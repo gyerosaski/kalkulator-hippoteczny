@@ -30,7 +30,7 @@ interface DialogData {
   `
 })
 export class SaveCalculationDialogComponent {
-  private readonly dialogRef = inject(MatDialogRef<SaveCalculationDialogComponent>, { self: true });
+  private readonly dialogRef = inject(MatDialogRef<SaveCalculationDialogComponent>);
   private readonly data = inject<DialogData | null>(MAT_DIALOG_DATA, { optional: true }) ?? {};
 
   nameCtrl = new FormControl(this.data.defaultName ?? '', { nonNullable: true, validators: [Validators.required] });

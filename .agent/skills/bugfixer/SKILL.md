@@ -1,0 +1,3 @@
+- odczytaj plik `docs/known_issues.md`
+- napraw nowe błędy
+- po naprawie oznacz jako [READY FOR TEST]

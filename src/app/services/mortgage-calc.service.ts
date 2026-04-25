@@ -114,7 +114,9 @@ export class MortgageCalcService {
 
   compute(inputs: MortgageInputs): MortgageResults {
     const nTotal = Math.max(0, Math.trunc(inputs.years) * 12 + Math.trunc(inputs.months));
-    const graceMonths = Math.max(0, this.monthDiff(inputs.startDate, inputs.capitalStartDate));
+    // Korekta o +1 miesiąc przesunięcia płatności: jeśli spłata kapitału ma zacząć się w kolejnym miesiącu
+    // po uruchomieniu kredytu, to pierwsza płatność (w kolejnym miesiącu) powinna już zawierać kapitał.
+    const graceMonths = Math.max(0, this.monthDiff(inputs.startDate, inputs.capitalStartDate) - 1);
     const amortMonths = Math.max(0, nTotal - graceMonths);
 
     // Efektywna stopa nominalna
@@ -129,7 +131,8 @@ export class MortgageCalcService {
 
     // Miesiące karencji: tylko odsetki
     for (let k = 0; k < Math.min(graceMonths, nTotal); k++) {
-      const date = this.addMonths(inputs.startDate, k);
+      // Płatności są w miesiącu następującym po miesiącu uruchomienia
+      const date = this.addMonths(inputs.startDate, k + 1);
       const odsetki = this.round2(saldo * i);
       const rata = odsetki; // brak kapitału w karencji
       const pozostalo = this.round2(saldo); // saldo bez zmian
@@ -145,7 +148,7 @@ export class MortgageCalcService {
         const R = i === 0 ? this.round2(P / n) : this.round2(P * i / (1 - Math.pow(1 + i, -n)));
         for (let t = 1; t <= n; t++) {
           const idx = graceMonths + t; // global index
-          const date = this.addMonths(inputs.startDate, idx - 1);
+          const date = this.addMonths(inputs.startDate, idx);
           const interest = this.round2(saldo * i);
           const capital = this.round2(R - interest);
           saldo = this.round2(saldo - capital);
@@ -166,7 +169,7 @@ export class MortgageCalcService {
         const capitalConst = this.round2(P / n);
         for (let t = 1; t <= n; t++) {
           const idx = graceMonths + t;
-          const date = this.addMonths(inputs.startDate, idx - 1);
+          const date = this.addMonths(inputs.startDate, idx);
           const interest = this.round2(saldo * i);
           let capital = t === n ? this.round2(saldo) : capitalConst;
           const rate = this.round2(capital + interest);
