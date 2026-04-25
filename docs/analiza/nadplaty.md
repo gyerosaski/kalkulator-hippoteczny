@@ -2,7 +2,6 @@
 
 ### 1. Zakres analizy
 - Aplikacja: `Kalkulator kredytu hipotecznego`.
-- URL: `https://wiedza.marciniwuc.com/kalkulator-kredytu-hipotecznego/` (widok kalkulatora osadzony w `iframe`).
 - Analizowana zakładka: `Nadpłaty`.
 - Cel zakładki: modelowanie scenariuszy nadpłacania kredytu oraz prowizji za wcześniejszą spłatę i pokazanie wpływu na harmonogram oraz podsumowanie kosztów.
 
@@ -28,59 +27,7 @@
 | `Wyczyść dane` | Czyści wartości w zakładce `Nadpłaty` do wartości domyślnych (m.in. kwoty/prowizja do `0,00`). | Działa natychmiast bez dodatkowego potwierdzenia. |
 | `Zapisz kalkulację` | Zapisuje aktualny scenariusz kalkulacji (integracja z sekcją `Twoje kalkulacje`). | Brak walidacji błędów prezentowanych inline w analizowanym scenariuszu. |
 
-### 4. Tabele i sekcje wynikowe powiązane z zakładką
-
-#### 4.1 Podsumowanie płatności
-- Tabela agregatów (sekcja „Struktura wszystkich płatności”):
-  - `Suma wszystkich płatności`
-  - `Odsetki`
-  - `Koszty okołokredytowe`
-- Tabela rozbicia kosztów okołokredytowych:
-  - `prowizja za udzielenie`
-  - `opłata za wycenę`
-  - `ubezpieczenie nieruchomości`
-  - `ubezpieczenie na życie`
-  - `ubezpieczenie od utraty pracy`
-  - `dodatkowe koszty`
-  - `prowizja za wcześniejszą spłatę`
-  - `inne`
-- Tabela kapitału:
-  - `Kapitał - spłacany w ratach`
-  - `Nadpłaty`
-
-#### 4.2 Harmonogram spłaty (tabela roczna)
-- Nazwy kolumn:
-  - `Data`
-  - `Rata`
-  - `Kapitał`
-  - `Odsetki`
-  - `Nadpłaty`
-  - `Pozostało do spłaty`
-  - `Koszty okołokredytowe`
-- Wartości prezentowane:
-  - Sumy roczne dla każdej pozycji.
-  - Wiersze rozwijalne (`+`) dla przejścia do szczegółu.
-- Sposób wyliczania (logika domenowa):
-  - `Rata = Kapitał + Odsetki (+ ewentualne koszty)` dla okresu.
-  - `Pozostało do spłaty` maleje o część kapitałową rat i nadpłaty.
-  - `Nadpłaty` wynikają z reguł zdefiniowanych w zakładce `Nadpłaty`.
-  - `Koszty okołokredytowe` uwzględniają m.in. prowizję za wcześniejszą spłatę, jeśli obowiązuje.
-
-### 5. Wykresy
-
-#### 5.1 Wykres harmonogramu spłaty kredytu
-- Typ: wykres skumulowany (warstwy kategorii kosztów/kapitału w czasie) + linia/seria salda pozostałego do spłaty.
-- Zakres czasu: od startu spłaty do końca okresu kredytu (np. `maj 2026 - kwiecień 2046`).
-- Serie danych (nazwy widoczne w opisie/legendzie):
-  - `Odsetki`
-  - `Koszty okołokredytowe`
-  - `Kapitał`
-  - `Nadpłaty`
-  - `Pozostało do spłaty`
-- Sposób wyliczania:
-  - Dane pochodzą z harmonogramu spłat i agregacji okresowych po rekalkulacji scenariusza nadpłat.
-
-### 6. Zależności obliczeniowe i reguły funkcjonalne
+### 4. Zależności obliczeniowe i reguły funkcjonalne
 - Zmiana któregokolwiek pola w zakładce `Nadpłaty` wpływa na:
   - `Nadpłaty` w tabeli harmonogramu,
   - `Pozostało do spłaty`,
@@ -92,9 +39,9 @@
 - Reguła prowizji:
   - Prowizja naliczana tylko do daty granicznej (`Bank pobiera prowizję do`).
 
-### 7. Techniczny wpływ nadpłat na koszty kredytu
+### 5. Techniczny wpływ nadpłat na koszty kredytu
 
-#### 7.1 Model miesięczny (uogólnienie)
+#### 5.1 Model miesięczny (uogólnienie)
 - Dla miesiąca `t`:
   - `odsetki_t = saldo_{t-1} * stopa_miesieczna_t`
   - `kapitał_raty_t = rata_t - odsetki_t`
@@ -102,14 +49,14 @@
   - `saldo_t = saldo_{t-1} - kapitał_raty_t - nadpłata_t`
 - Wniosek: każda dodatnia `nadpłata_t` obniża `saldo_t`, więc w kolejnych okresach maleje baza naliczania odsetek.
 
-#### 7.2 Wpływ na koszt odsetkowy
+#### 5.2 Wpływ na koszt odsetkowy
 - Całkowity koszt odsetek:
   - `Odsetki_total = Σ odsetki_t`
 - Ponieważ `odsetki_t` liczone są od aktualnego salda, nadpłaty przesuwają harmonogram w stronę:
   - niższych odsetek w kolejnych miesiącach,
   - szybszego spadku `Pozostało do spłaty`.
 
-#### 7.3 Wpływ trybu `Skutek nadpłaty`
+#### 5.3 Wpływ trybu `Skutek nadpłaty`
 - `niższa rata`:
   - po nadpłacie system rekalkuluje ratę dla pozostałego okresu,
   - efekt: niższy cashflow miesięczny, oszczędność odsetkowa zwykle mniejsza niż przy skróceniu okresu.
@@ -117,7 +64,7 @@
   - po nadpłacie system utrzymuje zbliżoną ratę i redukuje liczbę okresów,
   - efekt: zwykle większa oszczędność odsetek (krótszy czas naliczania).
 
-#### 7.4 Prowizja za wcześniejszą spłatę
+#### 5.4 Prowizja za wcześniejszą spłatę
 - Dla okresów spełniających warunek daty (`t <= data_graniczna_prowizji`):
   - `prowizja_t = nadpłata_t * stawka_prowizji`
 - Łączny koszt prowizji:
@@ -125,13 +72,13 @@
 - Nadpłata obniża odsetki, ale może chwilowo zwiększyć koszty okołokredytowe przez prowizję. Finalny efekt kosztowy:
   - `Koszt_całkowity = Odsetki_total + Koszty_okołokredytowe_total`
 
-#### 7.5 Reguła „docelowej raty miesięcznej”
+#### 5.5 Reguła „docelowej raty miesięcznej”
 - Pole 5 w połączeniu z 6–7 działa jak strategia utrzymania zadanej płatności miesięcznej.
 - Dla miesięcy aktywnego zakresu:
   - `nadpłata_t = max(0, rata_docelowa - rata_wynikająca_z_harmonogramu_t)`
 - Technicznie oznacza to automatyczne dopisywanie nadpłaty tam, gdzie rata harmonogramowa jest niższa od celu użytkownika.
 
-### 8. Uwagi implementacyjne (Angular)
+### 6. Uwagi implementacyjne (Angular)
 - Zakładka powinna być odwzorowana jako formularz reaktywny z grupami pól:
   - `nadplatyRegula` (1–4),
   - `rataDocelowaRegula` (5–7),

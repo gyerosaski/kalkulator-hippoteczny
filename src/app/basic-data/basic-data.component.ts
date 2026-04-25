@@ -1,8 +1,16 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { MortgageCalcService, MortgageInputs, MortgageResults, ScheduleRow } from '../services/mortgage-calc.service';
+import {
+  MortgageCalcService,
+  MortgageInputs,
+  MortgageResults,
+  PrepaymentEffect,
+  PrepaymentFrequency,
+  PrepaymentRule,
+  ScheduleRow
+} from '../services/mortgage-calc.service';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTableModule } from '@angular/material/table';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -20,11 +28,19 @@ function nextMonthStr(date = new Date()): string {
   return ym(d);
 }
 
+function addMonthsStr(baseYm: string, monthsToAdd: number): string {
+  const [y, m] = baseYm.split('-').map((v) => parseInt(v, 10));
+  const d = new Date(y, (m - 1) + monthsToAdd, 1);
+  return ym(d);
+}
+
 export interface YearGroup {
   year: number;
   sumRate: number;
   sumCapital: number;
   sumInterest: number;
+  sumPrepayment: number;
+  sumCommission: number;
   lastRemaining: number;
   rows: ScheduleRow[];
 }
@@ -42,6 +58,13 @@ export class BasicDataComponent {
   private calc = inject(MortgageCalcService);
   private dialog = inject(MatDialog);
 
+  readonly prepaymentFrequencyOptions: PrepaymentFrequency[] = ['jednorazowo', 'co miesiąc', 'co kwartał', 'co rok'];
+  readonly prepaymentEffectOptions: PrepaymentEffect[] = ['niższa rata', 'skrócenie okresu'];
+
+  get nadplatyRegulyArray(): FormArray {
+    return this.form.get('nadplatyReguly') as FormArray;
+  }
+
   // Formularz wejściowy
   form: FormGroup = this.fb.group({
     propertyValue: new FormControl(500_000, { nonNullable: true, validators: [Validators.required, Validators.min(0.01)] }),
@@ -55,13 +78,24 @@ export class BasicDataComponent {
     rateType: new FormControl<'zmienna' | 'stala'>('zmienna', { nonNullable: true }),
     nominalRate: new FormControl(9.0, { nonNullable: true, validators: [Validators.min(0), Validators.max(50)] }),
     wibor: new FormControl(7.0, { nonNullable: true, validators: [Validators.min(0), Validators.max(50)] }),
-    margin: new FormControl(2.0, { nonNullable: true, validators: [Validators.min(0), Validators.max(50)] })
+    margin: new FormControl(2.0, { nonNullable: true, validators: [Validators.min(0), Validators.max(50)] }),
+    nadplatyReguly: this.fb.array([this.createNadplataRegulaGroup()]),
+    rataDocelowaRegula: this.fb.group({
+      targetRate: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
+      from: new FormControl(nextMonthStr(), { nonNullable: true, validators: [Validators.required] }),
+      to: new FormControl(addMonthsStr(nextMonthStr(), 12), { nonNullable: true, validators: [Validators.required] }),
+      effect: new FormControl<PrepaymentEffect>('niższa rata', { nonNullable: true, validators: [Validators.required] })
+    }),
+    prowizjaWczesniejszaSplata: this.fb.group({
+      ratePct: new FormControl(0, { nonNullable: true, validators: [Validators.min(0), Validators.max(100)] }),
+      validUntil: new FormControl(addMonthsStr(nextMonthStr(), 36), { nonNullable: true, validators: [Validators.required] })
+    })
   }, { validators: [crossFieldValidator] });
 
   // Wyniki
   results = signal<MortgageResults | null>(null);
   yearlyGroups = signal<YearGroup[] | null>(null);
-  displayedColumns: string[] = ['date', 'rate', 'capital', 'interest', 'remaining'];
+  displayedColumns: string[] = ['date', 'rate', 'capital', 'interest', 'prepayment', 'commission', 'remaining'];
 
   // Obserwacja zmian formularza i przeliczenia
   constructor() {
@@ -75,6 +109,19 @@ export class BasicDataComponent {
   private recalculate() {
     const v = this.form.getRawValue();
     if (this.form.valid) {
+      const prepaymentRules = ((v.nadplatyReguly ?? []) as any[])
+        .filter((r) => r && r.from && (r.frequency === 'jednorazowo' || r.to))
+        .map((r) => ({
+          frequency: r.frequency as PrepaymentFrequency,
+          from: r.from,
+          to: r.frequency === 'jednorazowo' ? r.from : (r.to || r.from),
+          amount: Number(r.amount) || 0,
+          effect: r.effect as PrepaymentEffect
+        }));
+
+      const rataDocelowa = (v.rataDocelowaRegula ?? {}) as any;
+      const prowizja = (v.prowizjaWczesniejszaSplata ?? {}) as any;
+
       const inputs: MortgageInputs = {
         propertyValue: v.propertyValue,
         loanAmount: v.loanAmount,
@@ -87,7 +134,18 @@ export class BasicDataComponent {
         rateType: v.rateType,
         nominalRate: v.nominalRate,
         wibor: v.wibor,
-        margin: v.margin
+        margin: v.margin,
+        prepaymentRules,
+        targetInstallmentRule: {
+          targetRate: Number(rataDocelowa.targetRate) || 0,
+          from: rataDocelowa.from || nextMonthStr(),
+          to: rataDocelowa.to || nextMonthStr(),
+          effect: (rataDocelowa.effect as PrepaymentEffect) || 'niższa rata'
+        },
+        earlyRepaymentCommission: {
+          ratePct: Number(prowizja.ratePct) || 0,
+          validUntil: prowizja.validUntil || nextMonthStr()
+        }
       };
       const res = this.calc.compute(inputs);
       this.results.set(res);
@@ -121,6 +179,55 @@ export class BasicDataComponent {
     this.form.updateValueAndValidity();
   }
 
+  addNadplataRegula() {
+    this.nadplatyRegulyArray.push(this.createNadplataRegulaGroup());
+    this.form.updateValueAndValidity();
+  }
+
+  removeNadplataRegula(index: number) {
+    if (this.nadplatyRegulyArray.length <= 1) return;
+    this.nadplatyRegulyArray.removeAt(index);
+    this.form.updateValueAndValidity();
+  }
+
+  onNadplataFrequencyChanged(index: number) {
+    const ruleGroup = this.nadplatyRegulyArray.at(index) as FormGroup | null;
+    if (!ruleGroup) return;
+
+    const frequency = ruleGroup.get('frequency')?.value as PrepaymentFrequency | undefined;
+    const from = ruleGroup.get('from')?.value as string | undefined;
+    const toControl = ruleGroup.get('to');
+    if (!toControl) return;
+
+    if (frequency === 'jednorazowo' && from) {
+      toControl.setValue(from);
+    } else if (frequency !== 'jednorazowo' && !toControl.value && from) {
+      toControl.setValue(addMonthsStr(from, 12));
+    }
+
+    this.form.updateValueAndValidity();
+  }
+
+  onNadplataFromChanged(index: number) {
+    const ruleGroup = this.nadplatyRegulyArray.at(index) as FormGroup | null;
+    if (!ruleGroup) return;
+
+    const frequency = ruleGroup.get('frequency')?.value as PrepaymentFrequency | undefined;
+    const from = ruleGroup.get('from')?.value as string | undefined;
+    const toControl = ruleGroup.get('to');
+    if (frequency === 'jednorazowo' && from && toControl && toControl.value !== from) {
+      toControl.setValue(from);
+    }
+    this.form.updateValueAndValidity();
+  }
+
+  formatMonthPl(month: string | null | undefined): string {
+    if (!month || !/^\d{4}-\d{2}$/.test(month)) return '';
+    const [y, m] = month.split('-').map((v) => parseInt(v, 10));
+    const d = new Date(y, m - 1, 1);
+    return new Intl.DateTimeFormat('pl-PL', { month: 'short', year: 'numeric' }).format(d);
+  }
+
   // Akcje
   setDefaults() {
     this.form.patchValue({
@@ -135,8 +242,19 @@ export class BasicDataComponent {
       rateType: 'zmienna',
       wibor: 7.0,
       margin: 2.0,
-      nominalRate: 9.0
+      nominalRate: 9.0,
+      rataDocelowaRegula: {
+        targetRate: 0,
+        from: nextMonthStr(),
+        to: addMonthsStr(nextMonthStr(), 12),
+        effect: 'niższa rata'
+      },
+      prowizjaWczesniejszaSplata: {
+        ratePct: 0,
+        validUntil: addMonthsStr(nextMonthStr(), 36)
+      }
     });
+    this.form.setControl('nadplatyReguly', this.fb.array([this.createNadplataRegulaGroup()]));
   }
 
   clearAll() {
@@ -152,8 +270,19 @@ export class BasicDataComponent {
       rateType: 'zmienna',
       nominalRate: 0,
       wibor: 0,
-      margin: 0
+      margin: 0,
+      rataDocelowaRegula: {
+        targetRate: 0,
+        from: nextMonthStr(),
+        to: nextMonthStr(),
+        effect: 'niższa rata'
+      },
+      prowizjaWczesniejszaSplata: {
+        ratePct: 0,
+        validUntil: nextMonthStr()
+      }
     } as any);
+    this.form.setControl('nadplatyReguly', this.fb.array([this.createNadplataRegulaGroup({ to: nextMonthStr() })]));
   }
 
   saveCalculation() {
@@ -202,16 +331,40 @@ export class BasicDataComponent {
 
   // Pomocnicze computed
   readonly rateLabel = computed(() => this.form.get('rateType')?.value === 'stala' ? 'Oprocentowanie (stałe, %)' : 'Oprocentowanie = WIBOR + Marża (tylko do odczytu)');
+
+  private createNadplataRegulaGroup(initial: Partial<PrepaymentRule> = {}): FormGroup {
+    const frequency = initial.frequency ?? 'jednorazowo';
+    const from = initial.from ?? nextMonthStr();
+    const to = frequency === 'jednorazowo' ? from : (initial.to ?? addMonthsStr(from, 12));
+    return this.fb.group({
+      frequency: new FormControl<PrepaymentFrequency>(frequency, { nonNullable: true, validators: [Validators.required] }),
+      from: new FormControl(from, { nonNullable: true, validators: [Validators.required] }),
+      to: new FormControl(to, { nonNullable: true, validators: [Validators.required] }),
+      amount: new FormControl(initial.amount ?? 0, { nonNullable: true, validators: [Validators.min(0)] }),
+      effect: new FormControl<PrepaymentEffect>(initial.effect ?? 'niższa rata', { nonNullable: true, validators: [Validators.required] })
+    });
+  }
 }
 
 function groupByYear(rows: ScheduleRow[]): YearGroup[] {
   const out = new Map<number, YearGroup>();
   for (const r of rows) {
-    const [yy, mm] = r.date.split('-').map((v) => parseInt(v, 10));
-    const g = out.get(yy) || { year: yy, sumRate: 0, sumCapital: 0, sumInterest: 0, lastRemaining: 0, rows: [] };
+    const [yy] = r.date.split('-').map((v) => parseInt(v, 10));
+    const g = out.get(yy) || {
+      year: yy,
+      sumRate: 0,
+      sumCapital: 0,
+      sumInterest: 0,
+      sumPrepayment: 0,
+      sumCommission: 0,
+      lastRemaining: 0,
+      rows: []
+    };
     g.sumRate += r.rate;
     g.sumCapital += r.capital;
     g.sumInterest += r.interest;
+    g.sumPrepayment += r.prepayment;
+    g.sumCommission += r.commission;
     g.lastRemaining = r.remaining; // ostatni w roku nadpisze poprawnie
     g.rows.push(r);
     out.set(yy, g);
@@ -222,6 +375,8 @@ function groupByYear(rows: ScheduleRow[]): YearGroup[] {
     sumRate: Math.round(g.sumRate * 100) / 100,
     sumCapital: Math.round(g.sumCapital * 100) / 100,
     sumInterest: Math.round(g.sumInterest * 100) / 100,
+    sumPrepayment: Math.round(g.sumPrepayment * 100) / 100,
+    sumCommission: Math.round(g.sumCommission * 100) / 100,
   }));
   return res;
 }
@@ -233,6 +388,8 @@ function crossFieldValidator(group: FormGroup) {
   const mos = group.get('months')?.value ?? 0;
   const start = group.get('startDate')?.value as string;
   const capStart = group.get('capitalStartDate')?.value as string;
+  const nadplatyReguly = (group.get('nadplatyReguly')?.value ?? []) as Array<{ frequency?: PrepaymentFrequency; from: string; to?: string; amount: number }>;
+  const rataDocelowaRegula = (group.get('rataDocelowaRegula')?.value ?? {}) as { from?: string; to?: string; targetRate?: number };
 
   const errors: any = {};
   if (pv && la && la > pv) errors.loanGtProperty = true;
@@ -242,5 +399,23 @@ function crossFieldValidator(group: FormGroup) {
   if (start && capStart) {
     if (capStart < start) errors.capitalBeforeStart = true;
   }
+
+  for (const rule of nadplatyReguly) {
+    if (rule.frequency !== 'jednorazowo' && rule.from && rule.to && rule.to < rule.from) {
+      errors.prepaymentDateRangeInvalid = true;
+    }
+    if ((Number(rule.amount) || 0) < 0) {
+      errors.prepaymentAmountInvalid = true;
+    }
+  }
+
+  if (rataDocelowaRegula.from && rataDocelowaRegula.to && rataDocelowaRegula.to < rataDocelowaRegula.from) {
+    errors.targetInstallmentDateRangeInvalid = true;
+  }
+
+  if ((Number(rataDocelowaRegula.targetRate) || 0) < 0) {
+    errors.targetInstallmentInvalid = true;
+  }
+
   return Object.keys(errors).length ? errors : null;
 }

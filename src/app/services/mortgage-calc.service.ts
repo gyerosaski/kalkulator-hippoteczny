@@ -3,6 +3,29 @@ import { Injectable } from '@angular/core';
 export type InstallmentType = 'rowne' | 'malejace';
 export type RateType = 'zmienna' | 'stala';
 
+export type PrepaymentFrequency = 'jednorazowo' | 'co miesiąc' | 'co kwartał' | 'co rok';
+export type PrepaymentEffect = 'niższa rata' | 'skrócenie okresu';
+
+export interface PrepaymentRule {
+  frequency: PrepaymentFrequency;
+  from: string; // 'YYYY-MM'
+  to?: string; // 'YYYY-MM' (opcjonalne dla jednorazowej nadpłaty)
+  amount: number; // PLN
+  effect: PrepaymentEffect;
+}
+
+export interface TargetInstallmentRule {
+  targetRate: number; // PLN
+  from: string; // 'YYYY-MM'
+  to: string; // 'YYYY-MM'
+  effect: PrepaymentEffect;
+}
+
+export interface EarlyRepaymentCommission {
+  ratePct: number; // %
+  validUntil: string; // 'YYYY-MM'
+}
+
 export interface MortgageInputs {
   propertyValue: number; // Wartość nieruchomości (PLN)
   loanAmount: number; // Kwota kredytu (PLN)
@@ -16,6 +39,9 @@ export interface MortgageInputs {
   nominalRate: number; // % (przy stałej edytowalne; przy zmiennej = wibor+margin)
   wibor: number; // % (gdy zmienna)
   margin: number; // % (gdy zmienna)
+  prepaymentRules?: PrepaymentRule[];
+  targetInstallmentRule?: TargetInstallmentRule;
+  earlyRepaymentCommission?: EarlyRepaymentCommission;
 }
 
 export interface ScheduleRow {
@@ -24,6 +50,8 @@ export interface ScheduleRow {
   rate: number; // Rata
   capital: number; // Kapitał
   interest: number; // Odsetki
+  prepayment: number; // Nadpłata
+  commission: number; // Prowizja za wcześniejszą spłatę
   remaining: number; // Pozostało do spłaty po racie
 }
 
@@ -50,6 +78,10 @@ export class MortgageCalcService {
     return Math.round((x + Number.EPSILON) * 100) / 100;
   }
 
+  private asNonNegativeNumber(value: unknown): number {
+    return Math.max(0, Number(value) || 0);
+  }
+
   private parseMonth(str: string): { y: number; m: number } {
     // expects 'YYYY-MM'
     const [y, m] = str.split('-').map((v) => parseInt(v, 10));
@@ -72,6 +104,41 @@ export class MortgageCalcService {
 
   private monthlyRate(nominalPercent: number): number {
     return nominalPercent / 100 / 12;
+  }
+
+  private annuityPayment(principal: number, monthlyRate: number, periods: number): number {
+    if (periods <= 0) return 0;
+    if (monthlyRate === 0) return this.round2(principal / periods);
+    return this.round2(principal * monthlyRate / (1 - Math.pow(1 + monthlyRate, -periods)));
+  }
+
+  private isMonthInRange(month: string, from: string, to?: string): boolean {
+    if (!from) return false;
+    const effectiveTo = to || from;
+    return month >= from && month <= effectiveTo;
+  }
+
+  private matchesFrequency(month: string, rule: PrepaymentRule): boolean {
+    const diff = this.monthDiff(rule.from, month);
+    if (diff < 0) return false;
+    switch (rule.frequency) {
+      case 'jednorazowo':
+        return diff === 0;
+      case 'co miesiąc':
+        return true;
+      case 'co kwartał':
+        return diff % 3 === 0;
+      case 'co rok':
+        return diff % 12 === 0;
+      default:
+        return false;
+    }
+  }
+
+  private prepaymentFromRule(month: string, rule: PrepaymentRule): number {
+    if (!this.isMonthInRange(month, rule.from, rule.to)) return 0;
+    if (!this.matchesFrequency(month, rule)) return 0;
+    return this.round2(this.asNonNegativeNumber(rule.amount));
   }
 
   // Spójność LTV/kwota/wartość
@@ -126,56 +193,122 @@ export class MortgageCalcService {
 
     const i = this.monthlyRate(effectiveRate);
 
+    const prepaymentRules = (inputs.prepaymentRules ?? [])
+      .filter((r) => r?.from && (r?.frequency === 'jednorazowo' || !!r?.to))
+      .map((r) => ({
+        frequency: r.frequency,
+        from: r.from,
+        to: r.frequency === 'jednorazowo' ? r.from : (r.to || r.from),
+        amount: this.asNonNegativeNumber(r.amount),
+        effect: r.effect
+      }));
+    const targetInstallmentRule = inputs.targetInstallmentRule;
+    const commissionRatePct = this.asNonNegativeNumber(inputs.earlyRepaymentCommission?.ratePct);
+    const commissionValidUntil = inputs.earlyRepaymentCommission?.validUntil || '';
+
     const schedule: ScheduleRow[] = [];
-    let saldo = Number(inputs.loanAmount) || 0;
+    let saldo = this.asNonNegativeNumber(inputs.loanAmount);
+    let remainingAmortMonths = amortMonths;
+    let equalRate = this.annuityPayment(saldo, i, amortMonths);
+    let decreasingCapitalPart = amortMonths > 0 ? this.round2(saldo / amortMonths) : 0;
 
-    // Miesiące karencji: tylko odsetki
-    for (let k = 0; k < Math.min(graceMonths, nTotal); k++) {
-      // Płatności są w miesiącu następującym po miesiącu uruchomienia
-      const date = this.addMonths(inputs.startDate, k + 1);
-      const odsetki = this.round2(saldo * i);
-      const rata = odsetki; // brak kapitału w karencji
-      const pozostalo = this.round2(saldo); // saldo bez zmian
-      schedule.push({ index: k + 1, date, rate: rata, capital: 0, interest: odsetki, remaining: pozostalo });
-    }
+    const maxMonthsLimit = Math.max(nTotal, 1) + 1_200;
+    for (let idx = 1; idx <= maxMonthsLimit; idx++) {
+      if (saldo <= 0) break;
 
-    // Część amortyzacyjna (po karencji)
-    if (amortMonths > 0) {
-      if (inputs.installmentType === 'rowne') {
-        // Rata annuitetowa R = P*i / (1 - (1+i)^-n)
-        const P = saldo;
-        const n = amortMonths;
-        const R = i === 0 ? this.round2(P / n) : this.round2(P * i / (1 - Math.pow(1 + i, -n)));
-        for (let t = 1; t <= n; t++) {
-          const idx = graceMonths + t; // global index
-          const date = this.addMonths(inputs.startDate, idx);
-          const interest = this.round2(saldo * i);
-          const capital = this.round2(R - interest);
-          saldo = this.round2(saldo - capital);
-          // ostatnia rata – korekta do zera
-          if (t === n) {
-            const adjCapital = this.round2(capital + saldo);
-            const adjRate = this.round2(interest + adjCapital);
-            saldo = 0;
-            schedule.push({ index: idx, date, rate: adjRate, capital: adjCapital, interest, remaining: saldo });
+      const date = this.addMonths(inputs.startDate, idx);
+      const inGrace = idx <= graceMonths;
+      const interest = this.round2(saldo * i);
+
+      let capital = 0;
+      let baseRate = 0;
+
+      if (inGrace || remainingAmortMonths <= 0) {
+        capital = 0;
+        baseRate = interest;
+      } else if (inputs.installmentType === 'rowne') {
+        const planned = equalRate > 0 ? equalRate : this.annuityPayment(saldo, i, remainingAmortMonths);
+        capital = this.round2(planned - interest);
+        if (capital < 0) capital = 0;
+        if (capital > saldo) capital = this.round2(saldo);
+        baseRate = this.round2(interest + capital);
+      } else {
+        const capitalConst = decreasingCapitalPart > 0 ? decreasingCapitalPart : this.round2(saldo / Math.max(1, remainingAmortMonths));
+        capital = this.round2(Math.min(saldo, capitalConst));
+        baseRate = this.round2(interest + capital);
+      }
+
+      saldo = this.round2(Math.max(0, saldo - capital));
+
+      let prepaymentLower = 0;
+      let prepaymentShorten = 0;
+
+      for (const rule of prepaymentRules) {
+        const amount = this.prepaymentFromRule(date, rule);
+        if (amount <= 0) continue;
+        if (rule.effect === 'niższa rata') {
+          prepaymentLower = this.round2(prepaymentLower + amount);
+        } else {
+          prepaymentShorten = this.round2(prepaymentShorten + amount);
+        }
+      }
+
+      if (targetInstallmentRule && this.isMonthInRange(date, targetInstallmentRule.from, targetInstallmentRule.to)) {
+        const targetRate = this.asNonNegativeNumber(targetInstallmentRule.targetRate);
+        const targetPrepayment = this.round2(Math.max(0, targetRate - baseRate));
+        if (targetPrepayment > 0) {
+          if (targetInstallmentRule.effect === 'niższa rata') {
+            prepaymentLower = this.round2(prepaymentLower + targetPrepayment);
           } else {
-            schedule.push({ index: idx, date, rate: R, capital, interest, remaining: saldo });
+            prepaymentShorten = this.round2(prepaymentShorten + targetPrepayment);
           }
         }
-      } else {
-        // malejące: stały kapitał = P / n, rata = kapitał + odsetki od salda
-        const P = saldo;
-        const n = amortMonths;
-        const capitalConst = this.round2(P / n);
-        for (let t = 1; t <= n; t++) {
-          const idx = graceMonths + t;
-          const date = this.addMonths(inputs.startDate, idx);
-          const interest = this.round2(saldo * i);
-          let capital = t === n ? this.round2(saldo) : capitalConst;
-          const rate = this.round2(capital + interest);
-          saldo = this.round2(saldo - capital);
-          schedule.push({ index: idx, date, rate, capital, interest, remaining: saldo });
+      }
+
+      let prepayment = this.round2(prepaymentLower + prepaymentShorten);
+      if (prepayment > saldo) {
+        prepayment = this.round2(saldo);
+      }
+      saldo = this.round2(Math.max(0, saldo - prepayment));
+
+      const commission = prepayment > 0 && commissionRatePct > 0 && (!commissionValidUntil || date <= commissionValidUntil)
+        ? this.round2(prepayment * (commissionRatePct / 100))
+        : 0;
+      const totalRateForMonth = this.round2(baseRate + prepayment + commission);
+
+      schedule.push({
+        index: idx,
+        date,
+        rate: totalRateForMonth,
+        capital,
+        interest,
+        prepayment,
+        commission,
+        remaining: saldo
+      });
+
+      const hasLowerRatePrepayment = prepaymentLower > 0;
+      if (!inGrace && remainingAmortMonths > 0) {
+        remainingAmortMonths -= 1;
+        if (saldo <= 0) {
+          remainingAmortMonths = 0;
+        } else if (hasLowerRatePrepayment) {
+          if (inputs.installmentType === 'rowne') {
+            equalRate = this.annuityPayment(saldo, i, Math.max(1, remainingAmortMonths));
+          } else {
+            decreasingCapitalPart = this.round2(saldo / Math.max(1, remainingAmortMonths));
+          }
         }
+      } else if (inGrace && hasLowerRatePrepayment && remainingAmortMonths > 0) {
+        if (inputs.installmentType === 'rowne') {
+          equalRate = this.annuityPayment(saldo, i, Math.max(1, remainingAmortMonths));
+        } else {
+          decreasingCapitalPart = this.round2(saldo / Math.max(1, remainingAmortMonths));
+        }
+      }
+
+      if (nTotal > 0 && idx >= nTotal && prepayment === 0 && remainingAmortMonths === 0) {
+        break;
       }
     }
 
@@ -184,16 +317,16 @@ export class MortgageCalcService {
     const totalCapital = this.round2(schedule.reduce((s, r) => s + r.capital, 0));
     const totalInterest = this.round2(schedule.reduce((s, r) => s + r.interest, 0));
 
-    const overheadCosts = 0;
-    const prepayments = 0;
-    const bankReturnRatioPct = inputs.loanAmount > 0 ? this.round2(((totalRate + overheadCosts - prepayments) / inputs.loanAmount) * 100) : 0;
+    const overheadCosts = this.round2(schedule.reduce((s, r) => s + r.commission, 0));
+    const prepayments = this.round2(schedule.reduce((s, r) => s + r.prepayment, 0));
+    const bankReturnRatioPct = inputs.loanAmount > 0 ? this.round2((totalRate / inputs.loanAmount) * 100) : 0;
 
     const first = schedule.length > 0 ? { rate: schedule[0].rate, capital: schedule[0].capital, interest: schedule[0].interest } : null;
 
     return {
       effectiveRate: this.round2(effectiveRate),
-      totalMonths: nTotal,
-      amortizationMonths: amortMonths,
+      totalMonths: schedule.length,
+      amortizationMonths: Math.max(0, schedule.length - Math.min(graceMonths, schedule.length)),
       firstInstallment: first,
       totals: {
         totalRate, totalCapital, totalInterest, overheadCosts, prepayments, bankReturnRatioPct
