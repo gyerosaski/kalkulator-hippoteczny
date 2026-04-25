@@ -1,0 +1,1 @@
+- pierwsza rata powinna być w kolejnym miesiącu po miesiącu, w którym uruchomiono kredyt 

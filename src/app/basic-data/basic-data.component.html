@@ -1,0 +1,161 @@
+<div class="container" [formGroup]="form">
+  <h2>Dane podstawowe</h2>
+
+  <div class="grid">
+    <label>
+      1. Wartość nieruchomości (zł)
+      <input type="number" formControlName="propertyValue" (change)="onPropertyValueChanged()" />
+    </label>
+    <label>
+      2. Kwota kredytu (zł)
+      <input type="number" formControlName="loanAmount" (change)="onLoanAmountChanged()" />
+    </label>
+    <label>
+      3. LTV (%)
+      <input type="number" step="0.01" formControlName="ltv" (change)="onLtvChanged()" />
+    </label>
+
+    <div class="row">
+      <label>
+        4a. Okres: lata
+        <input type="number" min="0" formControlName="years" />
+      </label>
+      <label>
+        4b. m-ce
+        <input type="number" min="0" max="11" formControlName="months" />
+      </label>
+    </div>
+
+    <label>
+      5. Data uruchomienia (YYYY-MM)
+      <input type="month" formControlName="startDate" />
+    </label>
+
+    <label>
+      6. Początek spłat kapitału (YYYY-MM)
+      <input type="month" formControlName="capitalStartDate" />
+    </label>
+
+    <div class="row">
+      <label>
+        Jakie raty?
+        <select formControlName="installmentType">
+          <option value="rowne">równe</option>
+          <option value="malejace">malejące</option>
+        </select>
+      </label>
+
+      <label>
+        Rodzaj oprocentowania
+        <select formControlName="rateType">
+          <option value="zmienna">zmienna</option>
+          <option value="stala">stała</option>
+        </select>
+      </label>
+    </div>
+
+    <ng-container *ngIf="form.get('rateType')?.value === 'zmienna'; else stala">
+      <div class="row">
+        <label>
+          8.a WIBOR (%)
+          <input type="number" step="0.01" formControlName="wibor" />
+        </label>
+        <label>
+          8.b Marża (%)
+          <input type="number" step="0.01" formControlName="margin" />
+        </label>
+        <label>
+          8. Oprocentowanie (nominalne, %)
+          <input type="number" step="0.01" [value]="(form.get('wibor')?.value || 0) + (form.get('margin')?.value || 0)" disabled />
+        </label>
+      </div>
+    </ng-container>
+    <ng-template #stala>
+      <label>
+        8. Oprocentowanie stałe (%)
+        <input type="number" step="0.01" formControlName="nominalRate" />
+      </label>
+    </ng-template>
+  </div>
+
+  <div class="actions">
+    <button type="button" (click)="setDefaults()">Wstaw domyślne</button>
+    <button type="button" (click)="clearAll()">Wyczyść dane</button>
+    <button type="button" (click)="saveCalculation()">Zapisz kalkulację</button>
+  </div>
+
+  @if (form.errors) {
+    <div class="errors">
+      @if (form.errors?.['loanGtProperty']) { <p>Kwota kredytu nie może być większa niż wartość nieruchomości.</p> }
+      @if (form.errors?.['totalMonthsInvalid']) { <p>Łączna liczba miesięcy musi być większa od 0.</p> }
+      @if (form.errors?.['capitalBeforeStart']) { <p>Początek spłat kapitału nie może być wcześniejszy niż data uruchomienia.</p> }
+    </div>
+  }
+
+  @if (results()) {
+    <div class="summary">
+      <h3>Wyniki</h3>
+      <p>Oprocentowanie nominalne: {{ results()?.effectiveRate }} %</p>
+      <p>Wysokość pierwszej raty: {{ results()?.firstInstallment?.rate | number:'1.2-2':'pl' }} zł</p>
+
+      <h4>Podsumowanie płatności</h4>
+      <ul>
+        <li>Suma rat: {{ results()?.totals?.totalRate | number:'1.2-2':'pl' }} zł</li>
+        <li>Odsetki: {{ results()?.totals?.totalInterest | number:'1.2-2':'pl' }} zł</li>
+        <li>Kapitał: {{ results()?.totals?.totalCapital | number:'1.2-2':'pl' }} zł</li>
+        <li>Oddasz do banku: {{ results()?.totals?.bankReturnRatioPct | number:'1.2-2':'pl' }} %</li>
+      </ul>
+
+      <h3>Harmonogram spłaty – agregacja roczna</h3>
+      @if (yearlyGroups()?.length) {
+        <mat-accordion multi>
+          @for (g of yearlyGroups()!; track g.year) {
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Rok {{ g.year }}</mat-panel-title>
+                <mat-panel-description>
+                  Suma: rata {{ g.sumRate | number:'1.2-2':'pl' }} zł; kapitał {{ g.sumCapital | number:'1.2-2':'pl' }} zł; odsetki {{ g.sumInterest | number:'1.2-2':'pl' }} zł; pozostało {{ g.lastRemaining | number:'1.2-2':'pl' }} zł
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+
+              <table mat-table [dataSource]="g.rows" class="mat-elevation-z1">
+                <!-- Data Column -->
+                <ng-container matColumnDef="date">
+                  <th mat-header-cell *matHeaderCellDef> Data </th>
+                  <td mat-cell *matCellDef="let row"> {{ row.date }} </td>
+                </ng-container>
+
+                <!-- Rate Column -->
+                <ng-container matColumnDef="rate">
+                  <th mat-header-cell *matHeaderCellDef> Rata </th>
+                  <td mat-cell *matCellDef="let row"> {{ row.rate | number:'1.2-2':'pl' }} </td>
+                </ng-container>
+
+                <!-- Capital Column -->
+                <ng-container matColumnDef="capital">
+                  <th mat-header-cell *matHeaderCellDef> Kapitał </th>
+                  <td mat-cell *matCellDef="let row"> {{ row.capital | number:'1.2-2':'pl' }} </td>
+                </ng-container>
+
+                <!-- Interest Column -->
+                <ng-container matColumnDef="interest">
+                  <th mat-header-cell *matHeaderCellDef> Odsetki </th>
+                  <td mat-cell *matCellDef="let row"> {{ row.interest | number:'1.2-2':'pl' }} </td>
+                </ng-container>
+
+                <!-- Remaining Column -->
+                <ng-container matColumnDef="remaining">
+                  <th mat-header-cell *matHeaderCellDef> Pozostało </th>
+                  <td mat-cell *matCellDef="let row"> {{ row.remaining | number:'1.2-2':'pl' }} </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+              </table>
+            </mat-expansion-panel>
+          }
+        </mat-accordion>
+      }
+    </div>
+  }
+</div>
