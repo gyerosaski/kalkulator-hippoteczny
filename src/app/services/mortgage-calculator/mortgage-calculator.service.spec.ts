@@ -1,4 +1,4 @@
-import { MortgageCalcService, MortgageInputs, PrepaymentEffect } from './mortgage-calc.service';
+import { MortgageCalculatorService, MortgageInputs, PrepaymentEffect } from './mortgage-calculator.service';
 
 function baseInputs(effect: PrepaymentEffect = 'skrócenie okresu'): MortgageInputs {
   return {
@@ -37,10 +37,10 @@ function baseInputs(effect: PrepaymentEffect = 'skrócenie okresu'): MortgageInp
 }
 
 describe('MortgageCalcService (nadpłaty)', () => {
-  let service: MortgageCalcService;
+  let service: MortgageCalculatorService;
 
   beforeEach(() => {
-    service = new MortgageCalcService();
+    service = new MortgageCalculatorService();
   });
 
   it('powinien naliczyć nadpłatę i prowizję w aktywnym okresie prowizji', () => {

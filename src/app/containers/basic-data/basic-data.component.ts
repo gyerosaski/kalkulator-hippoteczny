@@ -2,23 +2,17 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {
-  MortgageCalcService,
-  MortgageInputs,
-  MortgageResults,
-  OverheadCostsInputs,
-  PrepaymentEffect,
-  PrepaymentFrequency,
-  PrepaymentRule,
-  ScheduleRow,
-  Tranche
-} from '../services/mortgage-calc.service';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTableModule } from '@angular/material/table';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { SaveCalculationDialogComponent } from './save-calculation-dialog.component';
 import { startWith } from 'rxjs';
-import {OverheadCostsComponent} from '../overhead-costs/overhead-costs.component';
+import {
+  MortgageCalculatorService, MortgageInputs, MortgageResults, OverheadCostsInputs, PrepaymentEffect,
+  PrepaymentFrequency, PrepaymentRule,
+  ScheduleRow, Tranche
+} from '../../services/mortgage-calculator/mortgage-calculator.service';
+import {OverheadCostsComponent} from '../../components/overhead-costs/overhead-costs.component';
+import {SaveCalculationDialogComponent} from '../../dialogs/save-calculation/save-calculation-dialog.component';
 
 function ym(date = new Date()): string {
   const y = date.getFullYear();
@@ -52,14 +46,14 @@ export interface YearGroup {
 @Component({
   selector: 'app-basic-data',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatExpansionModule, MatTableModule, MatDialogModule, OverheadCostsComponent],
+  imports: [CommonModule, ReactiveFormsModule, MatExpansionModule, MatTableModule, MatDialogModule, OverheadCostsComponent, OverheadCostsComponent],
   templateUrl: './basic-data.component.html',
   styleUrl: './basic-data.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BasicDataComponent {
   private fb = inject(FormBuilder);
-  private calc = inject(MortgageCalcService);
+  private calc = inject(MortgageCalculatorService);
   private dialog = inject(MatDialog);
 
   readonly prepaymentFrequencyOptions: PrepaymentFrequency[] = ['jednorazowo', 'co miesiąc', 'co kwartał', 'co rok'];

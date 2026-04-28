@@ -1,30 +1,17 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { startWith } from 'rxjs';
+import {ChangeDetectionStrategy, Component, computed, inject, signal} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {startWith} from 'rxjs';
+import {MatExpansionModule} from '@angular/material/expansion';
+import {MatTableModule} from '@angular/material/table';
+import {MatDialog, MatDialogModule} from '@angular/material/dialog';
+import {SaveCalculationDialogComponent} from '../../dialogs/save-calculation/save-calculation-dialog.component';
 import {
-  AdditionalCost,
-  BridgeInsurance,
   InsuranceCalcMethod,
-  InsuranceFrequency,
-  JobLossInsurance,
-  LifeInsurance,
-  LifeInsuranceCalcMethod,
-  LowEquityInsurance,
-  MortgageCalcService,
-  MortgageInputs,
-  MortgageResults,
-  OverheadCostsInputs,
-  PrepaymentEffect,
-  PromotionalRate,
-  PropertyInsurance,
-  ScheduleRow
-} from '../services/mortgage-calc.service';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatTableModule } from '@angular/material/table';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { SaveCalculationDialogComponent } from '../basic-data/save-calculation-dialog.component';
+  InsuranceFrequency, LifeInsuranceCalcMethod,
+  MortgageCalculatorService, MortgageInputs, MortgageResults, OverheadCostsInputs, PrepaymentEffect
+} from '../../services/mortgage-calculator/mortgage-calculator.service';
 
 function ym(date = new Date()): string {
   const y = date.getFullYear();
@@ -58,7 +45,7 @@ function endOfLoanDate(): string {
 })
 export class OverheadCostsComponent {
   private fb = inject(FormBuilder);
-  private calc = inject(MortgageCalcService);
+  private calc = inject(MortgageCalculatorService);
   private dialog = inject(MatDialog);
 
   readonly insuranceFrequencyOptions: InsuranceFrequency[] = ['co rok', 'co miesiąc', 'jednorazowo'];
@@ -74,51 +61,57 @@ export class OverheadCostsComponent {
   // Formularz główny – dane podstawowe + koszty okołokredytowe
   form: FormGroup = this.fb.group({
     // Dane podstawowe (identyczne jak w BasicDataComponent)
-    propertyValue: new FormControl(500_000, { nonNullable: true, validators: [Validators.required, Validators.min(0.01)] }),
-    loanAmount: new FormControl(400_000, { nonNullable: true, validators: [Validators.required, Validators.min(0.01)] }),
-    ltv: new FormControl(80, { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(100)] }),
-    years: new FormControl(20, { nonNullable: true, validators: [Validators.min(0)] }),
-    months: new FormControl(0, { nonNullable: true, validators: [Validators.min(0), Validators.max(11)] }),
-    startDate: new FormControl(ym(), { nonNullable: true, validators: [Validators.required] }),
-    capitalStartDate: new FormControl(nextMonthStr(), { nonNullable: true, validators: [Validators.required] }),
-    installmentType: new FormControl<'rowne' | 'malejace'>('rowne', { nonNullable: true }),
-    rateType: new FormControl<'zmienna' | 'stala'>('zmienna', { nonNullable: true }),
-    nominalRate: new FormControl(9.0, { nonNullable: true, validators: [Validators.min(0), Validators.max(50)] }),
-    wibor: new FormControl(7.0, { nonNullable: true, validators: [Validators.min(0), Validators.max(50)] }),
-    margin: new FormControl(2.0, { nonNullable: true, validators: [Validators.min(0), Validators.max(50)] }),
+    propertyValue: new FormControl(500_000, {
+      nonNullable: true,
+      validators: [Validators.required, Validators.min(0.01)]
+    }),
+    loanAmount: new FormControl(400_000, {nonNullable: true, validators: [Validators.required, Validators.min(0.01)]}),
+    ltv: new FormControl(80, {
+      nonNullable: true,
+      validators: [Validators.required, Validators.min(0), Validators.max(100)]
+    }),
+    years: new FormControl(20, {nonNullable: true, validators: [Validators.min(0)]}),
+    months: new FormControl(0, {nonNullable: true, validators: [Validators.min(0), Validators.max(11)]}),
+    startDate: new FormControl(ym(), {nonNullable: true, validators: [Validators.required]}),
+    capitalStartDate: new FormControl(nextMonthStr(), {nonNullable: true, validators: [Validators.required]}),
+    installmentType: new FormControl<'rowne' | 'malejace'>('rowne', {nonNullable: true}),
+    rateType: new FormControl<'zmienna' | 'stala'>('zmienna', {nonNullable: true}),
+    nominalRate: new FormControl(9.0, {nonNullable: true, validators: [Validators.min(0), Validators.max(50)]}),
+    wibor: new FormControl(7.0, {nonNullable: true, validators: [Validators.min(0), Validators.max(50)]}),
+    margin: new FormControl(2.0, {nonNullable: true, validators: [Validators.min(0), Validators.max(50)]}),
 
     // 1. Prowizja za udzielenie
-    commissionPct: new FormControl(0, { nonNullable: true, validators: [Validators.min(0), Validators.max(100)] }),
+    commissionPct: new FormControl(0, {nonNullable: true, validators: [Validators.min(0), Validators.max(100)]}),
     // 2. Opłata za wycenę
-    appraisalFee: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
+    appraisalFee: new FormControl(0, {nonNullable: true, validators: [Validators.min(0)]}),
     // 3. Ubezpieczenie pomostowe
-    bridgeRateIncrease: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
-    bridgeMonths: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
+    bridgeRateIncrease: new FormControl(0, {nonNullable: true, validators: [Validators.min(0)]}),
+    bridgeMonths: new FormControl(0, {nonNullable: true, validators: [Validators.min(0)]}),
     // 4. Ubezpieczenie nieruchomości
-    propInsFrequency: new FormControl<'co rok' | 'co miesiąc'>('co rok', { nonNullable: true }),
-    propInsCalcMethod: new FormControl<InsuranceCalcMethod>('% wartości nieruchomości', { nonNullable: true }),
-    propInsValue: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
-    propInsFrom: new FormControl(nextMonthStr(), { nonNullable: true }),
-    propInsTo: new FormControl(endOfLoanDate(), { nonNullable: true }),
+    propInsFrequency: new FormControl<'co rok' | 'co miesiąc'>('co rok', {nonNullable: true}),
+    propInsCalcMethod: new FormControl<InsuranceCalcMethod>('% wartości nieruchomości', {nonNullable: true}),
+    propInsValue: new FormControl(0, {nonNullable: true, validators: [Validators.min(0)]}),
+    propInsFrom: new FormControl(nextMonthStr(), {nonNullable: true}),
+    propInsTo: new FormControl(endOfLoanDate(), {nonNullable: true}),
     // 5. Ubezpieczenie niskiego wkładu
-    lowEquityRateIncrease: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
+    lowEquityRateIncrease: new FormControl(0, {nonNullable: true, validators: [Validators.min(0)]}),
     // 6. Ubezpieczenie na życie
-    lifeInsFrequency: new FormControl<InsuranceFrequency>('co rok', { nonNullable: true }),
-    lifeInsCalcMethod: new FormControl<LifeInsuranceCalcMethod>('% kwoty kredytu', { nonNullable: true }),
-    lifeInsValue: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
-    lifeInsFrom: new FormControl(nextMonthStr(), { nonNullable: true }),
-    lifeInsTo: new FormControl(endOfLoanDate(), { nonNullable: true }),
+    lifeInsFrequency: new FormControl<InsuranceFrequency>('co rok', {nonNullable: true}),
+    lifeInsCalcMethod: new FormControl<LifeInsuranceCalcMethod>('% kwoty kredytu', {nonNullable: true}),
+    lifeInsValue: new FormControl(0, {nonNullable: true, validators: [Validators.min(0)]}),
+    lifeInsFrom: new FormControl(nextMonthStr(), {nonNullable: true}),
+    lifeInsTo: new FormControl(endOfLoanDate(), {nonNullable: true}),
     // 7. Ubezpieczenie od utraty pracy
-    jobLossInsFrequency: new FormControl<InsuranceFrequency>('jednorazowo', { nonNullable: true }),
-    jobLossInsCalcMethod: new FormControl<LifeInsuranceCalcMethod>('% kwoty kredytu', { nonNullable: true }),
-    jobLossInsValue: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
-    jobLossInsFrom: new FormControl(nextMonthStr(), { nonNullable: true }),
+    jobLossInsFrequency: new FormControl<InsuranceFrequency>('jednorazowo', {nonNullable: true}),
+    jobLossInsCalcMethod: new FormControl<LifeInsuranceCalcMethod>('% kwoty kredytu', {nonNullable: true}),
+    jobLossInsValue: new FormControl(0, {nonNullable: true, validators: [Validators.min(0)]}),
+    jobLossInsFrom: new FormControl(nextMonthStr(), {nonNullable: true}),
     // 8. Dodatkowe koszty
     additionalCosts: this.fb.array([this.createAdditionalCostGroup()]),
     // 9. Promocyjna wysokość oprocentowania
-    promoRateDecrease: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
-    promoFrom: new FormControl(nextMonthStr(), { nonNullable: true }),
-    promoTo: new FormControl(addMonthsStr(nextMonthStr(), 12), { nonNullable: true })
+    promoRateDecrease: new FormControl(0, {nonNullable: true, validators: [Validators.min(0)]}),
+    promoFrom: new FormControl(nextMonthStr(), {nonNullable: true}),
+    promoTo: new FormControl(addMonthsStr(nextMonthStr(), 12), {nonNullable: true})
   });
 
   // Computed: prowizja w zł
@@ -208,21 +201,21 @@ export class OverheadCostsComponent {
   onLtvChanged() {
     const v = this.form.getRawValue();
     const synced = this.calc.syncLtvAmountValue(v.propertyValue, v.loanAmount, v.ltv, 'ltv');
-    this.form.patchValue(synced, { emitEvent: false });
+    this.form.patchValue(synced, {emitEvent: false});
     this.form.updateValueAndValidity();
   }
 
   onLoanAmountChanged() {
     const v = this.form.getRawValue();
     const synced = this.calc.syncLtvAmountValue(v.propertyValue, v.loanAmount, v.ltv, 'loanAmount');
-    this.form.patchValue(synced, { emitEvent: false });
+    this.form.patchValue(synced, {emitEvent: false});
     this.form.updateValueAndValidity();
   }
 
   onPropertyValueChanged() {
     const v = this.form.getRawValue();
     const synced = this.calc.syncLtvAmountValue(v.propertyValue, v.loanAmount, v.ltv, 'propertyValue');
-    this.form.patchValue(synced, { emitEvent: false });
+    this.form.patchValue(synced, {emitEvent: false});
     this.form.updateValueAndValidity();
   }
 
@@ -241,7 +234,7 @@ export class OverheadCostsComponent {
     if (!month || !/^\d{4}-\d{2}$/.test(month)) return '';
     const [y, m] = month.split('-').map((v) => parseInt(v, 10));
     const d = new Date(y, m - 1, 1);
-    return new Intl.DateTimeFormat('pl-PL', { month: 'short', year: 'numeric' }).format(d);
+    return new Intl.DateTimeFormat('pl-PL', {month: 'short', year: 'numeric'}).format(d);
   }
 
   setDefaults() {
@@ -314,7 +307,7 @@ export class OverheadCostsComponent {
 
   saveCalculation() {
     const dlgRef = this.dialog.open(SaveCalculationDialogComponent, {
-      data: { defaultName: 'Kalkulacja ' + new Date().toLocaleDateString('pl-PL') }
+      data: {defaultName: 'Kalkulacja ' + new Date().toLocaleDateString('pl-PL')}
     });
     dlgRef.afterClosed().subscribe((name) => {
       if (!name) return;
@@ -325,7 +318,7 @@ export class OverheadCostsComponent {
         const overwrite = window.confirm(`Istnieje już kalkulacja o nazwie "${name}". Czy chcesz ją nadpisać?`);
         if (!overwrite) return;
       }
-      const record = { name, createdAt: new Date().toISOString(), data };
+      const record = {name, createdAt: new Date().toISOString(), data};
       if (existingIdx >= 0) {
         all[existingIdx] = record;
       } else {
@@ -345,7 +338,7 @@ export class OverheadCostsComponent {
 
   private downloadJsonFile(fileName: string, content: any): void {
     const json = JSON.stringify(content, null, 2);
-    const blob = new Blob([json], { type: 'application/json' });
+    const blob = new Blob([json], {type: 'application/json'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -358,11 +351,11 @@ export class OverheadCostsComponent {
 
   private createAdditionalCostGroup(): FormGroup {
     return this.fb.group({
-      name: new FormControl('', { nonNullable: true }),
-      frequency: new FormControl<InsuranceFrequency>('jednorazowo', { nonNullable: true }),
-      calcMethod: new FormControl<LifeInsuranceCalcMethod>('znam kwotę', { nonNullable: true }),
-      value: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
-      from: new FormControl(nextMonthStr(), { nonNullable: true })
+      name: new FormControl('', {nonNullable: true}),
+      frequency: new FormControl<InsuranceFrequency>('jednorazowo', {nonNullable: true}),
+      calcMethod: new FormControl<LifeInsuranceCalcMethod>('znam kwotę', {nonNullable: true}),
+      value: new FormControl(0, {nonNullable: true, validators: [Validators.min(0)]}),
+      from: new FormControl(nextMonthStr(), {nonNullable: true})
     });
   }
 }

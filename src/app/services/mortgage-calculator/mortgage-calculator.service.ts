@@ -144,7 +144,7 @@ export interface MortgageResults {
 }
 
 @Injectable({ providedIn: 'root' })
-export class MortgageCalcService {
+export class MortgageCalculatorService {
   // Bezpieczne zaokrąglenie do 2 miejsc (PL waluty)
   private round2(x: number): number {
     return Math.round((x + Number.EPSILON) * 100) / 100;
