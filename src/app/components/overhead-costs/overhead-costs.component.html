@@ -70,12 +70,12 @@
         <label>
           Od
           <input type="month" formControlName="propInsFrom" />
-          <small>{{ formatMonthPl(form.get('propInsFrom')?.value) }}</small>
+          <small>{{ form.get('propInsFrom')?.value | formatMonthPl }}</small>
         </label>
         <label>
           do
           <input type="month" formControlName="propInsTo" />
-          <small>{{ formatMonthPl(form.get('propInsTo')?.value) }}</small>
+          <small>{{ form.get('propInsTo')?.value | formatMonthPl }}</small>
         </label>
       </div>
     </div>
@@ -120,12 +120,12 @@
         <label>
           Od
           <input type="month" formControlName="lifeInsFrom" />
-          <small>{{ formatMonthPl(form.get('lifeInsFrom')?.value) }}</small>
+          <small>{{ form.get('lifeInsFrom')?.value | formatMonthPl }}</small>
         </label>
         <label>
           do
           <input type="month" formControlName="lifeInsTo" />
-          <small>{{ formatMonthPl(form.get('lifeInsTo')?.value) }}</small>
+          <small>{{ form.get('lifeInsTo')?.value | formatMonthPl }}</small>
         </label>
       </div>
     </div>
@@ -158,7 +158,7 @@
       <label>
         Od
         <input type="month" formControlName="jobLossInsFrom" />
-        <small>{{ formatMonthPl(form.get('jobLossInsFrom')?.value) }}</small>
+        <small>{{ form.get('jobLossInsFrom')?.value | formatMonthPl }}</small>
       </label>
     </div>
   </div>
@@ -196,7 +196,7 @@
           <label>
             8.c Okres ponoszenia kosztu (Od)
             <input type="month" formControlName="from" />
-            <small>{{ formatMonthPl(cost.get('from')?.value) }}</small>
+            <small>{{ cost.get('from')?.value | formatMonthPl }}</small>
           </label>
           <div class="row row-wrap align-end">
             <button type="button" (click)="addAdditionalCost()">+</button>
@@ -221,12 +221,12 @@
         <label>
           Od
           <input type="month" formControlName="promoFrom" />
-          <small>{{ formatMonthPl(form.get('promoFrom')?.value) }}</small>
+          <small>{{ form.get('promoFrom')?.value | formatMonthPl }}</small>
         </label>
         <label>
           do
           <input type="month" formControlName="promoTo" />
-          <small>{{ formatMonthPl(form.get('promoTo')?.value) }}</small>
+          <small>{{ form.get('promoTo')?.value | formatMonthPl }}</small>
         </label>
       </div>
     </div>

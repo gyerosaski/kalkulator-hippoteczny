@@ -1,0 +1,69 @@
+<h2>Transze</h2>
+
+<div [formGroup]="form">
+  <div formArrayName="transze" class="stack">
+    @for (tranche of transzeArray.controls; track $index) {
+      <div class="card" [formGroupName]="$index">
+        <h3>Transza {{ $index + 1 }}</h3>
+
+        <div class="grid">
+          <label>
+            {{ $index + 1 }}. Kwota (zł)
+            <input type="number" step="0.01" min="0" formControlName="amount" />
+            @if (tranche.get('amount')?.invalid && tranche.get('amount')?.touched) {
+              <small class="field-error">Kwota musi być większa od zera.</small>
+            }
+          </label>
+
+          @if ($index === 0) {
+            <label>
+              {{ $index + 1 }}.2 Data
+              <input type="month" formControlName="date" [disabled]="true" [readonly]="true" />
+              <small>{{ tranche.get('date')?.value | formatMonthPl }}</small>
+            </label>
+          } @else {
+            <label>
+              {{ $index + 1 }}.2 Data
+              <input type="month" formControlName="date" />
+              <small>{{ tranche.get('date')?.value | formatMonthPl }}</small>
+            </label>
+
+            <label>
+              {{ $index + 1 }}.3 Opłata za uruchomienie transzy (zł)
+              <input type="number" step="0.01" min="0" formControlName="disbursementFee" />
+              @if (tranche.get('disbursementFee')?.errors?.['max']) {
+                <small class="field-error">Wysokość opłaty nie może być wyższa niż 1 000 zł.</small>
+              }
+            </label>
+          }
+        </div>
+
+        @if ($index > 0) {
+          <div class="row" style="margin-top: 0.5rem;">
+            <button type="button" (click)="removeTransza($index)">−</button>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="card">
+    <div class="grid">
+      <label>
+        SUMA TRANSZ (zł)
+        <input type="text" [value]="transzeSuma | number:'1.2-2':'pl'" disabled />
+      </label>
+    </div>
+    @if (form.errors?.['transzeSumMismatch']) {
+      <p class="field-error">
+        Suma transz musi być równa kwocie kredytu ({{ form.get('loanAmount')?.value | number:'1.2-2':'pl' }} zł).
+        Różnica: {{ form.errors?.['transzeSumMismatch'].diff | number:'1.2-2':'pl' }} zł.
+      </p>
+    }
+  </div>
+
+  <div class="actions">
+    <button type="button" (click)="addTransza()">+</button>
+    <button type="button" (click)="clearTransze()">Wyczyść dane</button>
+  </div>
+</div>
