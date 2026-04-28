@@ -10,8 +10,8 @@ import {SaveCalculationDialogComponent} from '../../dialogs/save-calculation/sav
 import {
   InsuranceCalcMethod,
   InsuranceFrequency, LifeInsuranceCalcMethod,
-  MortgageCalculatorService, MortgageInputs, MortgageResults, OverheadCostsInputs, PrepaymentEffect
-} from '../../services/mortgage-calculator/mortgage-calculator.service';
+  CalculatorService, MortgageInputs, MortgageResults, OverheadCostsInputs, PrepaymentEffect
+} from '../../services/calculator/calculator.service';
 
 function ym(date = new Date()): string {
   const y = date.getFullYear();
@@ -45,7 +45,7 @@ function endOfLoanDate(): string {
 })
 export class OverheadCostsComponent {
   private fb = inject(FormBuilder);
-  private calc = inject(MortgageCalculatorService);
+  private calc = inject(CalculatorService);
   private dialog = inject(MatDialog);
 
   readonly insuranceFrequencyOptions: InsuranceFrequency[] = ['co rok', 'co miesiąc', 'jednorazowo'];

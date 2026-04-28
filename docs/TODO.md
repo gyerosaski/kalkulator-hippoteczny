@@ -1,0 +1,5 @@
+- jedna wspólna instancja formularza tworzona i przechowywana w FormService
+- dodanie silnego typowania do formularza
+- wydzielenie do oddzielnych komponentów sekcji "dane podstawowe", "Wyniki", "Transze", "Nadpłaty", "Harmonogram spłaty"
+- przeniesienie do katalogu "model", wszystkich interfejsów i typów
+- przekształcenie w pipe'a metoday `formatMonthPl()` oraz innych metod, których zadaniem jest formatowanie danych w celu ich prezentacji użytkownikowi

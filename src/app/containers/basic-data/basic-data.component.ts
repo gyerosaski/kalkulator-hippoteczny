@@ -7,10 +7,10 @@ import { MatTableModule } from '@angular/material/table';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { startWith } from 'rxjs';
 import {
-  MortgageCalculatorService, MortgageInputs, MortgageResults, OverheadCostsInputs, PrepaymentEffect,
+  CalculatorService, MortgageInputs, MortgageResults, OverheadCostsInputs, PrepaymentEffect,
   PrepaymentFrequency, PrepaymentRule,
   ScheduleRow, Tranche
-} from '../../services/mortgage-calculator/mortgage-calculator.service';
+} from '../../services/calculator/calculator.service';
 import {OverheadCostsComponent} from '../../components/overhead-costs/overhead-costs.component';
 import {SaveCalculationDialogComponent} from '../../dialogs/save-calculation/save-calculation-dialog.component';
 
@@ -53,7 +53,7 @@ export interface YearGroup {
 })
 export class BasicDataComponent {
   private fb = inject(FormBuilder);
-  private calc = inject(MortgageCalculatorService);
+  private calc = inject(CalculatorService);
   private dialog = inject(MatDialog);
 
   readonly prepaymentFrequencyOptions: PrepaymentFrequency[] = ['jednorazowo', 'co miesiąc', 'co kwartał', 'co rok'];

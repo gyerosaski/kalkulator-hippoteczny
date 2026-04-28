@@ -231,27 +231,4 @@
       </div>
     </div>
   </div>
-
-  <div class="actions">
-    <button type="button" (click)="setDefaults()">Wstaw domyślne</button>
-    <button type="button" (click)="clearAll()">Wyczyść dane</button>
-    <button type="button" (click)="saveCalculation()">Zapisz kalkulację</button>
-  </div>
-
-  @if (results()) {
-    <div class="summary">
-      <h3>Wyniki</h3>
-      <p>Oprocentowanie nominalne: {{ results()?.effectiveRate }} %</p>
-
-      <h4>Podsumowanie płatności</h4>
-      <ul>
-        <li>Suma wszystkich płatności: {{ results()?.totals?.totalAllPayments | number:'1.2-2':'pl' }} zł</li>
-        <li>Suma rat: {{ results()?.totals?.totalRate | number:'1.2-2':'pl' }} zł</li>
-        <li>Odsetki: {{ results()?.totals?.totalInterest | number:'1.2-2':'pl' }} zł</li>
-        <li>Kapitał: {{ results()?.totals?.totalCapital | number:'1.2-2':'pl' }} zł</li>
-        <li>Koszty okołokredytowe: {{ results()?.totals?.overheadCosts | number:'1.2-2':'pl' }} zł</li>
-        <li>Oddasz do banku: {{ results()?.totals?.bankReturnRatioPct | number:'1.2-2':'pl' }} %</li>
-      </ul>
-    </div>
-  }
 </div>
