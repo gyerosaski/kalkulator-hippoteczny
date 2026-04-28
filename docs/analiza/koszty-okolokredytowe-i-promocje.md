@@ -1,9 +1,9 @@
-# Specyfikacja techniczna zakładki „Koszty okołokredytowe i promocje”
+# Specyfikacja techniczna sekcji „Koszty okołokredytowe i promocje”
 
-## 1. Kontekst zakładki
+## 1. Kontekst sekcji
 
-- Zakładka dostępna w kalkulatorze: `Koszty okołokredytowe i promocje`.
-- Cel zakładki: konfiguracja wszystkich kosztów dodatkowych oraz promocji obniżających oprocentowanie, które wpływają na:
+- Sekcja dostępna w kalkulatorze: `Koszty okołokredytowe i promocje`.
+- Cel sekcji: konfiguracja wszystkich kosztów dodatkowych oraz promocji obniżających oprocentowanie, które wpływają na:
   - `Koszty okołokredytowe` (panel podsumowania),
   - `Suma wszystkich płatności`,
   - szczegółowy harmonogram spłat.
@@ -157,7 +157,7 @@
 - `Wyczyść dane`
   - Działanie: zeruje/usuwa dane w zakładce.
 - `Zapisz kalkulację`
-  - Działanie: zapisuje aktualny stan zakładki kalkulatora.
+  - Działanie: zapisuje aktualny stan sekcji kalkulatora.
 - `+` (w sekcji `Dodatkowe koszty`)
   - Działanie: dodaje nowy wpis kosztu.
 
