@@ -26,6 +26,12 @@ export interface EarlyRepaymentCommission {
   validUntil: string; // 'YYYY-MM'
 }
 
+export interface Tranche {
+  amount: number; // PLN
+  date: string; // 'YYYY-MM'
+  disbursementFee?: number; // PLN (dla transz dodatkowych)
+}
+
 export interface MortgageInputs {
   propertyValue: number; // Wartość nieruchomości (PLN)
   loanAmount: number; // Kwota kredytu (PLN)
@@ -42,6 +48,7 @@ export interface MortgageInputs {
   prepaymentRules?: PrepaymentRule[];
   targetInstallmentRule?: TargetInstallmentRule;
   earlyRepaymentCommission?: EarlyRepaymentCommission;
+  tranches?: Tranche[];
 }
 
 export interface ScheduleRow {
@@ -206,8 +213,27 @@ export class MortgageCalcService {
     const commissionRatePct = this.asNonNegativeNumber(inputs.earlyRepaymentCommission?.ratePct);
     const commissionValidUntil = inputs.earlyRepaymentCommission?.validUntil || '';
 
+    // Transze – budowa mapy: miesiąc → kwota do uruchomienia
+    const trancheMap = new Map<string, number>();
+    let trancheDisbursementFees = 0;
+    const tranches = inputs.tranches ?? [];
+    if (tranches.length > 1) {
+      // Pomijamy pierwszą transzę (uruchamianą w momencie startDate – stanowi saldo początkowe)
+      for (let ti = 1; ti < tranches.length; ti++) {
+        const t = tranches[ti];
+        const amt = this.asNonNegativeNumber(t.amount);
+        if (amt > 0 && t.date) {
+          trancheMap.set(t.date, (trancheMap.get(t.date) || 0) + amt);
+        }
+        trancheDisbursementFees = this.round2(trancheDisbursementFees + this.asNonNegativeNumber(t.disbursementFee));
+      }
+    }
+
     const schedule: ScheduleRow[] = [];
-    let saldo = this.asNonNegativeNumber(inputs.loanAmount);
+    // Saldo początkowe = kwota pierwszej transzy (lub cała kwota kredytu, gdy brak transz)
+    let saldo = tranches.length > 1
+      ? this.asNonNegativeNumber(tranches[0].amount)
+      : this.asNonNegativeNumber(inputs.loanAmount);
     let remainingAmortMonths = amortMonths;
     let equalRate = this.annuityPayment(saldo, i, amortMonths);
     let decreasingCapitalPart = amortMonths > 0 ? this.round2(saldo / amortMonths) : 0;
@@ -217,6 +243,21 @@ export class MortgageCalcService {
       if (saldo <= 0) break;
 
       const date = this.addMonths(inputs.startDate, idx);
+
+      // Sprawdź, czy w tym miesiącu jest uruchamiana kolejna transza
+      const trancheAmount = trancheMap.get(date) || 0;
+      if (trancheAmount > 0) {
+        saldo = this.round2(saldo + trancheAmount);
+        // Przelicz ratę po dołączeniu transzy
+        if (remainingAmortMonths > 0) {
+          if (inputs.installmentType === 'rowne') {
+            equalRate = this.annuityPayment(saldo, i, Math.max(1, remainingAmortMonths));
+          } else {
+            decreasingCapitalPart = this.round2(saldo / Math.max(1, remainingAmortMonths));
+          }
+        }
+      }
+
       const inGrace = idx <= graceMonths;
       const interest = this.round2(saldo * i);
 
@@ -317,7 +358,7 @@ export class MortgageCalcService {
     const totalCapital = this.round2(schedule.reduce((s, r) => s + r.capital, 0));
     const totalInterest = this.round2(schedule.reduce((s, r) => s + r.interest, 0));
 
-    const overheadCosts = this.round2(schedule.reduce((s, r) => s + r.commission, 0));
+    const overheadCosts = this.round2(schedule.reduce((s, r) => s + r.commission, 0) + trancheDisbursementFees);
     const prepayments = this.round2(schedule.reduce((s, r) => s + r.prepayment, 0));
     const bankReturnRatioPct = inputs.loanAmount > 0 ? this.round2((totalRate / inputs.loanAmount) * 100) : 0;
 

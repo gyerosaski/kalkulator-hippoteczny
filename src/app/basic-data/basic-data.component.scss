@@ -10,6 +10,7 @@ input, select, button { padding: 0.5rem; font-size: 1rem; }
 .stack { display: flex; flex-direction: column; gap: 0.75rem; }
 .card { border: 1px solid #ddd; border-radius: 0.5rem; padding: 0.75rem; margin-bottom: 0.75rem; background: #fff; }
 .errors { color: #b00020; margin-top: 0.5rem; }
+.field-error { color: #b00020; font-size: 0.8rem; }
 .summary { margin-top: 1rem; }
 .schedule { width: 100%; border-collapse: collapse; }
 .schedule th, .schedule td { border: 1px solid #ddd; padding: 0.3rem 0.4rem; text-align: right; }

@@ -45,3 +45,4 @@ Wytworzenie lub rozwinięcie oprogramowania w Angularze na podstawie istniejące
 - Nie zgaduj wymagań: gdy analiza jest niejednoznaczna, zgłoś potrzebę doprecyzowania.
 - Zachowaj czytelność i modularność kodu.
 - Uwzględniaj walidacje, przypadki brzegowe i komunikaty dla użytkownika.
+- **Nie pisz testów** - testy zostaną napisane w osobnym skilu.

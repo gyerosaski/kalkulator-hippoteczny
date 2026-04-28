@@ -9,7 +9,8 @@ import {
   PrepaymentEffect,
   PrepaymentFrequency,
   PrepaymentRule,
-  ScheduleRow
+  ScheduleRow,
+  Tranche
 } from '../services/mortgage-calc.service';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTableModule } from '@angular/material/table';
@@ -65,6 +66,20 @@ export class BasicDataComponent {
     return this.form.get('nadplatyReguly') as FormArray;
   }
 
+  get transzeArray(): FormArray {
+    return this.form.get('transze') as FormArray;
+  }
+
+  get transzeSuma(): number {
+    const transze = this.transzeArray;
+    if (!transze) return 0;
+    let sum = 0;
+    for (let i = 0; i < transze.length; i++) {
+      sum += Number(transze.at(i).get('amount')?.value) || 0;
+    }
+    return Math.round(sum * 100) / 100;
+  }
+
   // Formularz wejściowy
   form: FormGroup = this.fb.group({
     propertyValue: new FormControl(500_000, { nonNullable: true, validators: [Validators.required, Validators.min(0.01)] }),
@@ -89,7 +104,8 @@ export class BasicDataComponent {
     prowizjaWczesniejszaSplata: this.fb.group({
       ratePct: new FormControl(0, { nonNullable: true, validators: [Validators.min(0), Validators.max(100)] }),
       validUntil: new FormControl(addMonthsStr(nextMonthStr(), 36), { nonNullable: true, validators: [Validators.required] })
-    })
+    }),
+    transze: this.fb.array([this.createTrancheGroup(true)])
   }, { validators: [crossFieldValidator] });
 
   // Wyniki
@@ -122,6 +138,12 @@ export class BasicDataComponent {
       const rataDocelowa = (v.rataDocelowaRegula ?? {}) as any;
       const prowizja = (v.prowizjaWczesniejszaSplata ?? {}) as any;
 
+      const tranches: Tranche[] = ((v.transze ?? []) as any[]).map((t: any) => ({
+        amount: Number(t.amount) || 0,
+        date: t.date || '',
+        disbursementFee: Number(t.disbursementFee) || 0
+      }));
+
       const inputs: MortgageInputs = {
         propertyValue: v.propertyValue,
         loanAmount: v.loanAmount,
@@ -136,6 +158,7 @@ export class BasicDataComponent {
         wibor: v.wibor,
         margin: v.margin,
         prepaymentRules,
+        tranches,
         targetInstallmentRule: {
           targetRate: Number(rataDocelowa.targetRate) || 0,
           from: rataDocelowa.from || nextMonthStr(),
@@ -176,6 +199,28 @@ export class BasicDataComponent {
     const v = this.form.getRawValue();
     const synced = this.calc.syncLtvAmountValue(v.propertyValue, v.loanAmount, v.ltv, 'propertyValue');
     this.form.patchValue(synced, { emitEvent: false });
+    this.form.updateValueAndValidity();
+  }
+
+  addTransza() {
+    const startDate = this.form.get('startDate')?.value || ym();
+    const nextDate = addMonthsStr(startDate, this.transzeArray.length);
+    this.transzeArray.push(this.createTrancheGroup(false, { date: nextDate }));
+    this.form.updateValueAndValidity();
+  }
+
+  removeTransza(index: number) {
+    if (index === 0 || this.transzeArray.length <= 1) return;
+    this.transzeArray.removeAt(index);
+    this.form.updateValueAndValidity();
+  }
+
+  clearTransze() {
+    const loanAmount = this.form.get('loanAmount')?.value || 0;
+    const startDate = this.form.get('startDate')?.value || ym();
+    this.form.setControl('transze', this.fb.array([
+      this.createTrancheGroup(true, { amount: loanAmount, date: startDate })
+    ]));
     this.form.updateValueAndValidity();
   }
 
@@ -255,6 +300,7 @@ export class BasicDataComponent {
       }
     });
     this.form.setControl('nadplatyReguly', this.fb.array([this.createNadplataRegulaGroup()]));
+    this.form.setControl('transze', this.fb.array([this.createTrancheGroup(true)]));
   }
 
   clearAll() {
@@ -283,6 +329,7 @@ export class BasicDataComponent {
       }
     } as any);
     this.form.setControl('nadplatyReguly', this.fb.array([this.createNadplataRegulaGroup({ to: nextMonthStr() })]));
+    this.form.setControl('transze', this.fb.array([this.createTrancheGroup(true, { amount: 0 })]));
   }
 
   saveCalculation() {
@@ -331,6 +378,18 @@ export class BasicDataComponent {
 
   // Pomocnicze computed
   readonly rateLabel = computed(() => this.form.get('rateType')?.value === 'stala' ? 'Oprocentowanie (stałe, %)' : 'Oprocentowanie = WIBOR + Marża (tylko do odczytu)');
+
+  private createTrancheGroup(isFirst: boolean, initial: Partial<Tranche> = {}): FormGroup {
+    const startDate = this.form?.get('startDate')?.value || ym();
+    const amount = initial.amount ?? (isFirst ? (this.form?.get('loanAmount')?.value || 0) : 0);
+    const date = initial.date ?? startDate;
+    const group = this.fb.group({
+      amount: new FormControl(amount, { nonNullable: true, validators: isFirst ? [] : [Validators.required, Validators.min(0.01)] }),
+      date: new FormControl(date, { nonNullable: true, validators: [Validators.required] }),
+      disbursementFee: new FormControl(initial.disbursementFee ?? 0, { nonNullable: true, validators: [Validators.min(0), Validators.max(1000)] })
+    });
+    return group;
+  }
 
   private createNadplataRegulaGroup(initial: Partial<PrepaymentRule> = {}): FormGroup {
     const frequency = initial.frequency ?? 'jednorazowo';
@@ -390,9 +449,22 @@ function crossFieldValidator(group: FormGroup) {
   const capStart = group.get('capitalStartDate')?.value as string;
   const nadplatyReguly = (group.get('nadplatyReguly')?.value ?? []) as Array<{ frequency?: PrepaymentFrequency; from: string; to?: string; amount: number }>;
   const rataDocelowaRegula = (group.get('rataDocelowaRegula')?.value ?? {}) as { from?: string; to?: string; targetRate?: number };
+  const transzeArray = group.get('transze') as FormArray | null;
 
   const errors: any = {};
   if (pv && la && la > pv) errors.loanGtProperty = true;
+
+  // Walidacja sumy transz
+  if (transzeArray && transzeArray.length > 1 && la > 0) {
+    let transzeSum = 0;
+    for (let i = 0; i < transzeArray.length; i++) {
+      transzeSum += Number(transzeArray.at(i).get('amount')?.value) || 0;
+    }
+    transzeSum = Math.round(transzeSum * 100) / 100;
+    if (Math.abs(transzeSum - la) > 0.01) {
+      errors.transzeSumMismatch = { expected: la, actual: transzeSum, diff: Math.round((transzeSum - la) * 100) / 100 };
+    }
+  }
   const n = Math.trunc(yrs) * 12 + Math.trunc(mos);
   if (n <= 0) errors.totalMonthsInvalid = true;
   // capital start cannot be before start
