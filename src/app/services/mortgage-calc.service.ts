@@ -32,6 +32,68 @@ export interface Tranche {
   disbursementFee?: number; // PLN (dla transz dodatkowych)
 }
 
+export type InsuranceFrequency = 'co rok' | 'co miesiąc' | 'jednorazowo';
+export type InsuranceCalcMethod = '% wartości nieruchomości' | '% kwoty kredytu' | '% salda kredytu' | 'znam kwotę';
+export type LifeInsuranceCalcMethod = '% kwoty kredytu' | '% salda kredytu' | 'znam kwotę';
+
+export interface BridgeInsurance {
+  rateIncrease: number; // % podwyższenia oprocentowania
+  months: number; // liczba miesięcy
+}
+
+export interface PropertyInsurance {
+  frequency: 'co rok' | 'co miesiąc';
+  calcMethod: InsuranceCalcMethod;
+  value: number; // % lub kwota zł
+  from: string; // 'YYYY-MM'
+  to: string; // 'YYYY-MM'
+}
+
+export interface LowEquityInsurance {
+  rateIncrease: number; // % podwyższenia oprocentowania
+}
+
+export interface LifeInsurance {
+  frequency: InsuranceFrequency;
+  calcMethod: LifeInsuranceCalcMethod;
+  value: number;
+  from: string;
+  to: string;
+}
+
+export interface JobLossInsurance {
+  frequency: InsuranceFrequency;
+  calcMethod: LifeInsuranceCalcMethod;
+  value: number;
+  from: string;
+}
+
+export interface AdditionalCost {
+  name: string;
+  frequency: InsuranceFrequency;
+  calcMethod: LifeInsuranceCalcMethod;
+  value: number;
+  from: string;
+}
+
+export interface PromotionalRate {
+  rateDecrease: number; // %
+  from: string;
+  to: string;
+}
+
+export interface OverheadCostsInputs {
+  commissionPct: number; // % prowizji za udzielenie
+  appraisalFee: number; // zł opłata za wycenę
+  bridgeInsurance?: BridgeInsurance;
+  propertyInsurance?: PropertyInsurance;
+  lowEquityInsurance?: LowEquityInsurance;
+  lifeInsurance?: LifeInsurance;
+  jobLossInsurance?: JobLossInsurance;
+  additionalCosts?: AdditionalCost[];
+  promotionalRate?: PromotionalRate;
+}
+
 export interface MortgageInputs {
   propertyValue: number; // Wartość nieruchomości (PLN)
   loanAmount: number; // Kwota kredytu (PLN)
@@ -49,6 +111,7 @@ export interface MortgageInputs {
   targetInstallmentRule?: TargetInstallmentRule;
   earlyRepaymentCommission?: EarlyRepaymentCommission;
   tranches?: Tranche[];
+  overheadCosts?: OverheadCostsInputs;
 }
 
 export interface ScheduleRow {
@@ -60,6 +123,7 @@ export interface ScheduleRow {
   prepayment: number; // Nadpłata
   commission: number; // Prowizja za wcześniejszą spłatę
   remaining: number; // Pozostało do spłaty po racie
+  insuranceCost: number; // Koszt ubezpieczeń i dodatkowych kosztów w danym miesiącu
 }
 
 export interface MortgageResults {
@@ -71,9 +135,10 @@ export interface MortgageResults {
     totalRate: number;
     totalCapital: number;
     totalInterest: number;
-    overheadCosts: number; // tu 0.00 (brak zakładki Koszty)
-    prepayments: number; // tu 0.00 (brak zakładki Nadpłaty)
+    overheadCosts: number; // koszty okołokredytowe
+    prepayments: number;
     bankReturnRatioPct: number; // Suma wszystkich płatności / Kwota kredytu * 100
+    totalAllPayments: number; // Suma wszystkich płatności = totalRate + overheadCosts
   };
   schedule: ScheduleRow[];
 }
@@ -186,18 +251,150 @@ export class MortgageCalcService {
     return { propertyValue: resultPV, loanAmount: resultAmount, ltv: resultLtv };
   }
 
+  private calcInsuranceCostForMonth(
+    date: string,
+    saldo: number,
+    inputs: MortgageInputs,
+    oc: OverheadCostsInputs,
+    monthIndexFromStart: number
+  ): number {
+    let cost = 0;
+
+    // 4. Ubezpieczenie nieruchomości
+    const pi = oc.propertyInsurance;
+    if (pi && pi.value > 0 && this.isMonthInRange(date, pi.from, pi.to)) {
+      const diffFromStart = this.monthDiff(pi.from, date);
+      if (diffFromStart >= 0) {
+        const shouldCharge = pi.frequency === 'co miesiąc'
+          || (pi.frequency === 'co rok' && diffFromStart % 12 === 0);
+        if (shouldCharge) {
+          const base = this.getInsuranceBase(pi.calcMethod, inputs.propertyValue, inputs.loanAmount, saldo);
+          const amount = pi.calcMethod === 'znam kwotę' ? pi.value : this.round2(base * pi.value / 100);
+          cost = this.round2(cost + amount);
+        }
+      }
+    }
+
+    // 6. Ubezpieczenie na życie
+    const li = oc.lifeInsurance;
+    if (li && li.value > 0 && this.isMonthInRange(date, li.from, li.to)) {
+      const diffFromStart = this.monthDiff(li.from, date);
+      if (diffFromStart >= 0) {
+        const shouldCharge = li.frequency === 'jednorazowo'
+          ? diffFromStart === 0
+          : li.frequency === 'co miesiąc'
+            ? true
+            : diffFromStart % 12 === 0; // co rok
+        if (shouldCharge) {
+          const base = this.getInsuranceBaseNoProperty(li.calcMethod, inputs.loanAmount, saldo);
+          const amount = li.calcMethod === 'znam kwotę' ? li.value : this.round2(base * li.value / 100);
+          cost = this.round2(cost + amount);
+        }
+      }
+    }
+
+    // 7. Ubezpieczenie od utraty pracy
+    const jl = oc.jobLossInsurance;
+    if (jl && jl.value > 0 && date >= (jl.from || '')) {
+      const diffFromStart = this.monthDiff(jl.from, date);
+      if (diffFromStart >= 0) {
+        const shouldCharge = jl.frequency === 'jednorazowo'
+          ? diffFromStart === 0
+          : jl.frequency === 'co miesiąc'
+            ? true
+            : diffFromStart % 12 === 0;
+        if (shouldCharge) {
+          const base = this.getInsuranceBaseNoProperty(jl.calcMethod, inputs.loanAmount, saldo);
+          const amount = jl.calcMethod === 'znam kwotę' ? jl.value : this.round2(base * jl.value / 100);
+          cost = this.round2(cost + amount);
+        }
+      }
+    }
+
+    // 8. Dodatkowe koszty
+    for (const ac of (oc.additionalCosts ?? [])) {
+      if (!ac.value || ac.value <= 0 || !ac.from) continue;
+      if (date < ac.from) continue;
+      const diffFromStart = this.monthDiff(ac.from, date);
+      if (diffFromStart < 0) continue;
+      const shouldCharge = ac.frequency === 'jednorazowo'
+        ? diffFromStart === 0
+        : ac.frequency === 'co miesiąc'
+          ? true
+          : diffFromStart % 12 === 0;
+      if (shouldCharge) {
+        const base = this.getInsuranceBaseNoProperty(ac.calcMethod, inputs.loanAmount, saldo);
+        const amount = ac.calcMethod === 'znam kwotę' ? ac.value : this.round2(base * ac.value / 100);
+        cost = this.round2(cost + amount);
+      }
+    }
+
+    return cost;
+  }
+
+  private getInsuranceBase(method: InsuranceCalcMethod, propertyValue: number, loanAmount: number, saldo: number): number {
+    switch (method) {
+      case '% wartości nieruchomości': return propertyValue;
+      case '% kwoty kredytu': return loanAmount;
+      case '% salda kredytu': return saldo;
+      default: return 0;
+    }
+  }
+
+  private getInsuranceBaseNoProperty(method: LifeInsuranceCalcMethod, loanAmount: number, saldo: number): number {
+    switch (method) {
+      case '% kwoty kredytu': return loanAmount;
+      case '% salda kredytu': return saldo;
+      default: return 0;
+    }
+  }
+
+  private getEffectiveRateForMonth(
+    baseRate: number,
+    date: string,
+    startDate: string,
+    oc?: OverheadCostsInputs
+  ): number {
+    let rate = baseRate;
+    if (!oc) return rate;
+
+    // 3. Ubezpieczenie pomostowe – podwyższenie oprocentowania
+    const bi = oc.bridgeInsurance;
+    if (bi && bi.rateIncrease > 0 && bi.months > 0) {
+      const monthIdx = this.monthDiff(startDate, date);
+      if (monthIdx >= 1 && monthIdx <= bi.months) {
+        rate += bi.rateIncrease;
+      }
+    }
+
+    // 5. Ubezpieczenie niskiego wkładu – podwyższenie oprocentowania (bezterminowe)
+    const lei = oc.lowEquityInsurance;
+    if (lei && lei.rateIncrease > 0) {
+      rate += lei.rateIncrease;
+    }
+
+    // 9. Promocyjna wysokość oprocentowania – obniżenie
+    const pr = oc.promotionalRate;
+    if (pr && pr.rateDecrease > 0 && this.isMonthInRange(date, pr.from, pr.to)) {
+      rate = Math.max(0, rate - pr.rateDecrease);
+    }
+
+    return rate;
+  }
+
   compute(inputs: MortgageInputs): MortgageResults {
     const nTotal = Math.max(0, Math.trunc(inputs.years) * 12 + Math.trunc(inputs.months));
-    // Korekta o +1 miesiąc przesunięcia płatności: jeśli spłata kapitału ma zacząć się w kolejnym miesiącu
-    // po uruchomieniu kredytu, to pierwsza płatność (w kolejnym miesiącu) powinna już zawierać kapitał.
     const graceMonths = Math.max(0, this.monthDiff(inputs.startDate, inputs.capitalStartDate) - 1);
     const amortMonths = Math.max(0, nTotal - graceMonths);
 
-    // Efektywna stopa nominalna
-    const effectiveRate = inputs.rateType === 'zmienna'
+    const baseEffectiveRate = inputs.rateType === 'zmienna'
       ? (Number(inputs.wibor) || 0) + (Number(inputs.margin) || 0)
       : (Number(inputs.nominalRate) || 0);
 
+    const oc = inputs.overheadCosts;
+
+    // Początkowe i – bez modyfikacji (do annuity na start)
+    const effectiveRate = baseEffectiveRate;
     const i = this.monthlyRate(effectiveRate);
 
     const prepaymentRules = (inputs.prepaymentRules ?? [])
@@ -259,7 +456,11 @@ export class MortgageCalcService {
       }
 
       const inGrace = idx <= graceMonths;
-      const interest = this.round2(saldo * i);
+
+      // Dynamiczna stopa dla tego miesiąca (ubezpieczenie pomostowe, niski wkład, promocja)
+      const monthEffRate = this.getEffectiveRateForMonth(baseEffectiveRate, date, inputs.startDate, oc);
+      const iMonth = this.monthlyRate(monthEffRate);
+      const interest = this.round2(saldo * iMonth);
 
       let capital = 0;
       let baseRate = 0;
@@ -315,6 +516,10 @@ export class MortgageCalcService {
       const commission = prepayment > 0 && commissionRatePct > 0 && (!commissionValidUntil || date <= commissionValidUntil)
         ? this.round2(prepayment * (commissionRatePct / 100))
         : 0;
+
+      // Koszt ubezpieczeń i dodatkowych kosztów w tym miesiącu
+      const insuranceCost = oc ? this.calcInsuranceCostForMonth(date, saldo, inputs, oc, idx) : 0;
+
       const totalRateForMonth = this.round2(baseRate + prepayment + commission);
 
       schedule.push({
@@ -325,7 +530,8 @@ export class MortgageCalcService {
         interest,
         prepayment,
         commission,
-        remaining: saldo
+        remaining: saldo,
+        insuranceCost
       });
 
       const hasLowerRatePrepayment = prepaymentLower > 0;
@@ -358,9 +564,17 @@ export class MortgageCalcService {
     const totalCapital = this.round2(schedule.reduce((s, r) => s + r.capital, 0));
     const totalInterest = this.round2(schedule.reduce((s, r) => s + r.interest, 0));
 
-    const overheadCosts = this.round2(schedule.reduce((s, r) => s + r.commission, 0) + trancheDisbursementFees);
+    const totalInsuranceCosts = this.round2(schedule.reduce((s, r) => s + r.insuranceCost, 0));
+    const loanCommission = oc ? this.round2(inputs.loanAmount * (oc.commissionPct || 0) / 100) : 0;
+    const appraisalFee = oc ? this.round2(oc.appraisalFee || 0) : 0;
+    const earlyRepaymentCommissions = this.round2(schedule.reduce((s, r) => s + r.commission, 0));
+
+    const overheadCosts = this.round2(
+      loanCommission + appraisalFee + totalInsuranceCosts + earlyRepaymentCommissions + trancheDisbursementFees
+    );
     const prepayments = this.round2(schedule.reduce((s, r) => s + r.prepayment, 0));
-    const bankReturnRatioPct = inputs.loanAmount > 0 ? this.round2((totalRate / inputs.loanAmount) * 100) : 0;
+    const totalAllPayments = this.round2(totalRate + overheadCosts);
+    const bankReturnRatioPct = inputs.loanAmount > 0 ? this.round2((totalAllPayments / inputs.loanAmount) * 100) : 0;
 
     const first = schedule.length > 0 ? { rate: schedule[0].rate, capital: schedule[0].capital, interest: schedule[0].interest } : null;
 
@@ -370,7 +584,7 @@ export class MortgageCalcService {
       amortizationMonths: Math.max(0, schedule.length - Math.min(graceMonths, schedule.length)),
       firstInstallment: first,
       totals: {
-        totalRate, totalCapital, totalInterest, overheadCosts, prepayments, bankReturnRatioPct
+        totalRate, totalCapital, totalInterest, overheadCosts, prepayments, bankReturnRatioPct, totalAllPayments
       },
       schedule
     };

@@ -1,0 +1,257 @@
+<div class="container" [formGroup]="form">
+  <h2>Koszty okołokredytowe i promocje</h2>
+
+  <!-- 1. Prowizja za udzielenie -->
+  <div class="card">
+    <h3>1. Prowizja za udzielenie</h3>
+    <div class="grid">
+      <label>
+        Prowizja (%)
+        <input type="number" step="0.01" min="0" formControlName="commissionPct" />
+      </label>
+      <label>
+        Przeliczenie (zł)
+        <input type="text" [value]="commissionAmount() | number:'1.2-2':'pl'" disabled />
+      </label>
+    </div>
+  </div>
+
+  <!-- 2. Opłata za wycenę -->
+  <div class="card">
+    <h3>2. Opłata za wycenę</h3>
+    <div class="grid">
+      <label>
+        Kwota (zł)
+        <input type="number" step="0.01" min="0" formControlName="appraisalFee" />
+      </label>
+    </div>
+  </div>
+
+  <!-- 3. Ubezpieczenie pomostowe -->
+  <div class="card">
+    <h3>3. Ubezpieczenie pomostowe</h3>
+    <div class="grid">
+      <label>
+        Bank podwyższa oprocentowanie o (%)
+        <input type="number" step="0.01" min="0" formControlName="bridgeRateIncrease" />
+      </label>
+      <label>
+        przez (miesięcy)
+        <input type="number" min="0" formControlName="bridgeMonths" />
+      </label>
+    </div>
+  </div>
+
+  <!-- 4. Ubezpieczenie nieruchomości -->
+  <div class="card">
+    <h3>4. Ubezpieczenie nieruchomości</h3>
+    <div class="grid">
+      <label>
+        4.a Jak często opłacana jest składka?
+        <select formControlName="propInsFrequency">
+          @for (opt of propertyInsFrequencyOptions; track opt) {
+            <option [value]="opt">{{ opt }}</option>
+          }
+        </select>
+      </label>
+      <label>
+        4.b Jak wyliczana jest składka?
+        <select formControlName="propInsCalcMethod">
+          @for (opt of propertyInsCalcOptions; track opt) {
+            <option [value]="opt">{{ opt }}</option>
+          }
+        </select>
+      </label>
+      <label>
+        Wartość składki {{ form.get('propInsCalcMethod')?.value === 'znam kwotę' ? '(zł)' : '(%)' }}
+        <input type="number" step="0.0001" min="0" formControlName="propInsValue" />
+      </label>
+      <div class="row row-wrap">
+        <label>
+          Od
+          <input type="month" formControlName="propInsFrom" />
+          <small>{{ formatMonthPl(form.get('propInsFrom')?.value) }}</small>
+        </label>
+        <label>
+          do
+          <input type="month" formControlName="propInsTo" />
+          <small>{{ formatMonthPl(form.get('propInsTo')?.value) }}</small>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Ubezpieczenie niskiego wkładu -->
+  <div class="card">
+    <h3>5. Ubezpieczenie niskiego wkładu</h3>
+    <div class="grid">
+      <label>
+        Bank podwyższa oprocentowanie o (%)
+        <input type="number" step="0.01" min="0" formControlName="lowEquityRateIncrease" />
+      </label>
+    </div>
+  </div>
+
+  <!-- 6. Ubezpieczenie na życie -->
+  <div class="card">
+    <h3>6. Ubezpieczenie na życie</h3>
+    <div class="grid">
+      <label>
+        6.a Jak często opłacana jest składka?
+        <select formControlName="lifeInsFrequency">
+          @for (opt of insuranceFrequencyOptions; track opt) {
+            <option [value]="opt">{{ opt }}</option>
+          }
+        </select>
+      </label>
+      <label>
+        6.b Jak wyliczana jest składka?
+        <select formControlName="lifeInsCalcMethod">
+          @for (opt of lifeInsCalcOptions; track opt) {
+            <option [value]="opt">{{ opt }}</option>
+          }
+        </select>
+      </label>
+      <label>
+        Wartość składki {{ form.get('lifeInsCalcMethod')?.value === 'znam kwotę' ? '(zł)' : '(%)' }}
+        <input type="number" step="0.00001" min="0" formControlName="lifeInsValue" />
+      </label>
+      <div class="row row-wrap">
+        <label>
+          Od
+          <input type="month" formControlName="lifeInsFrom" />
+          <small>{{ formatMonthPl(form.get('lifeInsFrom')?.value) }}</small>
+        </label>
+        <label>
+          do
+          <input type="month" formControlName="lifeInsTo" />
+          <small>{{ formatMonthPl(form.get('lifeInsTo')?.value) }}</small>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Ubezpieczenie od utraty pracy -->
+  <div class="card">
+    <h3>7. Ubezpieczenie od utraty pracy</h3>
+    <div class="grid">
+      <label>
+        7.a Jak często opłacana jest składka?
+        <select formControlName="jobLossInsFrequency">
+          @for (opt of insuranceFrequencyOptions; track opt) {
+            <option [value]="opt">{{ opt }}</option>
+          }
+        </select>
+      </label>
+      <label>
+        7.b Jak wyliczana jest składka?
+        <select formControlName="jobLossInsCalcMethod">
+          @for (opt of lifeInsCalcOptions; track opt) {
+            <option [value]="opt">{{ opt }}</option>
+          }
+        </select>
+      </label>
+      <label>
+        Wartość składki {{ form.get('jobLossInsCalcMethod')?.value === 'znam kwotę' ? '(zł)' : '(%)' }}
+        <input type="number" step="0.01" min="0" formControlName="jobLossInsValue" />
+      </label>
+      <label>
+        Od
+        <input type="month" formControlName="jobLossInsFrom" />
+        <small>{{ formatMonthPl(form.get('jobLossInsFrom')?.value) }}</small>
+      </label>
+    </div>
+  </div>
+
+  <!-- 8. Dodatkowe koszty -->
+  <div formArrayName="additionalCosts" class="stack">
+    @for (cost of additionalCostsArray.controls; track $index) {
+      <div class="card" [formGroupName]="$index">
+        <h3>8. Dodatkowy koszt {{ $index + 1 }}</h3>
+        <div class="grid">
+          <label>
+            8. Nazwa kosztu
+            <input type="text" formControlName="name" />
+          </label>
+          <label>
+            8.a Jak często pobierana jest opłata?
+            <select formControlName="frequency">
+              @for (opt of insuranceFrequencyOptions; track opt) {
+                <option [value]="opt">{{ opt }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            8.b Jak wyliczana jest opłata?
+            <select formControlName="calcMethod">
+              @for (opt of lifeInsCalcOptions; track opt) {
+                <option [value]="opt">{{ opt }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            Kwota {{ cost.get('calcMethod')?.value === 'znam kwotę' ? '(zł)' : '(%)' }}
+            <input type="number" step="0.01" min="0" formControlName="value" />
+          </label>
+          <label>
+            8.c Okres ponoszenia kosztu (Od)
+            <input type="month" formControlName="from" />
+            <small>{{ formatMonthPl(cost.get('from')?.value) }}</small>
+          </label>
+          <div class="row row-wrap align-end">
+            <button type="button" (click)="addAdditionalCost()">+</button>
+            @if (additionalCostsArray.length > 1) {
+              <button type="button" (click)="removeAdditionalCost($index)">Usuń</button>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- 9. Promocyjna wysokość oprocentowania -->
+  <div class="card">
+    <h3>9. Promocyjna wysokość oprocentowania</h3>
+    <div class="grid">
+      <label>
+        Bank obniża oprocentowanie o (%)
+        <input type="number" step="0.01" min="0" formControlName="promoRateDecrease" />
+      </label>
+      <div class="row row-wrap">
+        <label>
+          Od
+          <input type="month" formControlName="promoFrom" />
+          <small>{{ formatMonthPl(form.get('promoFrom')?.value) }}</small>
+        </label>
+        <label>
+          do
+          <input type="month" formControlName="promoTo" />
+          <small>{{ formatMonthPl(form.get('promoTo')?.value) }}</small>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button type="button" (click)="setDefaults()">Wstaw domyślne</button>
+    <button type="button" (click)="clearAll()">Wyczyść dane</button>
+    <button type="button" (click)="saveCalculation()">Zapisz kalkulację</button>
+  </div>
+
+  @if (results()) {
+    <div class="summary">
+      <h3>Wyniki</h3>
+      <p>Oprocentowanie nominalne: {{ results()?.effectiveRate }} %</p>
+
+      <h4>Podsumowanie płatności</h4>
+      <ul>
+        <li>Suma wszystkich płatności: {{ results()?.totals?.totalAllPayments | number:'1.2-2':'pl' }} zł</li>
+        <li>Suma rat: {{ results()?.totals?.totalRate | number:'1.2-2':'pl' }} zł</li>
+        <li>Odsetki: {{ results()?.totals?.totalInterest | number:'1.2-2':'pl' }} zł</li>
+        <li>Kapitał: {{ results()?.totals?.totalCapital | number:'1.2-2':'pl' }} zł</li>
+        <li>Koszty okołokredytowe: {{ results()?.totals?.overheadCosts | number:'1.2-2':'pl' }} zł</li>
+        <li>Oddasz do banku: {{ results()?.totals?.bankReturnRatioPct | number:'1.2-2':'pl' }} %</li>
+      </ul>
+    </div>
+  }
+</div>

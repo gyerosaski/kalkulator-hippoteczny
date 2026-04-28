@@ -6,6 +6,7 @@ import {
   MortgageCalcService,
   MortgageInputs,
   MortgageResults,
+  OverheadCostsInputs,
   PrepaymentEffect,
   PrepaymentFrequency,
   PrepaymentRule,
@@ -17,6 +18,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { SaveCalculationDialogComponent } from './save-calculation-dialog.component';
 import { startWith } from 'rxjs';
+import {OverheadCostsComponent} from '../overhead-costs/overhead-costs.component';
 
 function ym(date = new Date()): string {
   const y = date.getFullYear();
@@ -42,6 +44,7 @@ export interface YearGroup {
   sumInterest: number;
   sumPrepayment: number;
   sumCommission: number;
+  sumInsuranceCost: number;
   lastRemaining: number;
   rows: ScheduleRow[];
 }
@@ -49,7 +52,7 @@ export interface YearGroup {
 @Component({
   selector: 'app-basic-data',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatExpansionModule, MatTableModule, MatDialogModule],
+  imports: [CommonModule, ReactiveFormsModule, MatExpansionModule, MatTableModule, MatDialogModule, OverheadCostsComponent],
   templateUrl: './basic-data.component.html',
   styleUrl: './basic-data.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -168,7 +171,8 @@ export class BasicDataComponent {
         earlyRepaymentCommission: {
           ratePct: Number(prowizja.ratePct) || 0,
           validUntil: prowizja.validUntil || nextMonthStr()
-        }
+        },
+        overheadCosts: (v as any).overheadCosts as OverheadCostsInputs | undefined
       };
       const res = this.calc.compute(inputs);
       this.results.set(res);
@@ -416,6 +420,7 @@ function groupByYear(rows: ScheduleRow[]): YearGroup[] {
       sumInterest: 0,
       sumPrepayment: 0,
       sumCommission: 0,
+      sumInsuranceCost: 0,
       lastRemaining: 0,
       rows: []
     };
@@ -424,11 +429,11 @@ function groupByYear(rows: ScheduleRow[]): YearGroup[] {
     g.sumInterest += r.interest;
     g.sumPrepayment += r.prepayment;
     g.sumCommission += r.commission;
-    g.lastRemaining = r.remaining; // ostatni w roku nadpisze poprawnie
+    g.sumInsuranceCost += r.insuranceCost;
+    g.lastRemaining = r.remaining;
     g.rows.push(r);
     out.set(yy, g);
   }
-  // Zaokrąglij sumy i posortuj lata rosnąco
   const res = Array.from(out.values()).sort((a, b) => a.year - b.year).map(g => ({
     ...g,
     sumRate: Math.round(g.sumRate * 100) / 100,
@@ -436,6 +441,7 @@ function groupByYear(rows: ScheduleRow[]): YearGroup[] {
     sumInterest: Math.round(g.sumInterest * 100) / 100,
     sumPrepayment: Math.round(g.sumPrepayment * 100) / 100,
     sumCommission: Math.round(g.sumCommission * 100) / 100,
+    sumInsuranceCost: Math.round(g.sumInsuranceCost * 100) / 100,
   }));
   return res;
 }
