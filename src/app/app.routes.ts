@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import {BasicDataComponent} from './containers/basic-data/basic-data.component';
+import {LayoutComponent} from './containers/layout/layout.component';
 
 export const routes: Routes = [
-  { path: '', component: BasicDataComponent }
+  { path: '', component: LayoutComponent }
 ];

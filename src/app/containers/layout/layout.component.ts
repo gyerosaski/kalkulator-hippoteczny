@@ -10,13 +10,13 @@ import {
 } from '../../model/mortgage.model';
 import { CalculatorService } from '../../services/calculator/calculator.service';
 import { FormService } from '../../services/form/form';
-import { OverheadCostsComponent } from '../../components/overhead-costs/overhead-costs.component';
-import { BasicDataFormComponent } from '../../components/basic-data-form/basic-data-form.component';
-import { TranchesComponent } from '../../components/tranches/tranches.component';
-import { PrepaymentsComponent } from '../../components/prepayments/prepayments.component';
 import { ResultsComponent } from '../../components/results/results.component';
 import { ScheduleComponent } from '../../components/schedule/schedule.component';
 import { SaveCalculationDialogComponent } from '../../dialogs/save-calculation/save-calculation-dialog.component';
+import {BasicDataFormComponent} from '../../components/form/basic-data-form/basic-data-form.component';
+import {OverheadCostsFormComponent} from '../../components/form/overhead-costs-form/overhead-costs-form.component';
+import {TranchesFormComponent} from '../../components/form/tranches-form/tranches-form.component';
+import {PrepaymentsFormComponent} from '../../components/form/prepayments-form/prepayments-form.component';
 
 function ym(date = new Date()): string {
   const y = date.getFullYear();
@@ -30,18 +30,18 @@ function nextMonthStr(date = new Date()): string {
 }
 
 @Component({
-  selector: 'app-basic-data',
+  selector: 'app-layout',
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, MatDialogModule,
-    BasicDataFormComponent, OverheadCostsComponent, TranchesComponent,
-    PrepaymentsComponent, ResultsComponent, ScheduleComponent
+    BasicDataFormComponent, OverheadCostsFormComponent, TranchesFormComponent,
+    PrepaymentsFormComponent, ResultsComponent, ScheduleComponent
   ],
-  templateUrl: './basic-data.component.html',
-  styleUrl: './basic-data.component.scss',
+  templateUrl: './layout.component.html',
+  styleUrl: './layout.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BasicDataComponent {
+export class LayoutComponent {
   private calc = inject(CalculatorService);
   private dialog = inject(MatDialog);
   private formService = inject(FormService);

@@ -3,28 +3,26 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
   InsuranceCalcMethod,
-  InsuranceFrequency, LifeInsuranceCalcMethod,
-  PrepaymentEffect
-} from '../../model/mortgage.model';
-import { FormService } from '../../services/form/form';
-import { FormatMonthPlPipe } from '../../pipes/format-month-pl.pipe';
+  InsuranceFrequency, LifeInsuranceCalcMethod
+} from '../../../model';
+import { FormService } from '../../../services/form/form';
+import { FormatMonthPlPipe } from '../../../pipes/format-month-pl.pipe';
 
 @Component({
-  selector: 'app-overhead-costs',
+  selector: 'app-overhead-costs-form',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormatMonthPlPipe],
-  templateUrl: './overhead-costs.component.html',
-  styleUrl: './overhead-costs.component.scss',
+  templateUrl: './overhead-costs-form.component.html',
+  styleUrl: './overhead-costs-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class OverheadCostsComponent {
+export class OverheadCostsFormComponent {
   private formService = inject(FormService);
 
   readonly insuranceFrequencyOptions: InsuranceFrequency[] = ['co rok', 'co miesiąc', 'jednorazowo'];
   readonly propertyInsFrequencyOptions: ('co rok' | 'co miesiąc')[] = ['co rok', 'co miesiąc'];
   readonly propertyInsCalcOptions: InsuranceCalcMethod[] = ['% wartości nieruchomości', '% kwoty kredytu', '% salda kredytu', 'znam kwotę'];
   readonly lifeInsCalcOptions: LifeInsuranceCalcMethod[] = ['% kwoty kredytu', '% salda kredytu', 'znam kwotę'];
-  readonly prepaymentEffectOptions: PrepaymentEffect[] = ['niższa rata', 'skrócenie okresu'];
 
   get form() { return this.formService.overheadCostsGroup; }
   get additionalCostsArray() { return this.formService.additionalCostsArray; }
