@@ -13,8 +13,12 @@
       <li>Suma rat: {{ results()?.totals?.totalRate | formatCurrencyAmount }}</li>
       <li>Odsetki: {{ results()?.totals?.totalInterest | formatCurrencyAmount }}</li>
       <li>Kapitał: {{ results()?.totals?.totalCapital | formatCurrencyAmount }}</li>
-      <li>Nadpłaty: {{ results()?.totals?.prepayments | formatCurrencyAmount }}</li>
-      <li>Koszty okołokredytowe: {{ results()?.totals?.overheadCosts | formatCurrencyAmount }}</li>
+      @if (isPrepaymentIncluded) {
+        <li>Nadpłaty: {{ results()?.totals?.prepayments | formatCurrencyAmount }}</li>
+      }
+      @if (isOverheadCostsIncluded) {
+        <li>Koszty okołokredytowe: {{ results()?.totals?.overheadCosts | formatCurrencyAmount }}</li>
+      }
       <li>Oddasz do banku: {{ results()?.totals?.bankReturnRatioPct | formatAmount }} %</li>
     </ul>
   </div>

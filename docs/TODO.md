@@ -8,4 +8,7 @@
 - [x] wydzielenie pól formularza sekcji "Koszty okołokredytowe i promocje", "Transze", "Nadpłaty" do oddzielnych formGroup
 - [x] umożliwienie włączania/wyłączania opcjonalnych sekcji formularza tj. "Koszty okołokredytowe i promocje", "Transze", "Nadpłaty", struktura formularza: form -> overheadCosts (FormGroup z polami `included` i `fields` (FormGroup z właściwymi polami sekcji)), nie branie pod uwagę pól z wyłączonych sekcji podczas wykonywania obliczeń
 - zamiast pól `MortgageFormGroup.years` i `MortgageFormGroup.months` przechowuj okres kredytowania w jednym polu `MortgageFormGroup.loanPeriod`, w którym dane przechowywana będzie liczba miesięcy. w warstwie prezentacyjnej umożliw wpisanie okresu kredytowania w miesiącach lub latach (input number + radio switch "lat/miesięcy")
--
+- paragraf "Wysokość pierwszej raty:" w komponencie `ResultsSummaryComponent`, zmienić nazwę na "Wysokość pierwszej raty kapitałowo-odsetkowej:" i prezentować odpowiednią wartość
+- udostępnić możliwość wczytywania uprzednio zapisanej konfiguracji formularza
+- dodać kolumnę "Koszty okołokredytowe" do tabeli z harmonogramem spłaty `ResultsSummaryComponent`
+- prezentować kolumny "Nadpłata" i "Koszty okołokredytowe" w harmonogramie spłaty warunkowo na podstawie flag `FormService.isPrepaymentIncluded` i `FormService.isOverheadCostsIncluded`

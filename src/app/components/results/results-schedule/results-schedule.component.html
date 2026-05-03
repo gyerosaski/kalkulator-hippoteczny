@@ -1,5 +1,5 @@
 @if (yearlyGroups()?.length) {
-  <h3>Harmonogram spłaty – agregacja roczna</h3>
+  <h3>Harmonogram spłaty</h3>
   <mat-accordion multi>
     @for (g of yearlyGroups()!; track g.year) {
       <mat-expansion-panel>

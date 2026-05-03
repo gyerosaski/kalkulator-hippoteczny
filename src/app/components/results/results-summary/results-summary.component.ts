@@ -1,8 +1,9 @@
-import { Component, input, ChangeDetectionStrategy } from '@angular/core';
+import {Component, input, ChangeDetectionStrategy, inject} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MortgageResults } from '../../../model/mortgage.model';
 import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
 import { FormatCurrencyAmountPipe } from '../../../pipes/format-currency-amount/format-currency-amount.pipe';
+import {FormService} from '../../../services/form/form';
 
 @Component({
   selector: 'app-results-summary',
@@ -13,4 +14,14 @@ import { FormatCurrencyAmountPipe } from '../../../pipes/format-currency-amount/
 })
 export class ResultsSummaryComponent {
   results = input.required<MortgageResults | null>();
+
+  private readonly formService = inject(FormService);
+
+  get isPrepaymentIncluded() {
+    return this.formService.isPrepaymentIncluded;
+  }
+
+  get isOverheadCostsIncluded() {
+    return this.formService.isOverheadCostsIncluded;
+  }
 }

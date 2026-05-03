@@ -154,6 +154,14 @@ export class FormService {
     return this.form.controls.prepayments;
   }
 
+  get isPrepaymentIncluded() {
+    return this.form.controls.prepayments.controls.included.value;
+  }
+
+  get isOverheadCostsIncluded() {
+    return this.form.controls.overheadCosts.controls.included.value;
+  }
+
   get tranchesSection(): FormGroup<ToggleableSectionFormGroup<TranchesFieldsFormGroup>> {
     return this.form.controls.tranches;
   }
@@ -505,7 +513,7 @@ export class FormService {
 
   setOverheadDefaults(): void {
     this.overheadCostsGroup.patchValue({
-      commissionPct: 1.5,
+      commissionPct: 0,
       appraisalFee: 400,
       bridgeRateIncrease: 1.2,
       bridgeMonths: 6,
