@@ -10,5 +10,7 @@
 - zamiast pól `MortgageFormGroup.years` i `MortgageFormGroup.months` przechowuj okres kredytowania w jednym polu `MortgageFormGroup.loanPeriod`, w którym dane przechowywana będzie liczba miesięcy. w warstwie prezentacyjnej umożliw wpisanie okresu kredytowania w miesiącach lub latach (input number + radio switch "lat/miesięcy")
 - paragraf "Wysokość pierwszej raty:" w komponencie `ResultsSummaryComponent`, zmienić nazwę na "Wysokość pierwszej raty kapitałowo-odsetkowej:" i prezentować odpowiednią wartość
 - udostępnić możliwość wczytywania uprzednio zapisanej konfiguracji formularza
-- dodać kolumnę "Koszty okołokredytowe" do tabeli z harmonogramem spłaty `ResultsSummaryComponent`
+- zastąpić kolumnę "Prowizja" kolumną "Koszty okołokredytowe" w tabeli z harmonogramem spłaty `ResultsSummaryComponent`
 - prezentować kolumny "Nadpłata" i "Koszty okołokredytowe" w harmonogramie spłaty warunkowo na podstawie flag `FormService.isPrepaymentIncluded` i `FormService.isOverheadCostsIncluded`
+- wydzielenie pól formularza prezentowany w komponencie `BasicDataFormComponent` do oddzielnej formGroup
+- umożliwienie zmiany oprocentowania (pola "Typ rat", "Stopa", "8.a WIBOR (%)", "8.b Marża (%)", "Oprocentowanie (nominalne, %)", "8. Oprocentowanie stałe (%)") w okresie kredytowania. wymienione pola powinny zostać zgrupowane i przechowywane jako formArray z możliwością dodania nowej z uwzględnieniem daty obowiązywania nowego oprocentowania
