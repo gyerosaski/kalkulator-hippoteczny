@@ -48,7 +48,7 @@ function crossFieldValidator(control: import('@angular/forms').AbstractControl) 
   const mos = group.get('months')?.value ?? 0;
   const start = group.get('startDate')?.value as string;
   const capStart = group.get('capitalStartDate')?.value as string;
-  const nadplatyReguly = group.get('nadplatyReguly')?.value ?? [];
+  const prepaymentRules = group.get('prepaymentRules')?.value ?? [];
   const rataDocelowaRegula =
     (group.get('rataDocelowaRegula') as FormGroup)?.getRawValue() ?? ({} as any);
   const transzeArray = group.get('transze') as FormArray<FormGroup<TrancheFormGroup>> | null;
@@ -76,7 +76,7 @@ function crossFieldValidator(control: import('@angular/forms').AbstractControl) 
     if (capStart < start) errors['capitalBeforeStart'] = true;
   }
 
-  for (const rule of nadplatyReguly) {
+  for (const rule of prepaymentRules) {
     if (rule.frequency !== 'jednorazowo' && rule.from && rule.to && rule.to < rule.from) {
       errors['prepaymentDateRangeInvalid'] = true;
     }
@@ -109,7 +109,7 @@ export class FormService {
   readonly form: FormGroup<MortgageFormGroup> = this.createForm();
 
   get nadplatyRegulyArray(): FormArray<FormGroup<PrepaymentRuleFormGroup>> {
-    return this.form.controls.nadplatyReguly;
+    return this.form.controls.prepaymentRules;
   }
 
   get transzeArray(): FormArray<FormGroup<TrancheFormGroup>> {
@@ -173,7 +173,7 @@ export class FormService {
           nonNullable: true,
           validators: [Validators.min(0), Validators.max(50)],
         }),
-        nadplatyReguly: new FormArray([this.createNadplataRegulaGroup()]),
+        prepaymentRules: new FormArray([this.createPrepaymentRuleGroup()]),
         rataDocelowaRegula: new FormGroup<TargetInstallmentFormGroup>({
           targetRate: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
           from: new FormControl(nextMonthStr(), {
@@ -272,7 +272,7 @@ export class FormService {
     });
   }
 
-  createNadplataRegulaGroup(
+  createPrepaymentRuleGroup(
     initial: Partial<PrepaymentRule> = {},
   ): FormGroup<PrepaymentRuleFormGroup> {
     const frequency = initial.frequency ?? 'jednorazowo';
@@ -330,7 +330,7 @@ export class FormService {
   }
 
   addNadplataRegula(): void {
-    this.nadplatyRegulyArray.push(this.createNadplataRegulaGroup());
+    this.nadplatyRegulyArray.push(this.createPrepaymentRuleGroup());
     this.form.updateValueAndValidity();
   }
 
@@ -406,7 +406,7 @@ export class FormService {
         validUntil: addMonthsStr(nextMonthStr(), 36),
       },
     });
-    this.form.setControl('nadplatyReguly', new FormArray([this.createNadplataRegulaGroup()]));
+    this.form.setControl('prepaymentRules', new FormArray([this.createPrepaymentRuleGroup()]));
     this.form.setControl('transze', new FormArray([this.createTrancheGroup(true)]));
   }
 
@@ -436,8 +436,8 @@ export class FormService {
       },
     });
     this.form.setControl(
-      'nadplatyReguly',
-      new FormArray([this.createNadplataRegulaGroup({ to: nextMonthStr() })]),
+      'prepaymentRules',
+      new FormArray([this.createPrepaymentRuleGroup({ to: nextMonthStr() })]),
     );
     this.form.setControl('transze', new FormArray([this.createTrancheGroup(true, { amount: 0 })]));
   }

@@ -82,7 +82,7 @@ export interface MortgageFormGroup {
   nominalRate: FormControl<number>;
   wibor: FormControl<number>;
   margin: FormControl<number>;
-  nadplatyReguly: FormArray<FormGroup<PrepaymentRuleFormGroup>>;
+  prepaymentRules: FormArray<FormGroup<PrepaymentRuleFormGroup>>;
   rataDocelowaRegula: FormGroup<TargetInstallmentFormGroup>;
   prowizjaWczesniejszaSplata: FormGroup<EarlyRepaymentCommissionFormGroup>;
   transze: FormArray<FormGroup<TrancheFormGroup>>;

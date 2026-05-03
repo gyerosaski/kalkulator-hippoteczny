@@ -6,3 +6,4 @@
 - zmiana layoutu na dwie kolumny, domyślnie równej szerokości z możliwością zmiany proporcji przez użytkownika. w lewej kolumnie prezentowane mają być wszystkie sekcje formularza, a w prawej wyniki i harmonogram spłat
 - umożliwienie zwinięcia każdej sekcji formularza
 - wydzielenie pól formularza sekcji "Koszty okołokredytowe i promocje", "Transze", "Nadpłaty" do oddzielnych formGroup
+- umożliwienie włączania/wyłączania opcjonalnych sekcji formularza tj. "Koszty okołokredytowe i promocje", "Transze", "Nadpłaty", struktura formularza: form -> overheadCosts (FormGroup z polami `included` i `fields` (FormGroup z właściwymi polami sekcji)), nie branie pod uwagę pól z wyłączonych sekcji podczas wykonywania obliczeń

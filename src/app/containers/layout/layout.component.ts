@@ -75,7 +75,7 @@ export class LayoutComponent {
   private recalculate() {
     const v = this.form.getRawValue();
     if (this.form.valid) {
-      const prepaymentRules = ((v.nadplatyReguly ?? []) as any[])
+      const prepaymentRules = ((v.prepaymentRules ?? []) as any[])
         .filter((r) => r && r.from && (r.frequency === 'jednorazowo' || r.to))
         .map((r) => ({
           frequency: r.frequency as PrepaymentFrequency,
