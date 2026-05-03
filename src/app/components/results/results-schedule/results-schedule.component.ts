@@ -2,17 +2,17 @@ import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTableModule } from '@angular/material/table';
-import { YearGroup } from '../../model/mortgage.model';
-import { FormatMonthPlPipe } from '../../pipes/format-month-pl.pipe';
+import { YearGroup } from '../../../model/mortgage.model';
+import { FormatMonthPlPipe } from '../../../pipes/format-month-pl.pipe';
 
 @Component({
-  selector: 'app-schedule',
+  selector: 'app-results-schedule',
   standalone: true,
   imports: [CommonModule, MatExpansionModule, MatTableModule, FormatMonthPlPipe],
-  templateUrl: './schedule.component.html',
+  templateUrl: './results-schedule.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ScheduleComponent {
+export class ResultsScheduleComponent {
   yearlyGroups = input.required<YearGroup[] | null>();
   displayedColumns: string[] = [
     'date',

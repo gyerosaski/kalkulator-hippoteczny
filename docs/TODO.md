@@ -3,3 +3,6 @@
 - [x] wydzielenie do oddzielnych komponentów sekcji "dane podstawowe", "Wyniki", "Transze", "Nadpłaty", "Harmonogram spłaty"
 - [x] przeniesienie do katalogu "model", wszystkich interfejsów i typów
 - [x] przekształcenie w pipe'a metoday `formatMonthPl()` oraz innych metod, których zadaniem jest formatowanie danych w celu ich prezentacji użytkownikowi
+- zmiana layoutu na dwie kolumny, domyślnie równej szerokości z możliwością zmiany proporcji przez użytkownika. w lewej kolumnie prezentowane mają być wszystkie sekcje formularza, a w prawej wyniki i harmonogram spłat
+- umożliwienie zwinięcia każdej sekcji formularza
+- wydzielenie pól formularza sekcji "Koszty okołokredytowe i promocje", "Transze", "Nadpłaty" do oddzielnych formGroup

@@ -16,13 +16,13 @@ import {
 } from '../../model/mortgage.model';
 import { CalculatorService } from '../../services/calculator/calculator.service';
 import { FormService } from '../../services/form/form';
-import { ResultsComponent } from '../../components/results/results.component';
-import { ScheduleComponent } from '../../components/schedule/schedule.component';
 import { SaveCalculationDialogComponent } from '../../dialogs/save-calculation/save-calculation-dialog.component';
 import { BasicDataFormComponent } from '../../components/form/basic-data-form/basic-data-form.component';
 import { OverheadCostsFormComponent } from '../../components/form/overhead-costs-form/overhead-costs-form.component';
 import { TranchesFormComponent } from '../../components/form/tranches-form/tranches-form.component';
 import { PrepaymentsFormComponent } from '../../components/form/prepayments-form/prepayments-form.component';
+import { ResultsSummaryComponent } from '../../components/results/results-summary/results-summary.component';
+import { ResultsScheduleComponent } from '../../components/results/results-schedule/results-schedule.component';
 
 function ym(date = new Date()): string {
   const y = date.getFullYear();
@@ -46,8 +46,8 @@ function nextMonthStr(date = new Date()): string {
     OverheadCostsFormComponent,
     TranchesFormComponent,
     PrepaymentsFormComponent,
-    ResultsComponent,
-    ScheduleComponent,
+    ResultsSummaryComponent,
+    ResultsScheduleComponent,
   ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss',
