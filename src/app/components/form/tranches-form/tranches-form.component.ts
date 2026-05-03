@@ -1,5 +1,5 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormService } from '../../../services/form/form';
 import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
@@ -9,13 +9,7 @@ import { FormatCurrencyAmountPipe } from '../../../pipes/format-currency-amount/
 @Component({
   selector: 'app-tranches-form',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    FormatAmountPipe,
-    FormatMonthPipe,
-    FormatCurrencyAmountPipe,
-  ],
+  imports: [ReactiveFormsModule, FormatAmountPipe, FormatMonthPipe, FormatCurrencyAmountPipe],
   templateUrl: './tranches-form.component.html',
   styleUrl: './tranches-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

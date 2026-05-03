@@ -1,14 +1,14 @@
-import {Component, input, ChangeDetectionStrategy, inject} from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, input, ChangeDetectionStrategy, inject } from '@angular/core';
+
 import { MortgageResults } from '../../../model/mortgage.model';
 import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
 import { FormatCurrencyAmountPipe } from '../../../pipes/format-currency-amount/format-currency-amount.pipe';
-import {FormService} from '../../../services/form/form';
+import { FormService } from '../../../services/form/form';
 
 @Component({
   selector: 'app-results-summary',
   standalone: true,
-  imports: [CommonModule, FormatAmountPipe, FormatCurrencyAmountPipe],
+  imports: [FormatAmountPipe, FormatCurrencyAmountPipe],
   templateUrl: './results-summary.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

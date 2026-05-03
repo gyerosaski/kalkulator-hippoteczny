@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ReactiveFormsModule } from '@angular/forms';
 import { InsuranceCalcMethod, InsuranceFrequency, LifeInsuranceCalcMethod } from '../../../model';
 import { FormService } from '../../../services/form/form';
@@ -9,7 +9,7 @@ import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
 @Component({
   selector: 'app-overhead-costs-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormatMonthPipe, FormatAmountPipe],
+  imports: [ReactiveFormsModule, FormatMonthPipe, FormatAmountPipe],
   templateUrl: './overhead-costs-form.component.html',
   styleUrl: './overhead-costs-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

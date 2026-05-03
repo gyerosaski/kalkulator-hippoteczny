@@ -1,5 +1,5 @@
-import {Component, input, ChangeDetectionStrategy, inject} from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, input, ChangeDetectionStrategy, inject } from '@angular/core';
+
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTableModule } from '@angular/material/table';
 import { YearGroup } from '../../../model/mortgage.model';
@@ -11,7 +11,6 @@ import { FormatCurrencyAmountPipe } from '../../../pipes/format-currency-amount/
   selector: 'app-results-schedule',
   standalone: true,
   imports: [
-    CommonModule,
     MatExpansionModule,
     MatTableModule,
     FormatMonthPipe,

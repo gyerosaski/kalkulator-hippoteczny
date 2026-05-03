@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   MatDialogModule,
@@ -19,7 +19,6 @@ interface DialogData {
   selector: 'app-save-calculation-dialog',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatDialogModule,
     MatFormFieldModule,
@@ -37,7 +36,9 @@ interface DialogData {
           placeholder="np. Moja kalkulacja"
           (keydown.enter)="onSave()"
         />
-        <mat-error *ngIf="nameCtrl.hasError('required')">Nazwa jest wymagana.</mat-error>
+        @if (nameCtrl.hasError('required')) {
+          <mat-error>Nazwa jest wymagana.</mat-error>
+        }
       </mat-form-field>
     </div>
     <div mat-dialog-actions align="end">
