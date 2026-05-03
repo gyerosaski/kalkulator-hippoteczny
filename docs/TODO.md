@@ -7,3 +7,5 @@
 - [x] umożliwienie zwinięcia każdej sekcji formularza
 - [x] wydzielenie pól formularza sekcji "Koszty okołokredytowe i promocje", "Transze", "Nadpłaty" do oddzielnych formGroup
 - [x] umożliwienie włączania/wyłączania opcjonalnych sekcji formularza tj. "Koszty okołokredytowe i promocje", "Transze", "Nadpłaty", struktura formularza: form -> overheadCosts (FormGroup z polami `included` i `fields` (FormGroup z właściwymi polami sekcji)), nie branie pod uwagę pól z wyłączonych sekcji podczas wykonywania obliczeń
+- zamiast pól `MortgageFormGroup.years` i `MortgageFormGroup.months` przechowuj okres kredytowania w jednym polu `MortgageFormGroup.loanPeriod`, w którym dane przechowywana będzie liczba miesięcy. w warstwie prezentacyjnej umożliw wpisanie okresu kredytowania w miesiącach lub latach (input number + radio switch "lat/miesięcy")
+- 
