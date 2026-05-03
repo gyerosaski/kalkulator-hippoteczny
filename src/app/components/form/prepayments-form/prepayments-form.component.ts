@@ -24,8 +24,16 @@ export class PrepaymentsFormComponent {
   ];
   readonly prepaymentEffectOptions: PrepaymentEffect[] = ['niższa rata', 'skrócenie okresu'];
 
-  get form() {
-    return this.formService.form;
+  collapsed = false;
+
+  get section() {
+    return this.formService.prepaymentsSection;
+  }
+  get included() {
+    return this.section.controls.included;
+  }
+  get fieldsGroup() {
+    return this.section.controls.fields;
   }
   get nadplatyRegulyArray() {
     return this.formService.nadplatyRegulyArray;
@@ -42,5 +50,9 @@ export class PrepaymentsFormComponent {
   }
   onNadplataFromChanged(index: number) {
     this.formService.onNadplataFromChanged(index);
+  }
+
+  toggleCollapsed() {
+    this.collapsed = !this.collapsed;
   }
 }

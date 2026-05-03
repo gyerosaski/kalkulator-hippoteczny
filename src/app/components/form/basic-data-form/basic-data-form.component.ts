@@ -17,6 +17,8 @@ export class BasicDataFormComponent {
   private readonly formService = inject(FormService);
   private readonly calculatorService = inject(CalculatorService);
 
+  collapsed = false;
+
   get form() {
     return this.formService.form;
   }
@@ -55,5 +57,9 @@ export class BasicDataFormComponent {
     );
     this.form.patchValue(synced, { emitEvent: false });
     this.form.updateValueAndValidity();
+  }
+
+  toggleCollapsed() {
+    this.collapsed = !this.collapsed;
   }
 }

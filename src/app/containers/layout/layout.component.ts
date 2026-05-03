@@ -65,6 +65,12 @@ export class LayoutComponent {
   results = signal<MortgageResults | null>(null);
   yearlyGroups = signal<YearGroup[] | null>(null);
 
+  leftFlex = '1 1 50%';
+  rightFlex = '1 1 50%';
+  private dragging = false;
+  private boundMouseMove = this.onMouseMove.bind(this);
+  private boundMouseUp = this.onMouseUp.bind(this);
+
   constructor() {
     this.recalculate();
     this.form.valueChanges
@@ -75,69 +81,117 @@ export class LayoutComponent {
   private recalculate() {
     const v = this.form.getRawValue();
     if (this.form.valid) {
-      const prepaymentRules = ((v.prepaymentRules ?? []) as any[])
-        .filter((r) => r && r.from && (r.frequency === 'jednorazowo' || r.to))
-        .map((r) => ({
-          frequency: r.frequency as PrepaymentFrequency,
-          from: r.from,
-          to: r.frequency === 'jednorazowo' ? r.from : r.to || r.from,
-          amount: Number(r.amount) || 0,
-          effect: r.effect as PrepaymentEffect,
-        }));
+      const prepaymentsIncluded = v.prepayments.included;
+      const tranchesIncluded = v.tranches.included;
+      const overheadIncluded = v.overheadCosts.included;
 
-      const rataDocelowa = (v.rataDocelowaRegula ?? {}) as any;
-      const prowizja = (v.prowizjaWczesniejszaSplata ?? {}) as any;
+      const prepaymentRules = prepaymentsIncluded
+        ? ((v.prepayments.fields.prepaymentRules ?? []) as any[])
+            .filter((r) => r && r.from && (r.frequency === 'jednorazowo' || r.to))
+            .map((r) => ({
+              frequency: r.frequency as PrepaymentFrequency,
+              from: r.from,
+              to: r.frequency === 'jednorazowo' ? r.from : r.to || r.from,
+              amount: Number(r.amount) || 0,
+              effect: r.effect as PrepaymentEffect,
+            }))
+        : [];
 
-      const tranches: Tranche[] = ((v.transze ?? []) as any[]).map((t: any) => ({
-        amount: Number(t.amount) || 0,
-        date: t.date || '',
-        disbursementFee: Number(t.disbursementFee) || 0,
-      }));
+      const rataDocelowa = prepaymentsIncluded
+        ? (v.prepayments.fields.rataDocelowaRegula ?? {}) as any
+        : {} as any;
+      const prowizja = prepaymentsIncluded
+        ? (v.prepayments.fields.prowizjaWczesniejszaSplata ?? {}) as any
+        : {} as any;
 
-      const overheadCostsRaw = (v.overheadCosts ?? {}) as any;
-      const overheadCosts: OverheadCostsInputs = {
-        commissionPct: Number(overheadCostsRaw.commissionPct) || 0,
-        appraisalFee: Number(overheadCostsRaw.appraisalFee) || 0,
-        bridgeInsurance: {
-          rateIncrease: Number(overheadCostsRaw.bridgeRateIncrease) || 0,
-          months: Number(overheadCostsRaw.bridgeMonths) || 0,
-        },
-        propertyInsurance: {
-          frequency: overheadCostsRaw.propInsFrequency,
-          calcMethod: overheadCostsRaw.propInsCalcMethod,
-          value: Number(overheadCostsRaw.propInsValue) || 0,
-          from: overheadCostsRaw.propInsFrom,
-          to: overheadCostsRaw.propInsTo,
-        },
-        lowEquityInsurance: {
-          rateIncrease: Number(overheadCostsRaw.lowEquityRateIncrease) || 0,
-        },
-        lifeInsurance: {
-          frequency: overheadCostsRaw.lifeInsFrequency,
-          calcMethod: overheadCostsRaw.lifeInsCalcMethod,
-          value: Number(overheadCostsRaw.lifeInsValue) || 0,
-          from: overheadCostsRaw.lifeInsFrom,
-          to: overheadCostsRaw.lifeInsTo,
-        },
-        jobLossInsurance: {
-          frequency: overheadCostsRaw.jobLossInsFrequency,
-          calcMethod: overheadCostsRaw.jobLossInsCalcMethod,
-          value: Number(overheadCostsRaw.jobLossInsValue) || 0,
-          from: overheadCostsRaw.jobLossInsFrom,
-        },
-        additionalCosts: ((overheadCostsRaw.additionalCosts ?? []) as any[]).map((ac: any) => ({
-          name: ac.name || '',
-          frequency: ac.frequency,
-          calcMethod: ac.calcMethod,
-          value: Number(ac.value) || 0,
-          from: ac.from,
-        })),
-        promotionalRate: {
-          rateDecrease: Number(overheadCostsRaw.promoRateDecrease) || 0,
-          from: overheadCostsRaw.promoFrom,
-          to: overheadCostsRaw.promoTo,
-        },
-      };
+      const tranches: Tranche[] = tranchesIncluded
+        ? ((v.tranches.fields.transze ?? []) as any[]).map((t: any) => ({
+            amount: Number(t.amount) || 0,
+            date: t.date || '',
+            disbursementFee: Number(t.disbursementFee) || 0,
+          }))
+        : [];
+
+      const overheadCostsRaw = overheadIncluded
+        ? (v.overheadCosts.fields ?? {}) as any
+        : {} as any;
+
+      const overheadCosts: OverheadCostsInputs = overheadIncluded
+        ? {
+            commissionPct: Number(overheadCostsRaw.commissionPct) || 0,
+            appraisalFee: Number(overheadCostsRaw.appraisalFee) || 0,
+            bridgeInsurance: {
+              rateIncrease: Number(overheadCostsRaw.bridgeRateIncrease) || 0,
+              months: Number(overheadCostsRaw.bridgeMonths) || 0,
+            },
+            propertyInsurance: {
+              frequency: overheadCostsRaw.propInsFrequency,
+              calcMethod: overheadCostsRaw.propInsCalcMethod,
+              value: Number(overheadCostsRaw.propInsValue) || 0,
+              from: overheadCostsRaw.propInsFrom,
+              to: overheadCostsRaw.propInsTo,
+            },
+            lowEquityInsurance: {
+              rateIncrease: Number(overheadCostsRaw.lowEquityRateIncrease) || 0,
+            },
+            lifeInsurance: {
+              frequency: overheadCostsRaw.lifeInsFrequency,
+              calcMethod: overheadCostsRaw.lifeInsCalcMethod,
+              value: Number(overheadCostsRaw.lifeInsValue) || 0,
+              from: overheadCostsRaw.lifeInsFrom,
+              to: overheadCostsRaw.lifeInsTo,
+            },
+            jobLossInsurance: {
+              frequency: overheadCostsRaw.jobLossInsFrequency,
+              calcMethod: overheadCostsRaw.jobLossInsCalcMethod,
+              value: Number(overheadCostsRaw.jobLossInsValue) || 0,
+              from: overheadCostsRaw.jobLossInsFrom,
+            },
+            additionalCosts: ((overheadCostsRaw.additionalCosts ?? []) as any[]).map((ac: any) => ({
+              name: ac.name || '',
+              frequency: ac.frequency,
+              calcMethod: ac.calcMethod,
+              value: Number(ac.value) || 0,
+              from: ac.from,
+            })),
+            promotionalRate: {
+              rateDecrease: Number(overheadCostsRaw.promoRateDecrease) || 0,
+              from: overheadCostsRaw.promoFrom,
+              to: overheadCostsRaw.promoTo,
+            },
+          }
+        : {
+            commissionPct: 0,
+            appraisalFee: 0,
+            bridgeInsurance: { rateIncrease: 0, months: 0 },
+            propertyInsurance: {
+              frequency: 'co rok' as any,
+              calcMethod: '% wartości nieruchomości' as any,
+              value: 0,
+              from: nextMonthStr(),
+              to: nextMonthStr(),
+            },
+            lowEquityInsurance: { rateIncrease: 0 },
+            lifeInsurance: {
+              frequency: 'co rok' as any,
+              calcMethod: '% kwoty kredytu' as any,
+              value: 0,
+              from: nextMonthStr(),
+              to: nextMonthStr(),
+            },
+            jobLossInsurance: {
+              frequency: 'jednorazowo' as any,
+              calcMethod: '% kwoty kredytu' as any,
+              value: 0,
+              from: nextMonthStr(),
+            },
+            additionalCosts: [],
+            promotionalRate: {
+              rateDecrease: 0,
+              from: nextMonthStr(),
+              to: nextMonthStr(),
+            },
+          };
 
       const inputs: MortgageInputs = {
         propertyValue: v.propertyValue,
@@ -154,16 +208,28 @@ export class LayoutComponent {
         margin: v.margin,
         prepaymentRules,
         tranches,
-        targetInstallmentRule: {
-          targetRate: Number(rataDocelowa.targetRate) || 0,
-          from: rataDocelowa.from || nextMonthStr(),
-          to: rataDocelowa.to || nextMonthStr(),
-          effect: (rataDocelowa.effect as PrepaymentEffect) || 'niższa rata',
-        },
-        earlyRepaymentCommission: {
-          ratePct: Number(prowizja.ratePct) || 0,
-          validUntil: prowizja.validUntil || nextMonthStr(),
-        },
+        targetInstallmentRule: prepaymentsIncluded
+          ? {
+              targetRate: Number(rataDocelowa.targetRate) || 0,
+              from: rataDocelowa.from || nextMonthStr(),
+              to: rataDocelowa.to || nextMonthStr(),
+              effect: (rataDocelowa.effect as PrepaymentEffect) || 'niższa rata',
+            }
+          : {
+              targetRate: 0,
+              from: nextMonthStr(),
+              to: nextMonthStr(),
+              effect: 'niższa rata',
+            },
+        earlyRepaymentCommission: prepaymentsIncluded
+          ? {
+              ratePct: Number(prowizja.ratePct) || 0,
+              validUntil: prowizja.validUntil || nextMonthStr(),
+            }
+          : {
+              ratePct: 0,
+              validUntil: nextMonthStr(),
+            },
         overheadCosts,
       };
       const res = this.calc.compute(inputs);
@@ -211,6 +277,33 @@ export class LayoutComponent {
       const fileName = this.sanitizeFileName(name) + '.json';
       this.downloadJsonFile(fileName, record);
     });
+  }
+
+  onDividerMouseDown(event: MouseEvent) {
+    event.preventDefault();
+    this.dragging = true;
+    document.addEventListener('mousemove', this.boundMouseMove);
+    document.addEventListener('mouseup', this.boundMouseUp);
+  }
+
+  private onMouseMove(event: MouseEvent) {
+    if (!this.dragging) return;
+    const container = (event.target as HTMLElement).closest('.two-column-layout')?.parentElement;
+    const layoutEl = document.querySelector('.two-column-layout') as HTMLElement;
+    if (!layoutEl) return;
+    const rect = layoutEl.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const totalWidth = rect.width;
+    const leftPct = Math.max(20, Math.min(80, (x / totalWidth) * 100));
+    const rightPct = 100 - leftPct;
+    this.leftFlex = `1 1 ${leftPct}%`;
+    this.rightFlex = `1 1 ${rightPct}%`;
+  }
+
+  private onMouseUp() {
+    this.dragging = false;
+    document.removeEventListener('mousemove', this.boundMouseMove);
+    document.removeEventListener('mouseup', this.boundMouseUp);
   }
 
   private sanitizeFileName(name: string): string {

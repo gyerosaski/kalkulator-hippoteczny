@@ -1,119 +1,130 @@
-<h2>Nadpłaty</h2>
+<div class="section-header">
+  <h2 (click)="toggleCollapsed()">
+    <span class="collapse-icon">{{ collapsed ? '▶' : '▼' }}</span>
+    Nadpłaty
+  </h2>
+  <label class="toggle-label">
+    <input type="checkbox" [formControl]="included" />
+    Włącz sekcję
+  </label>
+</div>
 
-<div [formGroup]="form">
-  <div formArrayName="nadplatyReguly" class="stack">
-    @for (rule of nadplatyRegulyArray.controls; track $index) {
-      <div class="card" [formGroupName]="$index">
-        <h3>Reguła nadpłaty {{ $index + 1 }}</h3>
+@if (!collapsed && included.value) {
+  <div [formGroup]="fieldsGroup">
+    <div formArrayName="prepaymentRules" class="stack">
+      @for (rule of nadplatyRegulyArray.controls; track $index) {
+        <div class="card" [formGroupName]="$index">
+          <h3>Reguła nadpłaty {{ $index + 1 }}</h3>
 
-        <div class="grid">
-          <label>
-            1. Jak często nadpłacasz?
-            <select formControlName="frequency" (change)="onNadplataFrequencyChanged($index)">
-              @for (opt of prepaymentFrequencyOptions; track opt) {
-                <option [value]="opt">{{ opt }}</option>
-              }
-            </select>
-          </label>
-
-          <label>
-            3. Kwota nadpłaty (zł)
-            <input type="number" step="0.01" min="0" formControlName="amount" />
-          </label>
-
-          @if (rule.get('frequency')?.value === 'jednorazowo') {
+          <div class="grid">
             <label>
-              2. Data nadpłaty
-              <input type="month" formControlName="from" (change)="onNadplataFromChanged($index)" />
-              <small>{{ rule.get('from')?.value | formatMonthPl }}</small>
-            </label>
-          } @else {
-            <div class="row row-wrap">
-              <label>
-                2a. Data nadpłaty od
-                <input
-                  type="month"
-                  formControlName="from"
-                  (change)="onNadplataFromChanged($index)"
-                />
-                <small>{{ rule.get('from')?.value | formatMonthPl }}</small>
-              </label>
-
-              <label>
-                2b. Data nadpłaty do
-                <input type="month" formControlName="to" />
-                <small>{{ rule.get('to')?.value | formatMonthPl }}</small>
-              </label>
-            </div>
-          }
-
-          <div class="row row-wrap align-end">
-            <label>
-              4. Skutek nadpłaty
-              <select formControlName="effect">
-                @for (effect of prepaymentEffectOptions; track effect) {
-                  <option [value]="effect">{{ effect }}</option>
+              1. Jak często nadpłacasz?
+              <select formControlName="frequency" (change)="onNadplataFrequencyChanged($index)">
+                @for (opt of prepaymentFrequencyOptions; track opt) {
+                  <option [value]="opt">{{ opt }}</option>
                 }
               </select>
             </label>
 
-            <button type="button" (click)="addNadplataRegula()">+</button>
-            @if (nadplatyRegulyArray.length > 1) {
-              <button type="button" (click)="removeNadplataRegula($index)">Usuń</button>
+            <label>
+              3. Kwota nadpłaty (zł)
+              <input type="number" step="0.01" min="0" formControlName="amount" />
+            </label>
+
+            @if (rule.get('frequency')?.value === 'jednorazowo') {
+              <label>
+                2. Data nadpłaty
+                <input type="month" formControlName="from" (change)="onNadplataFromChanged($index)" />
+                <small>{{ rule.get('from')?.value | formatMonthPl }}</small>
+              </label>
+            } @else {
+              <div class="row row-wrap">
+                <label>
+                  2a. Data nadpłaty od
+                  <input
+                    type="month"
+                    formControlName="from"
+                    (change)="onNadplataFromChanged($index)"
+                  />
+                  <small>{{ rule.get('from')?.value | formatMonthPl }}</small>
+                </label>
+
+                <label>
+                  2b. Data nadpłaty do
+                  <input type="month" formControlName="to" />
+                  <small>{{ rule.get('to')?.value | formatMonthPl }}</small>
+                </label>
+              </div>
             }
+
+            <div class="row row-wrap align-end">
+              <label>
+                4. Skutek nadpłaty
+                <select formControlName="effect">
+                  @for (effect of prepaymentEffectOptions; track effect) {
+                    <option [value]="effect">{{ effect }}</option>
+                  }
+                </select>
+              </label>
+
+              <button type="button" (click)="addNadplataRegula()">+</button>
+              @if (nadplatyRegulyArray.length > 1) {
+                <button type="button" (click)="removeNadplataRegula($index)">Usuń</button>
+              }
+            </div>
           </div>
         </div>
-      </div>
-    }
-  </div>
+      }
+    </div>
 
-  <div class="card" formGroupName="rataDocelowaRegula">
-    <h3>Reguła docelowej raty miesięcznej</h3>
-    <div class="grid">
-      <label>
-        5. Chcę co miesiąc płacić do banku ratę w wysokości (zł)
-        <input type="number" step="0.01" min="0" formControlName="targetRate" />
-      </label>
-
-      <div class="row row-wrap">
+    <div class="card" formGroupName="rataDocelowaRegula">
+      <h3>Reguła docelowej raty miesięcznej</h3>
+      <div class="grid">
         <label>
-          6a. Data nadpłaty od
-          <input type="month" formControlName="from" />
-          <small>{{ form.get('rataDocelowaRegula.from')?.value | formatMonthPl }}</small>
+          5. Chcę co miesiąc płacić do banku ratę w wysokości (zł)
+          <input type="number" step="0.01" min="0" formControlName="targetRate" />
         </label>
 
+        <div class="row row-wrap">
+          <label>
+            6a. Data nadpłaty od
+            <input type="month" formControlName="from" />
+            <small>{{ fieldsGroup.get('rataDocelowaRegula.from')?.value | formatMonthPl }}</small>
+          </label>
+
+          <label>
+            6b. Data nadpłaty do
+            <input type="month" formControlName="to" />
+            <small>{{ fieldsGroup.get('rataDocelowaRegula.to')?.value | formatMonthPl }}</small>
+          </label>
+        </div>
+
         <label>
-          6b. Data nadpłaty do
-          <input type="month" formControlName="to" />
-          <small>{{ form.get('rataDocelowaRegula.to')?.value | formatMonthPl }}</small>
+          7. Skutek nadpłaty
+          <select formControlName="effect">
+            @for (effect of prepaymentEffectOptions; track effect) {
+              <option [value]="effect">{{ effect }}</option>
+            }
+          </select>
         </label>
       </div>
+    </div>
 
-      <label>
-        7. Skutek nadpłaty
-        <select formControlName="effect">
-          @for (effect of prepaymentEffectOptions; track effect) {
-            <option [value]="effect">{{ effect }}</option>
-          }
-        </select>
-      </label>
+    <div class="card" formGroupName="prowizjaWczesniejszaSplata">
+      <h3>Prowizja za wcześniejszą spłatę</h3>
+      <div class="grid">
+        <label>
+          8. Wysokość prowizji za wcześniejszą spłatę (%)
+          <input type="number" step="0.01" min="0" formControlName="ratePct" />
+        </label>
+        <label>
+          9. Bank pobiera prowizję do
+          <input type="month" formControlName="validUntil" />
+          <small>{{
+            fieldsGroup.get('prowizjaWczesniejszaSplata.validUntil')?.value | formatMonthPl
+          }}</small>
+        </label>
+      </div>
     </div>
   </div>
-
-  <div class="card" formGroupName="prowizjaWczesniejszaSplata">
-    <h3>Prowizja za wcześniejszą spłatę</h3>
-    <div class="grid">
-      <label>
-        8. Wysokość prowizji za wcześniejszą spłatę (%)
-        <input type="number" step="0.01" min="0" formControlName="ratePct" />
-      </label>
-      <label>
-        9. Bank pobiera prowizję do
-        <input type="month" formControlName="validUntil" />
-        <small>{{
-          form.get('prowizjaWczesniejszaSplata.validUntil')?.value | formatMonthPl
-        }}</small>
-      </label>
-    </div>
-  </div>
-</div>
+}

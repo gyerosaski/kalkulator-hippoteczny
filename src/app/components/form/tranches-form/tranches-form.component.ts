@@ -15,6 +15,17 @@ import { FormatMonthPlPipe } from '../../../pipes/format-month-pl.pipe';
 export class TranchesFormComponent {
   readonly formService = inject(FormService);
 
+  collapsed = false;
+
+  get section() {
+    return this.formService.tranchesSection;
+  }
+  get included() {
+    return this.section.controls.included;
+  }
+  get fieldsGroup() {
+    return this.section.controls.fields;
+  }
   get form() {
     return this.formService.form;
   }
@@ -33,5 +44,9 @@ export class TranchesFormComponent {
   }
   clearTransze() {
     this.formService.clearTransze();
+  }
+
+  toggleCollapsed() {
+    this.collapsed = !this.collapsed;
   }
 }

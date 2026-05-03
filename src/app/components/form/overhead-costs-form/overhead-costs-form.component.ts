@@ -34,6 +34,14 @@ export class OverheadCostsFormComponent {
     'znam kwotę',
   ];
 
+  collapsed = false;
+
+  get section() {
+    return this.formService.overheadCostsSection;
+  }
+  get included() {
+    return this.section.controls.included;
+  }
   get form() {
     return this.formService.overheadCostsGroup;
   }
@@ -53,5 +61,9 @@ export class OverheadCostsFormComponent {
   }
   removeAdditionalCost(index: number) {
     this.formService.removeAdditionalCost(index);
+  }
+
+  toggleCollapsed() {
+    this.collapsed = !this.collapsed;
   }
 }

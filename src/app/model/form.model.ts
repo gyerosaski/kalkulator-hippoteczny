@@ -69,6 +69,21 @@ export interface OverheadCostsFormGroup {
   promoTo: FormControl<string>;
 }
 
+export interface PrepaymentsFieldsFormGroup {
+  prepaymentRules: FormArray<FormGroup<PrepaymentRuleFormGroup>>;
+  rataDocelowaRegula: FormGroup<TargetInstallmentFormGroup>;
+  prowizjaWczesniejszaSplata: FormGroup<EarlyRepaymentCommissionFormGroup>;
+}
+
+export interface TranchesFieldsFormGroup {
+  transze: FormArray<FormGroup<TrancheFormGroup>>;
+}
+
+export interface ToggleableSectionFormGroup<T extends { [K in keyof T]: import('@angular/forms').AbstractControl }> {
+  included: FormControl<boolean>;
+  fields: FormGroup<T>;
+}
+
 export interface MortgageFormGroup {
   propertyValue: FormControl<number>;
   loanAmount: FormControl<number>;
@@ -82,9 +97,7 @@ export interface MortgageFormGroup {
   nominalRate: FormControl<number>;
   wibor: FormControl<number>;
   margin: FormControl<number>;
-  prepaymentRules: FormArray<FormGroup<PrepaymentRuleFormGroup>>;
-  rataDocelowaRegula: FormGroup<TargetInstallmentFormGroup>;
-  prowizjaWczesniejszaSplata: FormGroup<EarlyRepaymentCommissionFormGroup>;
-  transze: FormArray<FormGroup<TrancheFormGroup>>;
-  overheadCosts: FormGroup<OverheadCostsFormGroup>;
+  overheadCosts: FormGroup<ToggleableSectionFormGroup<OverheadCostsFormGroup>>;
+  tranches: FormGroup<ToggleableSectionFormGroup<TranchesFieldsFormGroup>>;
+  prepayments: FormGroup<ToggleableSectionFormGroup<PrepaymentsFieldsFormGroup>>;
 }

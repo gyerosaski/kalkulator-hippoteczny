@@ -14,9 +14,12 @@ import {
   EarlyRepaymentCommissionFormGroup,
   MortgageFormGroup,
   OverheadCostsFormGroup,
+  PrepaymentsFieldsFormGroup,
   PrepaymentRuleFormGroup,
   TargetInstallmentFormGroup,
+  ToggleableSectionFormGroup,
   TrancheFormGroup,
+  TranchesFieldsFormGroup,
 } from '../../model/form.model';
 
 function ym(date = new Date()): string {
@@ -48,15 +51,24 @@ function crossFieldValidator(control: import('@angular/forms').AbstractControl) 
   const mos = group.get('months')?.value ?? 0;
   const start = group.get('startDate')?.value as string;
   const capStart = group.get('capitalStartDate')?.value as string;
-  const prepaymentRules = group.get('prepaymentRules')?.value ?? [];
-  const rataDocelowaRegula =
-    (group.get('rataDocelowaRegula') as FormGroup)?.getRawValue() ?? ({} as any);
-  const transzeArray = group.get('transze') as FormArray<FormGroup<TrancheFormGroup>> | null;
+
+  const tranchesSection = group.controls.tranches;
+  const tranchesIncluded = tranchesSection.controls.included.value;
+  const transzeArray = tranchesSection.controls.fields.controls.transze;
+
+  const prepaymentsSection = group.controls.prepayments;
+  const prepaymentsIncluded = prepaymentsSection.controls.included.value;
+  const prepaymentRules = prepaymentsIncluded
+    ? prepaymentsSection.controls.fields.controls.prepaymentRules.value ?? []
+    : [];
+  const rataDocelowaRegula = prepaymentsIncluded
+    ? (prepaymentsSection.controls.fields.controls.rataDocelowaRegula as FormGroup)?.getRawValue() ?? ({} as any)
+    : ({} as any);
 
   const errors: Record<string, unknown> = {};
   if (pv && la && la > pv) errors['loanGtProperty'] = true;
 
-  if (transzeArray && transzeArray.length > 1 && la > 0) {
+  if (tranchesIncluded && transzeArray && transzeArray.length > 1 && la > 0) {
     let transzeSum = 0;
     for (let i = 0; i < transzeArray.length; i++) {
       transzeSum += Number(transzeArray.at(i).get('amount')?.value) || 0;
@@ -76,25 +88,27 @@ function crossFieldValidator(control: import('@angular/forms').AbstractControl) 
     if (capStart < start) errors['capitalBeforeStart'] = true;
   }
 
-  for (const rule of prepaymentRules) {
-    if (rule.frequency !== 'jednorazowo' && rule.from && rule.to && rule.to < rule.from) {
-      errors['prepaymentDateRangeInvalid'] = true;
+  if (prepaymentsIncluded) {
+    for (const rule of prepaymentRules) {
+      if (rule.frequency !== 'jednorazowo' && rule.from && rule.to && rule.to < rule.from) {
+        errors['prepaymentDateRangeInvalid'] = true;
+      }
+      if ((Number(rule.amount) || 0) < 0) {
+        errors['prepaymentAmountInvalid'] = true;
+      }
     }
-    if ((Number(rule.amount) || 0) < 0) {
-      errors['prepaymentAmountInvalid'] = true;
+
+    if (
+      rataDocelowaRegula.from &&
+      rataDocelowaRegula.to &&
+      rataDocelowaRegula.to < rataDocelowaRegula.from
+    ) {
+      errors['targetInstallmentDateRangeInvalid'] = true;
     }
-  }
 
-  if (
-    rataDocelowaRegula.from &&
-    rataDocelowaRegula.to &&
-    rataDocelowaRegula.to < rataDocelowaRegula.from
-  ) {
-    errors['targetInstallmentDateRangeInvalid'] = true;
-  }
-
-  if ((Number(rataDocelowaRegula.targetRate) || 0) < 0) {
-    errors['targetInstallmentInvalid'] = true;
+    if ((Number(rataDocelowaRegula.targetRate) || 0) < 0) {
+      errors['targetInstallmentInvalid'] = true;
+    }
   }
 
   return Object.keys(errors).length ? errors : null;
@@ -109,19 +123,19 @@ export class FormService {
   readonly form: FormGroup<MortgageFormGroup> = this.createForm();
 
   get nadplatyRegulyArray(): FormArray<FormGroup<PrepaymentRuleFormGroup>> {
-    return this.form.controls.prepaymentRules;
+    return this.form.controls.prepayments.controls.fields.controls.prepaymentRules;
   }
 
   get transzeArray(): FormArray<FormGroup<TrancheFormGroup>> {
-    return this.form.controls.transze;
+    return this.form.controls.tranches.controls.fields.controls.transze;
   }
 
   get overheadCostsGroup(): FormGroup<OverheadCostsFormGroup> {
-    return this.form.controls.overheadCosts;
+    return this.form.controls.overheadCosts.controls.fields;
   }
 
   get additionalCostsArray(): FormArray<FormGroup<AdditionalCostFormGroup>> {
-    return this.form.controls.overheadCosts.controls.additionalCosts;
+    return this.overheadCostsGroup.controls.additionalCosts;
   }
 
   get transzeSuma(): number {
@@ -132,6 +146,18 @@ export class FormService {
       sum += Number(transze.at(i).get('amount')?.value) || 0;
     }
     return Math.round(sum * 100) / 100;
+  }
+
+  get prepaymentsSection(): FormGroup<ToggleableSectionFormGroup<PrepaymentsFieldsFormGroup>> {
+    return this.form.controls.prepayments;
+  }
+
+  get tranchesSection(): FormGroup<ToggleableSectionFormGroup<TranchesFieldsFormGroup>> {
+    return this.form.controls.tranches;
+  }
+
+  get overheadCostsSection(): FormGroup<ToggleableSectionFormGroup<OverheadCostsFormGroup>> {
+    return this.form.controls.overheadCosts;
   }
 
   private createForm(): FormGroup<MortgageFormGroup> {
@@ -173,34 +199,47 @@ export class FormService {
           nonNullable: true,
           validators: [Validators.min(0), Validators.max(50)],
         }),
-        prepaymentRules: new FormArray([this.createPrepaymentRuleGroup()]),
-        rataDocelowaRegula: new FormGroup<TargetInstallmentFormGroup>({
-          targetRate: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
-          from: new FormControl(nextMonthStr(), {
-            nonNullable: true,
-            validators: [Validators.required],
-          }),
-          to: new FormControl(addMonthsStr(nextMonthStr(), 12), {
-            nonNullable: true,
-            validators: [Validators.required],
-          }),
-          effect: new FormControl<PrepaymentEffect>('niższa rata', {
-            nonNullable: true,
-            validators: [Validators.required],
+        overheadCosts: new FormGroup<ToggleableSectionFormGroup<OverheadCostsFormGroup>>({
+          included: new FormControl(false, { nonNullable: true }),
+          fields: this.createOverheadCostsGroup(),
+        }),
+        tranches: new FormGroup<ToggleableSectionFormGroup<TranchesFieldsFormGroup>>({
+          included: new FormControl(false, { nonNullable: true }),
+          fields: new FormGroup<TranchesFieldsFormGroup>({
+            transze: new FormArray([this.createTrancheGroup(true)]),
           }),
         }),
-        prowizjaWczesniejszaSplata: new FormGroup<EarlyRepaymentCommissionFormGroup>({
-          ratePct: new FormControl(0, {
-            nonNullable: true,
-            validators: [Validators.min(0), Validators.max(100)],
-          }),
-          validUntil: new FormControl(addMonthsStr(nextMonthStr(), 36), {
-            nonNullable: true,
-            validators: [Validators.required],
+        prepayments: new FormGroup<ToggleableSectionFormGroup<PrepaymentsFieldsFormGroup>>({
+          included: new FormControl(false, { nonNullable: true }),
+          fields: new FormGroup<PrepaymentsFieldsFormGroup>({
+            prepaymentRules: new FormArray([this.createPrepaymentRuleGroup()]),
+            rataDocelowaRegula: new FormGroup<TargetInstallmentFormGroup>({
+              targetRate: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
+              from: new FormControl(nextMonthStr(), {
+                nonNullable: true,
+                validators: [Validators.required],
+              }),
+              to: new FormControl(addMonthsStr(nextMonthStr(), 12), {
+                nonNullable: true,
+                validators: [Validators.required],
+              }),
+              effect: new FormControl<PrepaymentEffect>('niższa rata', {
+                nonNullable: true,
+                validators: [Validators.required],
+              }),
+            }),
+            prowizjaWczesniejszaSplata: new FormGroup<EarlyRepaymentCommissionFormGroup>({
+              ratePct: new FormControl(0, {
+                nonNullable: true,
+                validators: [Validators.min(0), Validators.max(100)],
+              }),
+              validUntil: new FormControl(addMonthsStr(nextMonthStr(), 36), {
+                nonNullable: true,
+                validators: [Validators.required],
+              }),
+            }),
           }),
         }),
-        transze: new FormArray([this.createTrancheGroup(true)]),
-        overheadCosts: this.createOverheadCostsGroup(),
       },
       { validators: [crossFieldValidator] },
     );
@@ -322,7 +361,7 @@ export class FormService {
   clearTransze(): void {
     const loanAmount = this.form.get('loanAmount')?.value || 0;
     const startDate = this.form.get('startDate')?.value || ym();
-    this.form.setControl(
+    this.form.controls.tranches.controls.fields.setControl(
       'transze',
       new FormArray([this.createTrancheGroup(true, { amount: loanAmount, date: startDate })]),
     );
@@ -395,19 +434,29 @@ export class FormService {
       wibor: 7.0,
       margin: 2.0,
       nominalRate: 9.0,
-      rataDocelowaRegula: {
-        targetRate: 0,
-        from: nextMonthStr(),
-        to: addMonthsStr(nextMonthStr(), 12),
-        effect: 'niższa rata',
-      },
-      prowizjaWczesniejszaSplata: {
-        ratePct: 0,
-        validUntil: addMonthsStr(nextMonthStr(), 36),
+      prepayments: {
+        fields: {
+          rataDocelowaRegula: {
+            targetRate: 0,
+            from: nextMonthStr(),
+            to: addMonthsStr(nextMonthStr(), 12),
+            effect: 'niższa rata',
+          },
+          prowizjaWczesniejszaSplata: {
+            ratePct: 0,
+            validUntil: addMonthsStr(nextMonthStr(), 36),
+          },
+        },
       },
     });
-    this.form.setControl('prepaymentRules', new FormArray([this.createPrepaymentRuleGroup()]));
-    this.form.setControl('transze', new FormArray([this.createTrancheGroup(true)]));
+    this.form.controls.prepayments.controls.fields.setControl(
+      'prepaymentRules',
+      new FormArray([this.createPrepaymentRuleGroup()]),
+    );
+    this.form.controls.tranches.controls.fields.setControl(
+      'transze',
+      new FormArray([this.createTrancheGroup(true)]),
+    );
   }
 
   clearAll(): void {
@@ -424,22 +473,29 @@ export class FormService {
       nominalRate: 0,
       wibor: 0,
       margin: 0,
-      rataDocelowaRegula: {
-        targetRate: 0,
-        from: nextMonthStr(),
-        to: nextMonthStr(),
-        effect: 'niższa rata',
-      },
-      prowizjaWczesniejszaSplata: {
-        ratePct: 0,
-        validUntil: nextMonthStr(),
+      prepayments: {
+        fields: {
+          rataDocelowaRegula: {
+            targetRate: 0,
+            from: nextMonthStr(),
+            to: nextMonthStr(),
+            effect: 'niższa rata',
+          },
+          prowizjaWczesniejszaSplata: {
+            ratePct: 0,
+            validUntil: nextMonthStr(),
+          },
+        },
       },
     });
-    this.form.setControl(
+    this.form.controls.prepayments.controls.fields.setControl(
       'prepaymentRules',
       new FormArray([this.createPrepaymentRuleGroup({ to: nextMonthStr() })]),
     );
-    this.form.setControl('transze', new FormArray([this.createTrancheGroup(true, { amount: 0 })]));
+    this.form.controls.tranches.controls.fields.setControl(
+      'transze',
+      new FormArray([this.createTrancheGroup(true, { amount: 0 })]),
+    );
   }
 
   setOverheadDefaults(): void {
