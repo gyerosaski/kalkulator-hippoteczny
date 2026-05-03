@@ -31,7 +31,11 @@ export interface Tranche {
 }
 
 export type InsuranceFrequency = 'co rok' | 'co miesiąc' | 'jednorazowo';
-export type InsuranceCalcMethod = '% wartości nieruchomości' | '% kwoty kredytu' | '% salda kredytu' | 'znam kwotę';
+export type InsuranceCalcMethod =
+  | '% wartości nieruchomości'
+  | '% kwoty kredytu'
+  | '% salda kredytu'
+  | 'znam kwotę';
 export type LifeInsuranceCalcMethod = '% kwoty kredytu' | '% salda kredytu' | 'znam kwotę';
 
 export interface BridgeInsurance {

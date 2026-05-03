@@ -67,7 +67,12 @@
       </label>
       <label>
         8. Oprocentowanie (nominalne, %)
-        <input type="number" step="0.01" [value]="(form.get('wibor')?.value || 0) + (form.get('margin')?.value || 0)" disabled />
+        <input
+          type="number"
+          step="0.01"
+          [value]="(form.get('wibor')?.value || 0) + (form.get('margin')?.value || 0)"
+          disabled
+        />
       </label>
     </div>
   </ng-container>

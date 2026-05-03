@@ -10,16 +10,28 @@ import { FormatMonthPlPipe } from '../../../pipes/format-month-pl.pipe';
   imports: [CommonModule, ReactiveFormsModule, FormatMonthPlPipe],
   templateUrl: './tranches-form.component.html',
   styleUrl: './tranches-form.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TranchesFormComponent {
   readonly formService = inject(FormService);
 
-  get form() { return this.formService.form; }
-  get transzeArray() { return this.formService.transzeArray; }
-  get transzeSuma() { return this.formService.transzeSuma; }
+  get form() {
+    return this.formService.form;
+  }
+  get transzeArray() {
+    return this.formService.transzeArray;
+  }
+  get transzeSuma() {
+    return this.formService.transzeSuma;
+  }
 
-  addTransza() { this.formService.addTransza(); }
-  removeTransza(index: number) { this.formService.removeTransza(index); }
-  clearTransze() { this.formService.clearTransze(); }
+  addTransza() {
+    this.formService.addTransza();
+  }
+  removeTransza(index: number) {
+    this.formService.removeTransza(index);
+  }
+  clearTransze() {
+    this.formService.clearTransze();
+  }
 }

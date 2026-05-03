@@ -2,7 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'formatMonthPl',
-  standalone: true
+  standalone: true,
 })
 export class FormatMonthPlPipe implements PipeTransform {
   transform(month: string | null | undefined): string {

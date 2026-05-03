@@ -1,20 +1,52 @@
 import { Injectable } from '@angular/core';
 import {
-  InstallmentType, RateType, PrepaymentFrequency, PrepaymentEffect,
-  PrepaymentRule, TargetInstallmentRule, EarlyRepaymentCommission, Tranche,
-  InsuranceFrequency, InsuranceCalcMethod, LifeInsuranceCalcMethod,
-  BridgeInsurance, PropertyInsurance, LowEquityInsurance, LifeInsurance,
-  JobLossInsurance, AdditionalCost, PromotionalRate,
-  OverheadCostsInputs, MortgageInputs, ScheduleRow, MortgageResults
+  InstallmentType,
+  RateType,
+  PrepaymentFrequency,
+  PrepaymentEffect,
+  PrepaymentRule,
+  TargetInstallmentRule,
+  EarlyRepaymentCommission,
+  Tranche,
+  InsuranceFrequency,
+  InsuranceCalcMethod,
+  LifeInsuranceCalcMethod,
+  BridgeInsurance,
+  PropertyInsurance,
+  LowEquityInsurance,
+  LifeInsurance,
+  JobLossInsurance,
+  AdditionalCost,
+  PromotionalRate,
+  OverheadCostsInputs,
+  MortgageInputs,
+  ScheduleRow,
+  MortgageResults,
 } from '../../model/mortgage.model';
 
 export type {
-  InstallmentType, RateType, PrepaymentFrequency, PrepaymentEffect,
-  PrepaymentRule, TargetInstallmentRule, EarlyRepaymentCommission, Tranche,
-  InsuranceFrequency, InsuranceCalcMethod, LifeInsuranceCalcMethod,
-  BridgeInsurance, PropertyInsurance, LowEquityInsurance, LifeInsurance,
-  JobLossInsurance, AdditionalCost, PromotionalRate,
-  OverheadCostsInputs, MortgageInputs, ScheduleRow, MortgageResults
+  InstallmentType,
+  RateType,
+  PrepaymentFrequency,
+  PrepaymentEffect,
+  PrepaymentRule,
+  TargetInstallmentRule,
+  EarlyRepaymentCommission,
+  Tranche,
+  InsuranceFrequency,
+  InsuranceCalcMethod,
+  LifeInsuranceCalcMethod,
+  BridgeInsurance,
+  PropertyInsurance,
+  LowEquityInsurance,
+  LifeInsurance,
+  JobLossInsurance,
+  AdditionalCost,
+  PromotionalRate,
+  OverheadCostsInputs,
+  MortgageInputs,
+  ScheduleRow,
+  MortgageResults,
 };
 
 @Injectable({ providedIn: 'root' })
@@ -42,7 +74,7 @@ export class CalculatorService {
 
   private addMonths(base: string, offset: number): string {
     const { y, m } = this.parseMonth(base);
-    const total = (y * 12 + (m - 1)) + offset;
+    const total = y * 12 + (m - 1) + offset;
     const ny = Math.floor(total / 12);
     const nm = (total % 12) + 1;
     return `${ny.toString().padStart(4, '0')}-${nm.toString().padStart(2, '0')}`;
@@ -55,7 +87,7 @@ export class CalculatorService {
   private annuityPayment(principal: number, monthlyRate: number, periods: number): number {
     if (periods <= 0) return 0;
     if (monthlyRate === 0) return this.round2(principal / periods);
-    return this.round2(principal * monthlyRate / (1 - Math.pow(1 + monthlyRate, -periods)));
+    return this.round2((principal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -periods)));
   }
 
   private isMonthInRange(month: string, from: string, to?: string): boolean {
@@ -93,7 +125,7 @@ export class CalculatorService {
     propertyValue: number,
     loanAmount: number,
     ltv: number,
-    edited: 'ltv' | 'loanAmount' | 'propertyValue'
+    edited: 'ltv' | 'loanAmount' | 'propertyValue',
   ): { propertyValue: number; loanAmount: number; ltv: number } {
     const safePV = Math.max(0, Number(propertyValue) || 0);
     let resultPV = safePV;
@@ -130,7 +162,7 @@ export class CalculatorService {
     saldo: number,
     inputs: MortgageInputs,
     oc: OverheadCostsInputs,
-    monthIndexFromStart: number
+    monthIndexFromStart: number,
   ): number {
     let cost = 0;
 
@@ -139,11 +171,17 @@ export class CalculatorService {
     if (pi && pi.value > 0 && this.isMonthInRange(date, pi.from, pi.to)) {
       const diffFromStart = this.monthDiff(pi.from, date);
       if (diffFromStart >= 0) {
-        const shouldCharge = pi.frequency === 'co miesiąc'
-          || (pi.frequency === 'co rok' && diffFromStart % 12 === 0);
+        const shouldCharge =
+          pi.frequency === 'co miesiąc' || (pi.frequency === 'co rok' && diffFromStart % 12 === 0);
         if (shouldCharge) {
-          const base = this.getInsuranceBase(pi.calcMethod, inputs.propertyValue, inputs.loanAmount, saldo);
-          const amount = pi.calcMethod === 'znam kwotę' ? pi.value : this.round2(base * pi.value / 100);
+          const base = this.getInsuranceBase(
+            pi.calcMethod,
+            inputs.propertyValue,
+            inputs.loanAmount,
+            saldo,
+          );
+          const amount =
+            pi.calcMethod === 'znam kwotę' ? pi.value : this.round2((base * pi.value) / 100);
           cost = this.round2(cost + amount);
         }
       }
@@ -154,14 +192,16 @@ export class CalculatorService {
     if (li && li.value > 0 && this.isMonthInRange(date, li.from, li.to)) {
       const diffFromStart = this.monthDiff(li.from, date);
       if (diffFromStart >= 0) {
-        const shouldCharge = li.frequency === 'jednorazowo'
-          ? diffFromStart === 0
-          : li.frequency === 'co miesiąc'
-            ? true
-            : diffFromStart % 12 === 0; // co rok
+        const shouldCharge =
+          li.frequency === 'jednorazowo'
+            ? diffFromStart === 0
+            : li.frequency === 'co miesiąc'
+              ? true
+              : diffFromStart % 12 === 0; // co rok
         if (shouldCharge) {
           const base = this.getInsuranceBaseNoProperty(li.calcMethod, inputs.loanAmount, saldo);
-          const amount = li.calcMethod === 'znam kwotę' ? li.value : this.round2(base * li.value / 100);
+          const amount =
+            li.calcMethod === 'znam kwotę' ? li.value : this.round2((base * li.value) / 100);
           cost = this.round2(cost + amount);
         }
       }
@@ -172,33 +212,37 @@ export class CalculatorService {
     if (jl && jl.value > 0 && date >= (jl.from || '')) {
       const diffFromStart = this.monthDiff(jl.from, date);
       if (diffFromStart >= 0) {
-        const shouldCharge = jl.frequency === 'jednorazowo'
-          ? diffFromStart === 0
-          : jl.frequency === 'co miesiąc'
-            ? true
-            : diffFromStart % 12 === 0;
+        const shouldCharge =
+          jl.frequency === 'jednorazowo'
+            ? diffFromStart === 0
+            : jl.frequency === 'co miesiąc'
+              ? true
+              : diffFromStart % 12 === 0;
         if (shouldCharge) {
           const base = this.getInsuranceBaseNoProperty(jl.calcMethod, inputs.loanAmount, saldo);
-          const amount = jl.calcMethod === 'znam kwotę' ? jl.value : this.round2(base * jl.value / 100);
+          const amount =
+            jl.calcMethod === 'znam kwotę' ? jl.value : this.round2((base * jl.value) / 100);
           cost = this.round2(cost + amount);
         }
       }
     }
 
     // 8. Dodatkowe koszty
-    for (const ac of (oc.additionalCosts ?? [])) {
+    for (const ac of oc.additionalCosts ?? []) {
       if (!ac.value || ac.value <= 0 || !ac.from) continue;
       if (date < ac.from) continue;
       const diffFromStart = this.monthDiff(ac.from, date);
       if (diffFromStart < 0) continue;
-      const shouldCharge = ac.frequency === 'jednorazowo'
-        ? diffFromStart === 0
-        : ac.frequency === 'co miesiąc'
-          ? true
-          : diffFromStart % 12 === 0;
+      const shouldCharge =
+        ac.frequency === 'jednorazowo'
+          ? diffFromStart === 0
+          : ac.frequency === 'co miesiąc'
+            ? true
+            : diffFromStart % 12 === 0;
       if (shouldCharge) {
         const base = this.getInsuranceBaseNoProperty(ac.calcMethod, inputs.loanAmount, saldo);
-        const amount = ac.calcMethod === 'znam kwotę' ? ac.value : this.round2(base * ac.value / 100);
+        const amount =
+          ac.calcMethod === 'znam kwotę' ? ac.value : this.round2((base * ac.value) / 100);
         cost = this.round2(cost + amount);
       }
     }
@@ -206,20 +250,36 @@ export class CalculatorService {
     return cost;
   }
 
-  private getInsuranceBase(method: InsuranceCalcMethod, propertyValue: number, loanAmount: number, saldo: number): number {
+  private getInsuranceBase(
+    method: InsuranceCalcMethod,
+    propertyValue: number,
+    loanAmount: number,
+    saldo: number,
+  ): number {
     switch (method) {
-      case '% wartości nieruchomości': return propertyValue;
-      case '% kwoty kredytu': return loanAmount;
-      case '% salda kredytu': return saldo;
-      default: return 0;
+      case '% wartości nieruchomości':
+        return propertyValue;
+      case '% kwoty kredytu':
+        return loanAmount;
+      case '% salda kredytu':
+        return saldo;
+      default:
+        return 0;
     }
   }
 
-  private getInsuranceBaseNoProperty(method: LifeInsuranceCalcMethod, loanAmount: number, saldo: number): number {
+  private getInsuranceBaseNoProperty(
+    method: LifeInsuranceCalcMethod,
+    loanAmount: number,
+    saldo: number,
+  ): number {
     switch (method) {
-      case '% kwoty kredytu': return loanAmount;
-      case '% salda kredytu': return saldo;
-      default: return 0;
+      case '% kwoty kredytu':
+        return loanAmount;
+      case '% salda kredytu':
+        return saldo;
+      default:
+        return 0;
     }
   }
 
@@ -227,7 +287,7 @@ export class CalculatorService {
     baseRate: number,
     date: string,
     startDate: string,
-    oc?: OverheadCostsInputs
+    oc?: OverheadCostsInputs,
   ): number {
     let rate = baseRate;
     if (!oc) return rate;
@@ -261,9 +321,10 @@ export class CalculatorService {
     const graceMonths = Math.max(0, this.monthDiff(inputs.startDate, inputs.capitalStartDate) - 1);
     const amortMonths = Math.max(0, nTotal - graceMonths);
 
-    const baseEffectiveRate = inputs.rateType === 'zmienna'
-      ? (Number(inputs.wibor) || 0) + (Number(inputs.margin) || 0)
-      : (Number(inputs.nominalRate) || 0);
+    const baseEffectiveRate =
+      inputs.rateType === 'zmienna'
+        ? (Number(inputs.wibor) || 0) + (Number(inputs.margin) || 0)
+        : Number(inputs.nominalRate) || 0;
 
     const oc = inputs.overheadCosts;
 
@@ -276,9 +337,9 @@ export class CalculatorService {
       .map((r) => ({
         frequency: r.frequency,
         from: r.from,
-        to: r.frequency === 'jednorazowo' ? r.from : (r.to || r.from),
+        to: r.frequency === 'jednorazowo' ? r.from : r.to || r.from,
         amount: this.asNonNegativeNumber(r.amount),
-        effect: r.effect
+        effect: r.effect,
       }));
     const targetInstallmentRule = inputs.targetInstallmentRule;
     const commissionRatePct = this.asNonNegativeNumber(inputs.earlyRepaymentCommission?.ratePct);
@@ -296,15 +357,18 @@ export class CalculatorService {
         if (amt > 0 && t.date) {
           trancheMap.set(t.date, (trancheMap.get(t.date) || 0) + amt);
         }
-        trancheDisbursementFees = this.round2(trancheDisbursementFees + this.asNonNegativeNumber(t.disbursementFee));
+        trancheDisbursementFees = this.round2(
+          trancheDisbursementFees + this.asNonNegativeNumber(t.disbursementFee),
+        );
       }
     }
 
     const schedule: ScheduleRow[] = [];
     // Saldo początkowe = kwota pierwszej transzy (lub cała kwota kredytu, gdy brak transz)
-    let saldo = tranches.length > 1
-      ? this.asNonNegativeNumber(tranches[0].amount)
-      : this.asNonNegativeNumber(inputs.loanAmount);
+    let saldo =
+      tranches.length > 1
+        ? this.asNonNegativeNumber(tranches[0].amount)
+        : this.asNonNegativeNumber(inputs.loanAmount);
     let remainingAmortMonths = amortMonths;
     let equalRate = this.annuityPayment(saldo, i, amortMonths);
     let decreasingCapitalPart = amortMonths > 0 ? this.round2(saldo / amortMonths) : 0;
@@ -332,7 +396,12 @@ export class CalculatorService {
       const inGrace = idx <= graceMonths;
 
       // Dynamiczna stopa dla tego miesiąca (ubezpieczenie pomostowe, niski wkład, promocja)
-      const monthEffRate = this.getEffectiveRateForMonth(baseEffectiveRate, date, inputs.startDate, oc);
+      const monthEffRate = this.getEffectiveRateForMonth(
+        baseEffectiveRate,
+        date,
+        inputs.startDate,
+        oc,
+      );
       const iMonth = this.monthlyRate(monthEffRate);
       const interest = this.round2(saldo * iMonth);
 
@@ -343,13 +412,17 @@ export class CalculatorService {
         capital = 0;
         baseRate = interest;
       } else if (inputs.installmentType === 'rowne') {
-        const planned = equalRate > 0 ? equalRate : this.annuityPayment(saldo, i, remainingAmortMonths);
+        const planned =
+          equalRate > 0 ? equalRate : this.annuityPayment(saldo, i, remainingAmortMonths);
         capital = this.round2(planned - interest);
         if (capital < 0) capital = 0;
         if (capital > saldo) capital = this.round2(saldo);
         baseRate = this.round2(interest + capital);
       } else {
-        const capitalConst = decreasingCapitalPart > 0 ? decreasingCapitalPart : this.round2(saldo / Math.max(1, remainingAmortMonths));
+        const capitalConst =
+          decreasingCapitalPart > 0
+            ? decreasingCapitalPart
+            : this.round2(saldo / Math.max(1, remainingAmortMonths));
         capital = this.round2(Math.min(saldo, capitalConst));
         baseRate = this.round2(interest + capital);
       }
@@ -369,7 +442,10 @@ export class CalculatorService {
         }
       }
 
-      if (targetInstallmentRule && this.isMonthInRange(date, targetInstallmentRule.from, targetInstallmentRule.to)) {
+      if (
+        targetInstallmentRule &&
+        this.isMonthInRange(date, targetInstallmentRule.from, targetInstallmentRule.to)
+      ) {
         const targetRate = this.asNonNegativeNumber(targetInstallmentRule.targetRate);
         const targetPrepayment = this.round2(Math.max(0, targetRate - baseRate));
         if (targetPrepayment > 0) {
@@ -387,9 +463,12 @@ export class CalculatorService {
       }
       saldo = this.round2(Math.max(0, saldo - prepayment));
 
-      const commission = prepayment > 0 && commissionRatePct > 0 && (!commissionValidUntil || date <= commissionValidUntil)
-        ? this.round2(prepayment * (commissionRatePct / 100))
-        : 0;
+      const commission =
+        prepayment > 0 &&
+        commissionRatePct > 0 &&
+        (!commissionValidUntil || date <= commissionValidUntil)
+          ? this.round2(prepayment * (commissionRatePct / 100))
+          : 0;
 
       // Koszt ubezpieczeń i dodatkowych kosztów w tym miesiącu
       const insuranceCost = oc ? this.calcInsuranceCostForMonth(date, saldo, inputs, oc, idx) : 0;
@@ -405,7 +484,7 @@ export class CalculatorService {
         prepayment,
         commission,
         remaining: saldo,
-        insuranceCost
+        insuranceCost,
       });
 
       const hasLowerRatePrepayment = prepaymentLower > 0;
@@ -439,18 +518,28 @@ export class CalculatorService {
     const totalInterest = this.round2(schedule.reduce((s, r) => s + r.interest, 0));
 
     const totalInsuranceCosts = this.round2(schedule.reduce((s, r) => s + r.insuranceCost, 0));
-    const loanCommission = oc ? this.round2(inputs.loanAmount * (oc.commissionPct || 0) / 100) : 0;
+    const loanCommission = oc
+      ? this.round2((inputs.loanAmount * (oc.commissionPct || 0)) / 100)
+      : 0;
     const appraisalFee = oc ? this.round2(oc.appraisalFee || 0) : 0;
     const earlyRepaymentCommissions = this.round2(schedule.reduce((s, r) => s + r.commission, 0));
 
     const overheadCosts = this.round2(
-      loanCommission + appraisalFee + totalInsuranceCosts + earlyRepaymentCommissions + trancheDisbursementFees
+      loanCommission +
+        appraisalFee +
+        totalInsuranceCosts +
+        earlyRepaymentCommissions +
+        trancheDisbursementFees,
     );
     const prepayments = this.round2(schedule.reduce((s, r) => s + r.prepayment, 0));
     const totalAllPayments = this.round2(totalRate + overheadCosts);
-    const bankReturnRatioPct = inputs.loanAmount > 0 ? this.round2((totalAllPayments / inputs.loanAmount) * 100) : 0;
+    const bankReturnRatioPct =
+      inputs.loanAmount > 0 ? this.round2((totalAllPayments / inputs.loanAmount) * 100) : 0;
 
-    const first = schedule.length > 0 ? { rate: schedule[0].rate, capital: schedule[0].capital, interest: schedule[0].interest } : null;
+    const first =
+      schedule.length > 0
+        ? { rate: schedule[0].rate, capital: schedule[0].capital, interest: schedule[0].interest }
+        : null;
 
     return {
       effectiveRate: this.round2(effectiveRate),
@@ -458,9 +547,15 @@ export class CalculatorService {
       amortizationMonths: Math.max(0, schedule.length - Math.min(graceMonths, schedule.length)),
       firstInstallment: first,
       totals: {
-        totalRate, totalCapital, totalInterest, overheadCosts, prepayments, bankReturnRatioPct, totalAllPayments
+        totalRate,
+        totalCapital,
+        totalInterest,
+        overheadCosts,
+        prepayments,
+        bankReturnRatioPct,
+        totalAllPayments,
       },
-      schedule
+      schedule,
     };
   }
 }

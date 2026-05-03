@@ -31,7 +31,11 @@
             <div class="row row-wrap">
               <label>
                 2a. Data nadpłaty od
-                <input type="month" formControlName="from" (change)="onNadplataFromChanged($index)" />
+                <input
+                  type="month"
+                  formControlName="from"
+                  (change)="onNadplataFromChanged($index)"
+                />
                 <small>{{ rule.get('from')?.value | formatMonthPl }}</small>
               </label>
 
@@ -106,7 +110,9 @@
       <label>
         9. Bank pobiera prowizję do
         <input type="month" formControlName="validUntil" />
-        <small>{{ form.get('prowizjaWczesniejszaSplata.validUntil')?.value | formatMonthPl }}</small>
+        <small>{{
+          form.get('prowizjaWczesniejszaSplata.validUntil')?.value | formatMonthPl
+        }}</small>
       </label>
     </div>
   </div>

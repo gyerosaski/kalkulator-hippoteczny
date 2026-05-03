@@ -1,7 +1,12 @@
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import {
-  InsuranceCalcMethod, InsuranceFrequency, InstallmentType,
-  LifeInsuranceCalcMethod, PrepaymentEffect, PrepaymentFrequency, RateType
+  InsuranceCalcMethod,
+  InsuranceFrequency,
+  InstallmentType,
+  LifeInsuranceCalcMethod,
+  PrepaymentEffect,
+  PrepaymentFrequency,
+  RateType,
 } from './mortgage.model';
 
 export interface TrancheFormGroup {

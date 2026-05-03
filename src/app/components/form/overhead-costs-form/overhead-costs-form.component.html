@@ -11,7 +11,7 @@
       </label>
       <label>
         Przeliczenie (zł)
-        <input type="text" [value]="commissionAmount() | number:'1.2-2':'pl'" disabled />
+        <input type="text" [value]="commissionAmount() | number: '1.2-2' : 'pl'" disabled />
       </label>
     </div>
   </div>
@@ -152,7 +152,8 @@
         </select>
       </label>
       <label>
-        Wartość składki {{ form.get('jobLossInsCalcMethod')?.value === 'znam kwotę' ? '(zł)' : '(%)' }}
+        Wartość składki
+        {{ form.get('jobLossInsCalcMethod')?.value === 'znam kwotę' ? '(zł)' : '(%)' }}
         <input type="number" step="0.01" min="0" formControlName="jobLossInsValue" />
       </label>
       <label>

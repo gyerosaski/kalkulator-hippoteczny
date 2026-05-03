@@ -7,7 +7,7 @@ import { MortgageResults } from '../../model/mortgage.model';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './results.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResultsComponent {
   results = input.required<MortgageResults | null>();

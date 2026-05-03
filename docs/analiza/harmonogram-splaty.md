@@ -1,4 +1,5 @@
 # 1. Harmonogram spłaty – tabela (agregacja roczna i szczegóły miesięczne)
+
 - Kolumny (warstwa miesięczna):
   - Data,
   - Rata,
@@ -11,14 +12,13 @@
 - Sposób wyliczania (miesiąc m, stopa nominalna r, miesięczna i_m = r/12):
   - Jeśli tryb „równe” i dla okresu o stałym r:
     - Rata stała R = P × i_m / (1 − (1 + i_m)^(−n_okresu)),
-    - Odsetki_m = Saldo_{m−1} × i_m,
+    - Odsetki*m = Saldo*{m−1} × i_m,
     - Kapitał_m = R − Odsetki_m,
-    - Saldo_m = Saldo_{m−1} − Kapitał_m.
+    - Saldo*m = Saldo*{m−1} − Kapitał_m.
   - Jeśli tryb „malejące”:
     - Kapitał_m = P / n_całkowite (lub P_po_aktualizacjach / n_pozostałe),
-    - Odsetki_m = Saldo_{m−1} × i_m,
+    - Odsetki*m = Saldo*{m−1} × i_m,
     - Rata_m = Kapitał_m + Odsetki_m,
-    - Saldo_m = Saldo_{m−1} − Kapitał_m.
+    - Saldo*m = Saldo*{m−1} − Kapitał_m.
   - Nadpłaty (jeśli występują z innych zakładek) zmniejszają Saldo i modyfikują kolejne wyliczenia.
   - Koszty okołokredytowe przypisywane do miesięcy zgodnie z konfiguracją (domyślnie 0,00).
-

@@ -20,19 +20,19 @@ function baseInputs(effect: PrepaymentEffect = 'skrócenie okresu'): MortgageInp
         from: '2026-03',
         to: '2026-03',
         amount: 10_000,
-        effect
-      }
+        effect,
+      },
     ],
     targetInstallmentRule: {
       targetRate: 0,
       from: '2026-01',
       to: '2026-01',
-      effect: 'niższa rata'
+      effect: 'niższa rata',
     },
     earlyRepaymentCommission: {
       ratePct: 2,
-      validUntil: '2026-12'
-    }
+      validUntil: '2026-12',
+    },
   };
 }
 
@@ -56,13 +56,15 @@ describe('MortgageCalcService (nadpłaty)', () => {
 
   it('nie powinien naliczać prowizji po dacie granicznej', () => {
     const inputs = baseInputs();
-    inputs.prepaymentRules = [{
-      frequency: 'jednorazowo',
-      from: '2027-01',
-      to: '2027-01',
-      amount: 5_000,
-      effect: 'skrócenie okresu'
-    }];
+    inputs.prepaymentRules = [
+      {
+        frequency: 'jednorazowo',
+        from: '2027-01',
+        to: '2027-01',
+        amount: 5_000,
+        effect: 'skrócenie okresu',
+      },
+    ];
 
     const result = service.compute(inputs);
     const eventRow = result.schedule.find((r) => r.date === '2027-01');
@@ -74,13 +76,15 @@ describe('MortgageCalcService (nadpłaty)', () => {
 
   it('powinien uwzględnić jednorazową nadpłatę wskazaną pojedynczą datą (bez pola "do")', () => {
     const inputs = baseInputs();
-    inputs.prepaymentRules = [{
-      frequency: 'jednorazowo',
-      from: '2026-05',
-      to: '',
-      amount: 7_500,
-      effect: 'skrócenie okresu'
-    }];
+    inputs.prepaymentRules = [
+      {
+        frequency: 'jednorazowo',
+        from: '2026-05',
+        to: '',
+        amount: 7_500,
+        effect: 'skrócenie okresu',
+      },
+    ];
 
     const result = service.compute(inputs);
     const eventRow = result.schedule.find((r) => r.date === '2026-05');
@@ -108,7 +112,7 @@ describe('MortgageCalcService (nadpłaty)', () => {
       targetRate: 3_000,
       from: '2026-02',
       to: '2026-06',
-      effect: 'skrócenie okresu'
+      effect: 'skrócenie okresu',
     };
 
     const result = service.compute(inputs);
@@ -126,7 +130,7 @@ describe('MortgageCalcService (nadpłaty)', () => {
       targetRate: 100,
       from: '2026-02',
       to: '2026-06',
-      effect: 'skrócenie okresu'
+      effect: 'skrócenie okresu',
     };
 
     const result = service.compute(inputs);

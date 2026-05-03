@@ -5,18 +5,24 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { startWith } from 'rxjs';
 import {
-  MortgageInputs, MortgageResults, OverheadCostsInputs, PrepaymentEffect,
-  PrepaymentFrequency, ScheduleRow, Tranche, YearGroup
+  MortgageInputs,
+  MortgageResults,
+  OverheadCostsInputs,
+  PrepaymentEffect,
+  PrepaymentFrequency,
+  ScheduleRow,
+  Tranche,
+  YearGroup,
 } from '../../model/mortgage.model';
 import { CalculatorService } from '../../services/calculator/calculator.service';
 import { FormService } from '../../services/form/form';
 import { ResultsComponent } from '../../components/results/results.component';
 import { ScheduleComponent } from '../../components/schedule/schedule.component';
 import { SaveCalculationDialogComponent } from '../../dialogs/save-calculation/save-calculation-dialog.component';
-import {BasicDataFormComponent} from '../../components/form/basic-data-form/basic-data-form.component';
-import {OverheadCostsFormComponent} from '../../components/form/overhead-costs-form/overhead-costs-form.component';
-import {TranchesFormComponent} from '../../components/form/tranches-form/tranches-form.component';
-import {PrepaymentsFormComponent} from '../../components/form/prepayments-form/prepayments-form.component';
+import { BasicDataFormComponent } from '../../components/form/basic-data-form/basic-data-form.component';
+import { OverheadCostsFormComponent } from '../../components/form/overhead-costs-form/overhead-costs-form.component';
+import { TranchesFormComponent } from '../../components/form/tranches-form/tranches-form.component';
+import { PrepaymentsFormComponent } from '../../components/form/prepayments-form/prepayments-form.component';
 
 function ym(date = new Date()): string {
   const y = date.getFullYear();
@@ -33,20 +39,28 @@ function nextMonthStr(date = new Date()): string {
   selector: 'app-layout',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule, MatDialogModule,
-    BasicDataFormComponent, OverheadCostsFormComponent, TranchesFormComponent,
-    PrepaymentsFormComponent, ResultsComponent, ScheduleComponent
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    BasicDataFormComponent,
+    OverheadCostsFormComponent,
+    TranchesFormComponent,
+    PrepaymentsFormComponent,
+    ResultsComponent,
+    ScheduleComponent,
   ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayoutComponent {
   private calc = inject(CalculatorService);
   private dialog = inject(MatDialog);
   private formService = inject(FormService);
 
-  get form() { return this.formService.form; }
+  get form() {
+    return this.formService.form;
+  }
 
   results = signal<MortgageResults | null>(null);
   yearlyGroups = signal<YearGroup[] | null>(null);
@@ -66,9 +80,9 @@ export class LayoutComponent {
         .map((r) => ({
           frequency: r.frequency as PrepaymentFrequency,
           from: r.from,
-          to: r.frequency === 'jednorazowo' ? r.from : (r.to || r.from),
+          to: r.frequency === 'jednorazowo' ? r.from : r.to || r.from,
           amount: Number(r.amount) || 0,
-          effect: r.effect as PrepaymentEffect
+          effect: r.effect as PrepaymentEffect,
         }));
 
       const rataDocelowa = (v.rataDocelowaRegula ?? {}) as any;
@@ -77,7 +91,7 @@ export class LayoutComponent {
       const tranches: Tranche[] = ((v.transze ?? []) as any[]).map((t: any) => ({
         amount: Number(t.amount) || 0,
         date: t.date || '',
-        disbursementFee: Number(t.disbursementFee) || 0
+        disbursementFee: Number(t.disbursementFee) || 0,
       }));
 
       const overheadCostsRaw = (v.overheadCosts ?? {}) as any;
@@ -86,43 +100,43 @@ export class LayoutComponent {
         appraisalFee: Number(overheadCostsRaw.appraisalFee) || 0,
         bridgeInsurance: {
           rateIncrease: Number(overheadCostsRaw.bridgeRateIncrease) || 0,
-          months: Number(overheadCostsRaw.bridgeMonths) || 0
+          months: Number(overheadCostsRaw.bridgeMonths) || 0,
         },
         propertyInsurance: {
           frequency: overheadCostsRaw.propInsFrequency,
           calcMethod: overheadCostsRaw.propInsCalcMethod,
           value: Number(overheadCostsRaw.propInsValue) || 0,
           from: overheadCostsRaw.propInsFrom,
-          to: overheadCostsRaw.propInsTo
+          to: overheadCostsRaw.propInsTo,
         },
         lowEquityInsurance: {
-          rateIncrease: Number(overheadCostsRaw.lowEquityRateIncrease) || 0
+          rateIncrease: Number(overheadCostsRaw.lowEquityRateIncrease) || 0,
         },
         lifeInsurance: {
           frequency: overheadCostsRaw.lifeInsFrequency,
           calcMethod: overheadCostsRaw.lifeInsCalcMethod,
           value: Number(overheadCostsRaw.lifeInsValue) || 0,
           from: overheadCostsRaw.lifeInsFrom,
-          to: overheadCostsRaw.lifeInsTo
+          to: overheadCostsRaw.lifeInsTo,
         },
         jobLossInsurance: {
           frequency: overheadCostsRaw.jobLossInsFrequency,
           calcMethod: overheadCostsRaw.jobLossInsCalcMethod,
           value: Number(overheadCostsRaw.jobLossInsValue) || 0,
-          from: overheadCostsRaw.jobLossInsFrom
+          from: overheadCostsRaw.jobLossInsFrom,
         },
         additionalCosts: ((overheadCostsRaw.additionalCosts ?? []) as any[]).map((ac: any) => ({
           name: ac.name || '',
           frequency: ac.frequency,
           calcMethod: ac.calcMethod,
           value: Number(ac.value) || 0,
-          from: ac.from
+          from: ac.from,
         })),
         promotionalRate: {
           rateDecrease: Number(overheadCostsRaw.promoRateDecrease) || 0,
           from: overheadCostsRaw.promoFrom,
-          to: overheadCostsRaw.promoTo
-        }
+          to: overheadCostsRaw.promoTo,
+        },
       };
 
       const inputs: MortgageInputs = {
@@ -144,13 +158,13 @@ export class LayoutComponent {
           targetRate: Number(rataDocelowa.targetRate) || 0,
           from: rataDocelowa.from || nextMonthStr(),
           to: rataDocelowa.to || nextMonthStr(),
-          effect: (rataDocelowa.effect as PrepaymentEffect) || 'niższa rata'
+          effect: (rataDocelowa.effect as PrepaymentEffect) || 'niższa rata',
         },
         earlyRepaymentCommission: {
           ratePct: Number(prowizja.ratePct) || 0,
-          validUntil: prowizja.validUntil || nextMonthStr()
+          validUntil: prowizja.validUntil || nextMonthStr(),
         },
-        overheadCosts
+        overheadCosts,
       };
       const res = this.calc.compute(inputs);
       this.results.set(res);
@@ -173,7 +187,7 @@ export class LayoutComponent {
 
   saveCalculation() {
     const dlgRef = this.dialog.open(SaveCalculationDialogComponent, {
-      data: { defaultName: 'Kalkulacja ' + new Date().toLocaleDateString('pl-PL') }
+      data: { defaultName: 'Kalkulacja ' + new Date().toLocaleDateString('pl-PL') },
     });
     dlgRef.afterClosed().subscribe((name) => {
       if (!name) return;
@@ -181,7 +195,9 @@ export class LayoutComponent {
       const all = JSON.parse(localStorage.getItem('kalkulacje') || '[]');
       const existingIdx = all.findIndex((x: any) => x.name === name);
       if (existingIdx >= 0) {
-        const overwrite = window.confirm(`Istnieje już kalkulacja o nazwie "${name}". Czy chcesz ją nadpisać?`);
+        const overwrite = window.confirm(
+          `Istnieje już kalkulacja o nazwie "${name}". Czy chcesz ją nadpisać?`,
+        );
         if (!overwrite) return;
       }
       const record = { name, createdAt: new Date().toISOString(), data };
@@ -229,7 +245,7 @@ function groupByYear(rows: ScheduleRow[]): YearGroup[] {
       sumCommission: 0,
       sumInsuranceCost: 0,
       lastRemaining: 0,
-      rows: []
+      rows: [],
     };
     g.sumRate += r.rate;
     g.sumCapital += r.capital;
@@ -241,13 +257,15 @@ function groupByYear(rows: ScheduleRow[]): YearGroup[] {
     g.rows.push(r);
     out.set(yy, g);
   }
-  return Array.from(out.values()).sort((a, b) => a.year - b.year).map(g => ({
-    ...g,
-    sumRate: Math.round(g.sumRate * 100) / 100,
-    sumCapital: Math.round(g.sumCapital * 100) / 100,
-    sumInterest: Math.round(g.sumInterest * 100) / 100,
-    sumPrepayment: Math.round(g.sumPrepayment * 100) / 100,
-    sumCommission: Math.round(g.sumCommission * 100) / 100,
-    sumInsuranceCost: Math.round(g.sumInsuranceCost * 100) / 100,
-  }));
+  return Array.from(out.values())
+    .sort((a, b) => a.year - b.year)
+    .map((g) => ({
+      ...g,
+      sumRate: Math.round(g.sumRate * 100) / 100,
+      sumCapital: Math.round(g.sumCapital * 100) / 100,
+      sumInterest: Math.round(g.sumInterest * 100) / 100,
+      sumPrepayment: Math.round(g.sumPrepayment * 100) / 100,
+      sumCommission: Math.round(g.sumCommission * 100) / 100,
+      sumInsuranceCost: Math.round(g.sumInsuranceCost * 100) / 100,
+    }));
 }

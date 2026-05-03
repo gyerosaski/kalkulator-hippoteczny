@@ -9,6 +9,6 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideAnimations(),
-    { provide: LOCALE_ID, useValue: 'pl-PL' }
-  ]
+    { provide: LOCALE_ID, useValue: 'pl-PL' },
+  ],
 };

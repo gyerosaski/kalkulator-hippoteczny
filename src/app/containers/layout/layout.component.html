@@ -15,11 +15,21 @@
 
   @if (form.errors) {
     <div class="errors">
-      @if (form.errors?.['loanGtProperty']) { <p>Kwota kredytu nie może być większa niż wartość nieruchomości.</p> }
-      @if (form.errors?.['totalMonthsInvalid']) { <p>Łączna liczba miesięcy musi być większa od 0.</p> }
-      @if (form.errors?.['capitalBeforeStart']) { <p>Początek spłat kapitału nie może być wcześniejszy niż data uruchomienia.</p> }
-      @if (form.errors?.['prepaymentDateRangeInvalid']) { <p>W regule nadpłaty data „do" nie może być wcześniejsza niż data „od".</p> }
-      @if (form.errors?.['targetInstallmentDateRangeInvalid']) { <p>W regule docelowej raty data „do" nie może być wcześniejsza niż data „od".</p> }
+      @if (form.errors?.['loanGtProperty']) {
+        <p>Kwota kredytu nie może być większa niż wartość nieruchomości.</p>
+      }
+      @if (form.errors?.['totalMonthsInvalid']) {
+        <p>Łączna liczba miesięcy musi być większa od 0.</p>
+      }
+      @if (form.errors?.['capitalBeforeStart']) {
+        <p>Początek spłat kapitału nie może być wcześniejszy niż data uruchomienia.</p>
+      }
+      @if (form.errors?.['prepaymentDateRangeInvalid']) {
+        <p>W regule nadpłaty data „do" nie może być wcześniejsza niż data „od".</p>
+      }
+      @if (form.errors?.['targetInstallmentDateRangeInvalid']) {
+        <p>W regule docelowej raty data „do" nie może być wcześniejsza niż data „od".</p>
+      }
     </div>
   }
 

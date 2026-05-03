@@ -1,13 +1,22 @@
 import { inject, Injectable } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import {
-  InsuranceCalcMethod, InsuranceFrequency, LifeInsuranceCalcMethod,
-  PrepaymentEffect, PrepaymentFrequency, Tranche, PrepaymentRule
+  InsuranceCalcMethod,
+  InsuranceFrequency,
+  LifeInsuranceCalcMethod,
+  PrepaymentEffect,
+  PrepaymentFrequency,
+  Tranche,
+  PrepaymentRule,
 } from '../../model/mortgage.model';
 import {
-  AdditionalCostFormGroup, EarlyRepaymentCommissionFormGroup,
-  MortgageFormGroup, OverheadCostsFormGroup, PrepaymentRuleFormGroup,
-  TargetInstallmentFormGroup, TrancheFormGroup
+  AdditionalCostFormGroup,
+  EarlyRepaymentCommissionFormGroup,
+  MortgageFormGroup,
+  OverheadCostsFormGroup,
+  PrepaymentRuleFormGroup,
+  TargetInstallmentFormGroup,
+  TrancheFormGroup,
 } from '../../model/form.model';
 
 function ym(date = new Date()): string {
@@ -23,7 +32,7 @@ function nextMonthStr(date = new Date()): string {
 
 function addMonthsStr(baseYm: string, monthsToAdd: number): string {
   const [y, m] = baseYm.split('-').map((v) => parseInt(v, 10));
-  const d = new Date(y, (m - 1) + monthsToAdd, 1);
+  const d = new Date(y, m - 1 + monthsToAdd, 1);
   return ym(d);
 }
 
@@ -40,7 +49,8 @@ function crossFieldValidator(control: import('@angular/forms').AbstractControl) 
   const start = group.get('startDate')?.value as string;
   const capStart = group.get('capitalStartDate')?.value as string;
   const nadplatyReguly = group.get('nadplatyReguly')?.value ?? [];
-  const rataDocelowaRegula = (group.get('rataDocelowaRegula') as FormGroup)?.getRawValue() ?? {} as any;
+  const rataDocelowaRegula =
+    (group.get('rataDocelowaRegula') as FormGroup)?.getRawValue() ?? ({} as any);
   const transzeArray = group.get('transze') as FormArray<FormGroup<TrancheFormGroup>> | null;
 
   const errors: Record<string, unknown> = {};
@@ -53,7 +63,11 @@ function crossFieldValidator(control: import('@angular/forms').AbstractControl) 
     }
     transzeSum = Math.round(transzeSum * 100) / 100;
     if (Math.abs(transzeSum - la) > 0.01) {
-      errors['transzeSumMismatch'] = { expected: la, actual: transzeSum, diff: Math.round((transzeSum - la) * 100) / 100 };
+      errors['transzeSumMismatch'] = {
+        expected: la,
+        actual: transzeSum,
+        diff: Math.round((transzeSum - la) * 100) / 100,
+      };
     }
   }
   const n = Math.trunc(yrs) * 12 + Math.trunc(mos);
@@ -71,7 +85,11 @@ function crossFieldValidator(control: import('@angular/forms').AbstractControl) 
     }
   }
 
-  if (rataDocelowaRegula.from && rataDocelowaRegula.to && rataDocelowaRegula.to < rataDocelowaRegula.from) {
+  if (
+    rataDocelowaRegula.from &&
+    rataDocelowaRegula.to &&
+    rataDocelowaRegula.to < rataDocelowaRegula.from
+  ) {
     errors['targetInstallmentDateRangeInvalid'] = true;
   }
 
@@ -117,85 +135,164 @@ export class FormService {
   }
 
   private createForm(): FormGroup<MortgageFormGroup> {
-    const form = new FormGroup<MortgageFormGroup>({
-      propertyValue: new FormControl(500_000, { nonNullable: true, validators: [Validators.required, Validators.min(0.01)] }),
-      loanAmount: new FormControl(400_000, { nonNullable: true, validators: [Validators.required, Validators.min(0.01)] }),
-      ltv: new FormControl(80, { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(100)] }),
-      years: new FormControl(20, { nonNullable: true, validators: [Validators.min(0)] }),
-      months: new FormControl(0, { nonNullable: true, validators: [Validators.min(0), Validators.max(11)] }),
-      startDate: new FormControl(ym(), { nonNullable: true, validators: [Validators.required] }),
-      capitalStartDate: new FormControl(nextMonthStr(), { nonNullable: true, validators: [Validators.required] }),
-      installmentType: new FormControl<'rowne' | 'malejace'>('rowne', { nonNullable: true }),
-      rateType: new FormControl<'zmienna' | 'stala'>('zmienna', { nonNullable: true }),
-      nominalRate: new FormControl(9.0, { nonNullable: true, validators: [Validators.min(0), Validators.max(50)] }),
-      wibor: new FormControl(7.0, { nonNullable: true, validators: [Validators.min(0), Validators.max(50)] }),
-      margin: new FormControl(2.0, { nonNullable: true, validators: [Validators.min(0), Validators.max(50)] }),
-      nadplatyReguly: new FormArray([this.createNadplataRegulaGroup()]),
-      rataDocelowaRegula: new FormGroup<TargetInstallmentFormGroup>({
-        targetRate: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
-        from: new FormControl(nextMonthStr(), { nonNullable: true, validators: [Validators.required] }),
-        to: new FormControl(addMonthsStr(nextMonthStr(), 12), { nonNullable: true, validators: [Validators.required] }),
-        effect: new FormControl<PrepaymentEffect>('niższa rata', { nonNullable: true, validators: [Validators.required] })
-      }),
-      prowizjaWczesniejszaSplata: new FormGroup<EarlyRepaymentCommissionFormGroup>({
-        ratePct: new FormControl(0, { nonNullable: true, validators: [Validators.min(0), Validators.max(100)] }),
-        validUntil: new FormControl(addMonthsStr(nextMonthStr(), 36), { nonNullable: true, validators: [Validators.required] })
-      }),
-      transze: new FormArray([this.createTrancheGroup(true)]),
-      overheadCosts: this.createOverheadCostsGroup()
-    }, { validators: [crossFieldValidator] });
+    const form = new FormGroup<MortgageFormGroup>(
+      {
+        propertyValue: new FormControl(500_000, {
+          nonNullable: true,
+          validators: [Validators.required, Validators.min(0.01)],
+        }),
+        loanAmount: new FormControl(400_000, {
+          nonNullable: true,
+          validators: [Validators.required, Validators.min(0.01)],
+        }),
+        ltv: new FormControl(80, {
+          nonNullable: true,
+          validators: [Validators.required, Validators.min(0), Validators.max(100)],
+        }),
+        years: new FormControl(20, { nonNullable: true, validators: [Validators.min(0)] }),
+        months: new FormControl(0, {
+          nonNullable: true,
+          validators: [Validators.min(0), Validators.max(11)],
+        }),
+        startDate: new FormControl(ym(), { nonNullable: true, validators: [Validators.required] }),
+        capitalStartDate: new FormControl(nextMonthStr(), {
+          nonNullable: true,
+          validators: [Validators.required],
+        }),
+        installmentType: new FormControl<'rowne' | 'malejace'>('rowne', { nonNullable: true }),
+        rateType: new FormControl<'zmienna' | 'stala'>('zmienna', { nonNullable: true }),
+        nominalRate: new FormControl(9.0, {
+          nonNullable: true,
+          validators: [Validators.min(0), Validators.max(50)],
+        }),
+        wibor: new FormControl(7.0, {
+          nonNullable: true,
+          validators: [Validators.min(0), Validators.max(50)],
+        }),
+        margin: new FormControl(2.0, {
+          nonNullable: true,
+          validators: [Validators.min(0), Validators.max(50)],
+        }),
+        nadplatyReguly: new FormArray([this.createNadplataRegulaGroup()]),
+        rataDocelowaRegula: new FormGroup<TargetInstallmentFormGroup>({
+          targetRate: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
+          from: new FormControl(nextMonthStr(), {
+            nonNullable: true,
+            validators: [Validators.required],
+          }),
+          to: new FormControl(addMonthsStr(nextMonthStr(), 12), {
+            nonNullable: true,
+            validators: [Validators.required],
+          }),
+          effect: new FormControl<PrepaymentEffect>('niższa rata', {
+            nonNullable: true,
+            validators: [Validators.required],
+          }),
+        }),
+        prowizjaWczesniejszaSplata: new FormGroup<EarlyRepaymentCommissionFormGroup>({
+          ratePct: new FormControl(0, {
+            nonNullable: true,
+            validators: [Validators.min(0), Validators.max(100)],
+          }),
+          validUntil: new FormControl(addMonthsStr(nextMonthStr(), 36), {
+            nonNullable: true,
+            validators: [Validators.required],
+          }),
+        }),
+        transze: new FormArray([this.createTrancheGroup(true)]),
+        overheadCosts: this.createOverheadCostsGroup(),
+      },
+      { validators: [crossFieldValidator] },
+    );
     return form;
   }
 
   private createOverheadCostsGroup(): FormGroup<OverheadCostsFormGroup> {
     return new FormGroup<OverheadCostsFormGroup>({
-      commissionPct: new FormControl(0, { nonNullable: true, validators: [Validators.min(0), Validators.max(100)] }),
+      commissionPct: new FormControl(0, {
+        nonNullable: true,
+        validators: [Validators.min(0), Validators.max(100)],
+      }),
       appraisalFee: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
-      bridgeRateIncrease: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
+      bridgeRateIncrease: new FormControl(0, {
+        nonNullable: true,
+        validators: [Validators.min(0)],
+      }),
       bridgeMonths: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
       propInsFrequency: new FormControl<'co rok' | 'co miesiąc'>('co rok', { nonNullable: true }),
-      propInsCalcMethod: new FormControl<InsuranceCalcMethod>('% wartości nieruchomości', { nonNullable: true }),
+      propInsCalcMethod: new FormControl<InsuranceCalcMethod>('% wartości nieruchomości', {
+        nonNullable: true,
+      }),
       propInsValue: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
       propInsFrom: new FormControl(nextMonthStr(), { nonNullable: true }),
       propInsTo: new FormControl(endOfLoanDate(), { nonNullable: true }),
-      lowEquityRateIncrease: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
+      lowEquityRateIncrease: new FormControl(0, {
+        nonNullable: true,
+        validators: [Validators.min(0)],
+      }),
       lifeInsFrequency: new FormControl<InsuranceFrequency>('co rok', { nonNullable: true }),
-      lifeInsCalcMethod: new FormControl<LifeInsuranceCalcMethod>('% kwoty kredytu', { nonNullable: true }),
+      lifeInsCalcMethod: new FormControl<LifeInsuranceCalcMethod>('% kwoty kredytu', {
+        nonNullable: true,
+      }),
       lifeInsValue: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
       lifeInsFrom: new FormControl(nextMonthStr(), { nonNullable: true }),
       lifeInsTo: new FormControl(endOfLoanDate(), { nonNullable: true }),
-      jobLossInsFrequency: new FormControl<InsuranceFrequency>('jednorazowo', { nonNullable: true }),
-      jobLossInsCalcMethod: new FormControl<LifeInsuranceCalcMethod>('% kwoty kredytu', { nonNullable: true }),
+      jobLossInsFrequency: new FormControl<InsuranceFrequency>('jednorazowo', {
+        nonNullable: true,
+      }),
+      jobLossInsCalcMethod: new FormControl<LifeInsuranceCalcMethod>('% kwoty kredytu', {
+        nonNullable: true,
+      }),
       jobLossInsValue: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
       jobLossInsFrom: new FormControl(nextMonthStr(), { nonNullable: true }),
       additionalCosts: new FormArray([this.createAdditionalCostGroup()]),
       promoRateDecrease: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
       promoFrom: new FormControl(nextMonthStr(), { nonNullable: true }),
-      promoTo: new FormControl(addMonthsStr(nextMonthStr(), 12), { nonNullable: true })
+      promoTo: new FormControl(addMonthsStr(nextMonthStr(), 12), { nonNullable: true }),
     });
   }
 
-  createTrancheGroup(isFirst: boolean, initial: Partial<Tranche> = {}): FormGroup<TrancheFormGroup> {
+  createTrancheGroup(
+    isFirst: boolean,
+    initial: Partial<Tranche> = {},
+  ): FormGroup<TrancheFormGroup> {
     const startDate = this.form?.get('startDate')?.value || ym();
-    const amount = initial.amount ?? (isFirst ? (this.form?.get('loanAmount')?.value || 0) : 0);
+    const amount = initial.amount ?? (isFirst ? this.form?.get('loanAmount')?.value || 0 : 0);
     const date = initial.date ?? startDate;
     return new FormGroup<TrancheFormGroup>({
-      amount: new FormControl(amount, { nonNullable: true, validators: isFirst ? [] : [Validators.required, Validators.min(0.01)] }),
+      amount: new FormControl(amount, {
+        nonNullable: true,
+        validators: isFirst ? [] : [Validators.required, Validators.min(0.01)],
+      }),
       date: new FormControl(date, { nonNullable: true, validators: [Validators.required] }),
-      disbursementFee: new FormControl(initial.disbursementFee ?? 0, { nonNullable: true, validators: [Validators.min(0), Validators.max(1000)] })
+      disbursementFee: new FormControl(initial.disbursementFee ?? 0, {
+        nonNullable: true,
+        validators: [Validators.min(0), Validators.max(1000)],
+      }),
     });
   }
 
-  createNadplataRegulaGroup(initial: Partial<PrepaymentRule> = {}): FormGroup<PrepaymentRuleFormGroup> {
+  createNadplataRegulaGroup(
+    initial: Partial<PrepaymentRule> = {},
+  ): FormGroup<PrepaymentRuleFormGroup> {
     const frequency = initial.frequency ?? 'jednorazowo';
     const from = initial.from ?? nextMonthStr();
     const to = frequency === 'jednorazowo' ? from : (initial.to ?? addMonthsStr(from, 12));
     return new FormGroup<PrepaymentRuleFormGroup>({
-      frequency: new FormControl<PrepaymentFrequency>(frequency, { nonNullable: true, validators: [Validators.required] }),
+      frequency: new FormControl<PrepaymentFrequency>(frequency, {
+        nonNullable: true,
+        validators: [Validators.required],
+      }),
       from: new FormControl(from, { nonNullable: true, validators: [Validators.required] }),
       to: new FormControl(to, { nonNullable: true, validators: [Validators.required] }),
-      amount: new FormControl(initial.amount ?? 0, { nonNullable: true, validators: [Validators.min(0)] }),
-      effect: new FormControl<PrepaymentEffect>(initial.effect ?? 'niższa rata', { nonNullable: true, validators: [Validators.required] })
+      amount: new FormControl(initial.amount ?? 0, {
+        nonNullable: true,
+        validators: [Validators.min(0)],
+      }),
+      effect: new FormControl<PrepaymentEffect>(initial.effect ?? 'niższa rata', {
+        nonNullable: true,
+        validators: [Validators.required],
+      }),
     });
   }
 
@@ -205,7 +302,7 @@ export class FormService {
       frequency: new FormControl<InsuranceFrequency>('jednorazowo', { nonNullable: true }),
       calcMethod: new FormControl<LifeInsuranceCalcMethod>('znam kwotę', { nonNullable: true }),
       value: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
-      from: new FormControl(nextMonthStr(), { nonNullable: true })
+      from: new FormControl(nextMonthStr(), { nonNullable: true }),
     });
   }
 
@@ -225,9 +322,10 @@ export class FormService {
   clearTransze(): void {
     const loanAmount = this.form.get('loanAmount')?.value || 0;
     const startDate = this.form.get('startDate')?.value || ym();
-    this.form.setControl('transze', new FormArray([
-      this.createTrancheGroup(true, { amount: loanAmount, date: startDate })
-    ]));
+    this.form.setControl(
+      'transze',
+      new FormArray([this.createTrancheGroup(true, { amount: loanAmount, date: startDate })]),
+    );
     this.form.updateValueAndValidity();
   }
 
@@ -301,12 +399,12 @@ export class FormService {
         targetRate: 0,
         from: nextMonthStr(),
         to: addMonthsStr(nextMonthStr(), 12),
-        effect: 'niższa rata'
+        effect: 'niższa rata',
       },
       prowizjaWczesniejszaSplata: {
         ratePct: 0,
-        validUntil: addMonthsStr(nextMonthStr(), 36)
-      }
+        validUntil: addMonthsStr(nextMonthStr(), 36),
+      },
     });
     this.form.setControl('nadplatyReguly', new FormArray([this.createNadplataRegulaGroup()]));
     this.form.setControl('transze', new FormArray([this.createTrancheGroup(true)]));
@@ -330,22 +428,25 @@ export class FormService {
         targetRate: 0,
         from: nextMonthStr(),
         to: nextMonthStr(),
-        effect: 'niższa rata'
+        effect: 'niższa rata',
       },
       prowizjaWczesniejszaSplata: {
         ratePct: 0,
-        validUntil: nextMonthStr()
-      }
+        validUntil: nextMonthStr(),
+      },
     });
-    this.form.setControl('nadplatyReguly', new FormArray([this.createNadplataRegulaGroup({ to: nextMonthStr() })]));
+    this.form.setControl(
+      'nadplatyReguly',
+      new FormArray([this.createNadplataRegulaGroup({ to: nextMonthStr() })]),
+    );
     this.form.setControl('transze', new FormArray([this.createTrancheGroup(true, { amount: 0 })]));
   }
 
   setOverheadDefaults(): void {
     this.overheadCostsGroup.patchValue({
-      commissionPct: 1.50,
+      commissionPct: 1.5,
       appraisalFee: 400,
-      bridgeRateIncrease: 1.20,
+      bridgeRateIncrease: 1.2,
       bridgeMonths: 6,
       propInsFrequency: 'co rok',
       propInsCalcMethod: '% wartości nieruchomości',
@@ -364,9 +465,12 @@ export class FormService {
       jobLossInsFrom: nextMonthStr(),
       promoRateDecrease: 0,
       promoFrom: nextMonthStr(),
-      promoTo: addMonthsStr(nextMonthStr(), 12)
+      promoTo: addMonthsStr(nextMonthStr(), 12),
     });
-    this.overheadCostsGroup.setControl('additionalCosts', new FormArray([this.createAdditionalCostGroup()]));
+    this.overheadCostsGroup.setControl(
+      'additionalCosts',
+      new FormArray([this.createAdditionalCostGroup()]),
+    );
   }
 
   clearOverheadCosts(): void {
@@ -392,8 +496,11 @@ export class FormService {
       jobLossInsFrom: nextMonthStr(),
       promoRateDecrease: 0,
       promoFrom: nextMonthStr(),
-      promoTo: addMonthsStr(nextMonthStr(), 12)
+      promoTo: addMonthsStr(nextMonthStr(), 12),
     });
-    this.overheadCostsGroup.setControl('additionalCosts', new FormArray([this.createAdditionalCostGroup()]));
+    this.overheadCostsGroup.setControl(
+      'additionalCosts',
+      new FormArray([this.createAdditionalCostGroup()]),
+    );
   }
 }

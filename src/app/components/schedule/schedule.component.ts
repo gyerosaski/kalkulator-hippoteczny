@@ -10,9 +10,17 @@ import { FormatMonthPlPipe } from '../../pipes/format-month-pl.pipe';
   standalone: true,
   imports: [CommonModule, MatExpansionModule, MatTableModule, FormatMonthPlPipe],
   templateUrl: './schedule.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ScheduleComponent {
   yearlyGroups = input.required<YearGroup[] | null>();
-  displayedColumns: string[] = ['date', 'rate', 'capital', 'interest', 'prepayment', 'commission', 'remaining'];
+  displayedColumns: string[] = [
+    'date',
+    'rate',
+    'capital',
+    'interest',
+    'prepayment',
+    'commission',
+    'remaining',
+  ];
 }
