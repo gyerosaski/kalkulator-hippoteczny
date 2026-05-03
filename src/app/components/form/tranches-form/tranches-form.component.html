@@ -71,7 +71,7 @@
           Suma transz musi być równa kwocie kredytu ({{
             form.get('loanAmount')?.value | formatAmount
           }}
-          zł). Różnica: {{ form.errors?.['transzeSumMismatch'].diff | formatAmount }} zł.
+          zł). Różnica: {{ form.errors?.['transzeSumMismatch'].diff | formatCurrencyAmount }}.
         </p>
       }
     </div>

@@ -6,11 +6,12 @@
         <mat-expansion-panel-header>
           <mat-panel-title>Rok {{ g.year }}</mat-panel-title>
           <mat-panel-description>
-            Suma: rata {{ g.sumRate | formatAmount }} zł; kapitał
-            {{ g.sumCapital | formatAmount }} zł; odsetki {{ g.sumInterest | formatAmount }} zł;
-            nadpłaty {{ g.sumPrepayment | formatAmount }} zł; prowizja
-            {{ g.sumCommission | formatAmount }} zł; pozostało
-            {{ g.lastRemaining | formatAmount }} zł
+            Suma: rata {{ g.sumRate | formatCurrencyAmount }}; kapitał
+            {{ g.sumCapital | formatCurrencyAmount }}; odsetki
+            {{ g.sumInterest | formatCurrencyAmount }}; nadpłaty
+            {{ g.sumPrepayment | formatCurrencyAmount }}; prowizja
+            {{ g.sumCommission | formatCurrencyAmount }}; pozostało
+            {{ g.lastRemaining | formatCurrencyAmount }}
           </mat-panel-description>
         </mat-expansion-panel-header>
 
