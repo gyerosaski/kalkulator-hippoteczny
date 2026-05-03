@@ -6,49 +6,48 @@
         <mat-expansion-panel-header>
           <mat-panel-title>Rok {{ g.year }}</mat-panel-title>
           <mat-panel-description>
-            Suma: rata {{ g.sumRate | number: '1.2-2' : 'pl' }} zł; kapitał
-            {{ g.sumCapital | number: '1.2-2' : 'pl' }} zł; odsetki
-            {{ g.sumInterest | number: '1.2-2' : 'pl' }} zł; nadpłaty
-            {{ g.sumPrepayment | number: '1.2-2' : 'pl' }} zł; prowizja
-            {{ g.sumCommission | number: '1.2-2' : 'pl' }} zł; pozostało
-            {{ g.lastRemaining | number: '1.2-2' : 'pl' }} zł
+            Suma: rata {{ g.sumRate | formatAmount }} zł; kapitał
+            {{ g.sumCapital | formatAmount }} zł; odsetki {{ g.sumInterest | formatAmount }} zł;
+            nadpłaty {{ g.sumPrepayment | formatAmount }} zł; prowizja
+            {{ g.sumCommission | formatAmount }} zł; pozostało
+            {{ g.lastRemaining | formatAmount }} zł
           </mat-panel-description>
         </mat-expansion-panel-header>
 
         <table mat-table [dataSource]="g.rows" class="mat-elevation-z1">
           <ng-container matColumnDef="date">
             <th mat-header-cell *matHeaderCellDef>Data</th>
-            <td mat-cell *matCellDef="let row">{{ row.date | formatMonthPl }}</td>
+            <td mat-cell *matCellDef="let row">{{ row.date | formatMonth }}</td>
           </ng-container>
 
           <ng-container matColumnDef="rate">
             <th mat-header-cell *matHeaderCellDef>Rata</th>
-            <td mat-cell *matCellDef="let row">{{ row.rate | number: '1.2-2' : 'pl' }}</td>
+            <td mat-cell *matCellDef="let row">{{ row.rate | formatAmount }}</td>
           </ng-container>
 
           <ng-container matColumnDef="capital">
             <th mat-header-cell *matHeaderCellDef>Kapitał</th>
-            <td mat-cell *matCellDef="let row">{{ row.capital | number: '1.2-2' : 'pl' }}</td>
+            <td mat-cell *matCellDef="let row">{{ row.capital | formatAmount }}</td>
           </ng-container>
 
           <ng-container matColumnDef="interest">
             <th mat-header-cell *matHeaderCellDef>Odsetki</th>
-            <td mat-cell *matCellDef="let row">{{ row.interest | number: '1.2-2' : 'pl' }}</td>
+            <td mat-cell *matCellDef="let row">{{ row.interest | formatAmount }}</td>
           </ng-container>
 
           <ng-container matColumnDef="prepayment">
             <th mat-header-cell *matHeaderCellDef>Nadpłata</th>
-            <td mat-cell *matCellDef="let row">{{ row.prepayment | number: '1.2-2' : 'pl' }}</td>
+            <td mat-cell *matCellDef="let row">{{ row.prepayment | formatAmount }}</td>
           </ng-container>
 
           <ng-container matColumnDef="commission">
             <th mat-header-cell *matHeaderCellDef>Prowizja</th>
-            <td mat-cell *matCellDef="let row">{{ row.commission | number: '1.2-2' : 'pl' }}</td>
+            <td mat-cell *matCellDef="let row">{{ row.commission | formatAmount }}</td>
           </ng-container>
 
           <ng-container matColumnDef="remaining">
             <th mat-header-cell *matHeaderCellDef>Pozostało</th>
-            <td mat-cell *matCellDef="let row">{{ row.remaining | number: '1.2-2' : 'pl' }}</td>
+            <td mat-cell *matCellDef="let row">{{ row.remaining | formatAmount }}</td>
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

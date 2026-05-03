@@ -21,7 +21,7 @@
         </label>
         <label>
           Przeliczenie (zł)
-          <input type="text" [value]="commissionAmount() | number: '1.2-2' : 'pl'" disabled />
+          <input type="text" [value]="commissionAmount() | formatAmount" disabled />
         </label>
       </div>
     </div>
@@ -73,19 +73,20 @@
           </select>
         </label>
         <label>
-          Wartość składki {{ form.get('propInsCalcMethod')?.value === 'znam kwotę' ? '(zł)' : '(%)' }}
+          Wartość składki
+          {{ form.get('propInsCalcMethod')?.value === 'znam kwotę' ? '(zł)' : '(%)' }}
           <input type="number" step="0.0001" min="0" formControlName="propInsValue" />
         </label>
         <div class="row row-wrap">
           <label>
             Od
             <input type="month" formControlName="propInsFrom" />
-            <small>{{ form.get('propInsFrom')?.value | formatMonthPl }}</small>
+            <small>{{ form.get('propInsFrom')?.value | formatMonth }}</small>
           </label>
           <label>
             do
             <input type="month" formControlName="propInsTo" />
-            <small>{{ form.get('propInsTo')?.value | formatMonthPl }}</small>
+            <small>{{ form.get('propInsTo')?.value | formatMonth }}</small>
           </label>
         </div>
       </div>
@@ -123,19 +124,20 @@
           </select>
         </label>
         <label>
-          Wartość składki {{ form.get('lifeInsCalcMethod')?.value === 'znam kwotę' ? '(zł)' : '(%)' }}
+          Wartość składki
+          {{ form.get('lifeInsCalcMethod')?.value === 'znam kwotę' ? '(zł)' : '(%)' }}
           <input type="number" step="0.00001" min="0" formControlName="lifeInsValue" />
         </label>
         <div class="row row-wrap">
           <label>
             Od
             <input type="month" formControlName="lifeInsFrom" />
-            <small>{{ form.get('lifeInsFrom')?.value | formatMonthPl }}</small>
+            <small>{{ form.get('lifeInsFrom')?.value | formatMonth }}</small>
           </label>
           <label>
             do
             <input type="month" formControlName="lifeInsTo" />
-            <small>{{ form.get('lifeInsTo')?.value | formatMonthPl }}</small>
+            <small>{{ form.get('lifeInsTo')?.value | formatMonth }}</small>
           </label>
         </div>
       </div>
@@ -169,7 +171,7 @@
         <label>
           Od
           <input type="month" formControlName="jobLossInsFrom" />
-          <small>{{ form.get('jobLossInsFrom')?.value | formatMonthPl }}</small>
+          <small>{{ form.get('jobLossInsFrom')?.value | formatMonth }}</small>
         </label>
       </div>
     </div>
@@ -207,7 +209,7 @@
             <label>
               8.c Okres ponoszenia kosztu (Od)
               <input type="month" formControlName="from" />
-              <small>{{ cost.get('from')?.value | formatMonthPl }}</small>
+              <small>{{ cost.get('from')?.value | formatMonth }}</small>
             </label>
             <div class="row row-wrap align-end">
               <button type="button" (click)="addAdditionalCost()">+</button>
@@ -232,12 +234,12 @@
           <label>
             Od
             <input type="month" formControlName="promoFrom" />
-            <small>{{ form.get('promoFrom')?.value | formatMonthPl }}</small>
+            <small>{{ form.get('promoFrom')?.value | formatMonth }}</small>
           </label>
           <label>
             do
             <input type="month" formControlName="promoTo" />
-            <small>{{ form.get('promoTo')?.value | formatMonthPl }}</small>
+            <small>{{ form.get('promoTo')?.value | formatMonth }}</small>
           </label>
         </div>
       </div>

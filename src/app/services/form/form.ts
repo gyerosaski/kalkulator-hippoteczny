@@ -59,10 +59,12 @@ function crossFieldValidator(control: import('@angular/forms').AbstractControl) 
   const prepaymentsSection = group.controls.prepayments;
   const prepaymentsIncluded = prepaymentsSection.controls.included.value;
   const prepaymentRules = prepaymentsIncluded
-    ? prepaymentsSection.controls.fields.controls.prepaymentRules.value ?? []
+    ? (prepaymentsSection.controls.fields.controls.prepaymentRules.value ?? [])
     : [];
   const rataDocelowaRegula = prepaymentsIncluded
-    ? (prepaymentsSection.controls.fields.controls.rataDocelowaRegula as FormGroup)?.getRawValue() ?? ({} as any)
+    ? ((
+        prepaymentsSection.controls.fields.controls.rataDocelowaRegula as FormGroup
+      )?.getRawValue() ?? ({} as any))
     : ({} as any);
 
   const errors: Record<string, unknown> = {};
@@ -214,7 +216,10 @@ export class FormService {
           fields: new FormGroup<PrepaymentsFieldsFormGroup>({
             prepaymentRules: new FormArray([this.createPrepaymentRuleGroup()]),
             rataDocelowaRegula: new FormGroup<TargetInstallmentFormGroup>({
-              targetRate: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
+              targetRate: new FormControl(0, {
+                nonNullable: true,
+                validators: [Validators.min(0)],
+              }),
               from: new FormControl(nextMonthStr(), {
                 nonNullable: true,
                 validators: [Validators.required],

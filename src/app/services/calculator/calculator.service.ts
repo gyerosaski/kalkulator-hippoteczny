@@ -53,7 +53,7 @@ export type {
 export class CalculatorService {
   // Bezpieczne zaokrąglenie do 2 miejsc (PL waluty)
   private round2(x: number): number {
-    return Math.round((x + Number.EPSILON) * 100) / 100;
+    return x;
   }
 
   private asNonNegativeNumber(value: unknown): number {
@@ -503,7 +503,7 @@ export class CalculatorService {
         if (inputs.installmentType === 'rowne') {
           equalRate = this.annuityPayment(saldo, i, Math.max(1, remainingAmortMonths));
         } else {
-          decreasingCapitalPart = this.round2(saldo / Math.max(1, remainingAmortMonths));
+          decreasingCapitalPart = saldo / Math.max(1, remainingAmortMonths);
         }
       }
 
@@ -513,28 +513,27 @@ export class CalculatorService {
     }
 
     // Sumy i wskaźniki
-    const totalRate = this.round2(schedule.reduce((s, r) => s + r.rate, 0));
-    const totalCapital = this.round2(schedule.reduce((s, r) => s + r.capital, 0));
-    const totalInterest = this.round2(schedule.reduce((s, r) => s + r.interest, 0));
+    const totalRate = schedule.reduce((s, r) => s + r.rate, 0);
+    const totalCapital = schedule.reduce((s, r) => s + r.capital, 0);
+    const totalInterest = schedule.reduce((s, r) => s + r.interest, 0);
 
-    const totalInsuranceCosts = this.round2(schedule.reduce((s, r) => s + r.insuranceCost, 0));
+    const totalInsuranceCosts = schedule.reduce((s, r) => s + r.insuranceCost, 0);
     const loanCommission = oc
       ? this.round2((inputs.loanAmount * (oc.commissionPct || 0)) / 100)
       : 0;
-    const appraisalFee = oc ? this.round2(oc.appraisalFee || 0) : 0;
-    const earlyRepaymentCommissions = this.round2(schedule.reduce((s, r) => s + r.commission, 0));
+    const appraisalFee = oc ? oc.appraisalFee || 0 : 0;
+    const earlyRepaymentCommissions = schedule.reduce((s, r) => s + r.commission, 0);
 
-    const overheadCosts = this.round2(
+    const overheadCosts =
       loanCommission +
-        appraisalFee +
-        totalInsuranceCosts +
-        earlyRepaymentCommissions +
-        trancheDisbursementFees,
-    );
-    const prepayments = this.round2(schedule.reduce((s, r) => s + r.prepayment, 0));
-    const totalAllPayments = this.round2(totalRate + overheadCosts);
+      appraisalFee +
+      totalInsuranceCosts +
+      earlyRepaymentCommissions +
+      trancheDisbursementFees;
+    const prepayments = schedule.reduce((s, r) => s + r.prepayment, 0);
+    const totalAllPayments = totalRate + overheadCosts;
     const bankReturnRatioPct =
-      inputs.loanAmount > 0 ? this.round2((totalAllPayments / inputs.loanAmount) * 100) : 0;
+      inputs.loanAmount > 0 ? (totalAllPayments / inputs.loanAmount) * 100 : 0;
 
     const first =
       schedule.length > 0
@@ -542,7 +541,7 @@ export class CalculatorService {
         : null;
 
     return {
-      effectiveRate: this.round2(effectiveRate),
+      effectiveRate: effectiveRate,
       totalMonths: schedule.length,
       amortizationMonths: Math.max(0, schedule.length - Math.min(graceMonths, schedule.length)),
       firstInstallment: first,

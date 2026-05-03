@@ -79,7 +79,9 @@ export interface TranchesFieldsFormGroup {
   transze: FormArray<FormGroup<TrancheFormGroup>>;
 }
 
-export interface ToggleableSectionFormGroup<T extends { [K in keyof T]: import('@angular/forms').AbstractControl }> {
+export interface ToggleableSectionFormGroup<
+  T extends { [K in keyof T]: import('@angular/forms').AbstractControl },
+> {
   included: FormControl<boolean>;
   fields: FormGroup<T>;
 }

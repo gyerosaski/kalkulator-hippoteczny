@@ -2,13 +2,13 @@ import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormService } from '../../../services/form/form';
-import { FormatMonthPlPipe } from '../../../pipes/format-month-pl.pipe';
 import { PrepaymentFrequency, PrepaymentEffect } from '../../../model/mortgage.model';
+import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
 
 @Component({
   selector: 'app-prepayments-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormatMonthPlPipe],
+  imports: [CommonModule, ReactiveFormsModule, FormatMonthPipe],
   templateUrl: './prepayments-form.component.html',
   styleUrl: './prepayments-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

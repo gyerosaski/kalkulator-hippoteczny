@@ -3,12 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormService } from '../../../services/form/form';
 import { CalculatorService } from '../../../services/calculator/calculator.service';
-import { FormatMonthPlPipe } from '../../../pipes/format-month-pl.pipe';
+import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
 
 @Component({
   selector: 'app-basic-data-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormatMonthPlPipe],
+  imports: [CommonModule, ReactiveFormsModule, FormatMonthPipe],
   templateUrl: './basic-data-form.component.html',
   styleUrl: './basic-data-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

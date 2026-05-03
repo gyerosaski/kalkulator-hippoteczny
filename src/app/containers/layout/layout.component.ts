@@ -98,11 +98,11 @@ export class LayoutComponent {
         : [];
 
       const rataDocelowa = prepaymentsIncluded
-        ? (v.prepayments.fields.rataDocelowaRegula ?? {}) as any
-        : {} as any;
+        ? ((v.prepayments.fields.rataDocelowaRegula ?? {}) as any)
+        : ({} as any);
       const prowizja = prepaymentsIncluded
-        ? (v.prepayments.fields.prowizjaWczesniejszaSplata ?? {}) as any
-        : {} as any;
+        ? ((v.prepayments.fields.prowizjaWczesniejszaSplata ?? {}) as any)
+        : ({} as any);
 
       const tranches: Tranche[] = tranchesIncluded
         ? ((v.tranches.fields.transze ?? []) as any[]).map((t: any) => ({
@@ -113,8 +113,8 @@ export class LayoutComponent {
         : [];
 
       const overheadCostsRaw = overheadIncluded
-        ? (v.overheadCosts.fields ?? {}) as any
-        : {} as any;
+        ? ((v.overheadCosts.fields ?? {}) as any)
+        : ({} as any);
 
       const overheadCosts: OverheadCostsInputs = overheadIncluded
         ? {

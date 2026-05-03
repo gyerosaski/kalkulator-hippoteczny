@@ -34,8 +34,12 @@
             @if (rule.get('frequency')?.value === 'jednorazowo') {
               <label>
                 2. Data nadpłaty
-                <input type="month" formControlName="from" (change)="onNadplataFromChanged($index)" />
-                <small>{{ rule.get('from')?.value | formatMonthPl }}</small>
+                <input
+                  type="month"
+                  formControlName="from"
+                  (change)="onNadplataFromChanged($index)"
+                />
+                <small>{{ rule.get('from')?.value | formatMonth }}</small>
               </label>
             } @else {
               <div class="row row-wrap">
@@ -46,13 +50,13 @@
                     formControlName="from"
                     (change)="onNadplataFromChanged($index)"
                   />
-                  <small>{{ rule.get('from')?.value | formatMonthPl }}</small>
+                  <small>{{ rule.get('from')?.value | formatMonth }}</small>
                 </label>
 
                 <label>
                   2b. Data nadpłaty do
                   <input type="month" formControlName="to" />
-                  <small>{{ rule.get('to')?.value | formatMonthPl }}</small>
+                  <small>{{ rule.get('to')?.value | formatMonth }}</small>
                 </label>
               </div>
             }
@@ -89,13 +93,13 @@
           <label>
             6a. Data nadpłaty od
             <input type="month" formControlName="from" />
-            <small>{{ fieldsGroup.get('rataDocelowaRegula.from')?.value | formatMonthPl }}</small>
+            <small>{{ fieldsGroup.get('rataDocelowaRegula.from')?.value | formatMonth }}</small>
           </label>
 
           <label>
             6b. Data nadpłaty do
             <input type="month" formControlName="to" />
-            <small>{{ fieldsGroup.get('rataDocelowaRegula.to')?.value | formatMonthPl }}</small>
+            <small>{{ fieldsGroup.get('rataDocelowaRegula.to')?.value | formatMonth }}</small>
           </label>
         </div>
 
@@ -121,7 +125,7 @@
           9. Bank pobiera prowizję do
           <input type="month" formControlName="validUntil" />
           <small>{{
-            fieldsGroup.get('prowizjaWczesniejszaSplata.validUntil')?.value | formatMonthPl
+            fieldsGroup.get('prowizjaWczesniejszaSplata.validUntil')?.value | formatMonth
           }}</small>
         </label>
       </div>

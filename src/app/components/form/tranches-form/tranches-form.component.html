@@ -29,20 +29,22 @@
               <label>
                 {{ $index + 1 }}.2 Data
                 <input type="month" formControlName="date" [disabled]="true" [readonly]="true" />
-                <small>{{ tranche.get('date')?.value | formatMonthPl }}</small>
+                <small>{{ tranche.get('date')?.value | formatMonth }}</small>
               </label>
             } @else {
               <label>
                 {{ $index + 1 }}.2 Data
                 <input type="month" formControlName="date" />
-                <small>{{ tranche.get('date')?.value | formatMonthPl }}</small>
+                <small>{{ tranche.get('date')?.value | formatMonth }}</small>
               </label>
 
               <label>
                 {{ $index + 1 }}.3 Opłata za uruchomienie transzy (zł)
                 <input type="number" step="0.01" min="0" formControlName="disbursementFee" />
                 @if (tranche.get('disbursementFee')?.errors?.['max']) {
-                  <small class="field-error">Wysokość opłaty nie może być wyższa niż 1 000 zł.</small>
+                  <small class="field-error"
+                    >Wysokość opłaty nie może być wyższa niż 1 000 zł.</small
+                  >
                 }
               </label>
             }
@@ -61,15 +63,15 @@
       <div class="grid">
         <label>
           SUMA TRANSZ (zł)
-          <input type="text" [value]="transzeSuma | number: '1.2-2' : 'pl'" disabled />
+          <input type="text" [value]="transzeSuma | formatAmount" disabled />
         </label>
       </div>
       @if (form.errors?.['transzeSumMismatch']) {
         <p class="field-error">
           Suma transz musi być równa kwocie kredytu ({{
-            form.get('loanAmount')?.value | number: '1.2-2' : 'pl'
+            form.get('loanAmount')?.value | formatAmount
           }}
-          zł). Różnica: {{ form.errors?.['transzeSumMismatch'].diff | number: '1.2-2' : 'pl' }} zł.
+          zł). Różnica: {{ form.errors?.['transzeSumMismatch'].diff | formatAmount }} zł.
         </p>
       }
     </div>

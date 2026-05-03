@@ -34,13 +34,13 @@
     <label>
       5. Data uruchomienia (YYYY-MM)
       <input type="month" formControlName="startDate" />
-      <small>{{ form.get('startDate')?.value | formatMonthPl }}</small>
+      <small>{{ form.get('startDate')?.value | formatMonth }}</small>
     </label>
 
     <label>
       6. Początek spłat kapitału (YYYY-MM)
       <input type="month" formControlName="capitalStartDate" />
-      <small>{{ form.get('capitalStartDate')?.value | formatMonthPl }}</small>
+      <small>{{ form.get('capitalStartDate')?.value | formatMonth }}</small>
     </label>
 
     <div class="row">

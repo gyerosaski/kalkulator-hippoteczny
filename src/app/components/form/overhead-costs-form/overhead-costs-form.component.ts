@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { InsuranceCalcMethod, InsuranceFrequency, LifeInsuranceCalcMethod } from '../../../model';
 import { FormService } from '../../../services/form/form';
-import { FormatMonthPlPipe } from '../../../pipes/format-month-pl.pipe';
+import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
+import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
 
 @Component({
   selector: 'app-overhead-costs-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormatMonthPlPipe],
+  imports: [CommonModule, ReactiveFormsModule, FormatMonthPipe, FormatAmountPipe],
   templateUrl: './overhead-costs-form.component.html',
   styleUrl: './overhead-costs-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -35,10 +35,7 @@
     }
   </div>
 
-  <div
-    class="column-divider"
-    (mousedown)="onDividerMouseDown($event)"
-  ></div>
+  <div class="column-divider" (mousedown)="onDividerMouseDown($event)"></div>
 
   <div class="column column-right" [style.flex]="rightFlex">
     <app-results-summary [results]="results()"></app-results-summary>
