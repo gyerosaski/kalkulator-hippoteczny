@@ -216,35 +216,6 @@ body {
   box-shadow: 0 1px 2px oklch(40% 0.02 250 / 0.08);
 }
 
-.sec-head-wrap { display: flex; align-items: center; padding-right: 16px; }
-.sec-head-wrap .sec-head { flex: 1; }
-.sec-head:disabled { cursor: not-allowed; opacity: 0.55; }
-.sec--off { background: var(--surface-2); }
-.sec--off .sec-head { opacity: 0.55; }
-
-.sec-switch {
-  display: inline-flex; align-items: center; gap: 8px;
-  cursor: pointer; user-select: none;
-  font-size: 11px; color: var(--muted);
-}
-.sec-switch input { display: none; }
-.switch-track {
-  width: 32px; height: 18px; border-radius: 999px;
-  background: var(--line-2); position: relative;
-  transition: background 0.2s;
-  display: inline-block;
-}
-.switch-thumb {
-  position: absolute; top: 2px; left: 2px;
-  width: 14px; height: 14px; border-radius: 50%;
-  background: white;
-  box-shadow: 0 1px 2px oklch(40% 0.02 250 / 0.2);
-  transition: left 0.2s;
-}
-.sec-switch input:checked + .switch-track { background: var(--accent-deep); }
-.sec-switch input:checked + .switch-track .switch-thumb { left: 16px; }
-.switch-lab { font-weight: 500; min-width: 22px; }
-
 /* Period composite input */
 .period-input { display: grid; grid-template-columns: 1fr auto; gap: 6px; align-items: stretch; }
 .seg--compact { width: auto; padding: 2px; }

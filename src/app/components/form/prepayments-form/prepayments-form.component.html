@@ -1,15 +1,4 @@
-<div class="section-header">
-  <h2 (click)="toggleCollapsed()">
-    <span class="collapse-icon">{{ collapsed ? '▶' : '▼' }}</span>
-    Nadpłaty
-  </h2>
-  <label class="toggle-label">
-    <input type="checkbox" [formControl]="included" />
-    Uwzględnij
-  </label>
-</div>
-
-@if (!collapsed && included.value) {
+<app-foldable-section title="Nadpłaty" num="" badge="opcjonalne" [toggleable]="true" [defaultOpen]="false" [included]="included">
   <div [formGroup]="fieldsGroup">
     <div formArrayName="prepaymentRules" class="stack">
       @for (rule of nadplatyRegulyArray.controls; track $index) {
@@ -125,10 +114,10 @@
           9. Bank pobiera prowizję do
           <input type="month" formControlName="validUntil" />
           <small>{{
-            fieldsGroup.get('prowizjaWczesniejszaSplata.validUntil')?.value | formatMonth
-          }}</small>
+              fieldsGroup.get('prowizjaWczesniejszaSplata.validUntil')?.value | formatMonth
+            }}</small>
         </label>
       </div>
     </div>
   </div>
-}
+</app-foldable-section>

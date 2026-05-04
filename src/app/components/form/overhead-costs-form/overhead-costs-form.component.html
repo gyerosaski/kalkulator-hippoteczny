@@ -1,15 +1,4 @@
-<div class="section-header">
-  <h2 (click)="toggleCollapsed()">
-    <span class="collapse-icon">{{ collapsed ? '▶' : '▼' }}</span>
-    Koszty okołokredytowe i promocje
-  </h2>
-  <label class="toggle-label">
-    <input type="checkbox" [formControl]="included" />
-    Uwzględnij
-  </label>
-</div>
-
-@if (!collapsed && included.value) {
+<app-foldable-section title="Koszty okołokredytowe i promocje" num="" badge="opcjonalne" [toggleable]="true" [defaultOpen]="false" [included]="included">
   <div [formGroup]="form">
     <!-- 1. Prowizja za udzielenie -->
     <div class="card">
@@ -245,4 +234,4 @@
       </div>
     </div>
   </div>
-}
+</app-foldable-section>

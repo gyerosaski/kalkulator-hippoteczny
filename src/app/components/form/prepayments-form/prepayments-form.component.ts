@@ -4,11 +4,12 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { FormService } from '../../../services/form/form';
 import { PrepaymentFrequency, PrepaymentEffect } from '../../../model/mortgage.model';
 import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
+import {FoldableSectionComponent} from '../../ui/foldable-section/foldable-section.component';
 
 @Component({
   selector: 'app-prepayments-form',
   standalone: true,
-  imports: [ReactiveFormsModule, FormatMonthPipe],
+  imports: [ReactiveFormsModule, FormatMonthPipe, FoldableSectionComponent],
   templateUrl: './prepayments-form.component.html',
   styleUrl: './prepayments-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

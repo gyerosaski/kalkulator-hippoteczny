@@ -5,11 +5,12 @@ import { InsuranceCalcMethod, InsuranceFrequency, LifeInsuranceCalcMethod } from
 import { FormService } from '../../../services/form/form';
 import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
 import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
+import {FoldableSectionComponent} from '../../ui/foldable-section/foldable-section.component';
 
 @Component({
   selector: 'app-overhead-costs-form',
   standalone: true,
-  imports: [ReactiveFormsModule, FormatMonthPipe, FormatAmountPipe],
+  imports: [ReactiveFormsModule, FormatMonthPipe, FormatAmountPipe, FoldableSectionComponent],
   templateUrl: './overhead-costs-form.component.html',
   styleUrl: './overhead-costs-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

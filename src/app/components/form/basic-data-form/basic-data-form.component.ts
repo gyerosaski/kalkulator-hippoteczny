@@ -3,10 +3,12 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { FormService } from '../../../services/form/form';
 import { CalculatorService } from '../../../services/calculator/calculator.service';
 import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
+import {FoldableSectionComponent} from '../../ui/foldable-section/foldable-section.component';
+
 @Component({
   selector: 'app-basic-data-form',
   standalone: true,
-  imports: [ReactiveFormsModule, FormatMonthPipe],
+  imports: [ReactiveFormsModule, FormatMonthPipe, FoldableSectionComponent],
   templateUrl: './basic-data-form.component.html',
   styleUrl: './basic-data-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

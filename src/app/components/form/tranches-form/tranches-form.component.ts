@@ -5,11 +5,12 @@ import { FormService } from '../../../services/form/form';
 import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
 import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
 import { FormatCurrencyAmountPipe } from '../../../pipes/format-currency-amount/format-currency-amount.pipe';
+import {FoldableSectionComponent} from '../../ui/foldable-section/foldable-section.component';
 
 @Component({
   selector: 'app-tranches-form',
   standalone: true,
-  imports: [ReactiveFormsModule, FormatAmountPipe, FormatMonthPipe, FormatCurrencyAmountPipe],
+  imports: [ReactiveFormsModule, FormatAmountPipe, FormatMonthPipe, FormatCurrencyAmountPipe, FoldableSectionComponent],
   templateUrl: './tranches-form.component.html',
   styleUrl: './tranches-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

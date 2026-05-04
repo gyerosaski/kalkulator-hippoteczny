@@ -1,10 +1,4 @@
-<div class="section-header">
-  <h2 (click)="toggleCollapsed()">
-    <span class="collapse-icon">{{ collapsed ? '▶' : '▼' }}</span>
-    Dane podstawowe
-  </h2>
-</div>
-@if (!collapsed) {
+<app-foldable-section title="Dane podstawowe" num="" badge="Dane wymagane do przeprowadzenia kalkulacji" [defaultOpen]="true">
   <div [formGroup]="basicData">
     <div class="grid">
       <label>
@@ -140,4 +134,4 @@
       <button type="button" (click)="addRatePeriod()">+ Dodaj zmianę oprocentowania</button>
     </div>
   </div>
-}
+</app-foldable-section>
