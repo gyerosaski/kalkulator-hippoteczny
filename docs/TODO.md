@@ -11,5 +11,5 @@
 - [x] paragraf "Wysokość pierwszej raty:" w komponencie `ResultsSummaryComponent`, zmienić nazwę na "Wysokość pierwszej raty kapitałowo-odsetkowej:" i prezentować odpowiednią wartość
 - [x] prezentować kolumny "Nadpłata" i "Koszty okołokredytowe" w harmonogramie spłaty warunkowo na podstawie flag `FormService.isPrepaymentIncluded` i `FormService.isOverheadCostsIncluded`
 - [x] wydzielenie pól formularza prezentowany w komponencie `BasicDataFormComponent` do oddzielnej formGroup
+- [x] umożliwienie zmiany oprocentowania (pola "Typ rat", "Stopa", "8.a WIBOR (%)", "8.b Marża (%)", "Oprocentowanie (nominalne, %)", "8. Oprocentowanie stałe (%)") w okresie kredytowania. wymienione pola powinny zostać zgrupowane i przechowywane jako formArray z możliwością dodania nowej z uwzględnieniem daty obowiązywania nowego oprocentowania
 - udostępnić możliwość wczytywania uprzednio zapisanej konfiguracji formularza
-- umożliwienie zmiany oprocentowania (pola "Typ rat", "Stopa", "8.a WIBOR (%)", "8.b Marża (%)", "Oprocentowanie (nominalne, %)", "8. Oprocentowanie stałe (%)") w okresie kredytowania. wymienione pola powinny zostać zgrupowane i przechowywane jako formArray z możliwością dodania nowej z uwzględnieniem daty obowiązywania nowego oprocentowania

@@ -1,6 +1,14 @@
 export type InstallmentType = 'rowne' | 'malejace';
 export type RateType = 'zmienna' | 'stala';
 
+export interface RatePeriod {
+  from: string; // 'YYYY-MM' - start date for this rate period
+  rateType: RateType;
+  nominalRate: number; // % (used when rateType === 'stala')
+  wibor: number; // % (used when rateType === 'zmienna')
+  margin: number; // % (used when rateType === 'zmienna')
+}
+
 export type PrepaymentFrequency = 'jednorazowo' | 'co miesiąc' | 'co kwartał' | 'co rok';
 export type PrepaymentEffect = 'niższa rata' | 'skrócenie okresu';
 
@@ -103,11 +111,8 @@ export interface MortgageInputs {
   loanPeriod: number; // okres kredytowania w miesiącach
   startDate: string; // 'YYYY-MM' (pierwszy miesiąc kredytu)
   capitalStartDate: string; // 'YYYY-MM' (początek spłat kapitału)
-  installmentType: InstallmentType; // równe | malejące
-  rateType: RateType; // zmienna | stała
-  nominalRate: number; // % (przy stałej edytowalne; przy zmiennej = wibor+margin)
-  wibor: number; // % (gdy zmienna)
-  margin: number; // % (gdy zmienna)
+  installmentType: InstallmentType; // równe | malejące (jeden typ na cały kredyt)
+  ratePeriods: RatePeriod[]; // co najmniej jeden; posortowane wg from
   prepaymentRules?: PrepaymentRule[];
   targetInstallmentRule?: TargetInstallmentRule;
   earlyRepaymentCommission?: EarlyRepaymentCommission;

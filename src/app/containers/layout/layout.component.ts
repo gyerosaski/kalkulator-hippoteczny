@@ -10,6 +10,7 @@ import {
   OverheadCostsInputs,
   PrepaymentEffect,
   PrepaymentFrequency,
+  RatePeriod,
   ScheduleRow,
   Tranche,
   YearGroup,
@@ -195,6 +196,14 @@ export class LayoutComponent {
           };
 
       const bd = v.basicData;
+      const ratePeriods: RatePeriod[] = ((bd.ratePeriods ?? []) as any[]).map((rp: any) => ({
+        from: rp.from || bd.startDate,
+        installmentType: rp.installmentType,
+        rateType: rp.rateType,
+        nominalRate: Number(rp.nominalRate) || 0,
+        wibor: Number(rp.wibor) || 0,
+        margin: Number(rp.margin) || 0,
+      }));
       const inputs: MortgageInputs = {
         propertyValue: bd.propertyValue,
         loanAmount: bd.loanAmount,
@@ -203,10 +212,7 @@ export class LayoutComponent {
         startDate: bd.startDate,
         capitalStartDate: bd.capitalStartDate,
         installmentType: bd.installmentType,
-        rateType: bd.rateType,
-        nominalRate: bd.nominalRate,
-        wibor: bd.wibor,
-        margin: bd.margin,
+        ratePeriods,
         prepaymentRules,
         tranches,
         targetInstallmentRule: prepaymentsIncluded

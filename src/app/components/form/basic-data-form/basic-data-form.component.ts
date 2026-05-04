@@ -25,6 +25,10 @@ export class BasicDataFormComponent {
     return this.formService.form.controls.basicData;
   }
 
+  get ratePeriods() {
+    return this.formService.ratePeriodsArray;
+  }
+
   get loanPeriodDisplayValue(): number {
     const months = this.basicData.controls.loanPeriod.value;
     return this.loanPeriodUnit === 'lata' ? Math.round((months / 12) * 100) / 100 : months;
@@ -76,5 +80,13 @@ export class BasicDataFormComponent {
   }
   toggleCollapsed() {
     this.collapsed = !this.collapsed;
+  }
+
+  addRatePeriod() {
+    this.formService.addRatePeriod();
+  }
+
+  removeRatePeriod(index: number) {
+    this.formService.removeRatePeriod(index);
   }
 }

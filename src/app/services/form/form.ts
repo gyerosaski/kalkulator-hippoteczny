@@ -3,9 +3,12 @@ import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@ang
 import {
   InsuranceCalcMethod,
   InsuranceFrequency,
+  InstallmentType,
   LifeInsuranceCalcMethod,
   PrepaymentEffect,
   PrepaymentFrequency,
+  RatePeriod,
+  RateType,
   Tranche,
   PrepaymentRule,
 } from '../../model/mortgage.model';
@@ -17,6 +20,7 @@ import {
   OverheadCostsFormGroup,
   PrepaymentsFieldsFormGroup,
   PrepaymentRuleFormGroup,
+  RatePeriodFormGroup,
   TargetInstallmentFormGroup,
   ToggleableSectionFormGroup,
   TrancheFormGroup,
@@ -124,6 +128,10 @@ export class FormService {
 
   readonly form: FormGroup<MortgageFormGroup> = this.createForm();
 
+  get ratePeriodsArray(): FormArray<FormGroup<RatePeriodFormGroup>> {
+    return this.form.controls.basicData.controls.ratePeriods;
+  }
+
   get nadplatyRegulyArray(): FormArray<FormGroup<PrepaymentRuleFormGroup>> {
     return this.form.controls.prepayments.controls.fields.controls.prepaymentRules;
   }
@@ -170,7 +178,28 @@ export class FormService {
     return this.form.controls.overheadCosts;
   }
 
+  createRatePeriodGroup(initial?: Partial<RatePeriod>): FormGroup<RatePeriodFormGroup> {
+    const from = initial?.from ?? (this.form?.controls.basicData?.get('startDate')?.value || ym());
+    return new FormGroup<RatePeriodFormGroup>({
+      from: new FormControl(from, { nonNullable: true, validators: [Validators.required] }),
+      rateType: new FormControl<RateType>(initial?.rateType ?? 'zmienna', { nonNullable: true }),
+      nominalRate: new FormControl(initial?.nominalRate ?? 9.0, {
+        nonNullable: true,
+        validators: [Validators.min(0), Validators.max(50)],
+      }),
+      wibor: new FormControl(initial?.wibor ?? 7.0, {
+        nonNullable: true,
+        validators: [Validators.min(0), Validators.max(50)],
+      }),
+      margin: new FormControl(initial?.margin ?? 2.0, {
+        nonNullable: true,
+        validators: [Validators.min(0), Validators.max(50)],
+      }),
+    });
+  }
+
   private createBasicDataGroup(): FormGroup<BasicDataFormGroup> {
+    const today = ym();
     return new FormGroup<BasicDataFormGroup>({
       propertyValue: new FormControl(500_000, {
         nonNullable: true,
@@ -188,25 +217,15 @@ export class FormService {
         nonNullable: true,
         validators: [Validators.required, Validators.min(1)],
       }),
-      startDate: new FormControl(ym(), { nonNullable: true, validators: [Validators.required] }),
+      startDate: new FormControl(today, { nonNullable: true, validators: [Validators.required] }),
       capitalStartDate: new FormControl(nextMonthStr(), {
         nonNullable: true,
         validators: [Validators.required],
       }),
-      installmentType: new FormControl<'rowne' | 'malejace'>('rowne', { nonNullable: true }),
-      rateType: new FormControl<'zmienna' | 'stala'>('zmienna', { nonNullable: true }),
-      nominalRate: new FormControl(9.0, {
-        nonNullable: true,
-        validators: [Validators.min(0), Validators.max(50)],
-      }),
-      wibor: new FormControl(7.0, {
-        nonNullable: true,
-        validators: [Validators.min(0), Validators.max(50)],
-      }),
-      margin: new FormControl(2.0, {
-        nonNullable: true,
-        validators: [Validators.min(0), Validators.max(50)],
-      }),
+      installmentType: new FormControl<InstallmentType>('rowne', { nonNullable: true }),
+      ratePeriods: new FormArray([
+        this.createRatePeriodGroup({ from: today }),
+      ]) as FormArray<FormGroup<RatePeriodFormGroup>>,
     });
   }
 
@@ -363,6 +382,29 @@ export class FormService {
     });
   }
 
+  addRatePeriod(): void {
+    const lastPeriod = this.ratePeriodsArray.at(this.ratePeriodsArray.length - 1);
+    const lastValues = lastPeriod?.getRawValue();
+    const lastFrom = lastValues?.from || (this.form.controls.basicData.get('startDate')?.value || ym());
+    const newFrom = addMonthsStr(lastFrom, 12);
+    this.ratePeriodsArray.push(
+      this.createRatePeriodGroup({
+        from: newFrom,
+        rateType: lastValues?.rateType,
+        nominalRate: lastValues?.nominalRate,
+        wibor: lastValues?.wibor,
+        margin: lastValues?.margin,
+      }),
+    );
+    this.form.updateValueAndValidity();
+  }
+
+  removeRatePeriod(index: number): void {
+    if (index === 0 || this.ratePeriodsArray.length <= 1) return;
+    this.ratePeriodsArray.removeAt(index);
+    this.form.updateValueAndValidity();
+  }
+
   addTransza(): void {
     const startDate = this.form.controls.basicData.get('startDate')?.value || ym();
     const nextDate = addMonthsStr(startDate, this.transzeArray.length);
@@ -448,10 +490,6 @@ export class FormService {
         startDate: ym(),
         capitalStartDate: nextMonthStr(),
         installmentType: 'rowne',
-        rateType: 'zmienna',
-        wibor: 7.0,
-        margin: 2.0,
-        nominalRate: 9.0,
       },
       prepayments: {
         fields: {
@@ -468,6 +506,18 @@ export class FormService {
         },
       },
     });
+    this.form.controls.basicData.setControl(
+      'ratePeriods',
+      new FormArray([
+        this.createRatePeriodGroup({
+          from: ym(),
+          rateType: 'zmienna',
+          wibor: 7.0,
+          margin: 2.0,
+          nominalRate: 9.0,
+        }),
+      ]) as FormArray<FormGroup<RatePeriodFormGroup>>,
+    );
     this.form.controls.prepayments.controls.fields.setControl(
       'prepaymentRules',
       new FormArray([this.createPrepaymentRuleGroup()]),
@@ -488,10 +538,6 @@ export class FormService {
         startDate: ym(),
         capitalStartDate: nextMonthStr(),
         installmentType: 'rowne',
-        rateType: 'zmienna',
-        nominalRate: 0,
-        wibor: 0,
-        margin: 0,
       },
       prepayments: {
         fields: {
@@ -508,6 +554,18 @@ export class FormService {
         },
       },
     });
+    this.form.controls.basicData.setControl(
+      'ratePeriods',
+      new FormArray([
+        this.createRatePeriodGroup({
+          from: ym(),
+          rateType: 'zmienna',
+          nominalRate: 0,
+          wibor: 0,
+          margin: 0,
+        }),
+      ]) as FormArray<FormGroup<RatePeriodFormGroup>>,
+    );
     this.form.controls.prepayments.controls.fields.setControl(
       'prepaymentRules',
       new FormArray([this.createPrepaymentRuleGroup({ to: nextMonthStr() })]),

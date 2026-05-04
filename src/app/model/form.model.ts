@@ -9,6 +9,14 @@ import {
   RateType,
 } from './mortgage.model';
 
+export interface RatePeriodFormGroup {
+  from: FormControl<string>;
+  rateType: FormControl<RateType>;
+  nominalRate: FormControl<number>;
+  wibor: FormControl<number>;
+  margin: FormControl<number>;
+}
+
 export interface TrancheFormGroup {
   amount: FormControl<number>;
   date: FormControl<string>;
@@ -94,10 +102,7 @@ export interface BasicDataFormGroup {
   startDate: FormControl<string>;
   capitalStartDate: FormControl<string>;
   installmentType: FormControl<InstallmentType>;
-  rateType: FormControl<RateType>;
-  nominalRate: FormControl<number>;
-  wibor: FormControl<number>;
-  margin: FormControl<number>;
+  ratePeriods: FormArray<FormGroup<RatePeriodFormGroup>>;
 }
 
 export interface MortgageFormGroup {

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
   InstallmentType,
+  RatePeriod,
   RateType,
   PrepaymentFrequency,
   PrepaymentEffect,
@@ -26,6 +27,7 @@ import {
 
 export type {
   InstallmentType,
+  RatePeriod,
   RateType,
   PrepaymentFrequency,
   PrepaymentEffect,
@@ -321,16 +323,40 @@ export class CalculatorService {
     const graceMonths = Math.max(0, this.monthDiff(inputs.startDate, inputs.capitalStartDate) - 1);
     const amortMonths = Math.max(0, nTotal - graceMonths);
 
-    const baseEffectiveRate =
-      inputs.rateType === 'zmienna'
-        ? (Number(inputs.wibor) || 0) + (Number(inputs.margin) || 0)
-        : Number(inputs.nominalRate) || 0;
-
     const oc = inputs.overheadCosts;
 
-    // Początkowe i – bez modyfikacji (do annuity na start)
-    const effectiveRate = baseEffectiveRate;
-    const i = this.monthlyRate(effectiveRate);
+    // Okresy oprocentowania — posortowane wg daty obowiązywania
+    const sortedPeriods: RatePeriod[] = [...(inputs.ratePeriods ?? [])].sort((a, b) =>
+      a.from <= b.from ? -1 : 1,
+    );
+    const fallbackPeriod: RatePeriod = {
+      from: inputs.startDate,
+      rateType: 'zmienna',
+      nominalRate: 9,
+      wibor: 7,
+      margin: 2,
+    };
+
+    const getPeriod = (date: string): RatePeriod => {
+      if (sortedPeriods.length === 0) return fallbackPeriod;
+      let applicable = sortedPeriods[0];
+      for (const p of sortedPeriods) {
+        if (p.from <= date) applicable = p;
+        else break;
+      }
+      return applicable;
+    };
+
+    const getBaseEffectiveRate = (period: RatePeriod): number =>
+      period.rateType === 'zmienna'
+        ? (Number(period.wibor) || 0) + (Number(period.margin) || 0)
+        : Number(period.nominalRate) || 0;
+
+    // Okres oprocentowania dla pierwszej raty
+    const firstPaymentDate = this.addMonths(inputs.startDate, 1);
+    const initialPeriod = getPeriod(firstPaymentDate);
+    const initialBaseRate = getBaseEffectiveRate(initialPeriod);
+    const initialI = this.monthlyRate(initialBaseRate);
 
     const prepaymentRules = (inputs.prepaymentRules ?? [])
       .filter((r) => r?.from && (r?.frequency === 'jednorazowo' || !!r?.to))
@@ -370,14 +396,32 @@ export class CalculatorService {
         ? this.asNonNegativeNumber(tranches[0].amount)
         : this.asNonNegativeNumber(inputs.loanAmount);
     let remainingAmortMonths = amortMonths;
-    let equalRate = this.annuityPayment(saldo, i, amortMonths);
+    let equalRate = this.annuityPayment(saldo, initialI, amortMonths);
     let decreasingCapitalPart = amortMonths > 0 ? this.round2(saldo / amortMonths) : 0;
+    let prevPeriod = initialPeriod;
 
     const maxMonthsLimit = Math.max(nTotal, 1) + 1_200;
     for (let idx = 1; idx <= maxMonthsLimit; idx++) {
       if (saldo <= 0) break;
 
       const date = this.addMonths(inputs.startDate, idx);
+      const period = getPeriod(date);
+      const baseEffectiveRate = getBaseEffectiveRate(period);
+      const iCurrent = this.monthlyRate(baseEffectiveRate);
+
+      const inGrace = idx <= graceMonths;
+
+      // Przy zmianie okresu oprocentowania przelicz ratę
+      if (period !== prevPeriod) {
+        prevPeriod = period;
+        if (!inGrace && remainingAmortMonths > 0) {
+          if (inputs.installmentType === 'rowne') {
+            equalRate = this.annuityPayment(saldo, iCurrent, remainingAmortMonths);
+          } else {
+            decreasingCapitalPart = this.round2(saldo / remainingAmortMonths);
+          }
+        }
+      }
 
       // Sprawdź, czy w tym miesiącu jest uruchamiana kolejna transza
       const trancheAmount = trancheMap.get(date) || 0;
@@ -386,14 +430,12 @@ export class CalculatorService {
         // Przelicz ratę po dołączeniu transzy
         if (remainingAmortMonths > 0) {
           if (inputs.installmentType === 'rowne') {
-            equalRate = this.annuityPayment(saldo, i, Math.max(1, remainingAmortMonths));
+            equalRate = this.annuityPayment(saldo, iCurrent, Math.max(1, remainingAmortMonths));
           } else {
             decreasingCapitalPart = this.round2(saldo / Math.max(1, remainingAmortMonths));
           }
         }
       }
-
-      const inGrace = idx <= graceMonths;
 
       // Dynamiczna stopa dla tego miesiąca (ubezpieczenie pomostowe, niski wkład, promocja)
       const monthEffRate = this.getEffectiveRateForMonth(
@@ -413,7 +455,7 @@ export class CalculatorService {
         baseRate = interest;
       } else if (inputs.installmentType === 'rowne') {
         const planned =
-          equalRate > 0 ? equalRate : this.annuityPayment(saldo, i, remainingAmortMonths);
+          equalRate > 0 ? equalRate : this.annuityPayment(saldo, iCurrent, remainingAmortMonths);
         capital = this.round2(planned - interest);
         if (capital < 0) capital = 0;
         if (capital > saldo) capital = this.round2(saldo);
@@ -494,14 +536,14 @@ export class CalculatorService {
           remainingAmortMonths = 0;
         } else if (hasLowerRatePrepayment) {
           if (inputs.installmentType === 'rowne') {
-            equalRate = this.annuityPayment(saldo, i, Math.max(1, remainingAmortMonths));
+            equalRate = this.annuityPayment(saldo, iCurrent, Math.max(1, remainingAmortMonths));
           } else {
-            decreasingCapitalPart = this.round2(saldo / Math.max(1, remainingAmortMonths));
+            decreasingCapitalPart = this.round2(saldo / remainingAmortMonths);
           }
         }
       } else if (inGrace && hasLowerRatePrepayment && remainingAmortMonths > 0) {
         if (inputs.installmentType === 'rowne') {
-          equalRate = this.annuityPayment(saldo, i, Math.max(1, remainingAmortMonths));
+          equalRate = this.annuityPayment(saldo, iCurrent, Math.max(1, remainingAmortMonths));
         } else {
           decreasingCapitalPart = saldo / Math.max(1, remainingAmortMonths);
         }
@@ -541,7 +583,7 @@ export class CalculatorService {
         : null;
 
     return {
-      effectiveRate: effectiveRate,
+      effectiveRate: initialBaseRate,
       totalMonths: schedule.length,
       amortizationMonths: Math.max(0, schedule.length - Math.min(graceMonths, schedule.length)),
       firstInstallment: first,

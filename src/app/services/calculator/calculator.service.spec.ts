@@ -5,15 +5,19 @@ function baseInputs(effect: PrepaymentEffect = 'skrócenie okresu'): MortgageInp
     propertyValue: 500_000,
     loanAmount: 300_000,
     ltv: 60,
-    years: 20,
-    months: 0,
+    loanPeriod: 20 * 12,
     startDate: '2026-01',
     capitalStartDate: '2026-02',
     installmentType: 'rowne',
-    rateType: 'stala',
-    nominalRate: 8,
-    wibor: 0,
-    margin: 0,
+    ratePeriods: [
+      {
+        from: '2026-01',
+        rateType: 'stala',
+        nominalRate: 8,
+        wibor: 0,
+        margin: 0,
+      },
+    ],
     prepaymentRules: [
       {
         frequency: 'jednorazowo',
@@ -138,5 +142,22 @@ describe('MortgageCalcService (nadpłaty)', () => {
 
     expect(rowsInRange.length).toBeGreaterThan(0);
     expect(rowsInRange.every((r) => r.prepayment === 0)).toBe(true);
+  });
+
+  it('powinien zastosować nowe oprocentowanie po zmianie okresu', () => {
+    const inputs = baseInputs();
+    inputs.prepaymentRules = [];
+    inputs.ratePeriods = [
+      { from: '2026-01', rateType: 'stala', nominalRate: 8, wibor: 0, margin: 0 },
+      { from: '2027-01', rateType: 'stala', nominalRate: 4, wibor: 0, margin: 0 },
+    ];
+
+    const result = service.compute(inputs);
+    const rowBefore = result.schedule.find((r) => r.date === '2026-12');
+    const rowAfter = result.schedule.find((r) => r.date === '2027-01');
+
+    expect(rowBefore).toBeTruthy();
+    expect(rowAfter).toBeTruthy();
+    expect(rowAfter!.interest).toBeLessThan(rowBefore!.interest);
   });
 });
