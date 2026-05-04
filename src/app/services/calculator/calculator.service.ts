@@ -317,7 +317,7 @@ export class CalculatorService {
   }
 
   compute(inputs: MortgageInputs): MortgageResults {
-    const nTotal = Math.max(0, Math.trunc(inputs.years) * 12 + Math.trunc(inputs.months));
+    const nTotal = Math.max(0, Math.trunc(inputs.loanPeriod));
     const graceMonths = Math.max(0, this.monthDiff(inputs.startDate, inputs.capitalStartDate) - 1);
     const amortMonths = Math.max(0, nTotal - graceMonths);
 

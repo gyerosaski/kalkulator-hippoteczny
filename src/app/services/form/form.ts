@@ -11,6 +11,7 @@ import {
 } from '../../model/mortgage.model';
 import {
   AdditionalCostFormGroup,
+  BasicDataFormGroup,
   EarlyRepaymentCommissionFormGroup,
   MortgageFormGroup,
   OverheadCostsFormGroup,
@@ -45,12 +46,12 @@ function endOfLoanDate(): string {
 
 function crossFieldValidator(control: import('@angular/forms').AbstractControl) {
   const group = control as FormGroup<MortgageFormGroup>;
-  const pv = group.get('propertyValue')?.value ?? 0;
-  const la = group.get('loanAmount')?.value ?? 0;
-  const yrs = group.get('years')?.value ?? 0;
-  const mos = group.get('months')?.value ?? 0;
-  const start = group.get('startDate')?.value as string;
-  const capStart = group.get('capitalStartDate')?.value as string;
+  const basicData = group.controls.basicData;
+  const pv = basicData.get('propertyValue')?.value ?? 0;
+  const la = basicData.get('loanAmount')?.value ?? 0;
+  const loanPeriod = basicData.get('loanPeriod')?.value ?? 0;
+  const start = basicData.get('startDate')?.value as string;
+  const capStart = basicData.get('capitalStartDate')?.value as string;
 
   const tranchesSection = group.controls.tranches;
   const tranchesIncluded = tranchesSection.controls.included.value;
@@ -84,8 +85,7 @@ function crossFieldValidator(control: import('@angular/forms').AbstractControl) 
       };
     }
   }
-  const n = Math.trunc(yrs) * 12 + Math.trunc(mos);
-  if (n <= 0) errors['totalMonthsInvalid'] = true;
+  if (Math.trunc(loanPeriod) <= 0) errors['totalMonthsInvalid'] = true;
   if (start && capStart) {
     if (capStart < start) errors['capitalBeforeStart'] = true;
   }
@@ -170,45 +170,50 @@ export class FormService {
     return this.form.controls.overheadCosts;
   }
 
+  private createBasicDataGroup(): FormGroup<BasicDataFormGroup> {
+    return new FormGroup<BasicDataFormGroup>({
+      propertyValue: new FormControl(500_000, {
+        nonNullable: true,
+        validators: [Validators.required, Validators.min(0.01)],
+      }),
+      loanAmount: new FormControl(400_000, {
+        nonNullable: true,
+        validators: [Validators.required, Validators.min(0.01)],
+      }),
+      ltv: new FormControl(80, {
+        nonNullable: true,
+        validators: [Validators.required, Validators.min(0), Validators.max(100)],
+      }),
+      loanPeriod: new FormControl(20 * 12, {
+        nonNullable: true,
+        validators: [Validators.required, Validators.min(1)],
+      }),
+      startDate: new FormControl(ym(), { nonNullable: true, validators: [Validators.required] }),
+      capitalStartDate: new FormControl(nextMonthStr(), {
+        nonNullable: true,
+        validators: [Validators.required],
+      }),
+      installmentType: new FormControl<'rowne' | 'malejace'>('rowne', { nonNullable: true }),
+      rateType: new FormControl<'zmienna' | 'stala'>('zmienna', { nonNullable: true }),
+      nominalRate: new FormControl(9.0, {
+        nonNullable: true,
+        validators: [Validators.min(0), Validators.max(50)],
+      }),
+      wibor: new FormControl(7.0, {
+        nonNullable: true,
+        validators: [Validators.min(0), Validators.max(50)],
+      }),
+      margin: new FormControl(2.0, {
+        nonNullable: true,
+        validators: [Validators.min(0), Validators.max(50)],
+      }),
+    });
+  }
+
   private createForm(): FormGroup<MortgageFormGroup> {
     const form = new FormGroup<MortgageFormGroup>(
       {
-        propertyValue: new FormControl(500_000, {
-          nonNullable: true,
-          validators: [Validators.required, Validators.min(0.01)],
-        }),
-        loanAmount: new FormControl(400_000, {
-          nonNullable: true,
-          validators: [Validators.required, Validators.min(0.01)],
-        }),
-        ltv: new FormControl(80, {
-          nonNullable: true,
-          validators: [Validators.required, Validators.min(0), Validators.max(100)],
-        }),
-        years: new FormControl(20, { nonNullable: true, validators: [Validators.min(0)] }),
-        months: new FormControl(0, {
-          nonNullable: true,
-          validators: [Validators.min(0), Validators.max(11)],
-        }),
-        startDate: new FormControl(ym(), { nonNullable: true, validators: [Validators.required] }),
-        capitalStartDate: new FormControl(nextMonthStr(), {
-          nonNullable: true,
-          validators: [Validators.required],
-        }),
-        installmentType: new FormControl<'rowne' | 'malejace'>('rowne', { nonNullable: true }),
-        rateType: new FormControl<'zmienna' | 'stala'>('zmienna', { nonNullable: true }),
-        nominalRate: new FormControl(9.0, {
-          nonNullable: true,
-          validators: [Validators.min(0), Validators.max(50)],
-        }),
-        wibor: new FormControl(7.0, {
-          nonNullable: true,
-          validators: [Validators.min(0), Validators.max(50)],
-        }),
-        margin: new FormControl(2.0, {
-          nonNullable: true,
-          validators: [Validators.min(0), Validators.max(50)],
-        }),
+        basicData: this.createBasicDataGroup(),
         overheadCosts: new FormGroup<ToggleableSectionFormGroup<OverheadCostsFormGroup>>({
           included: new FormControl(false, { nonNullable: true }),
           fields: this.createOverheadCostsGroup(),
@@ -308,8 +313,8 @@ export class FormService {
     isFirst: boolean,
     initial: Partial<Tranche> = {},
   ): FormGroup<TrancheFormGroup> {
-    const startDate = this.form?.get('startDate')?.value || ym();
-    const amount = initial.amount ?? (isFirst ? this.form?.get('loanAmount')?.value || 0 : 0);
+    const startDate = this.form?.controls.basicData?.get('startDate')?.value || ym();
+    const amount = initial.amount ?? (isFirst ? this.form?.controls.basicData?.get('loanAmount')?.value || 0 : 0);
     const date = initial.date ?? startDate;
     return new FormGroup<TrancheFormGroup>({
       amount: new FormControl(amount, {
@@ -359,7 +364,7 @@ export class FormService {
   }
 
   addTransza(): void {
-    const startDate = this.form.get('startDate')?.value || ym();
+    const startDate = this.form.controls.basicData.get('startDate')?.value || ym();
     const nextDate = addMonthsStr(startDate, this.transzeArray.length);
     this.transzeArray.push(this.createTrancheGroup(false, { date: nextDate }));
     this.form.updateValueAndValidity();
@@ -372,8 +377,8 @@ export class FormService {
   }
 
   clearTransze(): void {
-    const loanAmount = this.form.get('loanAmount')?.value || 0;
-    const startDate = this.form.get('startDate')?.value || ym();
+    const loanAmount = this.form.controls.basicData.get('loanAmount')?.value || 0;
+    const startDate = this.form.controls.basicData.get('startDate')?.value || ym();
     this.form.controls.tranches.controls.fields.setControl(
       'transze',
       new FormArray([this.createTrancheGroup(true, { amount: loanAmount, date: startDate })]),
@@ -435,18 +440,19 @@ export class FormService {
 
   setDefaults(): void {
     this.form.patchValue({
-      propertyValue: 500_000,
-      loanAmount: 400_000,
-      ltv: 80,
-      years: 20,
-      months: 0,
-      startDate: ym(),
-      capitalStartDate: nextMonthStr(),
-      installmentType: 'rowne',
-      rateType: 'zmienna',
-      wibor: 7.0,
-      margin: 2.0,
-      nominalRate: 9.0,
+      basicData: {
+        propertyValue: 500_000,
+        loanAmount: 400_000,
+        ltv: 80,
+        loanPeriod: 20 * 12,
+        startDate: ym(),
+        capitalStartDate: nextMonthStr(),
+        installmentType: 'rowne',
+        rateType: 'zmienna',
+        wibor: 7.0,
+        margin: 2.0,
+        nominalRate: 9.0,
+      },
       prepayments: {
         fields: {
           rataDocelowaRegula: {
@@ -474,18 +480,19 @@ export class FormService {
 
   clearAll(): void {
     this.form.patchValue({
-      propertyValue: 0 as any,
-      loanAmount: 0 as any,
-      ltv: 0 as any,
-      years: 0,
-      months: 0,
-      startDate: ym(),
-      capitalStartDate: nextMonthStr(),
-      installmentType: 'rowne',
-      rateType: 'zmienna',
-      nominalRate: 0,
-      wibor: 0,
-      margin: 0,
+      basicData: {
+        propertyValue: 0 as any,
+        loanAmount: 0 as any,
+        ltv: 0 as any,
+        loanPeriod: 0,
+        startDate: ym(),
+        capitalStartDate: nextMonthStr(),
+        installmentType: 'rowne',
+        rateType: 'zmienna',
+        nominalRate: 0,
+        wibor: 0,
+        margin: 0,
+      },
       prepayments: {
         fields: {
           rataDocelowaRegula: {

@@ -194,19 +194,19 @@ export class LayoutComponent {
             },
           };
 
+      const bd = v.basicData;
       const inputs: MortgageInputs = {
-        propertyValue: v.propertyValue,
-        loanAmount: v.loanAmount,
-        ltv: v.ltv,
-        years: v.years,
-        months: v.months,
-        startDate: v.startDate,
-        capitalStartDate: v.capitalStartDate,
-        installmentType: v.installmentType,
-        rateType: v.rateType,
-        nominalRate: v.nominalRate,
-        wibor: v.wibor,
-        margin: v.margin,
+        propertyValue: bd.propertyValue,
+        loanAmount: bd.loanAmount,
+        ltv: bd.ltv,
+        loanPeriod: bd.loanPeriod,
+        startDate: bd.startDate,
+        capitalStartDate: bd.capitalStartDate,
+        installmentType: bd.installmentType,
+        rateType: bd.rateType,
+        nominalRate: bd.nominalRate,
+        wibor: bd.wibor,
+        margin: bd.margin,
         prepaymentRules,
         tranches,
         targetInstallmentRule: prepaymentsIncluded

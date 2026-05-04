@@ -100,8 +100,7 @@ export interface MortgageInputs {
   propertyValue: number; // Wartość nieruchomości (PLN)
   loanAmount: number; // Kwota kredytu (PLN)
   ltv: number; // % 0-100
-  years: number; // lata >= 0
-  months: number; // m-ce 0-11
+  loanPeriod: number; // okres kredytowania w miesiącach
   startDate: string; // 'YYYY-MM' (pierwszy miesiąc kredytu)
   capitalStartDate: string; // 'YYYY-MM' (początek spłat kapitału)
   installmentType: InstallmentType; // równe | malejące

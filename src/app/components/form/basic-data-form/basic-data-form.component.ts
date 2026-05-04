@@ -1,10 +1,8 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
-
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormService } from '../../../services/form/form';
 import { CalculatorService } from '../../../services/calculator/calculator.service';
 import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
-
 @Component({
   selector: 'app-basic-data-form',
   standalone: true,
@@ -16,49 +14,66 @@ import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
 export class BasicDataFormComponent {
   private readonly formService = inject(FormService);
   private readonly calculatorService = inject(CalculatorService);
-
   collapsed = false;
+  loanPeriodUnit: 'lata' | 'miesiące' = 'lata';
 
   get form() {
     return this.formService.form;
   }
 
+  get basicData() {
+    return this.formService.form.controls.basicData;
+  }
+
+  get loanPeriodDisplayValue(): number {
+    const months = this.basicData.controls.loanPeriod.value;
+    return this.loanPeriodUnit === 'lata' ? Math.round((months / 12) * 100) / 100 : months;
+  }
+
+  onLoanPeriodDisplayChanged(event: Event): void {
+    const val = Number((event.target as HTMLInputElement).value);
+    const months = this.loanPeriodUnit === 'lata' ? Math.round(val * 12) : Math.round(val);
+    this.basicData.controls.loanPeriod.setValue(months);
+    this.form.updateValueAndValidity();
+  }
+
+  onLoanPeriodUnitChanged(unit: 'lata' | 'miesiące'): void {
+    this.loanPeriodUnit = unit;
+  }
+
   onLtvChanged() {
-    const v = this.form.getRawValue();
+    const v = this.basicData.getRawValue();
     const synced = this.calculatorService.syncLtvAmountValue(
       v.propertyValue,
       v.loanAmount,
       v.ltv,
       'ltv',
     );
-    this.form.patchValue(synced, { emitEvent: false });
+    this.basicData.patchValue(synced, { emitEvent: false });
     this.form.updateValueAndValidity();
   }
-
   onLoanAmountChanged() {
-    const v = this.form.getRawValue();
+    const v = this.basicData.getRawValue();
     const synced = this.calculatorService.syncLtvAmountValue(
       v.propertyValue,
       v.loanAmount,
       v.ltv,
       'loanAmount',
     );
-    this.form.patchValue(synced, { emitEvent: false });
+    this.basicData.patchValue(synced, { emitEvent: false });
     this.form.updateValueAndValidity();
   }
-
   onPropertyValueChanged() {
-    const v = this.form.getRawValue();
+    const v = this.basicData.getRawValue();
     const synced = this.calculatorService.syncLtvAmountValue(
       v.propertyValue,
       v.loanAmount,
       v.ltv,
       'propertyValue',
     );
-    this.form.patchValue(synced, { emitEvent: false });
+    this.basicData.patchValue(synced, { emitEvent: false });
     this.form.updateValueAndValidity();
   }
-
   toggleCollapsed() {
     this.collapsed = !this.collapsed;
   }

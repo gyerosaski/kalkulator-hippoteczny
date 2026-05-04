@@ -4,9 +4,8 @@
     Dane podstawowe
   </h2>
 </div>
-
 @if (!collapsed) {
-  <div class="grid" [formGroup]="form">
+  <div class="grid" [formGroup]="basicData">
     <label>
       1. Wartość nieruchomości (zł)
       <input type="number" formControlName="propertyValue" (change)="onPropertyValueChanged()" />
@@ -19,30 +18,49 @@
       3. LTV (%)
       <input type="number" step="0.01" formControlName="ltv" (change)="onLtvChanged()" />
     </label>
-
     <div class="row">
       <label>
         4. Okres kredytowania
-        <input type="number" min="0" formControlName="years" />
+        <input
+          type="number"
+          min="1"
+          [value]="loanPeriodDisplayValue"
+          (change)="onLoanPeriodDisplayChanged($event)"
+        />
       </label>
-      <label>
-        4b. m-ce
-        <input type="number" min="0" max="11" formControlName="months" />
-      </label>
+      <div class="radio-group">
+        <label>
+          <input
+            type="radio"
+            name="loanPeriodUnit"
+            value="lata"
+            [checked]="loanPeriodUnit === 'lata'"
+            (change)="onLoanPeriodUnitChanged('lata')"
+          />
+          lat
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="loanPeriodUnit"
+            value="miesiące"
+            [checked]="loanPeriodUnit === 'miesiące'"
+            (change)="onLoanPeriodUnitChanged('miesiące')"
+          />
+          miesięcy
+        </label>
+      </div>
     </div>
-
     <label>
       5. Data uruchomienia kredytu (YYYY-MM)
       <input type="month" formControlName="startDate" />
-      <small>{{ form.get('startDate')?.value | formatMonth }}</small>
+      <small>{{ basicData.get('startDate')?.value | formatMonth }}</small>
     </label>
-
     <label>
       6. Początek spłat kapitału (YYYY-MM)
       <input type="month" formControlName="capitalStartDate" />
-      <small>{{ form.get('capitalStartDate')?.value | formatMonth }}</small>
+      <small>{{ basicData.get('capitalStartDate')?.value | formatMonth }}</small>
     </label>
-
     <div class="row">
       <label>
         Typ rat
@@ -51,7 +69,6 @@
           <option value="malejace">malejące</option>
         </select>
       </label>
-
       <label>
         Stopa
         <select formControlName="rateType">
@@ -60,8 +77,7 @@
         </select>
       </label>
     </div>
-
-    @if (form.get('rateType')?.value === 'zmienna') {
+    @if (basicData.get('rateType')?.value === 'zmienna') {
       <div class="row">
         <label>
           8.a WIBOR (%)
@@ -76,7 +92,7 @@
           <input
             type="number"
             step="0.01"
-            [value]="(form.get('wibor')?.value || 0) + (form.get('margin')?.value || 0)"
+            [value]="(basicData.get('wibor')?.value || 0) + (basicData.get('margin')?.value || 0)"
             disabled
           />
         </label>

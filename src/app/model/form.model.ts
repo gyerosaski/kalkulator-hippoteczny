@@ -86,12 +86,11 @@ export interface ToggleableSectionFormGroup<
   fields: FormGroup<T>;
 }
 
-export interface MortgageFormGroup {
+export interface BasicDataFormGroup {
   propertyValue: FormControl<number>;
   loanAmount: FormControl<number>;
   ltv: FormControl<number>;
-  years: FormControl<number>;
-  months: FormControl<number>;
+  loanPeriod: FormControl<number>;
   startDate: FormControl<string>;
   capitalStartDate: FormControl<string>;
   installmentType: FormControl<InstallmentType>;
@@ -99,6 +98,10 @@ export interface MortgageFormGroup {
   nominalRate: FormControl<number>;
   wibor: FormControl<number>;
   margin: FormControl<number>;
+}
+
+export interface MortgageFormGroup {
+  basicData: FormGroup<BasicDataFormGroup>;
   overheadCosts: FormGroup<ToggleableSectionFormGroup<OverheadCostsFormGroup>>;
   tranches: FormGroup<ToggleableSectionFormGroup<TranchesFieldsFormGroup>>;
   prepayments: FormGroup<ToggleableSectionFormGroup<PrepaymentsFieldsFormGroup>>;
