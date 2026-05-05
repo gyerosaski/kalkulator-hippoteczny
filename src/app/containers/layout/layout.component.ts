@@ -69,12 +69,6 @@ export class LayoutComponent {
   results = signal<MortgageResults | null>(null);
   yearlyGroups = signal<YearGroup[] | null>(null);
 
-  leftFlex = '1 1 50%';
-  rightFlex = '1 1 50%';
-  private dragging = false;
-  private boundMouseMove = this.onMouseMove.bind(this);
-  private boundMouseUp = this.onMouseUp.bind(this);
-
   constructor() {
     this.recalculate();
     this.form.valueChanges
@@ -286,33 +280,6 @@ export class LayoutComponent {
       const fileName = this.sanitizeFileName(name) + '.json';
       this.downloadJsonFile(fileName, record);
     });
-  }
-
-  onDividerMouseDown(event: MouseEvent) {
-    event.preventDefault();
-    this.dragging = true;
-    document.addEventListener('mousemove', this.boundMouseMove);
-    document.addEventListener('mouseup', this.boundMouseUp);
-  }
-
-  private onMouseMove(event: MouseEvent) {
-    if (!this.dragging) return;
-    const container = (event.target as HTMLElement).closest('.two-column-layout')?.parentElement;
-    const layoutEl = document.querySelector('.two-column-layout') as HTMLElement;
-    if (!layoutEl) return;
-    const rect = layoutEl.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const totalWidth = rect.width;
-    const leftPct = Math.max(20, Math.min(80, (x / totalWidth) * 100));
-    const rightPct = 100 - leftPct;
-    this.leftFlex = `1 1 ${leftPct}%`;
-    this.rightFlex = `1 1 ${rightPct}%`;
-  }
-
-  private onMouseUp() {
-    this.dragging = false;
-    document.removeEventListener('mousemove', this.boundMouseMove);
-    document.removeEventListener('mouseup', this.boundMouseUp);
   }
 
   private sanitizeFileName(name: string): string {

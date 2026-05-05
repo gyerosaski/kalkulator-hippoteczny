@@ -26,16 +26,14 @@
   </header>
 
   <div class="two-column-layout">
-    <div class="column column-left" [style.flex]="leftFlex">
+    <div class="column">
       <app-basic-data-form></app-basic-data-form>
       <app-overhead-costs-form></app-overhead-costs-form>
       <app-tranches-form></app-tranches-form>
       <app-prepayments-form></app-prepayments-form>
     </div>
 
-    <div class="column-divider" (mousedown)="onDividerMouseDown($event)"></div>
-
-    <div class="column column-right" [style.flex]="rightFlex">
+    <div class="column">
       <app-results-errors></app-results-errors>
       <app-results-summary [results]="results()"></app-results-summary>
       <app-results-charts [results]="results()"></app-results-charts>
