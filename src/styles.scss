@@ -361,7 +361,7 @@ body {
 .tbl { font-size: 13px; }
 .tbl-head, .tbl-row {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr 1fr 1.2fr;
+  grid-template-columns: var(--tbl-cols, 1.4fr 1fr 1fr 1fr 1.2fr);
   gap: 8px;
   padding: 10px 20px;
   align-items: center;
