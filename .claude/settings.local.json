@@ -4,7 +4,8 @@
       "Bash(npm test *)",
       "Bash(npx vitest *)",
       "Bash(npx ng *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(npm start *)"
     ]
   }
 }

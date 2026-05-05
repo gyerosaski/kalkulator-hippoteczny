@@ -1,15 +1,18 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
-
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormService } from '../../../services/form/form';
 import { PrepaymentFrequency, PrepaymentEffect } from '../../../model/mortgage.model';
-import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
-import {FoldableSectionComponent} from '../../ui/foldable-section/foldable-section.component';
+import { SectionComponent } from '../../ui/section/section.component';
+import { FieldComponent } from '../../ui/field/field.component';
+import { NumberInputComponent } from '../../ui/number-input/number-input.component';
+import { MonthPickerComponent } from '../../ui/month-picker/month-picker.component';
+import { SelectComponent } from '../../ui/select/select.component';
 
 @Component({
   selector: 'app-prepayments-form',
   standalone: true,
-  imports: [ReactiveFormsModule, FormatMonthPipe, FoldableSectionComponent],
+  imports: [ReactiveFormsModule, SectionComponent, FieldComponent, NumberInputComponent, MonthPickerComponent, SelectComponent],
   templateUrl: './prepayments-form.component.html',
   styleUrl: './prepayments-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,6 +36,10 @@ export class PrepaymentsFormComponent {
   get included() {
     return this.section.controls.included;
   }
+  readonly includedEnabled = toSignal(
+    this.formService.prepaymentsSection.controls.included.valueChanges,
+    { initialValue: this.formService.prepaymentsSection.controls.included.value },
+  );
   get fieldsGroup() {
     return this.section.controls.fields;
   }

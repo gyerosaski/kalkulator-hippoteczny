@@ -1,16 +1,19 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule } from '@angular/forms';
 import { InsuranceCalcMethod, InsuranceFrequency, LifeInsuranceCalcMethod } from '../../../model';
 import { FormService } from '../../../services/form/form';
 import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
-import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
-import {FoldableSectionComponent} from '../../ui/foldable-section/foldable-section.component';
+import { SectionComponent } from '../../ui/section/section.component';
+import { FieldComponent } from '../../ui/field/field.component';
+import { NumberInputComponent } from '../../ui/number-input/number-input.component';
+import { MonthPickerComponent } from '../../ui/month-picker/month-picker.component';
+import { SelectComponent } from '../../ui/select/select.component';
 
 @Component({
   selector: 'app-overhead-costs-form',
   standalone: true,
-  imports: [ReactiveFormsModule, FormatMonthPipe, FormatAmountPipe, FoldableSectionComponent],
+  imports: [ReactiveFormsModule, FormatAmountPipe, SectionComponent, FieldComponent, NumberInputComponent, MonthPickerComponent, SelectComponent],
   templateUrl: './overhead-costs-form.component.html',
   styleUrl: './overhead-costs-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -44,6 +47,10 @@ export class OverheadCostsFormComponent {
   get included() {
     return this.section.controls.included;
   }
+  readonly includedEnabled = toSignal(
+    this.formService.overheadCostsSection.controls.included.valueChanges,
+    { initialValue: this.formService.overheadCostsSection.controls.included.value },
+  );
   get form() {
     return this.formService.overheadCostsGroup;
   }
@@ -57,6 +64,26 @@ export class OverheadCostsFormComponent {
     const commPct = this.form?.get('commissionPct')?.value || 0;
     return Math.round(loanAmount * commPct) / 100;
   });
+
+  get propInsSuffix(): string {
+    return this.form?.get('propInsCalcMethod')?.value === 'znam kwotę' ? 'zł' : '%';
+  }
+  get propInsDecimals(): number {
+    return this.form?.get('propInsCalcMethod')?.value === 'znam kwotę' ? 2 : 4;
+  }
+  get lifeInsSuffix(): string {
+    return this.form?.get('lifeInsCalcMethod')?.value === 'znam kwotę' ? 'zł' : '%';
+  }
+  get lifeInsDecimals(): number {
+    return this.form?.get('lifeInsCalcMethod')?.value === 'znam kwotę' ? 2 : 5;
+  }
+  get jobLossInsSuffix(): string {
+    return this.form?.get('jobLossInsCalcMethod')?.value === 'znam kwotę' ? 'zł' : '%';
+  }
+
+  getAdditionalCostSuffix(index: number): string {
+    return this.additionalCostsArray.at(index).get('calcMethod')?.value === 'znam kwotę' ? 'zł' : '%';
+  }
 
   addAdditionalCost() {
     this.formService.addAdditionalCost();

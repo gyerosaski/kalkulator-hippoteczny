@@ -1,167 +1,120 @@
-<app-foldable-section title="Koszty okołokredytowe i promocje" num="" badge="opcjonalne" [toggleable]="true" [defaultOpen]="false" [included]="included">
+<app-section title="Koszty okołokredytowe i promocje" badge="opcjonalne"
+  [toggleable]="true" [defaultOpen]="false"
+  [enabled]="includedEnabled()" (enabledChange)="included.setValue($event)">
   <div [formGroup]="form">
     <!-- 1. Prowizja za udzielenie -->
     <div class="card">
-      <h3>1. Prowizja za udzielenie</h3>
-      <div class="grid">
-        <label>
-          Prowizja (%)
-          <input type="number" step="0.01" min="0" formControlName="commissionPct" />
-        </label>
-        <label>
-          Przeliczenie (zł)
-          <input type="text" [value]="commissionAmount() | formatAmount" disabled />
-        </label>
+      <div class="card-head"><h3>1. Prowizja za udzielenie</h3></div>
+      <div class="row row--2">
+        <app-field num="1" label="Prowizja">
+          <app-number-input formControlName="commissionPct" suffix="%" [decimals]="2" />
+        </app-field>
+        <app-field label="Przeliczenie">
+          <div class="inp inp--disabled">
+            <input type="text" class="mono" [value]="commissionAmount() | formatAmount" readonly />
+            <span class="suffix">zł</span>
+          </div>
+        </app-field>
       </div>
     </div>
 
     <!-- 2. Opłata za wycenę -->
     <div class="card">
-      <h3>2. Opłata za wycenę</h3>
-      <div class="grid">
-        <label>
-          Kwota (zł)
-          <input type="number" step="0.01" min="0" formControlName="appraisalFee" />
-        </label>
+      <div class="card-head"><h3>2. Opłata za wycenę</h3></div>
+      <div class="row row--2">
+        <app-field num="2" label="Kwota">
+          <app-number-input formControlName="appraisalFee" suffix="zł" [decimals]="2" />
+        </app-field>
       </div>
     </div>
 
     <!-- 3. Ubezpieczenie pomostowe -->
     <div class="card">
-      <h3>3. Ubezpieczenie pomostowe</h3>
-      <div class="grid">
-        <label>
-          Bank podwyższa oprocentowanie o (%)
-          <input type="number" step="0.01" min="0" formControlName="bridgeRateIncrease" />
-        </label>
-        <label>
-          przez (miesięcy)
-          <input type="number" min="0" formControlName="bridgeMonths" />
-        </label>
+      <div class="card-head"><h3>3. Ubezpieczenie pomostowe</h3></div>
+      <div class="row row--2">
+        <app-field num="3a" label="Bank podwyższa oprocentowanie o">
+          <app-number-input formControlName="bridgeRateIncrease" suffix="%" [decimals]="2" />
+        </app-field>
+        <app-field num="3b" label="przez">
+          <app-number-input formControlName="bridgeMonths" suffix="mies." [decimals]="0" />
+        </app-field>
       </div>
     </div>
 
     <!-- 4. Ubezpieczenie nieruchomości -->
     <div class="card">
-      <h3>4. Ubezpieczenie nieruchomości</h3>
-      <div class="grid">
-        <label>
-          4.a Jak często opłacana jest składka?
-          <select formControlName="propInsFrequency">
-            @for (opt of propertyInsFrequencyOptions; track opt) {
-              <option [value]="opt">{{ opt }}</option>
-            }
-          </select>
-        </label>
-        <label>
-          4.b Jak wyliczana jest składka?
-          <select formControlName="propInsCalcMethod">
-            @for (opt of propertyInsCalcOptions; track opt) {
-              <option [value]="opt">{{ opt }}</option>
-            }
-          </select>
-        </label>
-        <label>
-          Wartość składki
-          {{ form.get('propInsCalcMethod')?.value === 'znam kwotę' ? '(zł)' : '(%)' }}
-          <input type="number" step="0.0001" min="0" formControlName="propInsValue" />
-        </label>
-        <div class="row row-wrap">
-          <label>
-            Od
-            <input type="month" formControlName="propInsFrom" />
-            <small>{{ form.get('propInsFrom')?.value | formatMonth }}</small>
-          </label>
-          <label>
-            do
-            <input type="month" formControlName="propInsTo" />
-            <small>{{ form.get('propInsTo')?.value | formatMonth }}</small>
-          </label>
+      <div class="card-head"><h3>4. Ubezpieczenie nieruchomości</h3></div>
+      <div class="row row--2">
+        <app-field num="4a" label="Jak często opłacana jest składka?">
+          <app-select formControlName="propInsFrequency" [options]="propertyInsFrequencyOptions" />
+        </app-field>
+        <app-field num="4b" label="Jak wyliczana jest składka?">
+          <app-select formControlName="propInsCalcMethod" [options]="propertyInsCalcOptions" />
+        </app-field>
+        <app-field num="4c" label="Wartość składki">
+          <app-number-input formControlName="propInsValue" [suffix]="propInsSuffix" [decimals]="propInsDecimals" />
+        </app-field>
+        <div class="row row--2">
+          <app-field label="Od">
+            <app-month-picker formControlName="propInsFrom" />
+          </app-field>
+          <app-field label="do">
+            <app-month-picker formControlName="propInsTo" />
+          </app-field>
         </div>
       </div>
     </div>
 
     <!-- 5. Ubezpieczenie niskiego wkładu -->
     <div class="card">
-      <h3>5. Ubezpieczenie niskiego wkładu</h3>
-      <div class="grid">
-        <label>
-          Bank podwyższa oprocentowanie o (%)
-          <input type="number" step="0.01" min="0" formControlName="lowEquityRateIncrease" />
-        </label>
+      <div class="card-head"><h3>5. Ubezpieczenie niskiego wkładu</h3></div>
+      <div class="row row--2">
+        <app-field num="5" label="Bank podwyższa oprocentowanie o">
+          <app-number-input formControlName="lowEquityRateIncrease" suffix="%" [decimals]="2" />
+        </app-field>
       </div>
     </div>
 
     <!-- 6. Ubezpieczenie na życie -->
     <div class="card">
-      <h3>6. Ubezpieczenie na życie</h3>
-      <div class="grid">
-        <label>
-          6.a Jak często opłacana jest składka?
-          <select formControlName="lifeInsFrequency">
-            @for (opt of insuranceFrequencyOptions; track opt) {
-              <option [value]="opt">{{ opt }}</option>
-            }
-          </select>
-        </label>
-        <label>
-          6.b Jak wyliczana jest składka?
-          <select formControlName="lifeInsCalcMethod">
-            @for (opt of lifeInsCalcOptions; track opt) {
-              <option [value]="opt">{{ opt }}</option>
-            }
-          </select>
-        </label>
-        <label>
-          Wartość składki
-          {{ form.get('lifeInsCalcMethod')?.value === 'znam kwotę' ? '(zł)' : '(%)' }}
-          <input type="number" step="0.00001" min="0" formControlName="lifeInsValue" />
-        </label>
-        <div class="row row-wrap">
-          <label>
-            Od
-            <input type="month" formControlName="lifeInsFrom" />
-            <small>{{ form.get('lifeInsFrom')?.value | formatMonth }}</small>
-          </label>
-          <label>
-            do
-            <input type="month" formControlName="lifeInsTo" />
-            <small>{{ form.get('lifeInsTo')?.value | formatMonth }}</small>
-          </label>
+      <div class="card-head"><h3>6. Ubezpieczenie na życie</h3></div>
+      <div class="row row--2">
+        <app-field num="6a" label="Jak często opłacana jest składka?">
+          <app-select formControlName="lifeInsFrequency" [options]="insuranceFrequencyOptions" />
+        </app-field>
+        <app-field num="6b" label="Jak wyliczana jest składka?">
+          <app-select formControlName="lifeInsCalcMethod" [options]="lifeInsCalcOptions" />
+        </app-field>
+        <app-field num="6c" label="Wartość składki">
+          <app-number-input formControlName="lifeInsValue" [suffix]="lifeInsSuffix" [decimals]="lifeInsDecimals" />
+        </app-field>
+        <div class="row row--2">
+          <app-field label="Od">
+            <app-month-picker formControlName="lifeInsFrom" />
+          </app-field>
+          <app-field label="do">
+            <app-month-picker formControlName="lifeInsTo" />
+          </app-field>
         </div>
       </div>
     </div>
 
     <!-- 7. Ubezpieczenie od utraty pracy -->
     <div class="card">
-      <h3>7. Ubezpieczenie od utraty pracy</h3>
-      <div class="grid">
-        <label>
-          7.a Jak często opłacana jest składka?
-          <select formControlName="jobLossInsFrequency">
-            @for (opt of insuranceFrequencyOptions; track opt) {
-              <option [value]="opt">{{ opt }}</option>
-            }
-          </select>
-        </label>
-        <label>
-          7.b Jak wyliczana jest składka?
-          <select formControlName="jobLossInsCalcMethod">
-            @for (opt of lifeInsCalcOptions; track opt) {
-              <option [value]="opt">{{ opt }}</option>
-            }
-          </select>
-        </label>
-        <label>
-          Wartość składki
-          {{ form.get('jobLossInsCalcMethod')?.value === 'znam kwotę' ? '(zł)' : '(%)' }}
-          <input type="number" step="0.01" min="0" formControlName="jobLossInsValue" />
-        </label>
-        <label>
-          Od
-          <input type="month" formControlName="jobLossInsFrom" />
-          <small>{{ form.get('jobLossInsFrom')?.value | formatMonth }}</small>
-        </label>
+      <div class="card-head"><h3>7. Ubezpieczenie od utraty pracy</h3></div>
+      <div class="row row--2">
+        <app-field num="7a" label="Jak często opłacana jest składka?">
+          <app-select formControlName="jobLossInsFrequency" [options]="insuranceFrequencyOptions" />
+        </app-field>
+        <app-field num="7b" label="Jak wyliczana jest składka?">
+          <app-select formControlName="jobLossInsCalcMethod" [options]="lifeInsCalcOptions" />
+        </app-field>
+        <app-field num="7c" label="Wartość składki">
+          <app-number-input formControlName="jobLossInsValue" [suffix]="jobLossInsSuffix" [decimals]="2" />
+        </app-field>
+        <app-field label="Od">
+          <app-month-picker formControlName="jobLossInsFrom" />
+        </app-field>
       </div>
     </div>
 
@@ -169,38 +122,26 @@
     <div formArrayName="additionalCosts" class="stack">
       @for (cost of additionalCostsArray.controls; track $index) {
         <div class="card" [formGroupName]="$index">
-          <h3>8. Dodatkowy koszt {{ $index + 1 }}</h3>
-          <div class="grid">
-            <label>
-              8. Nazwa kosztu
-              <input type="text" formControlName="name" />
-            </label>
-            <label>
-              8.a Jak często pobierana jest opłata?
-              <select formControlName="frequency">
-                @for (opt of insuranceFrequencyOptions; track opt) {
-                  <option [value]="opt">{{ opt }}</option>
-                }
-              </select>
-            </label>
-            <label>
-              8.b Jak wyliczana jest opłata?
-              <select formControlName="calcMethod">
-                @for (opt of lifeInsCalcOptions; track opt) {
-                  <option [value]="opt">{{ opt }}</option>
-                }
-              </select>
-            </label>
-            <label>
-              Kwota {{ cost.get('calcMethod')?.value === 'znam kwotę' ? '(zł)' : '(%)' }}
-              <input type="number" step="0.01" min="0" formControlName="value" />
-            </label>
-            <label>
-              8.c Okres ponoszenia kosztu (Od)
-              <input type="month" formControlName="from" />
-              <small>{{ cost.get('from')?.value | formatMonth }}</small>
-            </label>
-            <div class="row row-wrap align-end">
+          <div class="card-head"><h3>8. Dodatkowy koszt {{ $index + 1 }}</h3></div>
+          <div class="row row--2">
+            <app-field num="8" label="Nazwa kosztu">
+              <div class="inp">
+                <input type="text" formControlName="name" class="mono" />
+              </div>
+            </app-field>
+            <app-field num="8a" label="Jak często pobierana jest opłata?">
+              <app-select formControlName="frequency" [options]="insuranceFrequencyOptions" />
+            </app-field>
+            <app-field num="8b" label="Jak wyliczana jest opłata?">
+              <app-select formControlName="calcMethod" [options]="lifeInsCalcOptions" />
+            </app-field>
+            <app-field num="8c" label="Kwota">
+              <app-number-input formControlName="value" [suffix]="getAdditionalCostSuffix($index)" [decimals]="2" />
+            </app-field>
+            <app-field num="8d" label="Okres ponoszenia kosztu (Od)">
+              <app-month-picker formControlName="from" />
+            </app-field>
+            <div style="display:flex; gap:0.5rem; align-items:flex-end">
               <button type="button" (click)="addAdditionalCost()">+</button>
               @if (additionalCostsArray.length > 1) {
                 <button type="button" (click)="removeAdditionalCost($index)">Usuń</button>
@@ -213,25 +154,20 @@
 
     <!-- 9. Promocyjna wysokość oprocentowania -->
     <div class="card">
-      <h3>9. Promocyjna wysokość oprocentowania</h3>
-      <div class="grid">
-        <label>
-          Bank obniża oprocentowanie o (%)
-          <input type="number" step="0.01" min="0" formControlName="promoRateDecrease" />
-        </label>
-        <div class="row row-wrap">
-          <label>
-            Od
-            <input type="month" formControlName="promoFrom" />
-            <small>{{ form.get('promoFrom')?.value | formatMonth }}</small>
-          </label>
-          <label>
-            do
-            <input type="month" formControlName="promoTo" />
-            <small>{{ form.get('promoTo')?.value | formatMonth }}</small>
-          </label>
+      <div class="card-head"><h3>9. Promocyjna wysokość oprocentowania</h3></div>
+      <div class="row row--2">
+        <app-field num="9" label="Bank obniża oprocentowanie o">
+          <app-number-input formControlName="promoRateDecrease" suffix="%" [decimals]="2" />
+        </app-field>
+        <div class="row row--2">
+          <app-field label="Od">
+            <app-month-picker formControlName="promoFrom" />
+          </app-field>
+          <app-field label="do">
+            <app-month-picker formControlName="promoTo" />
+          </app-field>
         </div>
       </div>
     </div>
   </div>
-</app-foldable-section>
+</app-section>
