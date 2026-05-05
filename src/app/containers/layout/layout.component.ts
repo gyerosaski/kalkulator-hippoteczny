@@ -23,8 +23,9 @@ import { OverheadCostsFormComponent } from '../../components/form/overhead-costs
 import { TranchesFormComponent } from '../../components/form/tranches-form/tranches-form.component';
 import { PrepaymentsFormComponent } from '../../components/form/prepayments-form/prepayments-form.component';
 import { ResultsSummaryComponent } from '../../components/results/results-summary/results-summary.component';
+import { ResultsChartsComponent } from '../../components/results/results-charts/results-charts.component';
 import { ResultsScheduleComponent } from '../../components/results/results-schedule/results-schedule.component';
-import {ResultsErrorsComponent} from '../../components/results/results-errors/results-errors.component';
+import { ResultsErrorsComponent } from '../../components/results/results-errors/results-errors.component';
 
 function ym(date = new Date()): string {
   const y = date.getFullYear();
@@ -48,6 +49,7 @@ function nextMonthStr(date = new Date()): string {
     TranchesFormComponent,
     PrepaymentsFormComponent,
     ResultsSummaryComponent,
+    ResultsChartsComponent,
     ResultsScheduleComponent,
     ResultsErrorsComponent,
   ],
