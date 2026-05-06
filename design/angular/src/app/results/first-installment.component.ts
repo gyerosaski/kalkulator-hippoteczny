@@ -14,8 +14,13 @@ import { PlnPipe } from '../pipes/pln.pipe';
         <h3>Struktura pierwszej raty</h3>
       </div>
       <div class="donut-row donut-row--single">
-        <app-donut [data]="slices()" [size]="160" [thickness]="22"
-          centerLabel="rata" [centerValue]="(calc.schedule().firstInstallment | pln:0)"/>
+        <app-donut
+          [data]="slices()"
+          [size]="160"
+          [thickness]="22"
+          centerLabel="rata"
+          [centerValue]="calc.schedule().firstInstallment | pln: 0"
+        />
         <ul class="legend">
           @for (s of slices(); track s.label) {
             <li>

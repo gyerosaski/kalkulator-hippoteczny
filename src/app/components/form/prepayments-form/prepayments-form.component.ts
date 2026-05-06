@@ -12,7 +12,14 @@ import { SelectComponent } from '../../ui/select/select.component';
 @Component({
   selector: 'app-prepayments-form',
   standalone: true,
-  imports: [ReactiveFormsModule, SectionComponent, FieldComponent, NumberInputComponent, MonthPickerComponent, SelectComponent],
+  imports: [
+    ReactiveFormsModule,
+    SectionComponent,
+    FieldComponent,
+    NumberInputComponent,
+    MonthPickerComponent,
+    SelectComponent,
+  ],
   templateUrl: './prepayments-form.component.html',
   styleUrl: './prepayments-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

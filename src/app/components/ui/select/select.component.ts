@@ -1,4 +1,12 @@
-import { Component, ChangeDetectionStrategy, input, output, signal, computed, forwardRef } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  input,
+  output,
+  signal,
+  computed,
+  forwardRef,
+} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
@@ -25,7 +33,13 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
         }
       </select>
       <svg width="12" height="12" viewBox="0 0 12 12">
-        <path d="M2 4 L6 8 L10 4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path
+          d="M2 4 L6 8 L10 4"
+          stroke="currentColor"
+          stroke-width="1.5"
+          fill="none"
+          stroke-linecap="round"
+        />
       </svg>
     </div>
   `,
@@ -43,10 +57,18 @@ export class SelectComponent implements ControlValueAccessor {
   private _onChange?: (v: string) => void;
   private _onTouched?: () => void;
 
-  writeValue(v: string): void { this._cvaValue.set(v ?? ''); }
-  registerOnChange(fn: (v: string) => void): void { this._onChange = fn; }
-  registerOnTouched(fn: () => void): void { this._onTouched = fn; }
-  setDisabledState(d: boolean): void { this.disabled.set(d); }
+  writeValue(v: string): void {
+    this._cvaValue.set(v ?? '');
+  }
+  registerOnChange(fn: (v: string) => void): void {
+    this._onChange = fn;
+  }
+  registerOnTouched(fn: () => void): void {
+    this._onTouched = fn;
+  }
+  setDisabledState(d: boolean): void {
+    this.disabled.set(d);
+  }
 
   onNativeChange(val: string): void {
     this._cvaValue.set(val);

@@ -53,15 +53,15 @@ src/
 
 ## Mapowanie React → Angular
 
-| React (makieta) | Angular |
-|---|---|
-| `useState` | `signal()` |
-| `useMemo` | `computed()` |
+| React (makieta)           | Angular                                    |
+| ------------------------- | ------------------------------------------ |
+| `useState`                | `signal()`                                 |
+| `useMemo`                 | `computed()`                               |
 | `window.generateSchedule` | `CalcService.schedule()` (computed signal) |
-| props w dół | `@Input() ... = input.required<...>()` |
-| handlery w górę | `output<T>()` |
-| `useTweaks` | sygnał + `localStorage` |
-| inline JSX | osobne komponenty stand-alone |
+| props w dół               | `@Input() ... = input.required<...>()`     |
+| handlery w górę           | `output<T>()`                              |
+| `useTweaks`               | sygnał + `localStorage`                    |
+| inline JSX                | osobne komponenty stand-alone              |
 
 ## Stan globalny
 

@@ -1,16 +1,35 @@
-<app-section title="Dane podstawowe" badge="Dane wymagane do przeprowadzenia kalkulacji" [defaultOpen]="true">
+<app-section
+  title="Dane podstawowe"
+  badge="Dane wymagane do przeprowadzenia kalkulacji"
+  [defaultOpen]="true"
+>
   <div [formGroup]="basicData">
     <div class="row row--2">
       <app-field num="1" label="Wartość nieruchomości">
-        <app-number-input formControlName="propertyValue" suffix="zł" [decimals]="0" (valueChange)="onPropertyValueChanged()" />
+        <app-number-input
+          formControlName="propertyValue"
+          suffix="zł"
+          [decimals]="0"
+          (valueChange)="onPropertyValueChanged()"
+        />
       </app-field>
 
       <app-field num="2" label="Kwota kredytu">
-        <app-number-input formControlName="loanAmount" suffix="zł" [decimals]="0" (valueChange)="onLoanAmountChanged()" />
+        <app-number-input
+          formControlName="loanAmount"
+          suffix="zł"
+          [decimals]="0"
+          (valueChange)="onLoanAmountChanged()"
+        />
       </app-field>
 
       <app-field num="3" label="LTV">
-        <app-number-input formControlName="ltv" suffix="%" [decimals]="2" (valueChange)="onLtvChanged()" />
+        <app-number-input
+          formControlName="ltv"
+          suffix="%"
+          [decimals]="2"
+          (valueChange)="onLtvChanged()"
+        />
       </app-field>
 
       <app-field num="4" label="Okres kredytowania">
@@ -20,7 +39,12 @@
             [decimals]="2"
             (valueChange)="onLoanPeriodValueChanged($event)"
           />
-          <app-segmented [options]="['lata', 'miesiące']" [value]="loanPeriodUnit" (valueChange)="onLoanPeriodUnitChanged($event)" [compact]="true" />
+          <app-segmented
+            [options]="['lata', 'miesiące']"
+            [value]="loanPeriodUnit"
+            (valueChange)="onLoanPeriodUnitChanged($event)"
+            [compact]="true"
+          />
         </div>
       </app-field>
 
@@ -35,7 +59,11 @@
 
     <div class="row row--2" style="margin-top: 0.75rem">
       <app-field num="7" label="Typ rat">
-        <app-segmented formControlName="installmentType" [options]="['rowne', 'malejace']" [labels]="['równe', 'malejące']" />
+        <app-segmented
+          formControlName="installmentType"
+          [options]="['rowne', 'malejace']"
+          [labels]="['równe', 'malejące']"
+        />
       </app-field>
     </div>
 
@@ -51,9 +79,11 @@
                 <input
                   type="month"
                   formControlName="from"
-                  style="display:inline; width:auto; padding:0.25rem"
+                  style="display: inline; width: auto; padding: 0.25rem"
                 />
-                <small style="margin-left:0.25rem">{{ period.get('from')?.value | formatMonth }}</small>
+                <small style="margin-left: 0.25rem">{{
+                  period.get('from')?.value | formatMonth
+                }}</small>
               }
             </h3>
             @if ($index > 0) {
@@ -62,7 +92,11 @@
           </div>
 
           <app-field label="Stopa">
-            <app-segmented formControlName="rateType" [options]="['zmienna', 'stala']" [labels]="['zmienna', 'stała']" />
+            <app-segmented
+              formControlName="rateType"
+              [options]="['zmienna', 'stala']"
+              [labels]="['zmienna', 'stała']"
+            />
           </app-field>
 
           @if (period.get('rateType')?.value === 'zmienna') {
@@ -78,7 +112,11 @@
                   <input
                     type="text"
                     class="mono"
-                    [value]="((period.get('wibor')?.value || 0) + (period.get('margin')?.value || 0)).toFixed(2).replace('.', ',')"
+                    [value]="
+                      ((period.get('wibor')?.value || 0) + (period.get('margin')?.value || 0))
+                        .toFixed(2)
+                        .replace('.', ',')
+                    "
                     readonly
                   />
                   <span class="suffix">%</span>
@@ -97,7 +135,9 @@
     </div>
 
     <div class="actions">
-      <button type="button" class="btn btn--add" (click)="addRatePeriod()">+ Dodaj zmianę oprocentowania</button>
+      <button type="button" class="btn btn--add" (click)="addRatePeriod()">
+        + Dodaj zmianę oprocentowania
+      </button>
     </div>
   </div>
 </app-section>

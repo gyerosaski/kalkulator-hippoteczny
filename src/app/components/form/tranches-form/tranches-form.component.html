@@ -1,11 +1,18 @@
-<app-section title="Transze" badge="opcjonalne"
-  [toggleable]="true" [defaultOpen]="false"
-  [enabled]="includedEnabled()" (enabledChange)="included.setValue($event)">
+<app-section
+  title="Transze"
+  badge="opcjonalne"
+  [toggleable]="true"
+  [defaultOpen]="false"
+  [enabled]="includedEnabled()"
+  (enabledChange)="included.setValue($event)"
+>
   <div [formGroup]="fieldsGroup">
     <div formArrayName="transze" class="stack">
       @for (tranche of transzeArray.controls; track $index) {
         <div class="card" [formGroupName]="$index">
-          <div class="card-head"><h3>Transza {{ $index + 1 }}</h3></div>
+          <div class="card-head">
+            <h3>Transza {{ $index + 1 }}</h3>
+          </div>
           <div class="row row--2">
             <app-field [num]="($index + 1).toString()" label="Kwota">
               <app-number-input formControlName="amount" suffix="zł" [decimals]="2" />
@@ -17,7 +24,13 @@
             @if ($index === 0) {
               <app-field [num]="($index + 1).toString() + '.2'" label="Data">
                 <div class="inp inp--disabled">
-                  <input type="month" formControlName="date" [disabled]="true" [readonly]="true" class="mono" />
+                  <input
+                    type="month"
+                    formControlName="date"
+                    [disabled]="true"
+                    [readonly]="true"
+                    class="mono"
+                  />
                 </div>
                 <div class="field-hint">{{ tranche.get('date')?.value | formatMonth }}</div>
               </app-field>
@@ -26,14 +39,19 @@
                 <app-month-picker formControlName="date" />
               </app-field>
 
-              <app-field [num]="($index + 1).toString() + '.3'" label="Opłata za uruchomienie transzy">
+              <app-field
+                [num]="($index + 1).toString() + '.3'"
+                label="Opłata za uruchomienie transzy"
+              >
                 <app-number-input formControlName="disbursementFee" suffix="zł" [decimals]="2" />
                 @if (tranche.get('disbursementFee')?.errors?.['max']) {
-                  <small class="field-error">Wysokość opłaty nie może być wyższa niż 1 000 zł.</small>
+                  <small class="field-error"
+                    >Wysokość opłaty nie może być wyższa niż 1 000 zł.</small
+                  >
                 }
               </app-field>
 
-              <div style="display:flex; align-items:flex-end">
+              <div style="display: flex; align-items: flex-end">
                 <button type="button" (click)="removeTransza($index)">−</button>
               </div>
             }

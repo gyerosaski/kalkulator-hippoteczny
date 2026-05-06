@@ -1,6 +1,11 @@
-<app-section title="Koszty okołokredytowe i promocje" badge="opcjonalne"
-  [toggleable]="true" [defaultOpen]="false"
-  [enabled]="includedEnabled()" (enabledChange)="included.setValue($event)">
+<app-section
+  title="Koszty okołokredytowe i promocje"
+  badge="opcjonalne"
+  [toggleable]="true"
+  [defaultOpen]="false"
+  [enabled]="includedEnabled()"
+  (enabledChange)="included.setValue($event)"
+>
   <div [formGroup]="form">
     <!-- 1. Prowizja za udzielenie -->
     <div class="card">
@@ -52,7 +57,11 @@
           <app-select formControlName="propInsCalcMethod" [options]="propertyInsCalcOptions" />
         </app-field>
         <app-field num="4c" label="Wartość składki">
-          <app-number-input formControlName="propInsValue" [suffix]="propInsSuffix" [decimals]="propInsDecimals" />
+          <app-number-input
+            formControlName="propInsValue"
+            [suffix]="propInsSuffix"
+            [decimals]="propInsDecimals"
+          />
         </app-field>
         <div class="row row--2">
           <app-field label="Od">
@@ -86,7 +95,11 @@
           <app-select formControlName="lifeInsCalcMethod" [options]="lifeInsCalcOptions" />
         </app-field>
         <app-field num="6c" label="Wartość składki">
-          <app-number-input formControlName="lifeInsValue" [suffix]="lifeInsSuffix" [decimals]="lifeInsDecimals" />
+          <app-number-input
+            formControlName="lifeInsValue"
+            [suffix]="lifeInsSuffix"
+            [decimals]="lifeInsDecimals"
+          />
         </app-field>
         <div class="row row--2">
           <app-field label="Od">
@@ -110,7 +123,11 @@
           <app-select formControlName="jobLossInsCalcMethod" [options]="lifeInsCalcOptions" />
         </app-field>
         <app-field num="7c" label="Wartość składki">
-          <app-number-input formControlName="jobLossInsValue" [suffix]="jobLossInsSuffix" [decimals]="2" />
+          <app-number-input
+            formControlName="jobLossInsValue"
+            [suffix]="jobLossInsSuffix"
+            [decimals]="2"
+          />
         </app-field>
         <app-field label="Od">
           <app-month-picker formControlName="jobLossInsFrom" />
@@ -122,7 +139,9 @@
     <div formArrayName="additionalCosts" class="stack">
       @for (cost of additionalCostsArray.controls; track $index) {
         <div class="card" [formGroupName]="$index">
-          <div class="card-head"><h3>8. Dodatkowy koszt {{ $index + 1 }}</h3></div>
+          <div class="card-head">
+            <h3>8. Dodatkowy koszt {{ $index + 1 }}</h3>
+          </div>
           <div class="row row--2">
             <app-field num="8" label="Nazwa kosztu">
               <div class="inp">
@@ -136,12 +155,16 @@
               <app-select formControlName="calcMethod" [options]="lifeInsCalcOptions" />
             </app-field>
             <app-field num="8c" label="Kwota">
-              <app-number-input formControlName="value" [suffix]="getAdditionalCostSuffix($index)" [decimals]="2" />
+              <app-number-input
+                formControlName="value"
+                [suffix]="getAdditionalCostSuffix($index)"
+                [decimals]="2"
+              />
             </app-field>
             <app-field num="8d" label="Okres ponoszenia kosztu (Od)">
               <app-month-picker formControlName="from" />
             </app-field>
-            <div style="display:flex; gap:0.5rem; align-items:flex-end">
+            <div style="display: flex; gap: 0.5rem; align-items: flex-end">
               <button type="button" (click)="addAdditionalCost()">+</button>
               @if (additionalCostsArray.length > 1) {
                 <button type="button" (click)="removeAdditionalCost($index)">Usuń</button>

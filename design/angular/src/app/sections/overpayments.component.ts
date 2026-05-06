@@ -9,33 +9,52 @@ import { SelectComponent } from '../ui/select.component';
 @Component({
   selector: 'app-overpayments',
   standalone: true,
-  imports: [SectionComponent, FieldComponent, NumberInputComponent,
-            MonthPickerComponent, SelectComponent],
+  imports: [
+    SectionComponent,
+    FieldComponent,
+    NumberInputComponent,
+    MonthPickerComponent,
+    SelectComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <app-section title="Nadpłaty" [defaultOpen]="true"
-      [toggleable]="true" [enabled]="calc.overpaymentsEnabled()"
-      (enabledChange)="calc.overpaymentsEnabled.set($event)">
+    <app-section
+      title="Nadpłaty"
+      [defaultOpen]="true"
+      [toggleable]="true"
+      [enabled]="calc.overpaymentsEnabled()"
+      (enabledChange)="calc.overpaymentsEnabled.set($event)"
+    >
       <div class="row row--3">
         <app-field label="Jak często nadpłacasz?" num="1">
-          <app-select [options]="freqOpts" [value]="calc.overFreq()"
-            (valueChange)="calc.overFreq.set($any($event))"/>
+          <app-select
+            [options]="freqOpts"
+            [value]="calc.overFreq()"
+            (valueChange)="calc.overFreq.set($any($event))"
+          />
         </app-field>
         <app-field label="Kwota nadpłaty" num="3">
-          <app-number-input [value]="calc.overAmount()" (valueChange)="calc.overAmount.set($event)"
-            suffix="zł" [decimals]="2"/>
+          <app-number-input
+            [value]="calc.overAmount()"
+            (valueChange)="calc.overAmount.set($event)"
+            suffix="zł"
+            [decimals]="2"
+          />
         </app-field>
         <app-field label="Skutek nadpłaty" num="4">
-          <app-select [options]="['niższa rata','skrócenie okresu']" [value]="calc.overEffect()"
-            (valueChange)="calc.overEffect.set($any($event))"/>
+          <app-select
+            [options]="['niższa rata', 'skrócenie okresu']"
+            [value]="calc.overEffect()"
+            (valueChange)="calc.overEffect.set($any($event))"
+          />
         </app-field>
       </div>
       <div class="row row--2">
         <app-field label="Data nadpłaty — od" num="2">
-          <app-month-picker [value]="dateFrom()"/>
+          <app-month-picker [value]="dateFrom()" />
         </app-field>
         <app-field label="do">
-          <app-month-picker [value]="dateTo()"/>
+          <app-month-picker [value]="dateTo()" />
         </app-field>
       </div>
     </app-section>

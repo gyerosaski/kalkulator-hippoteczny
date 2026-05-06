@@ -1,5 +1,5 @@
-import {Component, inject} from '@angular/core';
-import {FormService} from '../../../services/form/form';
+import { Component, inject } from '@angular/core';
+import { FormService } from '../../../services/form/form';
 
 @Component({
   selector: 'app-results-errors',

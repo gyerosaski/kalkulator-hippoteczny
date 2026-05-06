@@ -22,16 +22,21 @@ import { FormService } from '../../../services/form/form';
             <div>Rata</div>
             <div>Kapitał</div>
             <div>Odsetki</div>
-            @if (isPrepaymentIncluded) { <div>Nadpłaty</div> }
-            @if (isOverheadCostsIncluded) { <div>Koszty</div> }
+            @if (isPrepaymentIncluded) {
+              <div>Nadpłaty</div>
+            }
+            @if (isOverheadCostsIncluded) {
+              <div>Koszty</div>
+            }
             <div>Pozostało</div>
           </div>
           @for (y of yearlyGroups()!; track y.year) {
-            <button class="tbl-row tbl-row--year" [class.is-open]="expandedYear() === y.year"
-              (click)="toggle(y.year)">
-              <div class="cell-year">
-                <span class="chev">▸</span>{{ y.year }}
-              </div>
+            <button
+              class="tbl-row tbl-row--year"
+              [class.is-open]="expandedYear() === y.year"
+              (click)="toggle(y.year)"
+            >
+              <div class="cell-year"><span class="chev">▸</span>{{ y.year }}</div>
               <div class="mono">{{ y.sumRate | formatAmount }}</div>
               <div class="mono">{{ y.sumCapital | formatAmount }}</div>
               <div class="mono">{{ y.sumInterest | formatAmount }}</div>
@@ -41,7 +46,9 @@ import { FormService } from '../../../services/form/form';
               @if (isOverheadCostsIncluded) {
                 <div class="mono">{{ y.sumInsuranceCost | formatAmount }}</div>
               }
-              <div class="mono"><b>{{ y.lastRemaining | formatAmount }}</b></div>
+              <div class="mono">
+                <b>{{ y.lastRemaining | formatAmount }}</b>
+              </div>
             </button>
             @if (expandedYear() === y.year) {
               @for (r of y.rows; track r.index) {
@@ -89,6 +96,6 @@ export class ResultsScheduleComponent {
   }
 
   toggle(year: number): void {
-    this.expandedYear.update(curr => (curr === year ? null : year));
+    this.expandedYear.update((curr) => (curr === year ? null : year));
   }
 }

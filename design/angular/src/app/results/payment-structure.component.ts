@@ -18,7 +18,7 @@ import { PlnPipe } from '../pipes/pln.pipe';
         <button class="btn btn--mini">drukuj</button>
       </div>
       <div class="donut-row">
-        <app-donut [data]="slices()" [centerLabel]="'Razem'" [centerValue]="centerVal()"/>
+        <app-donut [data]="slices()" [centerLabel]="'Razem'" [centerValue]="centerVal()" />
         <ul class="legend">
           @for (s of slices(); track s.label) {
             <li>

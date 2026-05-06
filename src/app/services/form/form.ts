@@ -223,9 +223,9 @@ export class FormService {
         validators: [Validators.required],
       }),
       installmentType: new FormControl<InstallmentType>('rowne', { nonNullable: true }),
-      ratePeriods: new FormArray([
-        this.createRatePeriodGroup({ from: today }),
-      ]) as FormArray<FormGroup<RatePeriodFormGroup>>,
+      ratePeriods: new FormArray([this.createRatePeriodGroup({ from: today })]) as FormArray<
+        FormGroup<RatePeriodFormGroup>
+      >,
     });
   }
 
@@ -333,7 +333,9 @@ export class FormService {
     initial: Partial<Tranche> = {},
   ): FormGroup<TrancheFormGroup> {
     const startDate = this.form?.controls.basicData?.get('startDate')?.value || ym();
-    const amount = initial.amount ?? (isFirst ? this.form?.controls.basicData?.get('loanAmount')?.value || 0 : 0);
+    const amount =
+      initial.amount ??
+      (isFirst ? this.form?.controls.basicData?.get('loanAmount')?.value || 0 : 0);
     const date = initial.date ?? startDate;
     return new FormGroup<TrancheFormGroup>({
       amount: new FormControl(amount, {
@@ -385,7 +387,8 @@ export class FormService {
   addRatePeriod(): void {
     const lastPeriod = this.ratePeriodsArray.at(this.ratePeriodsArray.length - 1);
     const lastValues = lastPeriod?.getRawValue();
-    const lastFrom = lastValues?.from || (this.form.controls.basicData.get('startDate')?.value || ym());
+    const lastFrom =
+      lastValues?.from || this.form.controls.basicData.get('startDate')?.value || ym();
     const newFrom = addMonthsStr(lastFrom, 12);
     this.ratePeriodsArray.push(
       this.createRatePeriodGroup({

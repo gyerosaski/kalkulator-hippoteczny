@@ -26,9 +26,9 @@ import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
         (change)="onNativeChange($any($event.target).value)"
       />
       <svg width="14" height="14" viewBox="0 0 14 14" class="cal-ico">
-        <rect x="1.5" y="2.5" width="11" height="10" rx="1.5" stroke="currentColor" fill="none"/>
-        <path d="M1.5 5.5 H12.5" stroke="currentColor"/>
-        <path d="M4 1 V3.5 M10 1 V3.5" stroke="currentColor" stroke-linecap="round"/>
+        <rect x="1.5" y="2.5" width="11" height="10" rx="1.5" stroke="currentColor" fill="none" />
+        <path d="M1.5 5.5 H12.5" stroke="currentColor" />
+        <path d="M4 1 V3.5 M10 1 V3.5" stroke="currentColor" stroke-linecap="round" />
       </svg>
     </div>
     @if (_value()) {
@@ -46,10 +46,18 @@ export class MonthPickerComponent implements ControlValueAccessor {
   private _onChange?: (v: string) => void;
   private _onTouched?: () => void;
 
-  writeValue(v: string): void { this._value.set(v ?? ''); }
-  registerOnChange(fn: (v: string) => void): void { this._onChange = fn; }
-  registerOnTouched(fn: () => void): void { this._onTouched = fn; }
-  setDisabledState(d: boolean): void { this.disabled.set(d); }
+  writeValue(v: string): void {
+    this._value.set(v ?? '');
+  }
+  registerOnChange(fn: (v: string) => void): void {
+    this._onChange = fn;
+  }
+  registerOnTouched(fn: () => void): void {
+    this._onTouched = fn;
+  }
+  setDisabledState(d: boolean): void {
+    this.disabled.set(d);
+  }
 
   onNativeChange(val: string): void {
     this._value.set(val);

@@ -13,7 +13,16 @@ import { MonthPickerComponent } from '../../ui/month-picker/month-picker.compone
 @Component({
   selector: 'app-tranches-form',
   standalone: true,
-  imports: [ReactiveFormsModule, FormatAmountPipe, FormatMonthPipe, FormatCurrencyAmountPipe, SectionComponent, FieldComponent, NumberInputComponent, MonthPickerComponent],
+  imports: [
+    ReactiveFormsModule,
+    FormatAmountPipe,
+    FormatMonthPipe,
+    FormatCurrencyAmountPipe,
+    SectionComponent,
+    FieldComponent,
+    NumberInputComponent,
+    MonthPickerComponent,
+  ],
   templateUrl: './tranches-form.component.html',
   styleUrl: './tranches-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

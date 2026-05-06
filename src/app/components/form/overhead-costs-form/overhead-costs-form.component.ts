@@ -13,7 +13,15 @@ import { SelectComponent } from '../../ui/select/select.component';
 @Component({
   selector: 'app-overhead-costs-form',
   standalone: true,
-  imports: [ReactiveFormsModule, FormatAmountPipe, SectionComponent, FieldComponent, NumberInputComponent, MonthPickerComponent, SelectComponent],
+  imports: [
+    ReactiveFormsModule,
+    FormatAmountPipe,
+    SectionComponent,
+    FieldComponent,
+    NumberInputComponent,
+    MonthPickerComponent,
+    SelectComponent,
+  ],
   templateUrl: './overhead-costs-form.component.html',
   styleUrl: './overhead-costs-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -82,7 +90,9 @@ export class OverheadCostsFormComponent {
   }
 
   getAdditionalCostSuffix(index: number): string {
-    return this.additionalCostsArray.at(index).get('calcMethod')?.value === 'znam kwotę' ? 'zł' : '%';
+    return this.additionalCostsArray.at(index).get('calcMethod')?.value === 'znam kwotę'
+      ? 'zł'
+      : '%';
   }
 
   addAdditionalCost() {

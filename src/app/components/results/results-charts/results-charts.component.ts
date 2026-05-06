@@ -20,7 +20,7 @@ import { FormService } from '../../../services/form/form';
             </div>
           </div>
           <div class="donut-row">
-            <app-donut [data]="totalSlices()" centerLabel="razem" [centerValue]="totalCenter()"/>
+            <app-donut [data]="totalSlices()" centerLabel="razem" [centerValue]="totalCenter()" />
             <ul class="legend">
               @for (s of totalSlices(); track s.label) {
                 <li>
@@ -38,8 +38,13 @@ import { FormService } from '../../../services/form/form';
             <h3>Struktura pierwszej raty</h3>
           </div>
           <div class="donut-row donut-row--single">
-            <app-donut [data]="firstSlices()" [size]="160" [thickness]="22"
-              centerLabel="rata" [centerValue]="firstCenter()"/>
+            <app-donut
+              [data]="firstSlices()"
+              [size]="160"
+              [thickness]="22"
+              centerLabel="rata"
+              [centerValue]="firstCenter()"
+            />
             <ul class="legend">
               @for (s of firstSlices(); track s.label) {
                 <li>
@@ -84,7 +89,11 @@ export class ResultsChartsComponent {
       { label: 'Odsetki', value: r.totals.totalInterest, color: 'var(--c-int)' },
     ];
     if (this.formService.isOverheadCostsIncluded && r.totals.overheadCosts > 0) {
-      slices.push({ label: 'Koszty okołokredytowe', value: r.totals.overheadCosts, color: 'var(--c-cost)' });
+      slices.push({
+        label: 'Koszty okołokredytowe',
+        value: r.totals.overheadCosts,
+        color: 'var(--c-cost)',
+      });
     }
     if (this.formService.isPrepaymentIncluded && r.totals.prepayments > 0) {
       slices.push({ label: 'Nadpłaty', value: r.totals.prepayments, color: 'var(--c-over)' });

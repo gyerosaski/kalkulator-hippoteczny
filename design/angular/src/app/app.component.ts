@@ -17,22 +17,38 @@ import { TweaksPanelComponent } from './tweaks/tweaks-panel.component';
   standalone: true,
   imports: [
     CommonModule,
-    BasicDataComponent, CostsComponent, TranchesComponent, OverpaymentsComponent,
-    KpiStripComponent, PaymentStructureComponent, FirstInstallmentComponent,
-    TrendChartComponent, ScheduleTableComponent, TweaksPanelComponent,
+    BasicDataComponent,
+    CostsComponent,
+    TranchesComponent,
+    OverpaymentsComponent,
+    KpiStripComponent,
+    PaymentStructureComponent,
+    FirstInstallmentComponent,
+    TrendChartComponent,
+    ScheduleTableComponent,
+    TweaksPanelComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="app" [attr.data-palette]="calc.tweaks().palette"
-         [attr.data-density]="calc.tweaks().density"
-         [attr.data-font]="calc.tweaks().fontPair">
+    <div
+      class="app"
+      [attr.data-palette]="calc.tweaks().palette"
+      [attr.data-density]="calc.tweaks().density"
+      [attr.data-font]="calc.tweaks().fontPair"
+    >
       <header class="topbar">
         <div class="brand">
           <div class="brand-mark">
             <svg width="24" height="24" viewBox="0 0 24 24">
-              <rect x="3" y="3" width="18" height="18" rx="5" fill="var(--accent-sage-deep)"/>
-              <path d="M8 12 L11 15 L16 9" stroke="white" stroke-width="2" fill="none"
-                stroke-linecap="round" stroke-linejoin="round"/>
+              <rect x="3" y="3" width="18" height="18" rx="5" fill="var(--accent-sage-deep)" />
+              <path
+                d="M8 12 L11 15 L16 9"
+                stroke="white"
+                stroke-width="2"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
             </svg>
           </div>
           <div>
@@ -55,23 +71,23 @@ import { TweaksPanelComponent } from './tweaks/tweaks-panel.component';
 
       <main class="grid">
         <div class="col col--form">
-          <app-basic-data/>
-          <app-costs/>
-          <app-tranches/>
-          <app-overpayments/>
+          <app-basic-data />
+          <app-costs />
+          <app-tranches />
+          <app-overpayments />
         </div>
         <div class="col col--results">
-          <app-kpi-strip/>
+          <app-kpi-strip />
           <div class="result-grid">
-            <app-payment-structure/>
-            <app-first-installment/>
+            <app-payment-structure />
+            <app-first-installment />
           </div>
-          <app-trend-chart/>
-          <app-schedule-table/>
+          <app-trend-chart />
+          <app-schedule-table />
         </div>
       </main>
 
-      <app-tweaks-panel/>
+      <app-tweaks-panel />
     </div>
   `,
 })

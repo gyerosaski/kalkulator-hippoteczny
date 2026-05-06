@@ -1,4 +1,13 @@
-import { Component, ChangeDetectionStrategy, input, output, signal, computed, effect, forwardRef } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  input,
+  output,
+  signal,
+  computed,
+  effect,
+  forwardRef,
+} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
@@ -24,8 +33,12 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
         (input)="onInput($any($event.target).value)"
         class="mono"
       />
-      @if (suffix()) { <span class="suffix">{{ suffix() }}</span> }
-      @if (hint()) { <span class="hint">{{ hint() }}</span> }
+      @if (suffix()) {
+        <span class="suffix">{{ suffix() }}</span>
+      }
+      @if (hint()) {
+        <span class="hint">{{ hint() }}</span>
+      }
     </div>
   `,
 })

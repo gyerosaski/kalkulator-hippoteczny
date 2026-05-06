@@ -22,7 +22,14 @@
   gap: 14px;
   padding-bottom: 32px;
 
-  &::-webkit-scrollbar { width: 6px; }
-  &::-webkit-scrollbar-track { background: transparent; }
-  &::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 3px; }
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: var(--line-2);
+    border-radius: 3px;
+  }
 }

@@ -10,25 +10,42 @@ import { Component, ChangeDetectionStrategy, input, output, signal, effect } fro
         <button class="sec-head" (click)="toggleOpen()" [disabled]="isOff()">
           <span class="sec-chev">
             <svg width="10" height="10" viewBox="0 0 10 10">
-              <path d="M3 1 L7 5 L3 9" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <path
+                d="M3 1 L7 5 L3 9"
+                stroke="currentColor"
+                stroke-width="1.5"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
             </svg>
           </span>
-          @if (num()) { <span class="sec-num">{{ num() }}</span> }
+          @if (num()) {
+            <span class="sec-num">{{ num() }}</span>
+          }
           <span class="sec-title">{{ title() }}</span>
-          @if (badge()) { <span class="sec-badge">{{ badge() }}</span> }
+          @if (badge()) {
+            <span class="sec-badge">{{ badge() }}</span>
+          }
         </button>
         @if (toggleable()) {
-          <label class="sec-switch" [title]="enabled() ? 'Wyłącz sekcję' : 'Włącz sekcję'"
-            (click)="$event.stopPropagation()">
-            <input type="checkbox" [checked]="enabled()"
-              (change)="enabledChange.emit($any($event.target).checked)"/>
+          <label
+            class="sec-switch"
+            [title]="enabled() ? 'Wyłącz sekcję' : 'Włącz sekcję'"
+            (click)="$event.stopPropagation()"
+          >
+            <input
+              type="checkbox"
+              [checked]="enabled()"
+              (change)="enabledChange.emit($any($event.target).checked)"
+            />
             <span class="switch-track"><span class="switch-thumb"></span></span>
             <span class="switch-lab">{{ enabled() ? 'wł.' : 'wył.' }}</span>
           </label>
         }
       </div>
       @if (open() && !isOff()) {
-        <div class="sec-body"><ng-content/></div>
+        <div class="sec-body"><ng-content /></div>
       }
     </section>
   `,
@@ -52,6 +69,6 @@ export class SectionComponent {
 
   toggleOpen() {
     if (this.isOff()) return;
-    this.open.update(v => !v);
+    this.open.update((v) => !v);
   }
 }

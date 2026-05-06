@@ -12,7 +12,15 @@ import { SegmentedComponent } from '../../ui/segmented/segmented.component';
 @Component({
   selector: 'app-basic-data-form',
   standalone: true,
-  imports: [ReactiveFormsModule, FormatMonthPipe, SectionComponent, FieldComponent, NumberInputComponent, MonthPickerComponent, SegmentedComponent],
+  imports: [
+    ReactiveFormsModule,
+    FormatMonthPipe,
+    SectionComponent,
+    FieldComponent,
+    NumberInputComponent,
+    MonthPickerComponent,
+    SegmentedComponent,
+  ],
   templateUrl: './basic-data-form.component.html',
   styleUrl: './basic-data-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

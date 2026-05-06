@@ -16,19 +16,29 @@ import { MonthLabelPipe } from '../pipes/month-label.pipe';
       </div>
       <div class="tbl">
         <div class="tbl-head">
-          <div>Okres</div><div>Rata</div><div>Kapitał</div><div>Odsetki</div>
-          <div>Nadpłaty</div><div>Koszty</div><div>Pozostało</div>
+          <div>Okres</div>
+          <div>Rata</div>
+          <div>Kapitał</div>
+          <div>Odsetki</div>
+          <div>Nadpłaty</div>
+          <div>Koszty</div>
+          <div>Pozostało</div>
         </div>
         @for (y of visibleYears(); track y.year) {
-          <button class="tbl-row tbl-row--year" [class.is-open]="expandedYear() === y.year"
-            (click)="toggle(y.year)">
+          <button
+            class="tbl-row tbl-row--year"
+            [class.is-open]="expandedYear() === y.year"
+            (click)="toggle(y.year)"
+          >
             <div class="cell-year"><span class="chev">▸</span>{{ y.year }}</div>
             <div class="mono">{{ y.rata | pln }}</div>
             <div class="mono">{{ y.principal | pln }}</div>
             <div class="mono">{{ y.interest | pln }}</div>
             <div class="mono">{{ y.overpayment | pln }}</div>
             <div class="mono">{{ y.monthlyCost | pln }}</div>
-            <div class="mono"><b>{{ y.balance | pln }}</b></div>
+            <div class="mono">
+              <b>{{ y.balance | pln }}</b>
+            </div>
           </button>
           @if (expandedYear() === y.year) {
             @for (r of y.rows; track r.idx) {
@@ -58,6 +68,6 @@ export class ScheduleTableComponent {
   totalYears = computed(() => this.calc.schedule().yearly.length);
 
   toggle(y: number) {
-    this.expandedYear.update(curr => curr === y ? null : y);
+    this.expandedYear.update((curr) => (curr === y ? null : y));
   }
 }

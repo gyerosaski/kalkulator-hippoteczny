@@ -1,6 +1,10 @@
 import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
 
-export interface DonutSlice { label: string; value: number; color: string; }
+export interface DonutSlice {
+  label: string;
+  value: number;
+  color: string;
+}
 
 @Component({
   selector: 'app-donut',
@@ -9,14 +13,26 @@ export interface DonutSlice { label: string; value: number; color: string; }
   template: `
     <div class="donut-wrap" [style.width.px]="size()" [style.height.px]="size()">
       <svg [attr.width]="size()" [attr.height]="size()">
-        <circle [attr.cx]="c()" [attr.cy]="c()" [attr.r]="r()" fill="none"
-          stroke="var(--track)" [attr.stroke-width]="thickness()"/>
+        <circle
+          [attr.cx]="c()"
+          [attr.cy]="c()"
+          [attr.r]="r()"
+          fill="none"
+          stroke="var(--track)"
+          [attr.stroke-width]="thickness()"
+        />
         @for (s of slices(); track s.slice.label) {
-          <circle [attr.cx]="c()" [attr.cy]="c()" [attr.r]="r()" fill="none"
-            [attr.stroke]="s.slice.color" [attr.stroke-width]="thickness()"
+          <circle
+            [attr.cx]="c()"
+            [attr.cy]="c()"
+            [attr.r]="r()"
+            fill="none"
+            [attr.stroke]="s.slice.color"
+            [attr.stroke-width]="thickness()"
             [attr.stroke-dasharray]="s.dasharray"
             [attr.stroke-dashoffset]="s.offset"
-            [attr.transform]="'rotate(-90 ' + c() + ' ' + c() + ')'"/>
+            [attr.transform]="'rotate(-90 ' + c() + ' ' + c() + ')'"
+          />
         }
       </svg>
       <div class="donut-center">
@@ -41,7 +57,7 @@ export class DonutComponent {
     const data = this.data();
     const total = data.reduce((s, d) => s + d.value, 0) || 1;
     let acc = 0;
-    return data.map(slice => {
+    return data.map((slice) => {
       const len = (slice.value / total) * this.circ();
       const out = { slice, dasharray: `${len} ${this.circ() - len}`, offset: -acc };
       acc += len;

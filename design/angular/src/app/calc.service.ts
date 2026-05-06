@@ -1,15 +1,34 @@
 import { Injectable, signal, computed } from '@angular/core';
 import {
-  CalcInput, ScheduleResult, ScheduleRow, YearAggregate,
-  InstallmentType, RateType, FrequencyAll, OverpaymentEffect,
-  Tweaks
+  CalcInput,
+  ScheduleResult,
+  ScheduleRow,
+  YearAggregate,
+  InstallmentType,
+  RateType,
+  FrequencyAll,
+  OverpaymentEffect,
+  Tweaks,
 } from './models';
 
 export function addMonths(d: Date, n: number): Date {
   return new Date(d.getFullYear(), d.getMonth() + n, 1);
 }
 
-const MONTHS_PL = ['sty','lut','mar','kwi','maj','cze','lip','sie','wrz','paź','lis','gru'];
+const MONTHS_PL = [
+  'sty',
+  'lut',
+  'mar',
+  'kwi',
+  'maj',
+  'cze',
+  'lip',
+  'sie',
+  'wrz',
+  'paź',
+  'lis',
+  'gru',
+];
 export const monthLabel = (d: Date) => `${MONTHS_PL[d.getMonth()]} ${d.getFullYear()}`;
 
 @Injectable({ providedIn: 'root' })
@@ -52,34 +71,38 @@ export class CalcService {
     return pv ? (this.loanAmount() / pv) * 100 : 0;
   });
 
-  schedule = computed<ScheduleResult>(() => this.compute({
-    propertyValue: this.propertyValue(),
-    loanAmount: this.loanAmount(),
-    years: this.years(),
-    months: this.months(),
-    installmentType: this.installmentType(),
-    rateType: this.rateType(),
-    rate: this.rate(),
-    wibor: this.wibor(),
-    margin: this.margin(),
-    startDate: this.startDate(),
-    costs: this.costsEnabled() ? {
-      commissionPct: this.commissionPct(),
-      valuationFee: this.valuationFee(),
-      bridgeRate: this.bridgeRate(),
-      bridgeMonths: this.bridgeMonths(),
-      insurancePct: this.insurancePct(),
-    } : { commissionPct: 0, valuationFee: 0, bridgeRate: 0, bridgeMonths: 0, insurancePct: 0 },
-    overpayments: {
-      frequency: this.overFreq(),
-      amount: this.overpaymentsEnabled() ? this.overAmount() : 0,
-      effect: this.overEffect(),
-    },
-    tranches: [],
-  }));
+  schedule = computed<ScheduleResult>(() =>
+    this.compute({
+      propertyValue: this.propertyValue(),
+      loanAmount: this.loanAmount(),
+      years: this.years(),
+      months: this.months(),
+      installmentType: this.installmentType(),
+      rateType: this.rateType(),
+      rate: this.rate(),
+      wibor: this.wibor(),
+      margin: this.margin(),
+      startDate: this.startDate(),
+      costs: this.costsEnabled()
+        ? {
+            commissionPct: this.commissionPct(),
+            valuationFee: this.valuationFee(),
+            bridgeRate: this.bridgeRate(),
+            bridgeMonths: this.bridgeMonths(),
+            insurancePct: this.insurancePct(),
+          }
+        : { commissionPct: 0, valuationFee: 0, bridgeRate: 0, bridgeMonths: 0, insurancePct: 0 },
+      overpayments: {
+        frequency: this.overFreq(),
+        amount: this.overpaymentsEnabled() ? this.overAmount() : 0,
+        effect: this.overEffect(),
+      },
+      tranches: [],
+    }),
+  );
 
   setLtv(pct: number) {
-    this.loanAmount.set(this.propertyValue() * pct / 100);
+    this.loanAmount.set((this.propertyValue() * pct) / 100);
   }
 
   private loadTweaks(): Tweaks {
@@ -90,33 +113,52 @@ export class CalcService {
     return { palette: 'sage', density: 'cozy', fontPair: 'inter' };
   }
   saveTweaks(t: Partial<Tweaks>) {
-    this.tweaks.update(prev => {
+    this.tweaks.update((prev) => {
       const next = { ...prev, ...t };
-      try { localStorage.setItem('khip:tweaks', JSON.stringify(next)); } catch {}
+      try {
+        localStorage.setItem('khip:tweaks', JSON.stringify(next));
+      } catch {}
       return next;
     });
   }
 
   // ====================== logika finansowa ======================
   private compute(input: CalcInput): ScheduleResult {
-    const { propertyValue, loanAmount, years, months, rateType, rate, wibor, margin,
-            installmentType, startDate, costs, overpayments } = input;
+    const {
+      propertyValue,
+      loanAmount,
+      years,
+      months,
+      rateType,
+      rate,
+      wibor,
+      margin,
+      installmentType,
+      startDate,
+      costs,
+      overpayments,
+    } = input;
 
     const n = years * 12 + months;
     const empty: ScheduleResult = {
-      rows: [], yearly: [], totalInterest: 0, totalPayments: 0,
-      firstInstallment: 0, totalCosts: 0, totalOverpayments: 0,
-      commission: 0, valuationFee: 0,
+      rows: [],
+      yearly: [],
+      totalInterest: 0,
+      totalPayments: 0,
+      firstInstallment: 0,
+      totalCosts: 0,
+      totalOverpayments: 0,
+      commission: 0,
+      valuationFee: 0,
     };
     if (n <= 0 || loanAmount <= 0) return empty;
 
     const nominal = rateType === 'zmienna' ? wibor + margin : rate;
     const i = nominal / 100 / 12;
     let balance = loanAmount;
-    let installmentEqual = i === 0 ? balance / n
-      : balance * i / (1 - Math.pow(1 + i, -n));
+    let installmentEqual = i === 0 ? balance / n : (balance * i) / (1 - Math.pow(1 + i, -n));
 
-    const insuranceMonthly = (costs.insurancePct / 100) * propertyValue / 12;
+    const insuranceMonthly = ((costs.insurancePct / 100) * propertyValue) / 12;
     const commission = (costs.commissionPct / 100) * loanAmount;
     const valuationFee = costs.valuationFee || 0;
 
@@ -155,20 +197,34 @@ export class CalcService {
       totalOverpayments += overpayment;
 
       rows.push({
-        idx: m + 1, date, rata, principal, interest, overpayment, balance,
-        monthlyCost: insuranceMonthly + (m < costs.bridgeMonths ? balance * (costs.bridgeRate/100/12) : 0),
+        idx: m + 1,
+        date,
+        rata,
+        principal,
+        interest,
+        overpayment,
+        balance,
+        monthlyCost:
+          insuranceMonthly + (m < costs.bridgeMonths ? balance * (costs.bridgeRate / 100 / 12) : 0),
       });
 
       if (balance === 0) break;
     }
 
     const byYear = new Map<number, YearAggregate>();
-    rows.forEach(r => {
+    rows.forEach((r) => {
       const y = r.date.getFullYear();
-      if (!byYear.has(y)) byYear.set(y, {
-        year: y, rata: 0, principal: 0, interest: 0, overpayment: 0,
-        monthlyCost: 0, balance: 0, rows: []
-      });
+      if (!byYear.has(y))
+        byYear.set(y, {
+          year: y,
+          rata: 0,
+          principal: 0,
+          interest: 0,
+          overpayment: 0,
+          monthlyCost: 0,
+          balance: 0,
+          rows: [],
+        });
       const a = byYear.get(y)!;
       a.rata += r.rata;
       a.principal += r.principal;
@@ -180,13 +236,19 @@ export class CalcService {
     });
 
     const yearly = Array.from(byYear.values());
-    const totalCosts = commission + valuationFee + rows.reduce((s,r)=>s+r.monthlyCost,0);
+    const totalCosts = commission + valuationFee + rows.reduce((s, r) => s + r.monthlyCost, 0);
     const totalPayments = loanAmount + totalInterest + totalCosts;
 
     return {
-      rows, yearly, totalInterest, totalPayments,
+      rows,
+      yearly,
+      totalInterest,
+      totalPayments,
       firstInstallment: rows[0]?.rata ?? 0,
-      totalCosts, totalOverpayments, commission, valuationFee,
+      totalCosts,
+      totalOverpayments,
+      commission,
+      valuationFee,
     };
   }
 }

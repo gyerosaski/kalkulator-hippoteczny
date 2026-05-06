@@ -1,14 +1,25 @@
-<app-section title="Nadpłaty" badge="opcjonalne"
-  [toggleable]="true" [defaultOpen]="false"
-  [enabled]="includedEnabled()" (enabledChange)="included.setValue($event)">
+<app-section
+  title="Nadpłaty"
+  badge="opcjonalne"
+  [toggleable]="true"
+  [defaultOpen]="false"
+  [enabled]="includedEnabled()"
+  (enabledChange)="included.setValue($event)"
+>
   <div [formGroup]="fieldsGroup">
     <div formArrayName="prepaymentRules" class="stack">
       @for (rule of nadplatyRegulyArray.controls; track $index) {
         <div class="card" [formGroupName]="$index">
-          <div class="card-head"><h3>Reguła nadpłaty {{ $index + 1 }}</h3></div>
+          <div class="card-head">
+            <h3>Reguła nadpłaty {{ $index + 1 }}</h3>
+          </div>
           <div class="row row--2">
             <app-field num="1" label="Jak często nadpłacasz?">
-              <app-select formControlName="frequency" [options]="prepaymentFrequencyOptions" (valueChange)="onNadplataFrequencyChanged($index)" />
+              <app-select
+                formControlName="frequency"
+                [options]="prepaymentFrequencyOptions"
+                (valueChange)="onNadplataFrequencyChanged($index)"
+              />
             </app-field>
 
             <app-field num="3" label="Kwota nadpłaty">
@@ -17,11 +28,17 @@
 
             @if (rule.get('frequency')?.value === 'jednorazowo') {
               <app-field num="2" label="Data nadpłaty">
-                <app-month-picker formControlName="from" (valueChange)="onNadplataFromChanged($index)" />
+                <app-month-picker
+                  formControlName="from"
+                  (valueChange)="onNadplataFromChanged($index)"
+                />
               </app-field>
             } @else {
               <app-field num="2a" label="Data nadpłaty od">
-                <app-month-picker formControlName="from" (valueChange)="onNadplataFromChanged($index)" />
+                <app-month-picker
+                  formControlName="from"
+                  (valueChange)="onNadplataFromChanged($index)"
+                />
               </app-field>
               <app-field num="2b" label="Data nadpłaty do">
                 <app-month-picker formControlName="to" />
@@ -32,7 +49,7 @@
               <app-select formControlName="effect" [options]="prepaymentEffectOptions" />
             </app-field>
 
-            <div style="display:flex; gap:0.5rem; align-items:flex-end">
+            <div style="display: flex; gap: 0.5rem; align-items: flex-end">
               <button type="button" (click)="addNadplataRegula()">+</button>
               @if (nadplatyRegulyArray.length > 1) {
                 <button type="button" (click)="removeNadplataRegula($index)">Usuń</button>

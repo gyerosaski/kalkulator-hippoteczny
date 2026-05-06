@@ -1,5 +1,5 @@
-import {Component, ChangeDetectionStrategy, input, signal, output} from '@angular/core';
-import {Form, FormControl, ReactiveFormsModule} from '@angular/forms';
+import { Component, ChangeDetectionStrategy, input, signal, output } from '@angular/core';
+import { Form, FormControl, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-foldable-section',
@@ -11,8 +11,14 @@ import {Form, FormControl, ReactiveFormsModule} from '@angular/forms';
         <button class="sec-head" (click)="toggleOpen()" [disabled]="isOff()">
           <span class="sec-chev">
             <svg width="10" height="10" viewBox="0 0 10 10">
-              <path d="M3 1 L7 5 L3 9" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"
-                    stroke-linejoin="round"/>
+              <path
+                d="M3 1 L7 5 L3 9"
+                stroke="currentColor"
+                stroke-width="1.5"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
             </svg>
           </span>
           @if (num()) {
@@ -24,24 +30,25 @@ import {Form, FormControl, ReactiveFormsModule} from '@angular/forms';
           }
         </button>
         @if (toggleable()) {
-          <label class="sec-switch" [title]="included()?.value ? 'Wyłącz sekcję' : 'Włącz sekcję'"
-                 (click)="$event.stopPropagation()">
-            <input type="checkbox" [formControl]="includedControl"/>
+          <label
+            class="sec-switch"
+            [title]="included()?.value ? 'Wyłącz sekcję' : 'Włącz sekcję'"
+            (click)="$event.stopPropagation()"
+          >
+            <input type="checkbox" [formControl]="includedControl" />
             <span class="switch-track"><span class="switch-thumb"></span></span>
-            <span class="switch-lab">{{ included()?.value  ? 'wł.' : 'wył.' }}</span>
+            <span class="switch-lab">{{ included()?.value ? 'wł.' : 'wył.' }}</span>
           </label>
         }
       </div>
       @if (open() && !isOff()) {
         <div class="sec-body">
-          <ng-content/>
+          <ng-content />
         </div>
       }
     </section>
   `,
-  imports: [
-    ReactiveFormsModule
-  ]
+  imports: [ReactiveFormsModule],
 })
 export class FoldableSectionComponent {
   title = input.required<string>();
@@ -66,6 +73,6 @@ export class FoldableSectionComponent {
 
   toggleOpen() {
     if (this.isOff()) return;
-    this.open.update(v => !v);
+    this.open.update((v) => !v);
   }
 }

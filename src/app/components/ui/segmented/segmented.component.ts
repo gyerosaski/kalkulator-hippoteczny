@@ -1,4 +1,12 @@
-import { Component, ChangeDetectionStrategy, input, output, signal, computed, forwardRef } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  input,
+  output,
+  signal,
+  computed,
+  forwardRef,
+} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
@@ -15,7 +23,12 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   template: `
     <div class="seg" [class.seg--compact]="compact()">
       @for (o of options(); track o; let i = $index) {
-        <button class="seg-btn" [class.is-on]="o === _value()" [disabled]="disabled()" (click)="select(o)">
+        <button
+          class="seg-btn"
+          [class.is-on]="o === _value()"
+          [disabled]="disabled()"
+          (click)="select(o)"
+        >
           {{ labels()[i] || o }}
         </button>
       }
@@ -37,10 +50,18 @@ export class SegmentedComponent implements ControlValueAccessor {
   private _onChange?: (v: string) => void;
   private _onTouched?: () => void;
 
-  writeValue(v: string): void { this._cvaValue.set(v ?? ''); }
-  registerOnChange(fn: (v: string) => void): void { this._onChange = fn; }
-  registerOnTouched(fn: () => void): void { this._onTouched = fn; }
-  setDisabledState(d: boolean): void { this.disabled.set(d); }
+  writeValue(v: string): void {
+    this._cvaValue.set(v ?? '');
+  }
+  registerOnChange(fn: (v: string) => void): void {
+    this._onChange = fn;
+  }
+  registerOnTouched(fn: () => void): void {
+    this._onTouched = fn;
+  }
+  setDisabledState(d: boolean): void {
+    this.disabled.set(d);
+  }
 
   select(option: string): void {
     if (this.disabled()) return;

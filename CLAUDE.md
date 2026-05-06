@@ -13,6 +13,7 @@ npm run prettier   # Format code
 ```
 
 To run a single test file:
+
 ```bash
 npx vitest run src/app/services/calculator/calculator.service.spec.ts
 ```
