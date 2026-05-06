@@ -1,8 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, viewChild } from '@angular/core';
 
 import { ReactiveFormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { startWith } from 'rxjs';
 import {
   MortgageInputs,
@@ -44,7 +43,7 @@ function nextMonthStr(date = new Date()): string {
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    MatDialogModule,
+    SaveCalculationDialogComponent,
     BasicDataFormComponent,
     OverheadCostsFormComponent,
     TranchesFormComponent,
@@ -61,8 +60,8 @@ function nextMonthStr(date = new Date()): string {
 })
 export class LayoutComponent {
   private calc = inject(CalculatorService);
-  private dialog = inject(MatDialog);
   private formService = inject(FormService);
+  private saveDialog = viewChild.required(SaveCalculationDialogComponent);
 
   get form() {
     return this.formService.form;
@@ -256,32 +255,29 @@ export class LayoutComponent {
     this.formService.clearOverheadCosts();
   }
 
-  saveCalculation() {
-    const dlgRef = this.dialog.open(SaveCalculationDialogComponent, {
-      data: { defaultName: 'Kalkulacja ' + new Date().toLocaleDateString('pl-PL') },
-    });
-    dlgRef.afterClosed().subscribe((name) => {
-      if (!name) return;
-      const data = this.form.getRawValue();
-      const all = JSON.parse(localStorage.getItem('kalkulacje') || '[]');
-      const existingIdx = all.findIndex((x: any) => x.name === name);
-      if (existingIdx >= 0) {
-        const overwrite = window.confirm(
-          `Istnieje już kalkulacja o nazwie "${name}". Czy chcesz ją nadpisać?`,
-        );
-        if (!overwrite) return;
-      }
-      const record = { name, createdAt: new Date().toISOString(), data };
-      if (existingIdx >= 0) {
-        all[existingIdx] = record;
-      } else {
-        all.push(record);
-      }
-      localStorage.setItem('kalkulacje', JSON.stringify(all));
+  async saveCalculation() {
+    const defaultName = 'Kalkulacja ' + new Date().toLocaleDateString('pl-PL');
+    const name = await this.saveDialog().open(defaultName);
+    if (!name) return;
+    const data = this.form.getRawValue();
+    const all = JSON.parse(localStorage.getItem('kalkulacje') || '[]');
+    const existingIdx = all.findIndex((x: any) => x.name === name);
+    if (existingIdx >= 0) {
+      const overwrite = window.confirm(
+        `Istnieje już kalkulacja o nazwie "${name}". Czy chcesz ją nadpisać?`,
+      );
+      if (!overwrite) return;
+    }
+    const record = { name, createdAt: new Date().toISOString(), data };
+    if (existingIdx >= 0) {
+      all[existingIdx] = record;
+    } else {
+      all.push(record);
+    }
+    localStorage.setItem('kalkulacje', JSON.stringify(all));
 
-      const fileName = this.sanitizeFileName(name) + '.json';
-      this.downloadJsonFile(fileName, record);
-    });
+    const fileName = this.sanitizeFileName(name) + '.json';
+    this.downloadJsonFile(fileName, record);
   }
 
   private sanitizeFileName(name: string): string {

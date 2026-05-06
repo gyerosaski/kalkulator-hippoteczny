@@ -1,21 +1,18 @@
-<h2 mat-dialog-title>Zapisz kalkulację</h2>
-<div mat-dialog-content>
-  <mat-form-field appearance="fill" style="width: 100%">
-    <mat-label>Nazwa kalkulacji</mat-label>
-    <input
-      matInput
-      [formControl]="nameCtrl"
-      placeholder="np. Moja kalkulacja"
-      (keydown.enter)="onSave()"
-    />
-    @if (nameCtrl.hasError('required')) {
-      <mat-error>Nazwa jest wymagana.</mat-error>
-    }
-  </mat-form-field>
-</div>
-<div mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Anuluj</button>
-  <button mat-raised-button color="primary" (click)="onSave()" [disabled]="nameCtrl.invalid">
-    Zapisz
-  </button>
-</div>
+<dialog #dialogEl (close)="onClose()">
+  <h2 class="dialog-title">Zapisz kalkulację</h2>
+  <form (ngSubmit)="onSave()">
+    <div class="field">
+      <span class="field-label">Nazwa kalkulacji</span>
+      <div class="inp">
+        <input [formControl]="nameCtrl" placeholder="np. Moja kalkulacja" autocomplete="off" />
+      </div>
+      @if (nameCtrl.hasError('required') && nameCtrl.touched) {
+        <span class="field-hint field-hint--error">Nazwa jest wymagana.</span>
+      }
+    </div>
+    <div class="dialog-actions">
+      <button class="btn btn--ghost" type="button" (click)="onCancel()">Anuluj</button>
+      <button class="btn btn--primary" type="submit" [disabled]="nameCtrl.invalid">Zapisz</button>
+    </div>
+  </form>
+</dialog>
