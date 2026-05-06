@@ -22,14 +22,9 @@
   gap: 14px;
   padding-bottom: 32px;
 
+  scrollbar-width: none;
+
   &::-webkit-scrollbar {
-    width: 6px;
-  }
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: var(--line-2);
-    border-radius: 3px;
+    display: none;
   }
 }
