@@ -1,0 +1,61 @@
+@if (yearlyGroups()?.length) {
+  <div class="card card--table">
+    <div class="card-head">
+      <h3>Harmonogram spłaty</h3>
+      <div class="muted small">agregacja roczna · kliknij rok aby rozwinąć</div>
+    </div>
+    <div class="tbl" [style.--tbl-cols]="gridColumns">
+      <div class="tbl-head">
+        <div>Okres</div>
+        <div>Rata</div>
+        <div>Kapitał</div>
+        <div>Odsetki</div>
+        @if (isPrepaymentIncluded) {
+          <div>Nadpłaty</div>
+        }
+        @if (isOverheadCostsIncluded) {
+          <div>Koszty</div>
+        }
+        <div>Pozostało</div>
+      </div>
+      @for (y of yearlyGroups()!; track y.year) {
+        <button
+          class="tbl-row tbl-row--year"
+          [class.is-open]="expandedYear() === y.year"
+          (click)="toggle(y.year)"
+        >
+          <div class="cell-year"><span class="chev">▸</span>{{ y.year }}</div>
+          <div class="mono">{{ y.sumRate | formatAmount }}</div>
+          <div class="mono">{{ y.sumCapital | formatAmount }}</div>
+          <div class="mono">{{ y.sumInterest | formatAmount }}</div>
+          @if (isPrepaymentIncluded) {
+            <div class="mono">{{ y.sumPrepayment | formatAmount }}</div>
+          }
+          @if (isOverheadCostsIncluded) {
+            <div class="mono">{{ y.sumInsuranceCost | formatAmount }}</div>
+          }
+          <div class="mono">
+            <b>{{ y.lastRemaining | formatAmount }}</b>
+          </div>
+        </button>
+        @if (expandedYear() === y.year) {
+          @for (r of y.rows; track r.index) {
+            <div class="tbl-row tbl-row--month">
+              <div class="cell-month">{{ r.date | formatMonth }}</div>
+              <div class="mono">{{ r.rate | formatAmount }}</div>
+              <div class="mono">{{ r.capital | formatAmount }}</div>
+              <div class="mono">{{ r.interest | formatAmount }}</div>
+              @if (isPrepaymentIncluded) {
+                <div class="mono">{{ r.prepayment | formatAmount }}</div>
+              }
+              @if (isOverheadCostsIncluded) {
+                <div class="mono">{{ r.insuranceCost | formatAmount }}</div>
+              }
+              <div class="mono">{{ r.remaining | formatAmount }}</div>
+            </div>
+          }
+        }
+      }
+    </div>
+  </div>
+}

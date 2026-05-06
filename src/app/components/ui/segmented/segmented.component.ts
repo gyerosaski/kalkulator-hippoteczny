@@ -20,20 +20,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
       multi: true,
     },
   ],
-  template: `
-    <div class="seg" [class.seg--compact]="compact()">
-      @for (o of options(); track o; let i = $index) {
-        <button
-          class="seg-btn"
-          [class.is-on]="o === _value()"
-          [disabled]="disabled()"
-          (click)="select(o)"
-        >
-          {{ labels()[i] || o }}
-        </button>
-      }
-    </div>
-  `,
+  templateUrl: './segmented.component.html',
 })
 export class SegmentedComponent implements ControlValueAccessor {
   options = input.required<string[]>();

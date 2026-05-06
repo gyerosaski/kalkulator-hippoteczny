@@ -15,23 +15,7 @@ import { IconCalendarComponent } from '../../icons/icon-calendar/icon-calendar.c
       multi: true,
     },
   ],
-  template: `
-    <div class="inp inp--date" [class.inp--focus]="focused()" [class.inp--disabled]="disabled()">
-      <input
-        type="month"
-        [disabled]="disabled()"
-        [value]="_value()"
-        class="mono"
-        (focus)="focused.set(true)"
-        (blur)="onBlur()"
-        (change)="onNativeChange($any($event.target).value)"
-      />
-      <icon-calendar />
-    </div>
-    @if (_value()) {
-      <div class="field-hint">{{ _value() | formatMonth }}</div>
-    }
-  `,
+  templateUrl: './month-picker.component.html',
 })
 export class MonthPickerComponent implements ControlValueAccessor {
   valueChange = output<string>();

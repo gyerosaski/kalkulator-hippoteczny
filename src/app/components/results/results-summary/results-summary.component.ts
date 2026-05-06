@@ -9,47 +9,7 @@ import { FormService } from '../../../services/form/form';
   standalone: true,
   imports: [FormatAmountPipe, DecimalPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    @if (results(); as r) {
-      <div class="kpi-strip">
-        <div class="kpi">
-          <div class="kpi-lab">Pierwsza rata</div>
-          <div class="kpi-val mono">
-            {{ r.firstInstallment?.rate | formatAmount }}<span class="kpi-unit">zł</span>
-          </div>
-          <div class="kpi-meta">
-            {{ installmentTypeLabel }} · {{ rateTypeLabel }}
-            {{ r.effectiveRate | number: '1.2-2' }}%
-          </div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-lab">Suma wszystkich płatności</div>
-          <div class="kpi-val mono">
-            {{ r.totals.totalAllPayments | formatAmount }}<span class="kpi-unit">zł</span>
-          </div>
-          <div class="kpi-meta">
-            oddasz <b>{{ r.totals.bankReturnRatioPct | number: '1.0-0' }}%</b> pożyczonej kwoty
-          </div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-lab">Odsetki</div>
-          <div class="kpi-val mono">
-            {{ r.totals.totalInterest | formatAmount }}<span class="kpi-unit">zł</span>
-          </div>
-          <div class="kpi-meta">{{ intPct() | number: '1.1-1' }}% od kapitału</div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-lab">{{ kpi4Label }}</div>
-          <div class="kpi-val mono">
-            {{ kpi4Value() | formatAmount }}<span class="kpi-unit">zł</span>
-          </div>
-          @if (kpi4Meta()) {
-            <div class="kpi-meta">{{ kpi4Meta() }}</div>
-          }
-        </div>
-      </div>
-    }
-  `,
+  templateUrl: './results-summary.component.html',
 })
 export class ResultsSummaryComponent {
   results = input.required<MortgageResults | null>();

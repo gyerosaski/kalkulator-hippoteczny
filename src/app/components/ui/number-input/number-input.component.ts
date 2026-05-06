@@ -21,26 +21,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
       multi: true,
     },
   ],
-  template: `
-    <div class="inp" [class.inp--focus]="focused()" [class.inp--disabled]="disabled()">
-      <input
-        type="text"
-        inputmode="decimal"
-        [disabled]="disabled()"
-        [value]="display()"
-        (focus)="onFocus()"
-        (blur)="onBlur()"
-        (input)="onInput($any($event.target).value)"
-        class="mono"
-      />
-      @if (suffix()) {
-        <span class="suffix">{{ suffix() }}</span>
-      }
-      @if (hint()) {
-        <span class="hint">{{ hint() }}</span>
-      }
-    </div>
-  `,
+  templateUrl: './number-input.component.html',
 })
 export class NumberInputComponent implements ControlValueAccessor {
   /** Optional: use without formControlName by binding [value] directly. */

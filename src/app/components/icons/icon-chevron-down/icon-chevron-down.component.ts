@@ -4,16 +4,6 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
   selector: 'icon-chevron-down',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <svg width="12" height="12" viewBox="0 0 12 12">
-      <path
-        d="M2 4 L6 8 L10 4"
-        stroke="currentColor"
-        stroke-width="1.5"
-        fill="none"
-        stroke-linecap="round"
-      />
-    </svg>
-  `,
+  templateUrl: './icon-chevron-down.component.html',
 })
 export class IconChevronDownComponent {}

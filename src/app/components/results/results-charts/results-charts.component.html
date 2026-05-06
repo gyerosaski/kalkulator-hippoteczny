@@ -1,0 +1,48 @@
+@if (results()) {
+  <div class="result-grid">
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <h3>Struktura wszystkich płatności</h3>
+          <div class="muted small">cały okres kredytowania</div>
+        </div>
+      </div>
+      <div class="donut-row">
+        <app-donut [data]="totalSlices()" centerLabel="razem" [centerValue]="totalCenter()" />
+        <ul class="legend">
+          @for (s of totalSlices(); track s.label) {
+            <li>
+              <span class="dot" [style.background]="s.color"></span>
+              <span class="leg-lab">{{ s.label }}</span>
+              <span class="leg-val mono">{{ s.value | formatAmount }} zł</span>
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h3>Struktura pierwszej raty</h3>
+      </div>
+      <div class="donut-row donut-row--single">
+        <app-donut
+          [data]="firstSlices()"
+          [size]="160"
+          [thickness]="22"
+          centerLabel="rata"
+          [centerValue]="firstCenter()"
+        />
+        <ul class="legend">
+          @for (s of firstSlices(); track s.label) {
+            <li>
+              <span class="dot" [style.background]="s.color"></span>
+              <span class="leg-lab">{{ s.label }}</span>
+              <span class="leg-val mono">{{ s.value | formatAmount }} zł</span>
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+}

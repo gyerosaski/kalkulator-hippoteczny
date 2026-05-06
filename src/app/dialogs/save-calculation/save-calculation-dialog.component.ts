@@ -25,29 +25,7 @@ interface DialogData {
     MatInputModule,
     MatButtonModule,
   ],
-  template: `
-    <h2 mat-dialog-title>Zapisz kalkulację</h2>
-    <div mat-dialog-content>
-      <mat-form-field appearance="fill" style="width: 100%;">
-        <mat-label>Nazwa kalkulacji</mat-label>
-        <input
-          matInput
-          [formControl]="nameCtrl"
-          placeholder="np. Moja kalkulacja"
-          (keydown.enter)="onSave()"
-        />
-        @if (nameCtrl.hasError('required')) {
-          <mat-error>Nazwa jest wymagana.</mat-error>
-        }
-      </mat-form-field>
-    </div>
-    <div mat-dialog-actions align="end">
-      <button mat-button mat-dialog-close>Anuluj</button>
-      <button mat-raised-button color="primary" (click)="onSave()" [disabled]="nameCtrl.invalid">
-        Zapisz
-      </button>
-    </div>
-  `,
+  templateUrl: './save-calculation-dialog.component.html',
 })
 export class SaveCalculationDialogComponent {
   private readonly dialogRef = inject(MatDialogRef<SaveCalculationDialogComponent>);

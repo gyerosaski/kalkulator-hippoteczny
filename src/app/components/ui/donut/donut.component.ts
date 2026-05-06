@@ -10,37 +10,7 @@ export interface DonutSlice {
   selector: 'app-donut',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <div class="donut-wrap" [style.width.px]="size()" [style.height.px]="size()">
-      <svg [attr.width]="size()" [attr.height]="size()">
-        <circle
-          [attr.cx]="c()"
-          [attr.cy]="c()"
-          [attr.r]="r()"
-          fill="none"
-          stroke="var(--track)"
-          [attr.stroke-width]="thickness()"
-        />
-        @for (s of slices(); track s.slice.label) {
-          <circle
-            [attr.cx]="c()"
-            [attr.cy]="c()"
-            [attr.r]="r()"
-            fill="none"
-            [attr.stroke]="s.slice.color"
-            [attr.stroke-width]="thickness()"
-            [attr.stroke-dasharray]="s.dasharray"
-            [attr.stroke-dashoffset]="s.offset"
-            [attr.transform]="'rotate(-90 ' + c() + ' ' + c() + ')'"
-          />
-        }
-      </svg>
-      <div class="donut-center">
-        <div class="donut-label">{{ centerLabel() }}</div>
-        <div class="donut-value mono">{{ centerValue() }}</div>
-      </div>
-    </div>
-  `,
+  templateUrl: './donut.component.html',
 })
 export class DonutComponent {
   data = input.required<DonutSlice[]>();

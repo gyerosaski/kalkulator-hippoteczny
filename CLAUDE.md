@@ -74,6 +74,7 @@ Dialogs (`src/app/dialogs/`): `SaveCalculationDialogComponent`, `LoadCalculation
 ### Key conventions
 
 - **All components are standalone** with `OnPush` change detection.
+- **Component templates always live in a separate `.html` file** (`templateUrl`) — never use inline `template: \`...\``in the`@Component` decorator.
 - **SVG icons are always separate components** placed in `src/app/components/icons/<icon-name>/`. Never inline SVG markup directly in templates — always use the corresponding icon component (e.g. `<icon-calculator />`). Exception: data-driven chart SVGs (like donut charts with Angular bindings) stay in their own chart components.
 - **Signals** for derived/output state; Reactive Forms for input state.
 - **Locale:** `pl-PL` — all labels, months, and number formats are Polish. Domain terms stay in Polish (`rowne`/`malejace`, `jednorazowo`, `co rok`, etc.).

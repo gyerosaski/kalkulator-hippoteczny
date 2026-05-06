@@ -1,0 +1,13 @@
+<div class="sel">
+  <select
+    [disabled]="disabled()"
+    [value]="_value()"
+    (change)="onNativeChange($any($event.target).value)"
+    (blur)="onBlur()"
+  >
+    @for (o of options(); track o; let i = $index) {
+      <option [value]="o">{{ labels()[i] || o }}</option>
+    }
+  </select>
+  <icon-chevron-down />
+</div>

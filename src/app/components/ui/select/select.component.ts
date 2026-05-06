@@ -22,21 +22,7 @@ import { IconChevronDownComponent } from '../../icons/icon-chevron-down/icon-che
       multi: true,
     },
   ],
-  template: `
-    <div class="sel">
-      <select
-        [disabled]="disabled()"
-        [value]="_value()"
-        (change)="onNativeChange($any($event.target).value)"
-        (blur)="onBlur()"
-      >
-        @for (o of options(); track o; let i = $index) {
-          <option [value]="o">{{ labels()[i] || o }}</option>
-        }
-      </select>
-      <icon-chevron-down />
-    </div>
-  `,
+  templateUrl: './select.component.html',
 })
 export class SelectComponent implements ControlValueAccessor {
   options = input.required<string[]>();
