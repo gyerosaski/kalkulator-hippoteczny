@@ -1,24 +1,17 @@
 import { Component, ChangeDetectionStrategy, input, output, signal } from '@angular/core';
+import { IconChevronRightComponent } from '../../icons/icon-chevron-right/icon-chevron-right.component';
 
 @Component({
   selector: 'app-section',
   standalone: true,
+  imports: [IconChevronRightComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="sec" [class.is-open]="open() && !isOff()" [class.sec--off]="isOff()">
       <div class="sec-head-wrap">
         <button class="sec-head" (click)="toggleOpen()" [disabled]="isOff()">
           <span class="sec-chev">
-            <svg width="10" height="10" viewBox="0 0 10 10">
-              <path
-                d="M3 1 L7 5 L3 9"
-                stroke="currentColor"
-                stroke-width="1.5"
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
+            <icon-chevron-right />
           </span>
           @if (num()) {
             <span class="sec-num">{{ num() }}</span>

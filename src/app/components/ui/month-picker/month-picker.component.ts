@@ -1,11 +1,12 @@
 import { Component, ChangeDetectionStrategy, signal, output, forwardRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
+import { IconCalendarComponent } from '../../icons/icon-calendar/icon-calendar.component';
 
 @Component({
   selector: 'app-month-picker',
   standalone: true,
-  imports: [FormatMonthPipe],
+  imports: [FormatMonthPipe, IconCalendarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
@@ -25,11 +26,7 @@ import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
         (blur)="onBlur()"
         (change)="onNativeChange($any($event.target).value)"
       />
-      <svg width="14" height="14" viewBox="0 0 14 14" class="cal-ico">
-        <rect x="1.5" y="2.5" width="11" height="10" rx="1.5" stroke="currentColor" fill="none" />
-        <path d="M1.5 5.5 H12.5" stroke="currentColor" />
-        <path d="M4 1 V3.5 M10 1 V3.5" stroke="currentColor" stroke-linecap="round" />
-      </svg>
+      <icon-calendar />
     </div>
     @if (_value()) {
       <div class="field-hint">{{ _value() | formatMonth }}</div>

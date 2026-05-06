@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy, input, signal, output } from '@angular/core';
-import { Form, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { IconChevronRightComponent } from '../../icons/icon-chevron-right/icon-chevron-right.component';
 
 @Component({
   selector: 'app-foldable-section',
@@ -10,16 +11,7 @@ import { Form, FormControl, ReactiveFormsModule } from '@angular/forms';
       <div class="sec-head-wrap">
         <button class="sec-head" (click)="toggleOpen()" [disabled]="isOff()">
           <span class="sec-chev">
-            <svg width="10" height="10" viewBox="0 0 10 10">
-              <path
-                d="M3 1 L7 5 L3 9"
-                stroke="currentColor"
-                stroke-width="1.5"
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
+            <icon-chevron-right />
           </span>
           @if (num()) {
             <span class="sec-num">{{ num() }}</span>
@@ -48,7 +40,7 @@ import { Form, FormControl, ReactiveFormsModule } from '@angular/forms';
       }
     </section>
   `,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, IconChevronRightComponent],
 })
 export class FoldableSectionComponent {
   title = input.required<string>();

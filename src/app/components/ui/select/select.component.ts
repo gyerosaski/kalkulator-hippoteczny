@@ -8,10 +8,12 @@ import {
   forwardRef,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { IconChevronDownComponent } from '../../icons/icon-chevron-down/icon-chevron-down.component';
 
 @Component({
   selector: 'app-select',
   standalone: true,
+  imports: [IconChevronDownComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
@@ -32,15 +34,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
           <option [value]="o">{{ labels()[i] || o }}</option>
         }
       </select>
-      <svg width="12" height="12" viewBox="0 0 12 12">
-        <path
-          d="M2 4 L6 8 L10 4"
-          stroke="currentColor"
-          stroke-width="1.5"
-          fill="none"
-          stroke-linecap="round"
-        />
-      </svg>
+      <icon-chevron-down />
     </div>
   `,
 })

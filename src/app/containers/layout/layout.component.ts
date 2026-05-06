@@ -26,6 +26,7 @@ import { ResultsSummaryComponent } from '../../components/results/results-summar
 import { ResultsChartsComponent } from '../../components/results/results-charts/results-charts.component';
 import { ResultsScheduleComponent } from '../../components/results/results-schedule/results-schedule.component';
 import { ResultsErrorsComponent } from '../../components/results/results-errors/results-errors.component';
+import { IconCalculatorComponent } from '../../components/icons/icon-calculator/icon-calculator.component';
 
 function ym(date = new Date()): string {
   const y = date.getFullYear();
@@ -52,6 +53,7 @@ function nextMonthStr(date = new Date()): string {
     ResultsChartsComponent,
     ResultsScheduleComponent,
     ResultsErrorsComponent,
+    IconCalculatorComponent,
   ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss',
