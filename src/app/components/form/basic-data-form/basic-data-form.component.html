@@ -82,26 +82,19 @@
                 <div class="rate-period-from">
                   <app-month-picker formControlName="from" />
                 </div>
-                <button
-                  type="button"
-                  class="ico-btn ico-btn--danger rate-period-close"
-                  title="Usuń okres"
-                  (click)="removeRatePeriod($index)"
-                >
-                  ×
-                </button>
+                <btn-remove class="rate-period-close" (remove)="removeRatePeriod($index)" />
               }
             </div>
-            <app-field label="Stopa">
+            <app-field label="Stopa" num="8">
               <app-segmented
                 formControlName="rateType"
                 [options]="['zmienna', 'stala']"
                 [labels]="['zmienna', 'stała']"
               />
             </app-field>
-            <div class="rate-grid">
+            <div class="row row--3">
               <app-field
-                [num]="$index === 0 ? '8' : ''"
+                num="9"
                 label="Oprocentowanie"
                 [hint]="
                   period.get('rateType')?.value === 'zmienna' ? 'WIBOR + Marża' : 'wartość stała'
@@ -126,10 +119,10 @@
                 }
               </app-field>
               @if (period.get('rateType')?.value === 'zmienna') {
-                <app-field num="8a" label="WIBOR">
+                <app-field num="9a" label="WIBOR">
                   <app-number-input formControlName="wibor" suffix="%" [decimals]="2" />
                 </app-field>
-                <app-field num="8b" label="Marża">
+                <app-field num="9b" label="Marża">
                   <app-number-input formControlName="margin" suffix="%" [decimals]="2" />
                 </app-field>
               }

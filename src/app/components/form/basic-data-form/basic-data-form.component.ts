@@ -7,6 +7,7 @@ import { FieldComponent } from '../../ui/field/field.component';
 import { NumberInputComponent } from '../../ui/number-input/number-input.component';
 import { MonthPickerComponent } from '../../ui/month-picker/month-picker.component';
 import { SegmentedComponent } from '../../ui/segmented/segmented.component';
+import { BtnRemoveComponent } from '../../ui/btn-remove/btn-remove.component';
 
 @Component({
   selector: 'app-basic-data-form',
@@ -18,6 +19,7 @@ import { SegmentedComponent } from '../../ui/segmented/segmented.component';
     NumberInputComponent,
     MonthPickerComponent,
     SegmentedComponent,
+    BtnRemoveComponent,
   ],
   templateUrl: './basic-data-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
