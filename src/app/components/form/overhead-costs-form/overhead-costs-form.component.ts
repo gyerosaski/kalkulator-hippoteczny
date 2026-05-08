@@ -9,6 +9,7 @@ import { FieldComponent } from '../../ui/field/field.component';
 import { NumberInputComponent } from '../../ui/number-input/number-input.component';
 import { MonthPickerComponent } from '../../ui/month-picker/month-picker.component';
 import { SelectComponent } from '../../ui/select/select.component';
+import { BtnRemoveComponent } from '../../ui/btn-remove/btn-remove.component';
 
 @Component({
   selector: 'app-overhead-costs-form',
@@ -21,6 +22,7 @@ import { SelectComponent } from '../../ui/select/select.component';
     NumberInputComponent,
     MonthPickerComponent,
     SelectComponent,
+    BtnRemoveComponent,
   ],
   templateUrl: './overhead-costs-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

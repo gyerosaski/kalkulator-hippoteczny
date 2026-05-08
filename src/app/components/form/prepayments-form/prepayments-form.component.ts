@@ -8,6 +8,7 @@ import { FieldComponent } from '../../ui/field/field.component';
 import { NumberInputComponent } from '../../ui/number-input/number-input.component';
 import { MonthPickerComponent } from '../../ui/month-picker/month-picker.component';
 import { SelectComponent } from '../../ui/select/select.component';
+import { BtnRemoveComponent } from '../../ui/btn-remove/btn-remove.component';
 
 @Component({
   selector: 'app-prepayments-form',
@@ -19,6 +20,7 @@ import { SelectComponent } from '../../ui/select/select.component';
     NumberInputComponent,
     MonthPickerComponent,
     SelectComponent,
+    BtnRemoveComponent,
   ],
   templateUrl: './prepayments-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

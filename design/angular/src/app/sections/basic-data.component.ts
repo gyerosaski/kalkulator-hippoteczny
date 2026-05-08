@@ -5,8 +5,7 @@ import { FieldComponent } from '../ui/field.component';
 import { NumberInputComponent } from '../ui/number-input.component';
 import { MonthPickerComponent } from '../ui/month-picker.component';
 import { SegmentedComponent } from '../ui/segmented.component';
-import { SelectComponent } from '../ui/select.component';
-import { PeriodUnit } from '../models';
+import { PeriodUnit, RatePeriod, RateType } from '../models';
 
 @Component({
   selector: 'app-basic-data',
@@ -17,11 +16,10 @@ import { PeriodUnit } from '../models';
     NumberInputComponent,
     MonthPickerComponent,
     SegmentedComponent,
-    SelectComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <app-section title="Dane podstawowe" num="" badge="krok 1" [defaultOpen]="true">
+    <app-section title="Dane podstawowe" badge="krok 1" [defaultOpen]="true">
       <div class="row row--2">
         <app-field label="Wartość nieruchomości" num="1">
           <app-number-input
@@ -95,49 +93,126 @@ import { PeriodUnit } from '../models';
             (valueChange)="calc.installmentType.set($any($event))"
           />
         </app-field>
-        <app-field label="Rodzaj stopy" num="7">
-          <app-select
-            [options]="['zmienna', 'stała']"
-            [value]="calc.rateType()"
-            (valueChange)="calc.rateType.set($any($event))"
-          />
-        </app-field>
+        <div></div>
       </div>
+
       <div class="rate-block">
-        <div class="rate-grid">
-          <app-field
-            label="Oprocentowanie"
-            num="8"
-            [hint]="calc.rateType() === 'zmienna' ? 'WIBOR + Marża' : 'wartość stała'"
-          >
-            <app-number-input
-              [value]="calc.rateType() === 'zmienna' ? calc.wibor() + calc.margin() : calc.rate()"
-              (valueChange)="calc.rate.set($event)"
-              suffix="%"
-              [decimals]="2"
-              [disabled]="calc.rateType() === 'zmienna'"
-            />
-          </app-field>
-          @if (calc.rateType() === 'zmienna') {
-            <app-field label="WIBOR" num="8a">
+        <!-- Okres 1 (bazowy) -->
+        <div class="rate-period">
+          <div class="rate-period-head">
+            <span class="rate-period-tag">okres 1</span>
+            <span class="muted small">od początku kredytu</span>
+            <span class="rate-period-toggle">
+              <span class="muted small">stopa</span>
+              <app-segmented
+                [options]="['zmienna', 'stała']"
+                [value]="calc.rateType()"
+                (valueChange)="calc.rateType.set($any($event))"
+              />
+            </span>
+          </div>
+          <div class="rate-grid">
+            <app-field
+              label="Oprocentowanie"
+              num="8"
+              [hint]="calc.rateType() === 'zmienna' ? 'WIBOR + Marża' : 'wartość stała'"
+            >
               <app-number-input
-                [value]="calc.wibor()"
-                (valueChange)="calc.wibor.set($event)"
+                [value]="calc.rateType() === 'zmienna' ? calc.wibor() + calc.margin() : calc.rate()"
+                (valueChange)="calc.rate.set($event)"
                 suffix="%"
                 [decimals]="2"
+                [disabled]="calc.rateType() === 'zmienna'"
               />
             </app-field>
-            <app-field label="Marża" num="8b">
-              <app-number-input
-                [value]="calc.margin()"
-                (valueChange)="calc.margin.set($event)"
-                suffix="%"
-                [decimals]="2"
-              />
-            </app-field>
-          }
+            @if (calc.rateType() === 'zmienna') {
+              <app-field label="WIBOR" num="8a">
+                <app-number-input
+                  [value]="calc.wibor()"
+                  (valueChange)="calc.wibor.set($event)"
+                  suffix="%"
+                  [decimals]="2"
+                />
+              </app-field>
+              <app-field label="Marża" num="8b">
+                <app-number-input
+                  [value]="calc.margin()"
+                  (valueChange)="calc.margin.set($event)"
+                  suffix="%"
+                  [decimals]="2"
+                />
+              </app-field>
+            }
+          </div>
         </div>
-        <button class="btn btn--add">＋ Dodaj okres oprocentowania</button>
+
+        <!-- Okresy dodatkowe -->
+        @for (p of calc.ratePeriods(); track p.id; let idx = $index) {
+          <div class="rate-period rate-period--extra">
+            <button
+              class="ico-btn ico-btn--danger rate-period-close"
+              title="Usuń okres"
+              (click)="calc.removeRatePeriod(p.id)"
+            >
+              ×
+            </button>
+            <div class="rate-period-head">
+              <span class="rate-period-tag">okres {{ idx + 2 }}</span>
+              <span class="muted small">od miesiąca</span>
+              <div class="rate-period-from">
+                <app-number-input
+                  [value]="p.fromMonth"
+                  (valueChange)="calc.updateRatePeriod(p.id, { fromMonth: clampMonth($event) })"
+                  suffix="m-c"
+                  [decimals]="0"
+                />
+              </div>
+              <span class="rate-period-toggle">
+                <span class="muted small">stopa</span>
+                <app-segmented
+                  [options]="['zmienna', 'stała']"
+                  [value]="p.rateType"
+                  (valueChange)="calc.updateRatePeriod(p.id, { rateType: $any($event) })"
+                />
+              </span>
+            </div>
+            <div class="rate-grid">
+              <app-field
+                label="Oprocentowanie"
+                [hint]="p.rateType === 'zmienna' ? 'WIBOR + Marża' : 'wartość stała'"
+              >
+                <app-number-input
+                  [value]="p.rateType === 'zmienna' ? p.wibor + p.margin : p.rate"
+                  (valueChange)="calc.updateRatePeriod(p.id, { rate: $event })"
+                  suffix="%"
+                  [decimals]="2"
+                  [disabled]="p.rateType === 'zmienna'"
+                />
+              </app-field>
+              @if (p.rateType === 'zmienna') {
+                <app-field label="WIBOR">
+                  <app-number-input
+                    [value]="p.wibor"
+                    (valueChange)="calc.updateRatePeriod(p.id, { wibor: $event })"
+                    suffix="%"
+                    [decimals]="2"
+                  />
+                </app-field>
+                <app-field label="Marża">
+                  <app-number-input
+                    [value]="p.margin"
+                    (valueChange)="calc.updateRatePeriod(p.id, { margin: $event })"
+                    suffix="%"
+                    [decimals]="2"
+                  />
+                </app-field>
+              }
+            </div>
+          </div>
+        }
+        <button class="btn btn--add" (click)="calc.addRatePeriod()">
+          ＋ Dodaj okres oprocentowania
+        </button>
       </div>
     </app-section>
   `,
@@ -153,6 +228,10 @@ export class BasicDataComponent {
   });
 
   nextMonth = computed(() => addMonths(this.calc.startDate(), 1));
+
+  clampMonth(v: number): number {
+    return Math.max(1, Math.round(v));
+  }
 
   onPeriodChange(v: number) {
     if (this.periodUnit() === 'lata') {

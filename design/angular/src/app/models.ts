@@ -58,6 +58,15 @@ export interface ScheduleResult {
   valuationFee: number;
 }
 
+export interface RatePeriod {
+  id: number;
+  fromMonth: number;
+  rateType: RateType;
+  rate: number;
+  wibor: number;
+  margin: number;
+}
+
 export interface CalcInput {
   propertyValue: number;
   loanAmount: number;
@@ -72,6 +81,7 @@ export interface CalcInput {
   costs: Costs;
   overpayments: Overpayments;
   tranches: Tranche[];
+  ratePeriods?: RatePeriod[];
 }
 
 export type Palette = 'sage' | 'peach' | 'lavender' | 'mist';

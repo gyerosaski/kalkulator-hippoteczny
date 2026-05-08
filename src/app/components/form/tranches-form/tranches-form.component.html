@@ -12,6 +12,9 @@
         <div class="card" [formGroupName]="$index">
           <div class="card-head">
             <h3>Transza {{ $index + 1 }}</h3>
+            @if ($index > 0) {
+              <btn-remove (remove)="removeTransza($index)" />
+            }
           </div>
           <div class="row row--2">
             <app-field [num]="($index + 1).toString()" label="Kwota">
@@ -50,10 +53,6 @@
                   >
                 }
               </app-field>
-
-              <div style="display: flex; align-items: flex-end">
-                <button type="button" (click)="removeTransza($index)">−</button>
-              </div>
             }
           </div>
         </div>

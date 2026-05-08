@@ -487,6 +487,74 @@ body {
   min-width: 22px;
 }
 
+/* Rate periods */
+.rate-period {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  margin-bottom: 10px;
+}
+.rate-period-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  line-height: 1;
+}
+.rate-period-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+.rate-period-toggle .seg {
+  padding: 2px;
+}
+.rate-period-toggle .seg-btn {
+  padding: 5px 10px;
+  font-size: 12px;
+}
+.rate-period--extra {
+  background: oklch(96% 0.022 var(--accent-h, 145));
+  border-color: oklch(88% 0.04 var(--accent-h, 145));
+}
+.rate-period-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.rate-period-tag {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--surface);
+}
+.rate-period-from {
+  width: 100px;
+}
+.ico-btn--danger {
+  color: var(--c-int);
+}
+.ico-btn--danger:hover {
+  background: oklch(94% 0.04 30);
+}
+
 /* Period composite input */
 .period-input {
   display: grid;

@@ -89,7 +89,7 @@
               }
             </h3>
             @if ($index > 0) {
-              <button type="button" class="ico-btn" (click)="removeRatePeriod($index)">−</button>
+              <btn-remove (remove)="removeRatePeriod($index)" />
             }
           </div>
 

@@ -141,6 +141,9 @@
         <div class="card" [formGroupName]="$index">
           <div class="card-head">
             <h3>8. Dodatkowy koszt {{ $index + 1 }}</h3>
+            @if (additionalCostsArray.length > 1) {
+              <btn-remove (remove)="removeAdditionalCost($index)" />
+            }
           </div>
           <div class="row row--2">
             <app-field num="8" label="Nazwa kosztu">
@@ -166,9 +169,6 @@
             </app-field>
             <div style="display: flex; gap: 0.5rem; align-items: flex-end">
               <button type="button" (click)="addAdditionalCost()">+</button>
-              @if (additionalCostsArray.length > 1) {
-                <button type="button" (click)="removeAdditionalCost($index)">Usuń</button>
-              }
             </div>
           </div>
         </div>

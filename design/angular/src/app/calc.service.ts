@@ -8,6 +8,7 @@ import {
   RateType,
   FrequencyAll,
   OverpaymentEffect,
+  RatePeriod,
   Tweaks,
 } from './models';
 
@@ -43,6 +44,29 @@ export class CalcService {
   rate = signal(9);
   wibor = signal(7);
   margin = signal(2);
+  ratePeriods = signal<RatePeriod[]>([]);
+
+  addRatePeriod() {
+    const list = this.ratePeriods();
+    const lastFrom = list.length ? list[list.length - 1].fromMonth : 0;
+    this.ratePeriods.set([
+      ...list,
+      {
+        id: Date.now() + Math.random(),
+        fromMonth: Math.max(12, lastFrom + 12),
+        rateType: this.rateType(),
+        rate: this.rate(),
+        wibor: this.wibor(),
+        margin: this.margin(),
+      },
+    ]);
+  }
+  updateRatePeriod(id: number, patch: Partial<RatePeriod>) {
+    this.ratePeriods.update((rp) => rp.map((p) => (p.id === id ? { ...p, ...patch } : p)));
+  }
+  removeRatePeriod(id: number) {
+    this.ratePeriods.update((rp) => rp.filter((p) => p.id !== id));
+  }
   startDate = signal<Date>(new Date(2026, 3, 1));
 
   // koszty
@@ -98,6 +122,7 @@ export class CalcService {
         effect: this.overEffect(),
       },
       tranches: [],
+      ratePeriods: this.ratePeriods(),
     }),
   );
 
@@ -137,6 +162,7 @@ export class CalcService {
       startDate,
       costs,
       overpayments,
+      ratePeriods,
     } = input;
 
     const n = years * 12 + months;
@@ -153,8 +179,18 @@ export class CalcService {
     };
     if (n <= 0 || loanAmount <= 0) return empty;
 
-    const nominal = rateType === 'zmienna' ? wibor + margin : rate;
-    const i = nominal / 100 / 12;
+    const baseNominal = rateType === 'zmienna' ? wibor + margin : rate;
+    const periods = (ratePeriods || []).slice().sort((a, b) => a.fromMonth - b.fromMonth);
+    const rateAt = (m: number) => {
+      let r = baseNominal;
+      for (const p of periods) {
+        if (m >= p.fromMonth) {
+          r = p.rateType === 'zmienna' ? p.wibor + p.margin : p.rate;
+        }
+      }
+      return r;
+    };
+    const i = baseNominal / 100 / 12;
     let balance = loanAmount;
     let installmentEqual = i === 0 ? balance / n : (balance * i) / (1 - Math.pow(1 + i, -n));
 
@@ -168,7 +204,7 @@ export class CalcService {
 
     for (let m = 0; m < n; m++) {
       const date = addMonths(startDate, m);
-      const effRate = (nominal + (m < costs.bridgeMonths ? costs.bridgeRate : 0)) / 100 / 12;
+      const effRate = (rateAt(m) + (m < costs.bridgeMonths ? costs.bridgeRate : 0)) / 100 / 12;
       const interest = balance * effRate;
       let principal: number, rata: number;
       if (installmentType === 'równe') {

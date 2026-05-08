@@ -1,0 +1,19 @@
+.btn-remove {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  color: var(--ink-2);
+  cursor: pointer;
+  flex-shrink: 0;
+
+  &:hover {
+    border-color: oklch(55% 0.18 25);
+    color: oklch(55% 0.18 25);
+  }
+}

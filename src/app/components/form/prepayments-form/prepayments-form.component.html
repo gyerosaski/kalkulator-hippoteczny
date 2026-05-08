@@ -12,6 +12,9 @@
         <div class="card" [formGroupName]="$index">
           <div class="card-head">
             <h3>Reguła nadpłaty {{ $index + 1 }}</h3>
+            @if (nadplatyRegulyArray.length > 1) {
+              <btn-remove (remove)="removeNadplataRegula($index)" />
+            }
           </div>
           <div class="row row--2">
             <app-field num="1" label="Jak często nadpłacasz?">
@@ -51,9 +54,6 @@
 
             <div style="display: flex; gap: 0.5rem; align-items: flex-end">
               <button type="button" (click)="addNadplataRegula()">+</button>
-              @if (nadplatyRegulyArray.length > 1) {
-                <button type="button" (click)="removeNadplataRegula($index)">Usuń</button>
-              }
             </div>
           </div>
         </div>
