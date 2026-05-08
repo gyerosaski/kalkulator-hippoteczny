@@ -1,12 +1,11 @@
 import { Component, ChangeDetectionStrategy, signal, output, forwardRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
 import { IconCalendarComponent } from '../../icons/icon-calendar/icon-calendar.component';
 
 @Component({
   selector: 'app-month-picker',
   standalone: true,
-  imports: [FormatMonthPipe, IconCalendarComponent],
+  imports: [IconCalendarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {

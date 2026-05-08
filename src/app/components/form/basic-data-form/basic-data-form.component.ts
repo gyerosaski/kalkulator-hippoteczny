@@ -22,7 +22,6 @@ import { SegmentedComponent } from '../../ui/segmented/segmented.component';
     SegmentedComponent,
   ],
   templateUrl: './basic-data-form.component.html',
-  styleUrl: './basic-data-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BasicDataFormComponent {

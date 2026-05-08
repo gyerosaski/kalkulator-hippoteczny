@@ -23,7 +23,6 @@ import { SelectComponent } from '../../ui/select/select.component';
     SelectComponent,
   ],
   templateUrl: './overhead-costs-form.component.html',
-  styleUrl: './overhead-costs-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OverheadCostsFormComponent {

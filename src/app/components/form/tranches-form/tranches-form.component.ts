@@ -24,7 +24,6 @@ import { MonthPickerComponent } from '../../ui/month-picker/month-picker.compone
     MonthPickerComponent,
   ],
   templateUrl: './tranches-form.component.html',
-  styleUrl: './tranches-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TranchesFormComponent {

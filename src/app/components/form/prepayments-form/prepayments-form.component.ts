@@ -21,7 +21,6 @@ import { SelectComponent } from '../../ui/select/select.component';
     SelectComponent,
   ],
   templateUrl: './prepayments-form.component.html',
-  styleUrl: './prepayments-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PrepaymentsFormComponent {
