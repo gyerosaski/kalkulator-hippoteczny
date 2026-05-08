@@ -1,4 +1,12 @@
-import { Component, ChangeDetectionStrategy, signal, output, forwardRef } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  signal,
+  output,
+  forwardRef,
+  viewChild,
+  ElementRef,
+} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { IconCalendarComponent } from '../../icons/icon-calendar/icon-calendar.component';
 
@@ -22,6 +30,11 @@ export class MonthPickerComponent implements ControlValueAccessor {
   focused = signal(false);
   disabled = signal(false);
   readonly _value = signal('');
+  private readonly inputRef = viewChild.required<ElementRef<HTMLInputElement>>('inputRef');
+
+  openPicker(): void {
+    this.inputRef().nativeElement.showPicker();
+  }
 
   private _onChange?: (v: string) => void;
   private _onTouched?: () => void;

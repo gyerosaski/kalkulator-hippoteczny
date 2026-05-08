@@ -296,6 +296,9 @@ body {
   display: grid;
   gap: 12px;
 }
+.row + .row {
+  margin-top: 12px;
+}
 .row--2 {
   grid-template-columns: 1fr 1fr;
 }
@@ -381,6 +384,9 @@ body {
 }
 .inp--date {
   gap: 8px;
+}
+.inp--date input::-webkit-calendar-picker-indicator {
+  display: none;
 }
 .inp--date .cal-ico {
   color: var(--muted);
