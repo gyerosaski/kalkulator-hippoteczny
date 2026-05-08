@@ -74,9 +74,9 @@
         @for (period of ratePeriods.controls; track $index) {
           <div class="rate-period" [formGroupName]="$index">
             <div class="rate-period-head">
-              <span class="rate-period-tag">okres {{ $index + 1 }}</span>
+              <span class="rate-period-tag">OKRES {{ $index + 1 }}</span>
               @if ($index === 0) {
-                <span class="muted small">od początku kredytu</span>
+                <span class="muted small">od daty uruchomienia kredytu</span>
               } @else {
                 <span class="muted small">od</span>
                 <div class="rate-period-from">

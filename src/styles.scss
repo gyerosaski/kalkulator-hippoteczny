@@ -284,7 +284,7 @@ body {
   letter-spacing: 0.01em;
 }
 .sec-body {
-  padding: 4px 20px 20px;
+  padding: 20px 20px;
   display: flex;
   flex-direction: column;
   gap: var(--gap);
@@ -546,6 +546,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin-top: 24px;
 }
 .rate-grid {
   display: grid;
@@ -560,6 +561,9 @@ body {
   flex-direction: column;
   gap: 14px;
   background: var(--surface);
+}
+.rate-period + .rate-period {
+  margin-top: 12px;
 }
 .rate-period-head {
   display: flex;
