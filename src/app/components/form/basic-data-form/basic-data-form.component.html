@@ -69,76 +69,76 @@
       </app-field>
     </div>
 
-    <div formArrayName="ratePeriods">
-      @for (period of ratePeriods.controls; track $index) {
-        <div class="card" [formGroupName]="$index">
-          <div class="card-head">
-            <h3>
+    <div class="rate-block">
+      <div formArrayName="ratePeriods">
+        @for (period of ratePeriods.controls; track $index) {
+          <div class="rate-period" [formGroupName]="$index">
+            <div class="rate-period-head">
+              <span class="rate-period-tag">okres {{ $index + 1 }}</span>
               @if ($index === 0) {
-                Oprocentowanie
+                <span class="muted small">od początku kredytu</span>
               } @else {
-                Oprocentowanie od
-                <input
-                  type="month"
-                  formControlName="from"
-                  style="display: inline; width: auto; padding: 0.25rem"
-                />
-                <small style="margin-left: 0.25rem">{{
-                  period.get('from')?.value | formatMonth
-                }}</small>
-              }
-            </h3>
-            @if ($index > 0) {
-              <btn-remove (remove)="removeRatePeriod($index)" />
-            }
-          </div>
-
-          <app-field label="Stopa">
-            <app-segmented
-              formControlName="rateType"
-              [options]="['zmienna', 'stala']"
-              [labels]="['zmienna', 'stała']"
-            />
-          </app-field>
-
-          @if (period.get('rateType')?.value === 'zmienna') {
-            <div class="row row--3">
-              <app-field num="8a" label="WIBOR">
-                <app-number-input formControlName="wibor" suffix="%" [decimals]="2" />
-              </app-field>
-              <app-field num="8b" label="Marża">
-                <app-number-input formControlName="margin" suffix="%" [decimals]="2" />
-              </app-field>
-              <app-field num="8" label="Oprocentowanie nominalne">
-                <div class="inp inp--disabled">
-                  <input
-                    type="text"
-                    class="mono"
-                    [value]="
-                      ((period.get('wibor')?.value || 0) + (period.get('margin')?.value || 0))
-                        .toFixed(2)
-                        .replace('.', ',')
-                    "
-                    readonly
-                  />
-                  <span class="suffix">%</span>
+                <span class="muted small">od</span>
+                <div class="rate-period-from">
+                  <app-month-picker formControlName="from" />
                 </div>
-              </app-field>
+                <button
+                  type="button"
+                  class="ico-btn ico-btn--danger rate-period-close"
+                  title="Usuń okres"
+                  (click)="removeRatePeriod($index)"
+                >
+                  ×
+                </button>
+              }
             </div>
-          } @else {
-            <div class="row row--2">
-              <app-field num="8" label="Oprocentowanie stałe">
-                <app-number-input formControlName="nominalRate" suffix="%" [decimals]="2" />
+            <app-field label="Stopa">
+              <app-segmented
+                formControlName="rateType"
+                [options]="['zmienna', 'stala']"
+                [labels]="['zmienna', 'stała']"
+              />
+            </app-field>
+            <div class="rate-grid">
+              <app-field
+                [num]="$index === 0 ? '8' : ''"
+                label="Oprocentowanie"
+                [hint]="
+                  period.get('rateType')?.value === 'zmienna' ? 'WIBOR + Marża' : 'wartość stała'
+                "
+              >
+                @if (period.get('rateType')?.value === 'zmienna') {
+                  <div class="inp inp--disabled">
+                    <input
+                      type="text"
+                      class="mono"
+                      [value]="
+                        ((period.get('wibor')?.value || 0) + (period.get('margin')?.value || 0))
+                          .toFixed(2)
+                          .replace('.', ',')
+                      "
+                      readonly
+                    />
+                    <span class="suffix">%</span>
+                  </div>
+                } @else {
+                  <app-number-input formControlName="nominalRate" suffix="%" [decimals]="2" />
+                }
               </app-field>
+              @if (period.get('rateType')?.value === 'zmienna') {
+                <app-field num="8a" label="WIBOR">
+                  <app-number-input formControlName="wibor" suffix="%" [decimals]="2" />
+                </app-field>
+                <app-field num="8b" label="Marża">
+                  <app-number-input formControlName="margin" suffix="%" [decimals]="2" />
+                </app-field>
+              }
             </div>
-          }
-        </div>
-      }
-    </div>
-
-    <div class="actions">
+          </div>
+        }
+      </div>
       <button type="button" class="btn btn--add" (click)="addRatePeriod()">
-        + Dodaj zmianę oprocentowania
+        ＋ Dodaj okres oprocentowania
       </button>
     </div>
   </div>

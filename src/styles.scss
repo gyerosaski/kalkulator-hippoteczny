@@ -543,14 +543,52 @@ body {
   background: var(--surface-2);
   border-radius: var(--r);
   padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 .rate-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 12px;
 }
-.rate-block .inp {
+.rate-period {
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
   background: var(--surface);
+}
+.rate-period-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.rate-period-tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent-deep);
+  background: color-mix(in oklch, var(--accent) 25%, var(--surface-2));
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.rate-period-from {
+  width: 148px;
+  flex-shrink: 0;
+}
+.rate-period-close {
+  margin-left: auto;
+}
+.ico-btn--danger {
+  color: oklch(55% 0.15 27);
+  border-color: oklch(85% 0.06 27);
+}
+.ico-btn--danger:hover {
+  background: oklch(95% 0.04 27);
 }
 
 /* Tranche */
@@ -666,7 +704,7 @@ body {
 
 .result-grid {
   display: grid;
-  grid-template-columns: 1.4fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 14px;
 }
 

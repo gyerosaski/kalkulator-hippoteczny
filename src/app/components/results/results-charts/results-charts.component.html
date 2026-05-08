@@ -2,10 +2,7 @@
   <div class="result-grid">
     <div class="card">
       <div class="card-head">
-        <div>
-          <h3>Struktura wszystkich płatności</h3>
-          <div class="muted small">cały okres kredytowania</div>
-        </div>
+        <h3>Struktura wszystkich płatności</h3>
       </div>
       <div class="donut-row">
         <app-donut [data]="totalSlices()" centerLabel="razem" [centerValue]="totalCenter()" />
@@ -25,14 +22,8 @@
       <div class="card-head">
         <h3>Struktura pierwszej raty</h3>
       </div>
-      <div class="donut-row donut-row--single">
-        <app-donut
-          [data]="firstSlices()"
-          [size]="160"
-          [thickness]="22"
-          centerLabel="rata"
-          [centerValue]="firstCenter()"
-        />
+      <div class="donut-row">
+        <app-donut [data]="firstSlices()" centerLabel="rata" [centerValue]="firstCenter()" />
         <ul class="legend">
           @for (s of firstSlices(); track s.label) {
             <li>

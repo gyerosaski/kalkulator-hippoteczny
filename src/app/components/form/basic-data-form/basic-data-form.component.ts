@@ -2,26 +2,22 @@ import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormService } from '../../../services/form/form';
 import { CalculatorService } from '../../../services/calculator/calculator.service';
-import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
 import { SectionComponent } from '../../ui/section/section.component';
 import { FieldComponent } from '../../ui/field/field.component';
 import { NumberInputComponent } from '../../ui/number-input/number-input.component';
 import { MonthPickerComponent } from '../../ui/month-picker/month-picker.component';
 import { SegmentedComponent } from '../../ui/segmented/segmented.component';
-import { BtnRemoveComponent } from '../../ui/btn-remove/btn-remove.component';
 
 @Component({
   selector: 'app-basic-data-form',
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    FormatMonthPipe,
     SectionComponent,
     FieldComponent,
     NumberInputComponent,
     MonthPickerComponent,
     SegmentedComponent,
-    BtnRemoveComponent,
   ],
   templateUrl: './basic-data-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
