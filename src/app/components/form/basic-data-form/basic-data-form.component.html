@@ -38,7 +38,7 @@
         <div class="inline">
           <app-number-input
             [value]="loanPeriodDisplayValue"
-            [decimals]="2"
+            [decimals]="0"
             (valueChange)="onLoanPeriodValueChanged($event)"
           />
           <app-segmented
@@ -69,13 +69,13 @@
       </app-field>
     </div>
 
-    <div class="stack" style="margin-top: 0.75rem" formArrayName="ratePeriods">
+    <div formArrayName="ratePeriods">
       @for (period of ratePeriods.controls; track $index) {
         <div class="card" [formGroupName]="$index">
           <div class="card-head">
             <h3>
               @if ($index === 0) {
-                Oprocentowanie (od początku)
+                Oprocentowanie
               } @else {
                 Oprocentowanie od
                 <input

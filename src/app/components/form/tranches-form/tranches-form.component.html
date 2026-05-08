@@ -7,7 +7,7 @@
   (enabledChange)="included.setValue($event)"
 >
   <div [formGroup]="fieldsGroup">
-    <div formArrayName="transze" class="stack">
+    <div formArrayName="transze">
       @for (tranche of transzeArray.controls; track $index) {
         <div class="card" [formGroupName]="$index">
           <div class="card-head">

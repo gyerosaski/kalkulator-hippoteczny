@@ -136,7 +136,7 @@
     </div>
 
     <!-- 8. Dodatkowe koszty -->
-    <div formArrayName="additionalCosts" class="stack">
+    <div formArrayName="additionalCosts">
       @for (cost of additionalCostsArray.controls; track $index) {
         <div class="card" [formGroupName]="$index">
           <div class="card-head">
