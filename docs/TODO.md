@@ -18,3 +18,4 @@
 - brak walidacji pola "6. Początek spłat kapitału (YYYY-MM)" - jeśli są zdefiniowane transze, data musi być większa od daty uruchomienia ostatniej transzy
 - [x] cały kapitał nie jest spłacany, zostają jakieś grosze
 - [x] w przypadku wypłaty kredytu w transzach rata kredytu powinna się zwiększać w miesiącu po jej uruchomieniu, a nie w tym samym miesiącu, sekcja "Pozostało" prawidłowo przyrasta o wysokość transzy w miesiącu jej uruchomienia
+- w harmonogramie spłat w miesiącu nadpłaty rata jest zwiększana o nadpłatę, a nie powinna
