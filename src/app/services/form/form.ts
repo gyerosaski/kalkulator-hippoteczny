@@ -610,6 +610,57 @@ export class FormService {
     );
   }
 
+  loadFromFile(savedData: any): void {
+    const data = savedData?.data ?? savedData;
+
+    const ratePeriods: any[] = data?.basicData?.ratePeriods ?? [];
+    this.form.controls.basicData.setControl(
+      'ratePeriods',
+      new FormArray(
+        ratePeriods.length > 0
+          ? ratePeriods.map((rp: any) => this.createRatePeriodGroup(rp))
+          : [this.createRatePeriodGroup()],
+      ) as FormArray<FormGroup<RatePeriodFormGroup>>,
+    );
+
+    const transze: any[] = data?.tranches?.fields?.transze ?? [];
+    this.form.controls.tranches.controls.fields.setControl(
+      'transze',
+      new FormArray(
+        transze.length > 0
+          ? transze.map((t: any, i: number) => this.createTrancheGroup(i === 0, t))
+          : [this.createTrancheGroup(true)],
+      ),
+    );
+
+    const prepaymentRules: any[] = data?.prepayments?.fields?.prepaymentRules ?? [];
+    this.form.controls.prepayments.controls.fields.setControl(
+      'prepaymentRules',
+      new FormArray(
+        prepaymentRules.length > 0
+          ? prepaymentRules.map((r: any) => this.createPrepaymentRuleGroup(r))
+          : [this.createPrepaymentRuleGroup()],
+      ),
+    );
+
+    const additionalCosts: any[] = data?.overheadCosts?.fields?.additionalCosts ?? [];
+    this.overheadCostsGroup.setControl(
+      'additionalCosts',
+      new FormArray(
+        additionalCosts.length > 0
+          ? additionalCosts.map((ac: any) => {
+              const g = this.createAdditionalCostGroup();
+              g.patchValue(ac);
+              return g;
+            })
+          : [this.createAdditionalCostGroup()],
+      ),
+    );
+
+    this.form.patchValue(data);
+    this.form.updateValueAndValidity();
+  }
+
   clearOverheadCosts(): void {
     this.overheadCostsGroup.patchValue({
       commissionPct: 0,

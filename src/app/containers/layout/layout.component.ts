@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, inject, signal, viewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  NgZone,
+  signal,
+  viewChild,
+} from '@angular/core';
 
 import { ReactiveFormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -61,7 +69,9 @@ function nextMonthStr(date = new Date()): string {
 export class LayoutComponent {
   private calc = inject(CalculatorService);
   private formService = inject(FormService);
+  private ngZone = inject(NgZone);
   private saveDialog = viewChild.required(SaveCalculationDialogComponent);
+  private fileInputEl = viewChild.required<ElementRef<HTMLInputElement>>('fileInputEl');
 
   get form() {
     return this.formService.form;
@@ -248,6 +258,31 @@ export class LayoutComponent {
   setDefaults() {
     this.formService.setDefaults();
     this.formService.setOverheadDefaults();
+  }
+
+  loadCalculationFromFile() {
+    const el = this.fileInputEl().nativeElement;
+    el.value = '';
+    el.click();
+  }
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const parsed = JSON.parse(e.target?.result as string);
+        const formData = parsed?.data ?? parsed;
+        this.ngZone.run(() => this.formService.loadFromFile(formData));
+      } catch {
+        window.alert(
+          'Nie udało się wczytać pliku. Upewnij się, że to prawidłowy plik kalkulacji .json.',
+        );
+      }
+    };
+    reader.readAsText(file);
   }
 
   async saveCalculation() {
