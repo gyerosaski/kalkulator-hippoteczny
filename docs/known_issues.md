@@ -1,4 +1,4 @@
 - pierwsza rata powinna być w kolejnym miesiącu po miesiącu, w którym uruchomiono kredyt
-- po kliknięciu zapisz kalkulację nie otwiera się modal leci `ERROR Error: NG0201: No provider for MatDialogRef found in NodeInjector. Find more at https://v21.angular.dev/errors/NG0201`
 - brak walidacji pola "6. Początek spłat kapitału (YYYY-MM)" - jeśli są zdefiniowane transze, data musi być większa od daty uruchomienia ostatniej transzy
-- cały kapitał nie jest spłacany, zostają jakieś grosze
+- [x] cały kapitał nie jest spłacany, zostają jakieś grosze
+- w przypadku wypłaty kredytu w transzach saldo kredytu powinno się zwiększać o wysokość transzy w miesiącu po jej uruchomieniu, a nie w tym samym miesiącu

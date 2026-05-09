@@ -1,6 +1,6 @@
 <dialog #dialogEl (close)="onClose()">
   <h2 class="dialog-title">Zapisz kalkulację</h2>
-  <form (ngSubmit)="onSave()">
+  <form (submit)="$event.preventDefault(); onSave()">
     <div class="field">
       <span class="field-label">Nazwa kalkulacji</span>
       <div class="inp">
