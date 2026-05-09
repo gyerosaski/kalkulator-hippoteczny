@@ -19,3 +19,6 @@
 - [x] cały kapitał nie jest spłacany, zostają jakieś grosze
 - [x] w przypadku wypłaty kredytu w transzach rata kredytu powinna się zwiększać w miesiącu po jej uruchomieniu, a nie w tym samym miesiącu, sekcja "Pozostało" prawidłowo przyrasta o wysokość transzy w miesiącu jej uruchomienia
 - [x] w harmonogramie spłat w miesiącu nadpłaty rata jest zwiększana o nadpłatę, a nie powinna
+- usunąć metodę CalculatorService.round2
+- przy dwóch regułach nadpłaty jeden skracającej okres, a drugiej obniżającej ratę okres kredytowania nie ulega skróceniu
+- dodaj regułę, żeby preferować użycie enumów zamiast literal types, zamień wszystkie wykorzystania, enumy powinny mieć klucze i wartości w języku angielskim, THIS_WAY, konwersja enumów na docelowe labelki w języku polskim powinna odbywać się w pipe'ach

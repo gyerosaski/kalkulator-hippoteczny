@@ -544,54 +544,6 @@ export class FormService {
     );
   }
 
-  clearAll(): void {
-    this.form.patchValue({
-      basicData: {
-        propertyValue: 0 as any,
-        loanAmount: 0 as any,
-        ltv: 0 as any,
-        loanPeriod: 0,
-        startDate: ym(),
-        capitalStartDate: nextMonthStr(),
-        installmentType: 'rowne',
-      },
-      prepayments: {
-        fields: {
-          rataDocelowaRegula: {
-            targetRate: 0,
-            from: nextMonthStr(),
-            to: nextMonthStr(),
-            effect: 'niższa rata',
-          },
-          prowizjaWczesniejszaSplata: {
-            ratePct: 0,
-            validUntil: nextMonthStr(),
-          },
-        },
-      },
-    });
-    this.form.controls.basicData.setControl(
-      'ratePeriods',
-      new FormArray([
-        this.createRatePeriodGroup({
-          from: ym(),
-          rateType: 'zmienna',
-          nominalRate: 0,
-          wibor: 0,
-          margin: 0,
-        }),
-      ]) as FormArray<FormGroup<RatePeriodFormGroup>>,
-    );
-    this.form.controls.prepayments.controls.fields.setControl(
-      'prepaymentRules',
-      new FormArray([this.createPrepaymentRuleGroup({ to: nextMonthStr() })]),
-    );
-    this.form.controls.tranches.controls.fields.setControl(
-      'transze',
-      new FormArray([this.createTrancheGroup(true, { amount: 0 })]),
-    );
-  }
-
   setOverheadDefaults(): void {
     this.overheadCostsGroup.patchValue({
       commissionPct: 0,
@@ -672,36 +624,5 @@ export class FormService {
 
     this.form.patchValue(data);
     this.form.updateValueAndValidity();
-  }
-
-  clearOverheadCosts(): void {
-    this.overheadCostsGroup.patchValue({
-      commissionPct: 0,
-      appraisalFee: 0,
-      bridgeRateIncrease: 0,
-      bridgeMonths: 0,
-      propInsFrequency: 'co rok',
-      propInsCalcMethod: '% wartości nieruchomości',
-      propInsValue: 0,
-      propInsFrom: nextMonthStr(),
-      propInsTo: endOfLoanDate(),
-      lowEquityRateIncrease: 0,
-      lifeInsFrequency: 'co rok',
-      lifeInsCalcMethod: '% kwoty kredytu',
-      lifeInsValue: 0,
-      lifeInsFrom: nextMonthStr(),
-      lifeInsTo: endOfLoanDate(),
-      jobLossInsFrequency: 'jednorazowo',
-      jobLossInsCalcMethod: '% kwoty kredytu',
-      jobLossInsValue: 0,
-      jobLossInsFrom: nextMonthStr(),
-      promoRateDecrease: 0,
-      promoFrom: nextMonthStr(),
-      promoTo: addMonthsStr(nextMonthStr(), 12),
-    });
-    this.overheadCostsGroup.setControl(
-      'additionalCosts',
-      new FormArray([this.createAdditionalCostGroup()]),
-    );
   }
 }

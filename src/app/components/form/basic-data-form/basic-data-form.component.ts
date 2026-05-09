@@ -31,7 +31,6 @@ import { CardsGroupComponent } from '../../ui/cards-group/cards-group.component'
 export class BasicDataFormComponent {
   private readonly formService = inject(FormService);
   private readonly calculatorService = inject(CalculatorService);
-  collapsed = false;
   loanPeriodUnit: 'lata' | 'miesiące' = 'lata';
 
   get form() {
@@ -49,11 +48,6 @@ export class BasicDataFormComponent {
   get loanPeriodDisplayValue(): number {
     const months = this.basicData.controls.loanPeriod.value;
     return this.loanPeriodUnit === 'lata' ? Math.round((months / 12) * 100) / 100 : months;
-  }
-
-  onLoanPeriodDisplayChanged(event: Event): void {
-    const val = Number((event.target as HTMLInputElement).value);
-    this.onLoanPeriodValueChanged(val);
   }
 
   onLoanPeriodValueChanged(val: number): void {
@@ -98,9 +92,6 @@ export class BasicDataFormComponent {
     );
     this.basicData.patchValue(synced, { emitEvent: false });
     this.form.updateValueAndValidity();
-  }
-  toggleCollapsed() {
-    this.collapsed = !this.collapsed;
   }
 
   addRatePeriod() {
