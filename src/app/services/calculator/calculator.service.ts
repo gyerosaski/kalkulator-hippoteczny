@@ -583,10 +583,14 @@ export class CalculatorService {
     const bankReturnRatioPct =
       inputs.loanAmount > 0 ? (totalAllPayments / inputs.loanAmount) * 100 : 0;
 
-    const first =
-      schedule.length > 0
-        ? { rate: schedule[0].rate, capital: schedule[0].capital, interest: schedule[0].interest }
-        : null;
+    const firstCapitalRow = schedule.find((r) => r.capital > 0) ?? schedule[0] ?? null;
+    const first = firstCapitalRow
+      ? {
+          rate: firstCapitalRow.rate,
+          capital: firstCapitalRow.capital,
+          interest: firstCapitalRow.interest,
+        }
+      : null;
 
     return {
       effectiveRate: initialBaseRate,

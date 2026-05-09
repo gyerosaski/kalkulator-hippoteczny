@@ -176,6 +176,10 @@ export class FormService {
     return this.form.controls.overheadCosts.controls.included.value;
   }
 
+  get isTrancheIncluded() {
+    return this.form.controls.tranches.controls.included.value;
+  }
+
   get tranchesSection(): FormGroup<ToggleableSectionFormGroup<TranchesFieldsFormGroup>> {
     return this.form.controls.tranches;
   }

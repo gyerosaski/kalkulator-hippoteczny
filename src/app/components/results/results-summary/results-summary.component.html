@@ -1,6 +1,6 @@
 @if (results(); as r) {
   <div class="kpi-strip">
-    <ui-kpi label="Pierwsza rata" [value]="r.firstInstallment?.rate">
+    <ui-kpi [label]="firstInstallmentLabel" [value]="r.firstInstallment?.rate">
       {{ installmentTypeLabel }} · {{ rateTypeLabel }} {{ r.effectiveRate | number: '1.2-2' }}%
     </ui-kpi>
     <ui-kpi label="Suma wszystkich płatności" [value]="r.totals.totalAllPayments">

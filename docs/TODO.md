@@ -12,9 +12,9 @@
 - [x] prezentować kolumny "Nadpłata" i "Koszty okołokredytowe" w harmonogramie spłaty warunkowo na podstawie flag `FormService.isPrepaymentIncluded` i `FormService.isOverheadCostsIncluded`
 - [x] wydzielenie pól formularza prezentowany w komponencie `BasicDataFormComponent` do oddzielnej formGroup
 - [x] umożliwienie zmiany oprocentowania (pola "Typ rat", "Stopa", "8.a WIBOR (%)", "8.b Marża (%)", "Oprocentowanie (nominalne, %)", "8. Oprocentowanie stałe (%)") w okresie kredytowania. wymienione pola powinny zostać zgrupowane i przechowywane jako formArray z możliwością dodania nowej z uwzględnieniem daty obowiązywania nowego oprocentowania
-- udostępnić możliwość wczytywania uprzednio zapisanej konfiguracji formularza
+- [x] udostępnić możliwość wczytywania uprzednio zapisanej konfiguracji formularza
 - [x] data wypłaty pierwszej transzy jest zawsze równa dacie uruchomienia kredytu. Pole powinno być zablokowane i aktualizować się po zmianie w polu "Data uruchomienia kredytu". zaktualizuj dokumentacje
-- pierwsza rata powinna być w kolejnym miesiącu po miesiącu, w którym uruchomiono kredyt
+- [x] pierwsza rata prezentowana w src/app/components/results/results-summary powinna być pierwszą ratą pełną kapitałowo-odsetkową. w przypadku uruchomienia kredytu w transzach prezentować labelkę "PIERWSZA RATA KAPITAŁOWO-ODSETKOWA" oraz poprawną wartość
 - brak walidacji pola "6. Początek spłat kapitału (YYYY-MM)" - jeśli są zdefiniowane transze, data musi być większa od daty uruchomienia ostatniej transzy
 - [x] cały kapitał nie jest spłacany, zostają jakieś grosze
 - [x] w przypadku wypłaty kredytu w transzach rata kredytu powinna się zwiększać w miesiącu po jej uruchomieniu, a nie w tym samym miesiącu, sekcja "Pozostało" prawidłowo przyrasta o wysokość transzy w miesiącu jej uruchomienia

@@ -37,6 +37,14 @@ export class ResultsSummaryComponent {
     return this.formService.isOverheadCostsIncluded;
   }
 
+  get isTrancheIncluded(): boolean {
+    return this.formService.isTrancheIncluded;
+  }
+
+  get firstInstallmentLabel(): string {
+    return this.isTrancheIncluded ? 'Pierwsza pełna rata' : 'Pierwsza rata';
+  }
+
   get kpi4Label(): string {
     if (this.isOverheadCostsIncluded && this.isPrepaymentIncluded) return 'Koszty i nadpłaty';
     if (this.isPrepaymentIncluded) return 'Nadpłaty';
