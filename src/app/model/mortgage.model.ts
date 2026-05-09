@@ -144,7 +144,7 @@ export interface MortgageResults {
     overheadCosts: number; // koszty okołokredytowe
     prepayments: number;
     bankReturnRatioPct: number; // Suma wszystkich płatności / Kwota kredytu * 100
-    totalAllPayments: number; // Suma wszystkich płatności = totalRate + overheadCosts
+    totalAllPayments: number; // Suma wszystkich płatności = totalRate + overheadCosts + prepayments
   };
   schedule: ScheduleRow[];
 }

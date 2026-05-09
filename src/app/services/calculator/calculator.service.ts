@@ -521,7 +521,7 @@ export class CalculatorService {
       // Koszt ubezpieczeń i dodatkowych kosztów w tym miesiącu
       const insuranceCost = oc ? this.calcInsuranceCostForMonth(date, saldo, inputs, oc, idx) : 0;
 
-      const totalRateForMonth = this.round2(baseRate + prepayment + commission);
+      const totalRateForMonth = this.round2(baseRate);
 
       schedule.push({
         index: idx,
@@ -579,7 +579,7 @@ export class CalculatorService {
       earlyRepaymentCommissions +
       trancheDisbursementFees;
     const prepayments = schedule.reduce((s, r) => s + r.prepayment, 0);
-    const totalAllPayments = totalRate + overheadCosts;
+    const totalAllPayments = totalRate + overheadCosts + prepayments;
     const bankReturnRatioPct =
       inputs.loanAmount > 0 ? (totalAllPayments / inputs.loanAmount) * 100 : 0;
 
