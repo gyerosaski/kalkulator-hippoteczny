@@ -1,5 +1,6 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, computed } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormService } from '../../../services/form/form';
 import { PrepaymentFrequency, PrepaymentEffect } from '../../../model/mortgage.model';
@@ -8,7 +9,9 @@ import { FieldComponent } from '../../ui/field/field.component';
 import { NumberInputComponent } from '../../ui/number-input/number-input.component';
 import { MonthPickerComponent } from '../../ui/month-picker/month-picker.component';
 import { SelectComponent } from '../../ui/select/select.component';
-import { BtnRemoveComponent } from '../../ui/btn-remove/btn-remove.component';
+import { BtnAddComponent } from '../../ui/btn-add/btn-add.component';
+import { CardComponent } from '../../ui/card/card.component';
+import { CardsGroupComponent } from '../../ui/cards-group/cards-group.component';
 
 @Component({
   selector: 'app-prepayments-form',
@@ -20,7 +23,9 @@ import { BtnRemoveComponent } from '../../ui/btn-remove/btn-remove.component';
     NumberInputComponent,
     MonthPickerComponent,
     SelectComponent,
-    BtnRemoveComponent,
+    BtnAddComponent,
+    CardComponent,
+    CardsGroupComponent,
   ],
   templateUrl: './prepayments-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -36,8 +41,6 @@ export class PrepaymentsFormComponent {
   ];
   readonly prepaymentEffectOptions: PrepaymentEffect[] = ['niższa rata', 'skrócenie okresu'];
 
-  collapsed = false;
-
   get section() {
     return this.formService.prepaymentsSection;
   }
@@ -47,6 +50,17 @@ export class PrepaymentsFormComponent {
   readonly includedEnabled = toSignal(
     this.formService.prepaymentsSection.controls.included.valueChanges,
     { initialValue: this.formService.prepaymentsSection.controls.included.value },
+  );
+  private readonly nadplatyCount = toSignal(
+    this.formService.nadplatyRegulyArray.valueChanges.pipe(
+      map(() => this.formService.nadplatyRegulyArray.length),
+    ),
+    { initialValue: this.formService.nadplatyRegulyArray.length },
+  );
+  readonly badge = computed(() =>
+    this.includedEnabled() && this.nadplatyCount()! > 1
+      ? `liczba reguł: ${this.nadplatyCount()}`
+      : 'opcjonalne',
   );
   get fieldsGroup() {
     return this.section.controls.fields;
@@ -66,9 +80,5 @@ export class PrepaymentsFormComponent {
   }
   onNadplataFromChanged(index: number) {
     this.formService.onNadplataFromChanged(index);
-  }
-
-  toggleCollapsed() {
-    this.collapsed = !this.collapsed;
   }
 }

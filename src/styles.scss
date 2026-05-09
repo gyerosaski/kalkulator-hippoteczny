@@ -547,7 +547,8 @@ body {
   flex-shrink: 0;
 }
 
-ui-card + ui-card {
+ui-card + ui-card,
+ui-cards-group + ui-card {
   margin-top: 12px;
 }
 

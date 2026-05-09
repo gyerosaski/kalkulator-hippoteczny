@@ -1,10 +1,9 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, computed } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormService } from '../../../services/form/form';
 import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
-import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
-import { FormatCurrencyAmountPipe } from '../../../pipes/format-currency-amount/format-currency-amount.pipe';
 import { SectionComponent } from '../../ui/section/section.component';
 import { FieldComponent } from '../../ui/field/field.component';
 import { NumberInputComponent } from '../../ui/number-input/number-input.component';
@@ -19,8 +18,6 @@ import { CardsGroupComponent } from '../../ui/cards-group/cards-group.component'
   imports: [
     ReactiveFormsModule,
     FormatAmountPipe,
-    FormatMonthPipe,
-    FormatCurrencyAmountPipe,
     SectionComponent,
     FieldComponent,
     NumberInputComponent,
@@ -47,11 +44,19 @@ export class TranchesFormComponent {
     this.formService.tranchesSection.controls.included.valueChanges,
     { initialValue: this.formService.tranchesSection.controls.included.value },
   );
+  private readonly transzeCount = toSignal(
+    this.formService.transzeArray.valueChanges.pipe(
+      map(() => this.formService.transzeArray.length),
+    ),
+    { initialValue: this.formService.transzeArray.length },
+  );
+  readonly badge = computed(() =>
+    this.includedEnabled() && this.transzeCount()! > 1
+      ? `liczba transz: ${this.transzeCount()}`
+      : 'opcjonalne',
+  );
   get fieldsGroup() {
     return this.section.controls.fields;
-  }
-  get form() {
-    return this.formService.form;
   }
   get transzeArray() {
     return this.formService.transzeArray;

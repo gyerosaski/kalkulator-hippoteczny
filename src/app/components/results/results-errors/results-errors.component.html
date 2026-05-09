@@ -1,19 +1,33 @@
-@if (form.errors) {
+@if (form.errors || hasInvalidTrancheAmount || hasInvalidDisbursementFee) {
   <div class="errors">
-    @if (form.errors['loanGtProperty']) {
+    @if (form.errors?.['loanGtProperty']) {
       <p>Kwota kredytu nie może być większa niż wartość nieruchomości.</p>
     }
-    @if (form.errors['totalMonthsInvalid']) {
+    @if (form.errors?.['totalMonthsInvalid']) {
       <p>Łączna liczba miesięcy musi być większa od 0.</p>
     }
-    @if (form.errors['capitalBeforeStart']) {
+    @if (form.errors?.['capitalBeforeStart']) {
       <p>Początek spłat kapitału nie może być wcześniejszy niż data uruchomienia.</p>
     }
-    @if (form.errors['prepaymentDateRangeInvalid']) {
+    @if (form.errors?.['prepaymentDateRangeInvalid']) {
       <p>W regule nadpłaty data „do" nie może być wcześniejsza niż data „od".</p>
     }
-    @if (form.errors['targetInstallmentDateRangeInvalid']) {
+    @if (form.errors?.['targetInstallmentDateRangeInvalid']) {
       <p>W regule docelowej raty data „do" nie może być wcześniejsza niż data „od".</p>
+    }
+    @if (form.errors?.['transzeSumMismatch']) {
+      <p>
+        Suma transz musi być równa kwocie kredytu ({{
+          form.errors?.['transzeSumMismatch']?.expected | formatAmount
+        }}
+        zł). Różnica: {{ form.errors?.['transzeSumMismatch']?.diff | formatCurrencyAmount }}.
+      </p>
+    }
+    @if (hasInvalidTrancheAmount) {
+      <p>Kwota każdej transzy musi być większa od zera.</p>
+    }
+    @if (hasInvalidDisbursementFee) {
+      <p>Wysokość opłaty za uruchomienie transzy nie może być wyższa niż 1 000 zł.</p>
     }
   </div>
 }

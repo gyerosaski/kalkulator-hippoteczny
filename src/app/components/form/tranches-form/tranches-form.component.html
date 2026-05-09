@@ -1,6 +1,6 @@
 ﻿<ui-section
   title="Transze"
-  badge="opcjonalne"
+  [badge]="badge()"
   [toggleable]="true"
   [defaultOpen]="false"
   [enabled]="includedEnabled()"
@@ -16,38 +16,19 @@
             (remove)="removeTransza($index)"
             [formGroupName]="$index"
           >
-            <div class="row row--2">
+            <div [class]="$index > 0 ? 'row row--3' : 'row row--2'">
               <ui-field label="Kwota">
                 <ui-number-input formControlName="amount" suffix="zł" [decimals]="2" />
-                @if (tranche.get('amount')?.invalid && tranche.get('amount')?.touched) {
-                  <small class="field-error">Kwota musi być większa od zera.</small>
-                }
               </ui-field>
-              @if ($index === 0) {
-                <ui-field label="Data uruchomienia">
-                  <div class="inp inp--disabled">
-                    <input type="month" formControlName="date" [readonly]="true" class="mono" />
-                  </div>
-                  <div class="field-hint">{{ tranche.get('date')?.value | formatMonth }}</div>
-                </ui-field>
-              } @else {
-                <ui-field label="Data uruchomienia">
-                  <ui-month-picker formControlName="date" />
+              <ui-field label="Data uruchomienia">
+                <ui-month-picker formControlName="date" />
+              </ui-field>
+              @if ($index > 0) {
+                <ui-field label="Opłata za uruchomienie transzy">
+                  <ui-number-input formControlName="disbursementFee" suffix="zł" [decimals]="2" />
                 </ui-field>
               }
             </div>
-            @if ($index > 0) {
-              <div class="row row--2">
-                <ui-field label="Opłata za uruchomienie transzy">
-                  <ui-number-input formControlName="disbursementFee" suffix="zł" [decimals]="2" />
-                  @if (tranche.get('disbursementFee')?.errors?.['max']) {
-                    <small class="field-error"
-                      >Wysokość opłaty nie może być wyższa niż 1 000 zł.</small
-                    >
-                  }
-                </ui-field>
-              </div>
-            }
           </ui-card>
         }
       </div>
@@ -61,14 +42,5 @@
         ><b>{{ transzeSuma | formatAmount }}</b> zł</span
       >
     </div>
-
-    @if (form.errors?.['transzeSumMismatch']) {
-      <p class="field-error">
-        Suma transz musi być równa kwocie kredytu ({{
-          form.get('loanAmount')?.value | formatAmount
-        }}
-        zł). Różnica: {{ form.errors?.['transzeSumMismatch'].diff | formatCurrencyAmount }}.
-      </p>
-    }
   </div>
 </ui-section>
