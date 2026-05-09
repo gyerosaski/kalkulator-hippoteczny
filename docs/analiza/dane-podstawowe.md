@@ -1,228 +1,175 @@
-### Dokumentacja techniczna – Zakładka „Dane podstawowe”
+### Dokumentacja techniczna – Sekcja „Dane podstawowe”
 
-Aplikacja: Kalkulator kredytu hipotecznego 2.0
-Zakres: Szczegółowa specyfikacja elementów i logiki zakładki „Dane podstawowe” niezbędna do odtworzenia w Angular.
-Data opracowania: 2026-04-25
+Aplikacja: Kalkulator Hipoteczny (Angular 21, standalone components, Reactive Forms, Vitest)
+Zakres: Specyfikacja elementów i logiki sekcji „Dane podstawowe” odzwierciedlająca aktualny stan implementacji.
+Data aktualizacji: 2026-05-09
 
 ---
 
-## 1. Cel i zakres zakładki
+## 1. Cel i zakres sekcji
 
-Zakładka „Dane podstawowe” służy do zdefiniowania kluczowych parametrów kredytu hipotecznego oraz natychmiastowego wyliczenia:
+Sekcja „Dane podstawowe” (komponent `BasicDataFormComponent`, plik `src/app/components/form/basic-data-form/`) służy do zdefiniowania kluczowych parametrów kredytu hipotecznego oraz natychmiastowego wyliczenia:
 
 - wysokości pierwszej raty,
-- całkowitych kosztów (odsetki + koszty okołokredytowe),
-- harmonogramu spłaty (tabela, agregacja roczna, wykres),
-- udziału poszczególnych składników płatności w czasie (wykresy).
+- całkowitych kosztów (odsetki + koszty okołokredytowe + nadpłaty + prowizje),
+- harmonogramu spłaty (tabela agregowana rocznie, rozwijana do widoku miesięcznego),
+- udziału poszczególnych składników płatności (donuty: `Struktura wszystkich płatności`, `Struktura pierwszej raty`).
 
-Wyniki aktualizowane są na bieżąco po każdej zmianie danych wejściowych.
+Wyniki aktualizowane są na bieżąco po każdej zmianie pola formularza — `LayoutComponent` subskrybuje `form.valueChanges` i wywołuje `recalculate()`, które przekazuje `MortgageInputs` do `CalculatorService.compute()`. Sekcja `basicData` jest jedyną sekcją domyślnie rozwiniętą i niewyłączalną — pozostałe sekcje (`Koszty okołokredytowe i promocje`, `Transze`, `Nadpłaty`) są opcjonalne i włączane przełącznikiem nagłówka (`included`).
 
 ---
 
 ## 2. Elementy interaktywne (pola wejściowe i przełączniki)
 
-Poniżej opisano wszystkie elementy wejściowe wraz z typami, formatami, jednostkami, walidacjami i regułami przeliczeń.
+Wszystkie pola walutowe i procentowe korzystają z generycznego komponentu `ui-number-input`, który formatuje wartość według lokalizacji `pl-PL` (separator tysięcy: spacja, separator dziesiętny: przecinek). Pola dat operują na ciągu `YYYY-MM` (komponent `ui-month-picker`).
 
-### 2.1. 1. Wartość nieruchomości
+### 2.1. 1. Wartość nieruchomości (`propertyValue`)
 
-- Typ: pole tekstowe z maską liczbową.
-- Domyślna wartość: 500 000.
-- Format danych: liczba całkowita lub z częścią dziesiętną, separator tysięcy: spacja, separator dziesiętny: przecinek (np. „750 000”, „750 000,50”).
-- Jednostka: zł (PLN), prezentowana po prawej stronie pola.
-- Dostępne wartości: > 0.
-- Walidacje:
-  - wymagane (pole nie może być puste),
-  - wartość dodatnia (> 0),
-  - maksymalna długość rozsądna, np. 12 cyfr łącznie (rekomendacja UI; brak ograniczenia domenowego),
-  - niedozwolone znaki inne niż cyfry, spacja (jako separator tysięcy) i przecinek (separator dziesiętny).
-- Zależności i przeliczenia:
-  - aktualizacja LTV (3) według wzoru LTV[%] = Kwota kredytu / Wartość nieruchomości × 100%,
-  - w przypadku wpisania LTV (3) – automatyczne wyliczenie „Kwota kredytu” (2) = Wartość × LTV/100.
+- Typ: `ui-number-input`, `suffix="zł"`, `[decimals]="0"`.
+- Domyślna wartość startowa: `500 000`.
+- Walidatory: `Validators.required`, `Validators.min(0.01)`.
+- Zależności: zmiana wywołuje `onPropertyValueChanged()` → `CalculatorService.syncLtvAmountValue(..., 'propertyValue')`, który przelicza LTV (LTV = `loanAmount / propertyValue × 100`). Jeśli `loanAmount > propertyValue`, kwota kredytu zostaje obcięta do `propertyValue`.
 
-### 2.2. 2. Kwota kredytu
+### 2.2. 2. Kwota kredytu (`loanAmount`)
 
-- Typ: pole tekstowe z maską liczbową.
-- Domyślna wartość (przykładowa): 400 000.
-- Format danych: jak w 2.1.
-- Jednostka: zł (PLN).
-- Dostępne wartości: 0 < Kwota ≤ Wartość nieruchomości.
-- Walidacje:
-  - wymagane,
-  - kwota dodatnia,
-  - nie większa niż „Wartość nieruchomości”.
-- Zależności i przeliczenia:
-  - przelicza LTV (3): LTV[%] = Kwota / Wartość × 100%,
-  - wpływa na harmonogram i wszystkie wyniki (raty, odsetki, wykresy, sumy).
+- Typ: `ui-number-input`, `suffix="zł"`, `[decimals]="0"`.
+- Domyślna wartość startowa: `400 000`.
+- Walidatory: `Validators.required`, `Validators.min(0.01)`.
+- Zależności: zmiana wywołuje `onLoanAmountChanged()` → przelicza LTV. Walidator krzyżowy `crossFieldValidator` zgłasza błąd `loanGtProperty`, gdy kwota kredytu przekracza wartość nieruchomości.
 
-### 2.3. 3. LTV
+### 2.3. 3. LTV (`ltv`)
 
-- Typ: pole procentowe z maską liczbową.
-- Domyślna wartość (przykładowa): 80,00 %.
-- Format danych: dwie cyfry po przecinku, separator dziesiętny: przecinek; wyświetlana jednostka „%”.
-- Dostępne wartości: 0,00 – 100,00.
-- Walidacje:
-  - wymagane,
-  - zakres [0;100],
-  - format procentowy (maks. 2 miejsca po przecinku; rekomendacja UI).
-- Zależności i przeliczenia:
-  - przy zmianie LTV wyliczana jest „Kwota kredytu” (2) = Wartość (1) × LTV/100,
-  - przy zmianie (1) lub (2) – LTV przeliczane automatycznie = 2/1 × 100.
+- Typ: `ui-number-input`, `suffix="%"`, `[decimals]="2"`.
+- Domyślna wartość startowa: `80` (%).
+- Walidatory: `Validators.required`, `Validators.min(0)`, `Validators.max(100)`.
+- Zależności: zmiana wywołuje `onLtvChanged()` → przelicza `loanAmount = propertyValue × ltv / 100`. Jeżeli `ltv > 100`, jest sprowadzane do `100`.
 
-### 2.4. 4. Okres kredytowania
+### 2.4. 4. Okres kredytowania (`loanPeriod`)
 
-- Typ: dwa pola liczb całkowitych: „lat” i „m‑cy”.
-- Domyślna wartość (przykładowa): 20 lat 0 m‑cy.
-- Format danych: wartości całkowite (bez separatorów). Prezentowane jednostki „lat”, „m‑cy”.
-- Dostępne wartości: lata ≥ 0, miesiące w zakresie 0–11.
-- Walidacje:
-  - łączna liczba miesięcy > 0,
-  - miesiące w zakresie 0–11;
-  - przy wpisaniu 12 m‑cy – automatyczne przeniesienie do lat (UX rekomendowany).
-- Zależności i przeliczenia:
-  - całkowita liczba rat n = lata × 12 + miesiące,
-  - n używane we wszystkich wyliczeniach harmonogramu i wykresów.
+- Typ: kombinacja `ui-number-input` + `ui-segmented` z opcjami `['lata', 'miesiące']` (właściwość `loanPeriodUnit` w komponencie).
+- Wartość przechowywana w formularzu jest zawsze w miesiącach. Konwersja z lat: `months = Math.round(years × 12)`.
+- Domyślna wartość startowa: `240` miesięcy (20 lat).
+- Walidatory: `Validators.required`, `Validators.min(1)`. Walidator krzyżowy `totalMonthsInvalid` zgłasza błąd, gdy `Math.trunc(loanPeriod) <= 0`.
+- Zależności: liczba rat `n = loanPeriod`; karencja `graceMonths = max(0, monthDiff(startDate, capitalStartDate) - 1)`; `amortMonths = n - graceMonths`.
 
-### 2.5. 5. Data uruchomienia kredytu
+### 2.5. 5. Data uruchomienia kredytu (`startDate`)
 
-- Typ: pole wyboru miesiąca/roku z pickerem (MonthPicker), z prezentacją „MMM RRRR” (np. „kwi 2026”).
-- Domyślna wartość: bieżący lub najbliższy miesiąc (obserwowane „kwi 2026”).
-- Walidacje:
-  - wymagane,
-  - poprawny miesiąc i rok.
-- Zależności i przeliczenia:
-  - wyznacza start harmonogramu (pierwsza rata w miesiącu „Początek spłat kapitału” – patrz 2.6),
-  - zmiana daty przesuwa zakres dat w tabeli i na wykresach.
+- Typ: `ui-month-picker`, format wewnętrzny `YYYY-MM`.
+- Domyślna wartość startowa: bieżący miesiąc (`ym(new Date())`).
+- Walidator: `Validators.required`.
+- Zależności: data pierwszej transzy jest synchronizowana z `startDate` (pierwsza transza nie ma odrębnej kontroli daty); pierwsza rata przypada na miesiąc `startDate + 1`.
 
-### 2.6. 6. Początek spłat kapitału
+### 2.6. 6. Początek spłat kapitału (`capitalStartDate`)
 
-- Typ: pole miesiąc/rok z przyciskiem akcji „EDYTUJ”.
-- Domyślna wartość: miesiąc następujący po „Dacie uruchomienia” (np. dla „kwi 2026” → „maj 2026”).
-- Zachowanie:
-  - domyślnie pole jest nieedytowalne (disabled),
-  - kliknięcie „EDYTUJ” odblokowuje edycję i pozwala ustawić karencję (opóźnienie spłaty kapitału).
-- Walidacje:
-  - „Początek spłat” ≥ „Data uruchomienia”,
-  - jeśli ustawiono karencję (Początek > Uruchomienie) – w okresie karencji harmonogram zawiera wyłącznie część odsetkową.
+- Typ: `ui-month-picker`, format `YYYY-MM`. Pole jest zawsze edytowalne (nie ma trybu „odblokowania” przyciskiem).
+- Domyślna wartość startowa: `nextMonthStr()` — miesiąc po dacie uruchomienia.
+- Walidatory: `Validators.required`. Walidator krzyżowy `capitalBeforeStart` zgłasza błąd, gdy `capitalStartDate < startDate`.
+- Zależności: ustalenie daty późniejszej niż `startDate + 1` skutkuje karencją (w okresie karencji harmonogram zawiera wyłącznie odsetki, `capital = 0`).
 
-### 2.7. Jakie raty?
+### 2.7. 7. Typ rat (`installmentType`)
 
-- Typ: przełącznik opcji (segment/segmented control).
-- Dostępne wartości: „równe” | „malejące”.
-- Zależności i przeliczenia:
-  - „równe” (annuitet): rata stała R przez cały okres danego poziomu oprocentowania,
-    - R = P × i_m / (1 − (1 + i_m)^(−n)),
-  - „malejące”: część kapitałowa stała, odsetki malejące,
-    - Kapitał*m = P / n, Odsetki_m = Saldom*−1 × i_m, R_m = Kapitał_m + Odsetki_m.
+- Typ: `ui-segmented`, `[options]="['rowne', 'malejace']"`, `[labels]="['równe', 'malejące']"`.
+- Domyślna wartość: `rowne`.
+- Wartość obowiązuje globalnie dla całego okresu kredytu (jeden typ rat dla wszystkich okresów oprocentowania).
+- Zależności:
+  - `rowne` (annuitet): rata stała `R = saldo × i_m / (1 − (1 + i_m)^(−n_pozostałe))` (`CalculatorService.annuityPayment`),
+  - `malejace`: część kapitałowa stała `Kapitał_m = saldo / n_pozostałe`, odsetki `Odsetki_m = saldo_{m-1} × i_m`, rata `R_m = Kapitał_m + Odsetki_m`.
+- Przy zmianie okresu oprocentowania, dołączeniu transzy lub nadpłacie z efektem „niższa rata” rata jest przeliczana ponownie od bieżącego salda i pozostałej liczby rat.
 
-### 2.8. 7. Stopa (rodzaj oprocentowania)
+### 2.8. Okresy oprocentowania (`ratePeriods` — `FormArray`)
 
-- Typ: lista rozwijana (select).
-- Dostępne wartości: „zmienna” | „stała”.
-- Zachowanie i zależności:
-  - „zmienna”: sekcja 2.9 „Oprocentowanie” jest polem tylko do odczytu, a wartość wyliczana jest jako „WIBOR + Marża”; widoczne i edytowalne pola 2.10 i 2.11.
-  - „stała”: sekcja 2.9 staje się edytowalna (wartość nominalnego stałego oprocentowania), a pola 2.10 i 2.11 są ukryte lub ignorowane.
+Sekcja `ui-cards-group` zawiera listę kart `OKRES n` (`FormArray` z `RatePeriodFormGroup`). Każdy okres definiuje typ stopy i jej wartość obowiązującą od wskazanej daty. Domyślnie istnieje jeden okres startujący od `startDate`.
 
-### 2.9. 8. Oprocentowanie (nominalne)
+Pola w karcie:
 
-- Typ: pole procentowe z maską liczbową.
-- Domyślna wartość (przykładowa przy „zmiennej”): 9,00 % (wynik 7,00% + 2,00%).
-- Jednostka: %.
-- Zachowanie:
-  - przy „zmiennej” stopie: disabled, wyliczane = WIBOR (2.10) + Marża (2.11),
-  - przy „stałej” stopie: edytowalne i używane bezpośrednio w kalkulacji.
-- Walidacje: wymagane; zakres rozsądny, np. 0%–50% (rekomendacja UI); 2 miejsca po przecinku.
+- 8. `Stopa` (`rateType`): `ui-segmented` z opcjami `['zmienna', 'stala']`. Domyślnie `zmienna`.
+- 9. `Oprocentowanie` (`nominalRate`): `ui-number-input`, `suffix="%"`, `[decimals]="2"`. Wyświetlane tylko dla `rateType === 'stala'`.
+  - Dla `rateType === 'zmienna'` to pole jest zastąpione polem tylko do odczytu (`inp inp--disabled`) prezentującym sumę `wibor + margin`.
+- 9a. `WIBOR` (`wibor`): widoczne tylko dla `rateType === 'zmienna'`. `ui-number-input`, `suffix="%"`, `[decimals]="2"`. Domyślnie `7,00`.
+- 9b. `Marża` (`margin`): widoczne tylko dla `rateType === 'zmienna'`. `ui-number-input`, `suffix="%"`, `[decimals]="2"`. Domyślnie `2,00`.
 
-### 2.10. 8.a WIBOR
+Walidatory: `Validators.min(0)`, `Validators.max(50)` dla wszystkich pól liczbowych w okresie.
 
-- Typ: pole procentowe.
-- Domyślna wartość: 7,00 %.
-- Jednostka: %.
-- Zależności: przy „zmiennej” stopie współtworzy „Oprocentowanie” (2.9) jako WIBOR + Marża.
-- Walidacje: wymagane; wartość nieujemna; 2 miejsca po przecinku.
+Pierwszy okres (`$index === 0`) ma stałą datę startu „od daty uruchomienia kredytu” i nie udostępnia pickera. Kolejne okresy mają edytowalne pole `from` (`ui-month-picker`) w nagłówku karty oraz przycisk „usuń”.
 
-### 2.11. 8.b Marża
+Przycisk `+ Dodaj okres oprocentowania` (`addRatePeriod()` w `FormService`) tworzy nowy okres z datą `lastFrom + 12 miesięcy` i kopiuje pozostałe wartości z poprzedniego okresu.
 
-- Typ: pole procentowe.
-- Domyślna wartość: 2,00 %.
-- Jednostka: %.
-- Zależności: przy „zmiennej” stopie współtworzy „Oprocentowanie” (2.9).
-- Walidacje: wymagane; wartość nieujemna; 2 miejsca po przecinku.
-
-### 2.12. „+” (Dodaj okres oprocentowania)
-
-- Typ: przycisk akcji w sekcji stóp.
-- Działanie: dodaje kolejny okres oprocentowania zaczynający się od wskazanej daty (zależnie od wybranego typu stopy: jedno pole „Oprocentowanie” dla stałej, albo para „WIBOR”/„Marża” dla zmiennej).
-- Walidacje i reguły:
-  - daty okresów nie mogą się pokrywać ani mieć przerw (ciągłość linii czasu),
-  - każdy okres musi mieć dodatni czas trwania,
-  - zmiana okresów powoduje rekalkulację harmonogramu z podziałem na odcinki stałego oprocentowania.
+W silniku obliczeniowym (`CalculatorService.compute`) okresy są sortowane rosnąco po `from`. Dla danego miesiąca `date` brany jest ostatni okres spełniający `period.from <= date`. Każda zmiana okresu w trakcie spłaty wywołuje rekalkulację `equalRate` lub `decreasingCapitalPart`.
 
 ---
 
-## 3. Przyciski akcji (na dole sekcji danych)
+## 3. Akcje globalne (topbar)
+
+Sekcja danych podstawowych nie ma osobnego paska akcji — globalne przyciski znajdują się w nagłówku aplikacji (`LayoutComponent.template`):
 
 ### 3.1. „Wstaw domyślne”
 
-- Działanie: ustawia wartości domyślne wszystkich pól na zakładce „Dane podstawowe” (np. 500 000 / 400 000 / 80% / 20 lat / bieżąca data / raty równe / zmienna 7%+2%).
-- Walidacje: brak dodatkowych (operacja nadpisuje bieżące dane po potwierdzeniu lub natychmiast – zgodnie z projektem UX).
+- Wywołuje `LayoutComponent.setDefaults()`, które uruchamia kolejno:
+  - `FormService.setDefaults()` — resetuje sekcję `basicData`, regułę docelowej raty, prowizję za wcześniejszą spłatę, listę okresów oprocentowania (jeden okres `zmienna 7+2`), reguły nadpłat oraz transze (jedna transza = `loanAmount` w `startDate`).
+  - `FormService.setOverheadDefaults()` — wstawia przykładowe wartości w sekcji „Koszty okołokredytowe i promocje” (m.in. `appraisalFee = 400`, `bridgeRateIncrease = 1,2`, `bridgeMonths = 6`, `propInsValue = 0,0008`).
+- Akcja nie pyta o potwierdzenie.
 
-### 3.2. „Wyczyść dane”
+### 3.2. „Zapisz kalkulację”
 
-- Działanie: zeruje/usuwa wartości we wszystkich polach wejściowych i czyści wyniki; resetuje wykresy i tabelę (do pustego stanu lub domyślnego minimalnego zakresu dat).
-- Walidacje: może wymagać potwierdzenia (dialog), jeśli istnieją niezapisane zmiany.
-
-### 3.3. „Zapisz kalkulację”
-
-- Działanie: otwiera modal „Zapisz kalkulację” (nazwa, ewentualnie opis). Po zapisaniu konfiguracja (dane wejściowe) trafia do pamięci lokalnej (localStorage) lub backendu – w zależności od docelowej architektury.
-- Walidacje:
-  - nazwa kalkulacji – wymagane, niepusta,
-  - unikalność nazwy (rekomendowane) lub nadpisanie po potwierdzeniu.
-
-Dodatkowy przycisk w obszarze wyników: „drukuj” – patrz 5.2.
+- Otwiera dialog `SaveCalculationDialogComponent` (`<dialog>` HTML5 z polem `nameCtrl`).
+- Po zatwierdzeniu nazwy dane (raw value formularza) zapisywane są do `localStorage` pod kluczem `'kalkulacje'` jako element listy `{ name, createdAt, data }`. Jeśli rekord o tej nazwie już istnieje, użytkownik jest pytany o nadpisanie (`window.confirm`).
+- Dodatkowo plik JSON o nazwie `<name>.json` jest pobierany przez przeglądarkę (utworzenie `Blob` + `URL.createObjectURL` + click na ukrytym elemencie `<a>`).
+- Przycisk „Wyczyść dane” oraz „drukuj” nie istnieją w bieżącej implementacji. Czyszczenie jest dostępne w `FormService.clearAll()` i `clearOverheadCosts()` / `clearTransze()`, ale nie ma do nich powiązanego elementu UI w `LayoutComponent`.
 
 ---
 
-## 4. Tabele i podsumowania
+## 4. Panel wyników (`ResultsSummaryComponent`)
 
-### 4.1. Podsumowanie „Oddasz do banku … pożyczonej kwoty”
+Bezpośrednio nad wykresami i tabelą harmonogramu wyświetlany jest pasek 4 kafelków KPI (`kpi-strip`):
 
-- Prezentowane wartości:
-  - Udział całkowitych płatności względem kwoty pożyczonej (np. 216%).
-  - Suma wszystkich płatności (kapitał + odsetki + koszty okołokredytowe − nadpłaty),
-  - Rozbicie: „Odsetki”, „Koszty okołokredytowe”, „Kapitał – spłacany w ratach”, „Nadpłaty”.
-- Sposób wyliczania:
-  - Odsetki = suma odsetek w całym harmonogramie,
-  - Koszty okołokredytowe = suma pozycji z zakładki „Koszty…” (tu default 0,00),
-  - Kapitał = kwota kredytu (spłacona w ratach),
-  - Nadpłaty = suma nadpłat (zakładka „Nadpłaty”, domyślnie 0,00),
-  - Wskaźnik „Oddasz do banku [%]” = Suma wszystkich płatności / Kwota kredytu × 100.
+1. **Pierwsza rata** (`r.firstInstallment.rate`) — z dopiskiem `installmentTypeLabel · rateTypeLabel effectiveRate%`.
+2. **Suma wszystkich płatności** (`r.totals.totalAllPayments = totalRate + overheadCosts`) — z dopiskiem „oddasz X% pożyczonej kwoty” (`bankReturnRatioPct`).
+3. **Odsetki** (`r.totals.totalInterest`) — z dopiskiem `intPct = totalInterest / totalCapital × 100`.
+4. **Koszty okołokredytowe** / **Nadpłaty** / **Koszty i nadpłaty** — etykieta zależna od włączonych sekcji (`kpi4Label`); wartość = `overheadCosts + prepayments`. Dolny meta-tekst opcjonalnie rozbija sumę na składniki.
 
----
+Wartości totali są obliczane w `CalculatorService.compute()`:
 
-## 6. Zdarzenia, przeliczenia i reguły aktualizacji
-
-- Każda zmiana w polach wejściowych (2.1–2.11) wyzwala natychmiastową rekalkulację:
-  - ponowne wyznaczenie n (liczby rat),
-  - ponowne obliczenie R (dla rat równych) lub Kapitał_m (dla malejących),
-  - przeliczenie odsetek, salda, sum i wskaźników,
-  - odświeżenie wykresów i tabel (wraz z agregacją roczną).
-- Zmiana „Rodzaju oprocentowania” (2.8) przełącza tryb edycji pól (2.9–2.11) i wywołuje rekalkulację.
-- Dodawanie okresów oprocentowania („+”) dzieli harmonogram na podokresy stałego r i odpowiednio aktualizuje n oraz R lub Kapitał_m dla każdego podokresu.
+- `totalRate = Σ schedule[i].rate` (rata + nadpłata + prowizja za wcześniejszą spłatę),
+- `overheadCosts = loanCommission + appraisalFee + Σ insuranceCost + Σ commission + Σ trancheDisbursementFees`,
+- `prepayments = Σ schedule[i].prepayment`,
+- `bankReturnRatioPct = totalAllPayments / loanAmount × 100`.
 
 ---
 
-## 7. Wymagania implementacyjne (Angular – wskazówki)
+## 5. Walidacje krzyżowe (`crossFieldValidator`)
 
-- Formularz: Reactive Forms + maski wejściowe dla walut i procentów (np. ngx-mask/Angular built-in pipes), walidacje synchroniczne; w razie potrzeby walidacje krzyżowe (kwota ≤ wartość; LTV = 2/1 × 100).
-- Logika finansowa: osobna warstwa serwisowa z czystymi funkcjami obliczeniowymi (deterministyczne, testowalne), bez zależności od komponentu UI.
-- Wykresy: Chart.js przez ngx‑charts/ngx‑chartjs lub bezpośrednią integrację; aktualizacja danych reaktywnie po zmianie formularza.
-- Tabela: wirtualizacja przy długich harmonogramach; mechanizm grupowania (rok) + rozwijanie miesięcy; formatowanie walutowe i daty polskie (Intl.NumberFormat, Intl.DateTimeFormat, pl‑PL).
-- Trwałość: zapisy konfiguracji lokalnie do pliku .json; serializacja tylko danych wejściowych, nie wyników.
-- Dostępność (a11y): role ARIA dla przycisków/przełączników; focus management w modalach; etykiety i opisy dla czytników.
-- brak API - wszystko ma się odbywać w aplikacji webowej Angular
+Walidator zarejestrowany na `FormGroup<MortgageFormGroup>` zwraca błędy globalne wyświetlane w `ResultsErrorsComponent`:
+
+| Klucz błędu                         | Warunek wyzwolenia                                                                                                    |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `loanGtProperty`                    | `loanAmount > propertyValue`                                                                                          |
+| `totalMonthsInvalid`                | `Math.trunc(loanPeriod) <= 0`                                                                                         |
+| `capitalBeforeStart`                | `capitalStartDate < startDate`                                                                                        |
+| `transzeSumMismatch`                | sekcja transz włączona i `Σ transze.amount ≠ loanAmount` (z tolerancją 0,01); w obiekcie błędu `expected/actual/diff` |
+| `prepaymentDateRangeInvalid`        | reguła nadpłaty (nie `jednorazowo`) z `to < from`                                                                     |
+| `prepaymentAmountInvalid`           | `amount < 0` w którejkolwiek regule nadpłaty                                                                          |
+| `targetInstallmentDateRangeInvalid` | reguła docelowej raty z `to < from`                                                                                   |
+| `targetInstallmentInvalid`          | `targetRate < 0`                                                                                                      |
+
+Gdy formularz jest niepoprawny (`form.valid === false`), `LayoutComponent.recalculate()` ustawia `results` i `yearlyGroups` na `null` — panel wyników, donuty i tabela znikają, a `ResultsErrorsComponent` wypisuje listę błędów.
 
 ---
 
-## 8. Uwagi i ograniczenia obserwacyjne
+## 6. Reguły aktualizacji wyników
 
-- Zakładki „Koszty…”, „Transze”, „Nadpłaty” wpływają na wyniki (koszty, nadpłaty), ale nie są częścią tej specyfikacji – tu ujęto ich wpływ na poziomie agregacji.
+- Każda zmiana w polach `basicData` lub jakimkolwiek innym polu formularza wyzwala `form.valueChanges` → `recalculate()`.
+- Sekcje opcjonalne (`overheadCosts`, `tranches`, `prepayments`) mają flagę `included`. Gdy jest `false`, `recalculate()` przekazuje do `CalculatorService` neutralne wartości domyślne (zerowe ubezpieczenia, brak transz, brak nadpłat) — silnik wykonuje obliczenia, ale dane sekcji nie wpływają na wynik.
+- Stan zwijania/rozwijania kart z okresami oprocentowania nie jest persystowany — to czysto wizualna właściwość komponentu.
+
+---
+
+## 7. Kontekst implementacyjny
+
+- Formularze: Reactive Forms (`FormGroup<MortgageFormGroup>` z typowanymi grupami w `src/app/model/form.model.ts`).
+- Serwis obliczeniowy: `CalculatorService` (`src/app/services/calculator/calculator.service.ts`) — czyste funkcje, brak zależności od komponentów; wszystkie daty przechowywane jako `YYYY-MM`, arytmetyka miesięcy oparta o `year × 12 + month`.
+- Wykresy: implementacja własna (SVG `stroke-dasharray`) w komponencie `ui-donut`. Brak zależności od Chart.js / ngx-charts.
+- Tabela: niestandardowy CSS Grid (klasa `tbl`) z agregacją roczną `groupByYear()` w `LayoutComponent`. Każda kategoria jest sumowana, ostatnie saldo w roku trafia do `lastRemaining`.
+- Trwałość: zapis/odczyt w `localStorage` pod kluczem `'kalkulacje'`; dodatkowo eksport JSON jako plik do pobrania.
+- Lokalizacja: `pl-PL` (`Intl.NumberFormat`). Etykiety i typy domenowe pozostają po polsku (`rowne`/`malejace`, `jednorazowo`, `co rok`, `niższa rata`, `skrócenie okresu`).
+- Strict TypeScript (`strict: true`, `strictTemplates: true`); zakaz `any`. Komponenty standalone z `OnPush`.
+- Testy: Vitest (`describe`/`it`/`expect` przez `vitest/globals`).
