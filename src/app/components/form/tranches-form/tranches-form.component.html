@@ -9,43 +9,36 @@
   <div [formGroup]="fieldsGroup">
     <div formArrayName="transze">
       @for (tranche of transzeArray.controls; track $index) {
-        <div class="card" [formGroupName]="$index">
-          <div class="card-head">
-            <h3>Transza {{ $index + 1 }}</h3>
-            @if ($index > 0) {
-              <btn-remove (remove)="removeTransza($index)" />
-            }
-          </div>
+        <ui-card
+          [tag]="'TRANSZA ' + ($index + 1)"
+          variant="dark"
+          [removable]="$index > 0"
+          (remove)="removeTransza($index)"
+          [formGroupName]="$index"
+        >
           <div class="row row--2">
-            <app-field [num]="($index + 1).toString()" label="Kwota">
+            <app-field label="Kwota">
               <app-number-input formControlName="amount" suffix="zł" [decimals]="2" />
               @if (tranche.get('amount')?.invalid && tranche.get('amount')?.touched) {
                 <small class="field-error">Kwota musi być większa od zera.</small>
               }
             </app-field>
-
             @if ($index === 0) {
-              <app-field [num]="($index + 1).toString() + '.2'" label="Data">
+              <app-field label="Data uruchomienia">
                 <div class="inp inp--disabled">
-                  <input
-                    type="month"
-                    formControlName="date"
-                    [disabled]="true"
-                    [readonly]="true"
-                    class="mono"
-                  />
+                  <input type="month" formControlName="date" [readonly]="true" class="mono" />
                 </div>
                 <div class="field-hint">{{ tranche.get('date')?.value | formatMonth }}</div>
               </app-field>
             } @else {
-              <app-field [num]="($index + 1).toString() + '.2'" label="Data">
+              <app-field label="Data uruchomienia">
                 <app-month-picker formControlName="date" />
               </app-field>
-
-              <app-field
-                [num]="($index + 1).toString() + '.3'"
-                label="Opłata za uruchomienie transzy"
-              >
+            }
+          </div>
+          @if ($index > 0) {
+            <div class="row row--2">
+              <app-field label="Opłata za uruchomienie transzy">
                 <app-number-input formControlName="disbursementFee" suffix="zł" [decimals]="2" />
                 @if (tranche.get('disbursementFee')?.errors?.['max']) {
                   <small class="field-error"
@@ -53,34 +46,28 @@
                   >
                 }
               </app-field>
-            }
-          </div>
-        </div>
+            </div>
+          }
+        </ui-card>
       }
     </div>
 
-    <div class="card">
-      <div class="row row--2">
-        <app-field label="Suma transz">
-          <div class="inp inp--disabled">
-            <input type="text" class="mono" [value]="transzeSuma | formatAmount" readonly />
-            <span class="suffix">zł</span>
-          </div>
-        </app-field>
-      </div>
-      @if (form.errors?.['transzeSumMismatch']) {
-        <p class="field-error">
-          Suma transz musi być równa kwocie kredytu ({{
-            form.get('loanAmount')?.value | formatAmount
-          }}
-          zł). Różnica: {{ form.errors?.['transzeSumMismatch'].diff | formatCurrencyAmount }}.
-        </p>
-      }
+    <btn-add label="Dodaj transzę" (add)="addTransza()" />
+
+    <div class="suma-row">
+      <span class="muted">Suma transz</span>
+      <span class="mono"
+        ><b>{{ transzeSuma | formatAmount }}</b> zł</span
+      >
     </div>
 
-    <div class="actions">
-      <button type="button" (click)="addTransza()">+</button>
-      <button type="button" (click)="clearTransze()">Wyczyść dane</button>
-    </div>
+    @if (form.errors?.['transzeSumMismatch']) {
+      <p class="field-error">
+        Suma transz musi być równa kwocie kredytu ({{
+          form.get('loanAmount')?.value | formatAmount
+        }}
+        zł). Różnica: {{ form.errors?.['transzeSumMismatch'].diff | formatCurrencyAmount }}.
+      </p>
+    }
   </div>
 </app-section>

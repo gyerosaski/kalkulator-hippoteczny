@@ -1,0 +1,14 @@
+<div class="card" [class.card--dark]="variant() === 'dark'">
+  @if (tag() || removable()) {
+    <div class="card-head">
+      @if (tag()) {
+        <span class="card-tag">{{ tag() }}</span>
+      }
+      <ng-content select="[slot=header]" />
+      @if (removable()) {
+        <btn-remove class="card-remove" (remove)="remove.emit()" />
+      }
+    </div>
+  }
+  <ng-content />
+</div>

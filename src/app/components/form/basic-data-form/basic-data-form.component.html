@@ -72,19 +72,22 @@
     <div class="rate-block">
       <div formArrayName="ratePeriods">
         @for (period of ratePeriods.controls; track $index) {
-          <div class="rate-period" [formGroupName]="$index">
-            <div class="rate-period-head">
-              <span class="rate-period-tag">OKRES {{ $index + 1 }}</span>
-              @if ($index === 0) {
-                <span class="muted small">od daty uruchomienia kredytu</span>
-              } @else {
+          <ui-card
+            [tag]="'OKRES ' + ($index + 1)"
+            [removable]="$index > 0"
+            (remove)="removeRatePeriod($index)"
+            [formGroupName]="$index"
+          >
+            @if ($index === 0) {
+              <span slot="header" class="muted small">od daty uruchomienia kredytu</span>
+            } @else {
+              <ng-container slot="header">
                 <span class="muted small">od</span>
                 <div class="rate-period-from">
                   <app-month-picker formControlName="from" />
                 </div>
-                <btn-remove class="rate-period-close" (remove)="removeRatePeriod($index)" />
-              }
-            </div>
+              </ng-container>
+            }
             <app-field label="Stopa" num="8">
               <app-segmented
                 formControlName="rateType"
@@ -127,12 +130,10 @@
                 </app-field>
               }
             </div>
-          </div>
+          </ui-card>
         }
       </div>
-      <button type="button" class="btn btn--add" (click)="addRatePeriod()">
-        ＋ Dodaj okres oprocentowania
-      </button>
+      <btn-add label="Dodaj okres oprocentowania" (add)="addRatePeriod()" />
     </div>
   </div>
 </app-section>

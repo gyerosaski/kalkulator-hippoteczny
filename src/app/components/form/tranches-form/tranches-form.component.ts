@@ -9,7 +9,8 @@ import { SectionComponent } from '../../ui/section/section.component';
 import { FieldComponent } from '../../ui/field/field.component';
 import { NumberInputComponent } from '../../ui/number-input/number-input.component';
 import { MonthPickerComponent } from '../../ui/month-picker/month-picker.component';
-import { BtnRemoveComponent } from '../../ui/btn-remove/btn-remove.component';
+import { BtnAddComponent } from '../../ui/btn-add/btn-add.component';
+import { CardComponent } from '../../ui/card/card.component';
 
 @Component({
   selector: 'app-tranches-form',
@@ -23,7 +24,8 @@ import { BtnRemoveComponent } from '../../ui/btn-remove/btn-remove.component';
     FieldComponent,
     NumberInputComponent,
     MonthPickerComponent,
-    BtnRemoveComponent,
+    BtnAddComponent,
+    CardComponent,
   ],
   templateUrl: './tranches-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

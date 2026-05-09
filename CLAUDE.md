@@ -81,3 +81,5 @@ Dialogs (`src/app/dialogs/`): `SaveCalculationDialogComponent`, `LoadCalculation
 - **Strict TypeScript** (`strict: true`, `strictTemplates: true`). No `any`.
 - **Tests use Vitest** (not Karma/Jasmine). `describe`/`it`/`expect` are auto-imported via `vitest/globals`.
 - SCSS for component styles; global styles in `src/styles.scss`.
+- **Generic UI components first** — before writing ad-hoc markup, always check `src/app/components/ui/` for an existing component that fits. If none exists, create a new generic one there rather than embedding one-off styles in a feature template. Prefer reuse and extraction over duplication.
+- **Generic CSS class names** — class names must describe structure or visual role, never domain context (e.g. `.card-head`, `.field-hint`, `.row--2` — not `.rate-period-head`, `.tranche-fee-row`). Before adding a new class, check `src/styles.scss` for an existing one that covers the same visual pattern. Reuse existing classes to keep the style consistent; extract a new generic class only when no existing one fits.

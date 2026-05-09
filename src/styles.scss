@@ -548,63 +548,16 @@ body {
   gap: 10px;
   margin-top: 24px;
 }
-.rate-period {
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  background: var(--surface);
-}
-.rate-period + .rate-period {
-  margin-top: 12px;
-}
-.rate-period-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.rate-period-tag {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--accent-deep);
-  background: color-mix(in oklch, var(--accent) 25%, var(--surface-2));
-  padding: 3px 8px;
-  border-radius: 6px;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-}
 .rate-period-from {
   width: 148px;
   flex-shrink: 0;
 }
-.rate-period-close {
-  margin-left: auto;
+
+ui-card + ui-card {
+  margin-top: 12px;
 }
 
 /* Tranche */
-.tranche-row {
-  display: grid;
-  grid-template-columns: auto 1fr 1fr auto;
-  gap: 12px;
-  align-items: end;
-  padding: 12px;
-  background: var(--surface-2);
-  border-radius: var(--r);
-}
-.tranche-num {
-  width: 28px;
-  height: 28px;
-  display: grid;
-  place-items: center;
-  background: var(--accent);
-  color: var(--ink);
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 13px;
-  margin-bottom: 6px;
-}
 .suma-row {
   display: flex;
   justify-content: space-between;
@@ -615,7 +568,6 @@ body {
   border-radius: var(--r);
   font-size: 13px;
 }
-
 /* KPI */
 .kpi-strip {
   display: grid;
