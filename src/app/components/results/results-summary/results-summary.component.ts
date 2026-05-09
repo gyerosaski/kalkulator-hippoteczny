@@ -1,13 +1,13 @@
 import { Component, input, ChangeDetectionStrategy, inject, computed } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { MortgageResults } from '../../../model/mortgage.model';
-import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
 import { FormService } from '../../../services/form/form';
+import { KpiComponent } from '../../ui/kpi/kpi.component';
 
 @Component({
   selector: 'app-results-summary',
   standalone: true,
-  imports: [FormatAmountPipe, DecimalPipe],
+  imports: [DecimalPipe, KpiComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './results-summary.component.html',
 })
