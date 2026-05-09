@@ -1,4 +1,4 @@
-<app-section
+﻿<ui-section
   title="Koszty okołokredytowe i promocje"
   badge="opcjonalne"
   [toggleable]="true"
@@ -11,15 +11,15 @@
     <div class="card">
       <div class="card-head"><h3>1. Prowizja za udzielenie</h3></div>
       <div class="row row--2">
-        <app-field num="1" label="Prowizja">
-          <app-number-input formControlName="commissionPct" suffix="%" [decimals]="2" />
-        </app-field>
-        <app-field label="Przeliczenie">
+        <ui-field num="1" label="Prowizja">
+          <ui-number-input formControlName="commissionPct" suffix="%" [decimals]="2" />
+        </ui-field>
+        <ui-field label="Przeliczenie">
           <div class="inp inp--disabled">
             <input type="text" class="mono" [value]="commissionAmount() | formatAmount" readonly />
             <span class="suffix">zł</span>
           </div>
-        </app-field>
+        </ui-field>
       </div>
     </div>
 
@@ -27,9 +27,9 @@
     <div class="card">
       <div class="card-head"><h3>2. Opłata za wycenę</h3></div>
       <div class="row row--2">
-        <app-field num="2" label="Kwota">
-          <app-number-input formControlName="appraisalFee" suffix="zł" [decimals]="2" />
-        </app-field>
+        <ui-field num="2" label="Kwota">
+          <ui-number-input formControlName="appraisalFee" suffix="zł" [decimals]="2" />
+        </ui-field>
       </div>
     </div>
 
@@ -37,12 +37,12 @@
     <div class="card">
       <div class="card-head"><h3>3. Ubezpieczenie pomostowe</h3></div>
       <div class="row row--2">
-        <app-field num="3a" label="Bank podwyższa oprocentowanie o">
-          <app-number-input formControlName="bridgeRateIncrease" suffix="%" [decimals]="2" />
-        </app-field>
-        <app-field num="3b" label="przez">
-          <app-number-input formControlName="bridgeMonths" suffix="mies." [decimals]="0" />
-        </app-field>
+        <ui-field num="3a" label="Bank podwyższa oprocentowanie o">
+          <ui-number-input formControlName="bridgeRateIncrease" suffix="%" [decimals]="2" />
+        </ui-field>
+        <ui-field num="3b" label="przez">
+          <ui-number-input formControlName="bridgeMonths" suffix="mies." [decimals]="0" />
+        </ui-field>
       </div>
     </div>
 
@@ -50,26 +50,26 @@
     <div class="card">
       <div class="card-head"><h3>4. Ubezpieczenie nieruchomości</h3></div>
       <div class="row row--2">
-        <app-field num="4a" label="Jak często opłacana jest składka?">
-          <app-select formControlName="propInsFrequency" [options]="propertyInsFrequencyOptions" />
-        </app-field>
-        <app-field num="4b" label="Jak wyliczana jest składka?">
-          <app-select formControlName="propInsCalcMethod" [options]="propertyInsCalcOptions" />
-        </app-field>
-        <app-field num="4c" label="Wartość składki">
-          <app-number-input
+        <ui-field num="4a" label="Jak często opłacana jest składka?">
+          <ui-select formControlName="propInsFrequency" [options]="propertyInsFrequencyOptions" />
+        </ui-field>
+        <ui-field num="4b" label="Jak wyliczana jest składka?">
+          <ui-select formControlName="propInsCalcMethod" [options]="propertyInsCalcOptions" />
+        </ui-field>
+        <ui-field num="4c" label="Wartość składki">
+          <ui-number-input
             formControlName="propInsValue"
             [suffix]="propInsSuffix"
             [decimals]="propInsDecimals"
           />
-        </app-field>
+        </ui-field>
         <div class="row row--2">
-          <app-field label="Od">
-            <app-month-picker formControlName="propInsFrom" />
-          </app-field>
-          <app-field label="do">
-            <app-month-picker formControlName="propInsTo" />
-          </app-field>
+          <ui-field label="Od">
+            <ui-month-picker formControlName="propInsFrom" />
+          </ui-field>
+          <ui-field label="do">
+            <ui-month-picker formControlName="propInsTo" />
+          </ui-field>
         </div>
       </div>
     </div>
@@ -78,9 +78,9 @@
     <div class="card">
       <div class="card-head"><h3>5. Ubezpieczenie niskiego wkładu</h3></div>
       <div class="row row--2">
-        <app-field num="5" label="Bank podwyższa oprocentowanie o">
-          <app-number-input formControlName="lowEquityRateIncrease" suffix="%" [decimals]="2" />
-        </app-field>
+        <ui-field num="5" label="Bank podwyższa oprocentowanie o">
+          <ui-number-input formControlName="lowEquityRateIncrease" suffix="%" [decimals]="2" />
+        </ui-field>
       </div>
     </div>
 
@@ -88,26 +88,26 @@
     <div class="card">
       <div class="card-head"><h3>6. Ubezpieczenie na życie</h3></div>
       <div class="row row--2">
-        <app-field num="6a" label="Jak często opłacana jest składka?">
-          <app-select formControlName="lifeInsFrequency" [options]="insuranceFrequencyOptions" />
-        </app-field>
-        <app-field num="6b" label="Jak wyliczana jest składka?">
-          <app-select formControlName="lifeInsCalcMethod" [options]="lifeInsCalcOptions" />
-        </app-field>
-        <app-field num="6c" label="Wartość składki">
-          <app-number-input
+        <ui-field num="6a" label="Jak często opłacana jest składka?">
+          <ui-select formControlName="lifeInsFrequency" [options]="insuranceFrequencyOptions" />
+        </ui-field>
+        <ui-field num="6b" label="Jak wyliczana jest składka?">
+          <ui-select formControlName="lifeInsCalcMethod" [options]="lifeInsCalcOptions" />
+        </ui-field>
+        <ui-field num="6c" label="Wartość składki">
+          <ui-number-input
             formControlName="lifeInsValue"
             [suffix]="lifeInsSuffix"
             [decimals]="lifeInsDecimals"
           />
-        </app-field>
+        </ui-field>
         <div class="row row--2">
-          <app-field label="Od">
-            <app-month-picker formControlName="lifeInsFrom" />
-          </app-field>
-          <app-field label="do">
-            <app-month-picker formControlName="lifeInsTo" />
-          </app-field>
+          <ui-field label="Od">
+            <ui-month-picker formControlName="lifeInsFrom" />
+          </ui-field>
+          <ui-field label="do">
+            <ui-month-picker formControlName="lifeInsTo" />
+          </ui-field>
         </div>
       </div>
     </div>
@@ -116,22 +116,22 @@
     <div class="card">
       <div class="card-head"><h3>7. Ubezpieczenie od utraty pracy</h3></div>
       <div class="row row--2">
-        <app-field num="7a" label="Jak często opłacana jest składka?">
-          <app-select formControlName="jobLossInsFrequency" [options]="insuranceFrequencyOptions" />
-        </app-field>
-        <app-field num="7b" label="Jak wyliczana jest składka?">
-          <app-select formControlName="jobLossInsCalcMethod" [options]="lifeInsCalcOptions" />
-        </app-field>
-        <app-field num="7c" label="Wartość składki">
-          <app-number-input
+        <ui-field num="7a" label="Jak często opłacana jest składka?">
+          <ui-select formControlName="jobLossInsFrequency" [options]="insuranceFrequencyOptions" />
+        </ui-field>
+        <ui-field num="7b" label="Jak wyliczana jest składka?">
+          <ui-select formControlName="jobLossInsCalcMethod" [options]="lifeInsCalcOptions" />
+        </ui-field>
+        <ui-field num="7c" label="Wartość składki">
+          <ui-number-input
             formControlName="jobLossInsValue"
             [suffix]="jobLossInsSuffix"
             [decimals]="2"
           />
-        </app-field>
-        <app-field label="Od">
-          <app-month-picker formControlName="jobLossInsFrom" />
-        </app-field>
+        </ui-field>
+        <ui-field label="Od">
+          <ui-month-picker formControlName="jobLossInsFrom" />
+        </ui-field>
       </div>
     </div>
 
@@ -142,31 +142,31 @@
           <div class="card-head">
             <h3>8. Dodatkowy koszt {{ $index + 1 }}</h3>
             @if (additionalCostsArray.length > 1) {
-              <btn-remove (remove)="removeAdditionalCost($index)" />
+              <ui-btn-remove (remove)="removeAdditionalCost($index)" />
             }
           </div>
           <div class="row row--2">
-            <app-field num="8" label="Nazwa kosztu">
+            <ui-field num="8" label="Nazwa kosztu">
               <div class="inp">
                 <input type="text" formControlName="name" class="mono" />
               </div>
-            </app-field>
-            <app-field num="8a" label="Jak często pobierana jest opłata?">
-              <app-select formControlName="frequency" [options]="insuranceFrequencyOptions" />
-            </app-field>
-            <app-field num="8b" label="Jak wyliczana jest opłata?">
-              <app-select formControlName="calcMethod" [options]="lifeInsCalcOptions" />
-            </app-field>
-            <app-field num="8c" label="Kwota">
-              <app-number-input
+            </ui-field>
+            <ui-field num="8a" label="Jak często pobierana jest opłata?">
+              <ui-select formControlName="frequency" [options]="insuranceFrequencyOptions" />
+            </ui-field>
+            <ui-field num="8b" label="Jak wyliczana jest opłata?">
+              <ui-select formControlName="calcMethod" [options]="lifeInsCalcOptions" />
+            </ui-field>
+            <ui-field num="8c" label="Kwota">
+              <ui-number-input
                 formControlName="value"
                 [suffix]="getAdditionalCostSuffix($index)"
                 [decimals]="2"
               />
-            </app-field>
-            <app-field num="8d" label="Okres ponoszenia kosztu (Od)">
-              <app-month-picker formControlName="from" />
-            </app-field>
+            </ui-field>
+            <ui-field num="8d" label="Okres ponoszenia kosztu (Od)">
+              <ui-month-picker formControlName="from" />
+            </ui-field>
             <div style="display: flex; gap: 0.5rem; align-items: flex-end">
               <button type="button" (click)="addAdditionalCost()">+</button>
             </div>
@@ -179,18 +179,18 @@
     <div class="card">
       <div class="card-head"><h3>9. Promocyjna wysokość oprocentowania</h3></div>
       <div class="row row--2">
-        <app-field num="9" label="Bank obniża oprocentowanie o">
-          <app-number-input formControlName="promoRateDecrease" suffix="%" [decimals]="2" />
-        </app-field>
+        <ui-field num="9" label="Bank obniża oprocentowanie o">
+          <ui-number-input formControlName="promoRateDecrease" suffix="%" [decimals]="2" />
+        </ui-field>
         <div class="row row--2">
-          <app-field label="Od">
-            <app-month-picker formControlName="promoFrom" />
-          </app-field>
-          <app-field label="do">
-            <app-month-picker formControlName="promoTo" />
-          </app-field>
+          <ui-field label="Od">
+            <ui-month-picker formControlName="promoFrom" />
+          </ui-field>
+          <ui-field label="do">
+            <ui-month-picker formControlName="promoTo" />
+          </ui-field>
         </div>
       </div>
     </div>
   </div>
-</app-section>
+</ui-section>

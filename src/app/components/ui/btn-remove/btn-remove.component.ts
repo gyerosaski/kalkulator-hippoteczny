@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, output } from '@angular/core';
 import { IconXComponent } from '../../icons/icon-x/icon-x.component';
 
 @Component({
-  selector: 'btn-remove',
+  selector: 'ui-btn-remove',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IconXComponent],

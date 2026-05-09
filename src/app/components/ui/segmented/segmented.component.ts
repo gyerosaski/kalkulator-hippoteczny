@@ -10,7 +10,7 @@ import {
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
-  selector: 'app-segmented',
+  selector: 'ui-segmented',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [

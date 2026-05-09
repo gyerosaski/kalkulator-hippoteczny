@@ -3,7 +3,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { IconChevronRightComponent } from '../../icons/icon-chevron-right/icon-chevron-right.component';
 
 @Component({
-  selector: 'app-foldable-section',
+  selector: 'ui-foldable-section',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './foldable-section.component.html',

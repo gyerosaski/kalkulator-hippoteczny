@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, input } from '@angular/core';
 
 @Component({
-  selector: 'app-field',
+  selector: 'ui-field',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './field.component.html',

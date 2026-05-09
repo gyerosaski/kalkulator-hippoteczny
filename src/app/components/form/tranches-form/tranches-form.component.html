@@ -1,4 +1,4 @@
-<app-section
+﻿<ui-section
   title="Transze"
   badge="opcjonalne"
   [toggleable]="true"
@@ -17,42 +17,42 @@
           [formGroupName]="$index"
         >
           <div class="row row--2">
-            <app-field label="Kwota">
-              <app-number-input formControlName="amount" suffix="zł" [decimals]="2" />
+            <ui-field label="Kwota">
+              <ui-number-input formControlName="amount" suffix="zł" [decimals]="2" />
               @if (tranche.get('amount')?.invalid && tranche.get('amount')?.touched) {
                 <small class="field-error">Kwota musi być większa od zera.</small>
               }
-            </app-field>
+            </ui-field>
             @if ($index === 0) {
-              <app-field label="Data uruchomienia">
+              <ui-field label="Data uruchomienia">
                 <div class="inp inp--disabled">
                   <input type="month" formControlName="date" [readonly]="true" class="mono" />
                 </div>
                 <div class="field-hint">{{ tranche.get('date')?.value | formatMonth }}</div>
-              </app-field>
+              </ui-field>
             } @else {
-              <app-field label="Data uruchomienia">
-                <app-month-picker formControlName="date" />
-              </app-field>
+              <ui-field label="Data uruchomienia">
+                <ui-month-picker formControlName="date" />
+              </ui-field>
             }
           </div>
           @if ($index > 0) {
             <div class="row row--2">
-              <app-field label="Opłata za uruchomienie transzy">
-                <app-number-input formControlName="disbursementFee" suffix="zł" [decimals]="2" />
+              <ui-field label="Opłata za uruchomienie transzy">
+                <ui-number-input formControlName="disbursementFee" suffix="zł" [decimals]="2" />
                 @if (tranche.get('disbursementFee')?.errors?.['max']) {
                   <small class="field-error"
                     >Wysokość opłaty nie może być wyższa niż 1 000 zł.</small
                   >
                 }
-              </app-field>
+              </ui-field>
             </div>
           }
         </ui-card>
       }
     </div>
 
-    <btn-add label="Dodaj transzę" (add)="addTransza()" />
+    <ui-btn-add label="Dodaj transzę" (add)="addTransza()" />
 
     <div class="suma-row">
       <span class="muted">Suma transz</span>
@@ -70,4 +70,4 @@
       </p>
     }
   </div>
-</app-section>
+</ui-section>

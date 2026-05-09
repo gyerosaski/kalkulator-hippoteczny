@@ -1,11 +1,11 @@
-@if (results()) {
+﻿@if (results()) {
   <div class="result-grid">
     <div class="card">
       <div class="card-head">
         <h3>Struktura wszystkich płatności</h3>
       </div>
       <div class="donut-row">
-        <app-donut [data]="totalSlices()" centerLabel="razem" [centerValue]="totalCenter()" />
+        <ui-donut [data]="totalSlices()" centerLabel="razem" [centerValue]="totalCenter()" />
         <ul class="legend">
           @for (s of totalSlices(); track s.label) {
             <li>
@@ -23,7 +23,7 @@
         <h3>Struktura pierwszej raty</h3>
       </div>
       <div class="donut-row">
-        <app-donut [data]="firstSlices()" centerLabel="rata" [centerValue]="firstCenter()" />
+        <ui-donut [data]="firstSlices()" centerLabel="rata" [centerValue]="firstCenter()" />
         <ul class="legend">
           @for (s of firstSlices(); track s.label) {
             <li>

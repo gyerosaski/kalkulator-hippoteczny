@@ -11,7 +11,7 @@ import {
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
-  selector: 'app-number-input',
+  selector: 'ui-number-input',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [

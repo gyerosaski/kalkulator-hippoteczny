@@ -1,72 +1,72 @@
-<app-section
+﻿<ui-section
   title="Dane podstawowe"
   badge="Dane wymagane do przeprowadzenia kalkulacji"
   [defaultOpen]="true"
 >
   <div [formGroup]="basicData">
     <div class="row row--3">
-      <app-field num="1" label="Wartość nieruchomości">
-        <app-number-input
+      <ui-field num="1" label="Wartość nieruchomości">
+        <ui-number-input
           formControlName="propertyValue"
           suffix="zł"
           [decimals]="0"
           (valueChange)="onPropertyValueChanged()"
         />
-      </app-field>
+      </ui-field>
 
-      <app-field num="2" label="Kwota kredytu">
-        <app-number-input
+      <ui-field num="2" label="Kwota kredytu">
+        <ui-number-input
           formControlName="loanAmount"
           suffix="zł"
           [decimals]="0"
           (valueChange)="onLoanAmountChanged()"
         />
-      </app-field>
+      </ui-field>
 
-      <app-field num="3" label="LTV">
-        <app-number-input
+      <ui-field num="3" label="LTV">
+        <ui-number-input
           formControlName="ltv"
           suffix="%"
           [decimals]="2"
           (valueChange)="onLtvChanged()"
         />
-      </app-field>
+      </ui-field>
     </div>
 
     <div class="row row--3">
-      <app-field num="4" label="Okres kredytowania">
+      <ui-field num="4" label="Okres kredytowania">
         <div class="inline">
-          <app-number-input
+          <ui-number-input
             [value]="loanPeriodDisplayValue"
             [decimals]="0"
             (valueChange)="onLoanPeriodValueChanged($event)"
           />
-          <app-segmented
+          <ui-segmented
             [options]="['lata', 'miesiące']"
             [value]="loanPeriodUnit"
             (valueChange)="onLoanPeriodUnitChanged($event)"
             [compact]="true"
           />
         </div>
-      </app-field>
+      </ui-field>
 
-      <app-field num="5" label="Data uruchomienia kredytu">
-        <app-month-picker formControlName="startDate" />
-      </app-field>
+      <ui-field num="5" label="Data uruchomienia kredytu">
+        <ui-month-picker formControlName="startDate" />
+      </ui-field>
 
-      <app-field num="6" label="Początek spłat kapitału">
-        <app-month-picker formControlName="capitalStartDate" />
-      </app-field>
+      <ui-field num="6" label="Początek spłat kapitału">
+        <ui-month-picker formControlName="capitalStartDate" />
+      </ui-field>
     </div>
 
     <div class="row row--3">
-      <app-field num="7" label="Typ rat">
-        <app-segmented
+      <ui-field num="7" label="Typ rat">
+        <ui-segmented
           formControlName="installmentType"
           [options]="['rowne', 'malejace']"
           [labels]="['równe', 'malejące']"
         />
-      </app-field>
+      </ui-field>
     </div>
 
     <div class="rate-block">
@@ -84,19 +84,19 @@
               <ng-container slot="header">
                 <span class="muted small">od</span>
                 <div class="rate-period-from">
-                  <app-month-picker formControlName="from" />
+                  <ui-month-picker formControlName="from" />
                 </div>
               </ng-container>
             }
-            <app-field label="Stopa" num="8">
-              <app-segmented
+            <ui-field label="Stopa" num="8">
+              <ui-segmented
                 formControlName="rateType"
                 [options]="['zmienna', 'stala']"
                 [labels]="['zmienna', 'stała']"
               />
-            </app-field>
+            </ui-field>
             <div class="row row--3">
-              <app-field
+              <ui-field
                 num="9"
                 label="Oprocentowanie"
                 [hint]="
@@ -118,22 +118,22 @@
                     <span class="suffix">%</span>
                   </div>
                 } @else {
-                  <app-number-input formControlName="nominalRate" suffix="%" [decimals]="2" />
+                  <ui-number-input formControlName="nominalRate" suffix="%" [decimals]="2" />
                 }
-              </app-field>
+              </ui-field>
               @if (period.get('rateType')?.value === 'zmienna') {
-                <app-field num="9a" label="WIBOR">
-                  <app-number-input formControlName="wibor" suffix="%" [decimals]="2" />
-                </app-field>
-                <app-field num="9b" label="Marża">
-                  <app-number-input formControlName="margin" suffix="%" [decimals]="2" />
-                </app-field>
+                <ui-field num="9a" label="WIBOR">
+                  <ui-number-input formControlName="wibor" suffix="%" [decimals]="2" />
+                </ui-field>
+                <ui-field num="9b" label="Marża">
+                  <ui-number-input formControlName="margin" suffix="%" [decimals]="2" />
+                </ui-field>
               }
             </div>
           </ui-card>
         }
       </div>
-      <btn-add label="Dodaj okres oprocentowania" (add)="addRatePeriod()" />
+      <ui-btn-add label="Dodaj okres oprocentowania" (add)="addRatePeriod()" />
     </div>
   </div>
-</app-section>
+</ui-section>

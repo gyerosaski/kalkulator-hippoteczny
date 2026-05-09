@@ -7,7 +7,7 @@ export interface DonutSlice {
 }
 
 @Component({
-  selector: 'app-donut',
+  selector: 'ui-donut',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './donut.component.html',

@@ -11,7 +11,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { IconCalendarComponent } from '../../icons/icon-calendar/icon-calendar.component';
 
 @Component({
-  selector: 'app-month-picker',
+  selector: 'ui-month-picker',
   standalone: true,
   imports: [IconCalendarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,

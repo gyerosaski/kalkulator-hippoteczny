@@ -1,4 +1,4 @@
-<app-section
+﻿<ui-section
   title="Nadpłaty"
   badge="opcjonalne"
   [toggleable]="true"
@@ -13,44 +13,44 @@
           <div class="card-head">
             <h3>Reguła nadpłaty {{ $index + 1 }}</h3>
             @if (nadplatyRegulyArray.length > 1) {
-              <btn-remove (remove)="removeNadplataRegula($index)" />
+              <ui-btn-remove (remove)="removeNadplataRegula($index)" />
             }
           </div>
           <div class="row row--2">
-            <app-field num="1" label="Jak często nadpłacasz?">
-              <app-select
+            <ui-field num="1" label="Jak często nadpłacasz?">
+              <ui-select
                 formControlName="frequency"
                 [options]="prepaymentFrequencyOptions"
                 (valueChange)="onNadplataFrequencyChanged($index)"
               />
-            </app-field>
+            </ui-field>
 
-            <app-field num="3" label="Kwota nadpłaty">
-              <app-number-input formControlName="amount" suffix="zł" [decimals]="2" />
-            </app-field>
+            <ui-field num="3" label="Kwota nadpłaty">
+              <ui-number-input formControlName="amount" suffix="zł" [decimals]="2" />
+            </ui-field>
 
             @if (rule.get('frequency')?.value === 'jednorazowo') {
-              <app-field num="2" label="Data nadpłaty">
-                <app-month-picker
+              <ui-field num="2" label="Data nadpłaty">
+                <ui-month-picker
                   formControlName="from"
                   (valueChange)="onNadplataFromChanged($index)"
                 />
-              </app-field>
+              </ui-field>
             } @else {
-              <app-field num="2a" label="Data nadpłaty od">
-                <app-month-picker
+              <ui-field num="2a" label="Data nadpłaty od">
+                <ui-month-picker
                   formControlName="from"
                   (valueChange)="onNadplataFromChanged($index)"
                 />
-              </app-field>
-              <app-field num="2b" label="Data nadpłaty do">
-                <app-month-picker formControlName="to" />
-              </app-field>
+              </ui-field>
+              <ui-field num="2b" label="Data nadpłaty do">
+                <ui-month-picker formControlName="to" />
+              </ui-field>
             }
 
-            <app-field num="4" label="Skutek nadpłaty">
-              <app-select formControlName="effect" [options]="prepaymentEffectOptions" />
-            </app-field>
+            <ui-field num="4" label="Skutek nadpłaty">
+              <ui-select formControlName="effect" [options]="prepaymentEffectOptions" />
+            </ui-field>
 
             <div style="display: flex; gap: 0.5rem; align-items: flex-end">
               <button type="button" (click)="addNadplataRegula()">+</button>
@@ -63,31 +63,31 @@
     <div class="card" formGroupName="rataDocelowaRegula">
       <div class="card-head"><h3>Reguła docelowej raty miesięcznej</h3></div>
       <div class="row row--2">
-        <app-field num="5" label="Chcę co miesiąc płacić do banku ratę w wysokości">
-          <app-number-input formControlName="targetRate" suffix="zł" [decimals]="2" />
-        </app-field>
-        <app-field num="6a" label="Data nadpłaty od">
-          <app-month-picker formControlName="from" />
-        </app-field>
-        <app-field num="6b" label="Data nadpłaty do">
-          <app-month-picker formControlName="to" />
-        </app-field>
-        <app-field num="7" label="Skutek nadpłaty">
-          <app-select formControlName="effect" [options]="prepaymentEffectOptions" />
-        </app-field>
+        <ui-field num="5" label="Chcę co miesiąc płacić do banku ratę w wysokości">
+          <ui-number-input formControlName="targetRate" suffix="zł" [decimals]="2" />
+        </ui-field>
+        <ui-field num="6a" label="Data nadpłaty od">
+          <ui-month-picker formControlName="from" />
+        </ui-field>
+        <ui-field num="6b" label="Data nadpłaty do">
+          <ui-month-picker formControlName="to" />
+        </ui-field>
+        <ui-field num="7" label="Skutek nadpłaty">
+          <ui-select formControlName="effect" [options]="prepaymentEffectOptions" />
+        </ui-field>
       </div>
     </div>
 
     <div class="card" formGroupName="prowizjaWczesniejszaSplata">
       <div class="card-head"><h3>Prowizja za wcześniejszą spłatę</h3></div>
       <div class="row row--2">
-        <app-field num="8" label="Wysokość prowizji za wcześniejszą spłatę">
-          <app-number-input formControlName="ratePct" suffix="%" [decimals]="2" />
-        </app-field>
-        <app-field num="9" label="Bank pobiera prowizję do">
-          <app-month-picker formControlName="validUntil" />
-        </app-field>
+        <ui-field num="8" label="Wysokość prowizji za wcześniejszą spłatę">
+          <ui-number-input formControlName="ratePct" suffix="%" [decimals]="2" />
+        </ui-field>
+        <ui-field num="9" label="Bank pobiera prowizję do">
+          <ui-month-picker formControlName="validUntil" />
+        </ui-field>
       </div>
     </div>
   </div>
-</app-section>
+</ui-section>

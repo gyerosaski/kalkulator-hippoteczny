@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, input, output, signal } from '@angu
 import { IconChevronRightComponent } from '../../icons/icon-chevron-right/icon-chevron-right.component';
 
 @Component({
-  selector: 'app-section',
+  selector: 'ui-section',
   standalone: true,
   imports: [IconChevronRightComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,

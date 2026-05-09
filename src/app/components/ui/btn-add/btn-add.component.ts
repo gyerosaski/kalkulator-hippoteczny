@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
 
 @Component({
-  selector: 'btn-add',
+  selector: 'ui-btn-add',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './btn-add.component.html',

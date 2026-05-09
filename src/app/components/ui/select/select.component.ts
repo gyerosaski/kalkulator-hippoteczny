@@ -11,7 +11,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { IconChevronDownComponent } from '../../icons/icon-chevron-down/icon-chevron-down.component';
 
 @Component({
-  selector: 'app-select',
+  selector: 'ui-select',
   standalone: true,
   imports: [IconChevronDownComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
