@@ -7,7 +7,8 @@
       "Bash(npm run *)",
       "Bash(npm start *)",
       "Bash(npx tsc *)",
-      "Bash(xargs grep -l \"app-field\\\\|btn-add\\\\|btn-remove\\\\|app-segmented\\\\|app-select\\\\|app-month-picker\\\\|app-foldable-section\\\\|app-section\\\\|app-number-input\\\\|app-donut\")"
+      "Bash(xargs grep -l \"app-field\\\\|btn-add\\\\|btn-remove\\\\|app-segmented\\\\|app-select\\\\|app-month-picker\\\\|app-foldable-section\\\\|app-section\\\\|app-number-input\\\\|app-donut\")",
+      "Bash(python -c \"import sys,json; cfg=json.load\\(sys.stdin\\); print\\(json.dumps\\(cfg.get\\('vitest',cfg.get\\('test',{}\\)\\), indent=2\\)\\)\")"
     ]
   }
 }

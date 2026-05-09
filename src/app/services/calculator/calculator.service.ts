@@ -399,6 +399,8 @@ export class CalculatorService {
     let equalRate = this.annuityPayment(saldo, initialI, amortMonths);
     let decreasingCapitalPart = amortMonths > 0 ? this.round2(saldo / amortMonths) : 0;
     let prevPeriod = initialPeriod;
+    // Flaga: transza uruchomiona w tym miesiącu – przelicz ratę dopiero w kolejnym
+    let needsRateRecalcAfterTranche = false;
 
     const maxMonthsLimit = Math.max(nTotal, 1) + 1_200;
     for (let idx = 1; idx <= maxMonthsLimit; idx++) {
@@ -411,6 +413,16 @@ export class CalculatorService {
 
       const inGrace = idx <= graceMonths;
 
+      // Odroczone przeliczenie raty po transzy z poprzedniego miesiąca
+      if (needsRateRecalcAfterTranche && !inGrace && remainingAmortMonths > 0) {
+        needsRateRecalcAfterTranche = false;
+        if (inputs.installmentType === 'rowne') {
+          equalRate = this.annuityPayment(saldo, iCurrent, Math.max(1, remainingAmortMonths));
+        } else {
+          decreasingCapitalPart = this.round2(saldo / Math.max(1, remainingAmortMonths));
+        }
+      }
+
       // Przy zmianie okresu oprocentowania przelicz ratę
       if (period !== prevPeriod) {
         prevPeriod = period;
@@ -419,20 +431,6 @@ export class CalculatorService {
             equalRate = this.annuityPayment(saldo, iCurrent, remainingAmortMonths);
           } else {
             decreasingCapitalPart = this.round2(saldo / remainingAmortMonths);
-          }
-        }
-      }
-
-      // Sprawdź, czy w tym miesiącu jest uruchamiana kolejna transza
-      const trancheAmount = trancheMap.get(date) || 0;
-      if (trancheAmount > 0) {
-        saldo = this.round2(saldo + trancheAmount);
-        // Przelicz ratę po dołączeniu transzy
-        if (remainingAmortMonths > 0) {
-          if (inputs.installmentType === 'rowne') {
-            equalRate = this.annuityPayment(saldo, iCurrent, Math.max(1, remainingAmortMonths));
-          } else {
-            decreasingCapitalPart = this.round2(saldo / Math.max(1, remainingAmortMonths));
           }
         }
       }
@@ -470,6 +468,14 @@ export class CalculatorService {
       }
 
       saldo = this.round2(Math.max(0, saldo - capital));
+
+      // Transza uruchamiana w tym miesiącu: dodaj do salda PO obliczeniu raty,
+      // żeby rata wzrosła dopiero w kolejnym miesiącu
+      const trancheAmount = trancheMap.get(date) || 0;
+      if (trancheAmount > 0) {
+        saldo = this.round2(saldo + trancheAmount);
+        needsRateRecalcAfterTranche = true;
+      }
 
       let prepaymentLower = 0;
       let prepaymentShorten = 0;

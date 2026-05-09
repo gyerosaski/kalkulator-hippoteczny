@@ -161,3 +161,61 @@ describe('MortgageCalcService (nadpłaty)', () => {
     expect(rowAfter!.interest).toBeLessThan(rowBefore!.interest);
   });
 });
+
+function trancheInputs(): MortgageInputs {
+  return {
+    propertyValue: 500_000,
+    loanAmount: 300_000,
+    ltv: 60,
+    loanPeriod: 20 * 12,
+    startDate: '2026-01',
+    capitalStartDate: '2026-02',
+    installmentType: 'rowne',
+    ratePeriods: [{ from: '2026-01', rateType: 'stala', nominalRate: 8, wibor: 0, margin: 0 }],
+    prepaymentRules: [],
+    targetInstallmentRule: { targetRate: 0, from: '2026-01', to: '2026-01', effect: 'niższa rata' },
+    tranches: [
+      { amount: 200_000, date: '2026-01', disbursementFee: 0 },
+      { amount: 100_000, date: '2026-04', disbursementFee: 0 },
+    ],
+  };
+}
+
+describe('MortgageCalcService (transze)', () => {
+  let service: CalculatorService;
+
+  beforeEach(() => {
+    service = new CalculatorService();
+  });
+
+  it('rata w miesiącu transzy powinna być taka sama jak miesiąc wcześniej', () => {
+    const result = service.compute(trancheInputs());
+    const rowBefore = result.schedule.find((r) => r.date === '2026-03');
+    const rowTranche = result.schedule.find((r) => r.date === '2026-04');
+
+    expect(rowBefore).toBeTruthy();
+    expect(rowTranche).toBeTruthy();
+    expect(rowTranche!.rate).toBeCloseTo(rowBefore!.rate, 0);
+  });
+
+  it('rata powinna wzrosnąć dopiero w miesiącu PO uruchomieniu transzy', () => {
+    const result = service.compute(trancheInputs());
+    const rowTranche = result.schedule.find((r) => r.date === '2026-04');
+    const rowAfter = result.schedule.find((r) => r.date === '2026-05');
+
+    expect(rowTranche).toBeTruthy();
+    expect(rowAfter).toBeTruthy();
+    expect(rowAfter!.rate).toBeGreaterThan(rowTranche!.rate);
+  });
+
+  it('"Pozostało" powinno wzrosnąć o kwotę transzy w miesiącu jej uruchomienia', () => {
+    const result = service.compute(trancheInputs());
+    const rowBefore = result.schedule.find((r) => r.date === '2026-03');
+    const rowTranche = result.schedule.find((r) => r.date === '2026-04');
+
+    expect(rowBefore).toBeTruthy();
+    expect(rowTranche).toBeTruthy();
+    // Saldo po racie z miesiąca transzy powinno być wyższe o ~100 000 (kwota transzy)
+    expect(rowTranche!.remaining).toBeGreaterThan(rowBefore!.remaining + 90_000);
+  });
+});

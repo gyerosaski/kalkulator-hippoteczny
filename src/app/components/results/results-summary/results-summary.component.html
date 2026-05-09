@@ -25,14 +25,16 @@
       </div>
       <div class="kpi-meta">{{ intPct() | number: '1.1-1' }}% od kapitału</div>
     </div>
-    <div class="kpi">
-      <div class="kpi-lab">{{ kpi4Label }}</div>
-      <div class="kpi-val mono">
-        {{ kpi4Value() | formatAmount }}<span class="kpi-unit">zł</span>
+    @if (this.isOverheadCostsIncluded || this.isPrepaymentIncluded) {
+      <div class="kpi">
+        <div class="kpi-lab">{{ kpi4Label }}</div>
+        <div class="kpi-val mono">
+          {{ kpi4Value() | formatAmount }}<span class="kpi-unit">zł</span>
+        </div>
+        @if (kpi4Meta()) {
+          <div class="kpi-meta">{{ kpi4Meta() }}</div>
+        }
       </div>
-      @if (kpi4Meta()) {
-        <div class="kpi-meta">{{ kpi4Meta() }}</div>
-      }
-    </div>
+    }
   </div>
 }

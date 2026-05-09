@@ -14,3 +14,7 @@
 - [x] umożliwienie zmiany oprocentowania (pola "Typ rat", "Stopa", "8.a WIBOR (%)", "8.b Marża (%)", "Oprocentowanie (nominalne, %)", "8. Oprocentowanie stałe (%)") w okresie kredytowania. wymienione pola powinny zostać zgrupowane i przechowywane jako formArray z możliwością dodania nowej z uwzględnieniem daty obowiązywania nowego oprocentowania
 - udostępnić możliwość wczytywania uprzednio zapisanej konfiguracji formularza
 - data wypłaty pierwszej transzy jest zawsze równa dacie uruchomienia kredytu. Pole powinno być zablokowane i aktualizować się po zmianie w polu "Data uruchomienia kredytu". zaktualizuj dokumentacje
+- pierwsza rata powinna być w kolejnym miesiącu po miesiącu, w którym uruchomiono kredyt
+- brak walidacji pola "6. Początek spłat kapitału (YYYY-MM)" - jeśli są zdefiniowane transze, data musi być większa od daty uruchomienia ostatniej transzy
+- [x] cały kapitał nie jest spłacany, zostają jakieś grosze
+- [x] w przypadku wypłaty kredytu w transzach rata kredytu powinna się zwiększać w miesiącu po jej uruchomieniu, a nie w tym samym miesiącu, sekcja "Pozostało" prawidłowo przyrasta o wysokość transzy w miesiącu jej uruchomienia

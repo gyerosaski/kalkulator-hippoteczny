@@ -1,4 +1,0 @@
-- pierwsza rata powinna być w kolejnym miesiącu po miesiącu, w którym uruchomiono kredyt
-- brak walidacji pola "6. Początek spłat kapitału (YYYY-MM)" - jeśli są zdefiniowane transze, data musi być większa od daty uruchomienia ostatniej transzy
-- [x] cały kapitał nie jest spłacany, zostają jakieś grosze
-- w przypadku wypłaty kredytu w transzach saldo kredytu powinno się zwiększać o wysokość transzy w miesiącu po jej uruchomieniu, a nie w tym samym miesiącu

@@ -128,6 +128,12 @@ export class FormService {
 
   readonly form: FormGroup<MortgageFormGroup> = this.createForm();
 
+  constructor() {
+    this.form.controls.basicData.controls.startDate.valueChanges.subscribe((newDate) => {
+      this.transzeArray.at(0)?.controls.date.setValue(newDate, { emitEvent: false });
+    });
+  }
+
   get ratePeriodsArray(): FormArray<FormGroup<RatePeriodFormGroup>> {
     return this.form.controls.basicData.controls.ratePeriods;
   }
@@ -336,13 +342,16 @@ export class FormService {
     const amount =
       initial.amount ??
       (isFirst ? this.form?.controls.basicData?.get('loanAmount')?.value || 0 : 0);
-    const date = initial.date ?? startDate;
+    const date = isFirst ? startDate : (initial.date ?? startDate);
     return new FormGroup<TrancheFormGroup>({
       amount: new FormControl(amount, {
         nonNullable: true,
         validators: isFirst ? [] : [Validators.required, Validators.min(0.01)],
       }),
-      date: new FormControl(date, { nonNullable: true, validators: [Validators.required] }),
+      date: new FormControl(
+        { value: date, disabled: isFirst },
+        { nonNullable: true, validators: [Validators.required] },
+      ),
       disbursementFee: new FormControl(initial.disbursementFee ?? 0, {
         nonNullable: true,
         validators: [Validators.min(0), Validators.max(1000)],
