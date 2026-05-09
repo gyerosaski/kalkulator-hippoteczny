@@ -775,15 +775,6 @@ ui-cards-group + ui-card {
   align-items: center;
   gap: 8px;
 }
-.tbl-row--year .chev {
-  color: var(--muted);
-  font-size: 10px;
-  transition: transform 0.2s;
-  display: inline-block;
-}
-.tbl-row--year.is-open .chev {
-  transform: rotate(90deg);
-}
 .tbl-row--month {
   background: oklch(98% 0.014 95);
   color: var(--ink-2);

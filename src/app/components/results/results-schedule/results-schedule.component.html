@@ -24,7 +24,14 @@
           [class.is-open]="expandedYear() === y.year"
           (click)="toggle(y.year)"
         >
-          <div class="cell-year"><span class="chev">▸</span>{{ y.year }}</div>
+          <div class="cell-year">
+            @if (expandedYear() === y.year) {
+              <icon-chevron-down />
+            } @else {
+              <icon-chevron-right />
+            }
+            {{ y.year }}
+          </div>
           <div class="mono">{{ y.sumRate | formatAmount }}</div>
           <div class="mono">{{ y.sumCapital | formatAmount }}</div>
           <div class="mono">{{ y.sumInterest | formatAmount }}</div>

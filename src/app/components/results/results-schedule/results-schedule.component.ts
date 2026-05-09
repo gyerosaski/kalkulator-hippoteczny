@@ -3,11 +3,13 @@ import { YearGroup } from '../../../model/mortgage.model';
 import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
 import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
 import { FormService } from '../../../services/form/form';
+import { IconChevronRightComponent } from '../../icons/icon-chevron-right/icon-chevron-right.component';
+import { IconChevronDownComponent } from '../../icons/icon-chevron-down/icon-chevron-down.component';
 
 @Component({
   selector: 'app-results-schedule',
   standalone: true,
-  imports: [FormatMonthPipe, FormatAmountPipe],
+  imports: [FormatMonthPipe, FormatAmountPipe, IconChevronRightComponent, IconChevronDownComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './results-schedule.component.html',
 })

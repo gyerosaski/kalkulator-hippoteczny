@@ -250,11 +250,6 @@ export class LayoutComponent {
     this.formService.setOverheadDefaults();
   }
 
-  clearAll() {
-    this.formService.clearAll();
-    this.formService.clearOverheadCosts();
-  }
-
   async saveCalculation() {
     const defaultName = 'Kalkulacja ' + new Date().toLocaleDateString('pl-PL');
     const name = await this.saveDialog().open(defaultName);
