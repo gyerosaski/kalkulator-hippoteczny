@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';
 import { InsuranceCalcMethod, InsuranceFrequency, LifeInsuranceCalcMethod } from '../../../model';
 import { FormService } from '../../../services/form/form';
@@ -9,7 +10,9 @@ import { FieldComponent } from '../../ui/field/field.component';
 import { NumberInputComponent } from '../../ui/number-input/number-input.component';
 import { MonthPickerComponent } from '../../ui/month-picker/month-picker.component';
 import { SelectComponent } from '../../ui/select/select.component';
-import { BtnRemoveComponent } from '../../ui/btn-remove/btn-remove.component';
+import { BtnAddComponent } from '../../ui/btn-add/btn-add.component';
+import { CardComponent } from '../../ui/card/card.component';
+import { CardsGroupComponent } from '../../ui/cards-group/cards-group.component';
 
 @Component({
   selector: 'app-overhead-costs-form',
@@ -22,7 +25,9 @@ import { BtnRemoveComponent } from '../../ui/btn-remove/btn-remove.component';
     NumberInputComponent,
     MonthPickerComponent,
     SelectComponent,
-    BtnRemoveComponent,
+    BtnAddComponent,
+    CardComponent,
+    CardsGroupComponent,
   ],
   templateUrl: './overhead-costs-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -48,8 +53,6 @@ export class OverheadCostsFormComponent {
     'znam kwotę',
   ];
 
-  collapsed = false;
-
   get section() {
     return this.formService.overheadCostsSection;
   }
@@ -59,6 +62,12 @@ export class OverheadCostsFormComponent {
   readonly includedEnabled = toSignal(
     this.formService.overheadCostsSection.controls.included.valueChanges,
     { initialValue: this.formService.overheadCostsSection.controls.included.value },
+  );
+  private readonly additionalCostsCount = toSignal(
+    this.formService.additionalCostsArray.valueChanges.pipe(
+      map(() => this.formService.additionalCostsArray.length),
+    ),
+    { initialValue: this.formService.additionalCostsArray.length },
   );
   get form() {
     return this.formService.overheadCostsGroup;
@@ -101,9 +110,5 @@ export class OverheadCostsFormComponent {
   }
   removeAdditionalCost(index: number) {
     this.formService.removeAdditionalCost(index);
-  }
-
-  toggleCollapsed() {
-    this.collapsed = !this.collapsed;
   }
 }
