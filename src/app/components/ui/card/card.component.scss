@@ -15,12 +15,6 @@
   flex-direction: column;
   gap: 14px;
   background: var(--surface);
-
-  &--dark {
-    --card-tag-bg: color-mix(in oklch, var(--accent) 30%, var(--surface));
-    background: var(--surface-2);
-    border-color: transparent;
-  }
 }
 
 .card-head {

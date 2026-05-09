@@ -11,7 +11,6 @@
       @for (tranche of transzeArray.controls; track $index) {
         <ui-card
           [tag]="'TRANSZA ' + ($index + 1)"
-          variant="dark"
           [removable]="$index > 0"
           (remove)="removeTransza($index)"
           [formGroupName]="$index"
