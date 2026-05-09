@@ -538,16 +538,10 @@ body {
   pointer-events: none;
 }
 
-/* Rate block */
-.rate-block {
-  background: var(--surface-2);
-  border-radius: var(--r);
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.row + ui-cards-group {
   margin-top: 24px;
 }
+
 .rate-period-from {
   width: 148px;
   flex-shrink: 0;

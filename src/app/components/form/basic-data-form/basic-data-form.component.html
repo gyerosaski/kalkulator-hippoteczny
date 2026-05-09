@@ -69,7 +69,7 @@
       </ui-field>
     </div>
 
-    <div class="rate-block">
+    <ui-cards-group>
       <div formArrayName="ratePeriods">
         @for (period of ratePeriods.controls; track $index) {
           <ui-card
@@ -134,6 +134,6 @@
         }
       </div>
       <ui-btn-add label="Dodaj okres oprocentowania" (add)="addRatePeriod()" />
-    </div>
+    </ui-cards-group>
   </div>
 </ui-section>

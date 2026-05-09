@@ -11,6 +11,7 @@ import { NumberInputComponent } from '../../ui/number-input/number-input.compone
 import { MonthPickerComponent } from '../../ui/month-picker/month-picker.component';
 import { BtnAddComponent } from '../../ui/btn-add/btn-add.component';
 import { CardComponent } from '../../ui/card/card.component';
+import { CardsGroupComponent } from '../../ui/cards-group/cards-group.component';
 
 @Component({
   selector: 'app-tranches-form',
@@ -26,6 +27,7 @@ import { CardComponent } from '../../ui/card/card.component';
     MonthPickerComponent,
     BtnAddComponent,
     CardComponent,
+    CardsGroupComponent,
   ],
   templateUrl: './tranches-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

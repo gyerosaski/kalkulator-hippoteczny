@@ -9,6 +9,7 @@ import { MonthPickerComponent } from '../../ui/month-picker/month-picker.compone
 import { SegmentedComponent } from '../../ui/segmented/segmented.component';
 import { BtnAddComponent } from '../../ui/btn-add/btn-add.component';
 import { CardComponent } from '../../ui/card/card.component';
+import { CardsGroupComponent } from '../../ui/cards-group/cards-group.component';
 
 @Component({
   selector: 'app-basic-data-form',
@@ -22,6 +23,7 @@ import { CardComponent } from '../../ui/card/card.component';
     SegmentedComponent,
     BtnAddComponent,
     CardComponent,
+    CardsGroupComponent,
   ],
   templateUrl: './basic-data-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
