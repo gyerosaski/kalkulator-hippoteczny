@@ -142,10 +142,22 @@ export class CalcService {
   tranchesEnabled = signal(true);
   overpaymentsEnabled = signal(true);
 
-  // nadpłaty
+  // nadpłaty — reguła A
   overFreq = signal<FrequencyAll>('co miesiąc');
   overAmount = signal(0);
   overEffect = signal<OverpaymentEffect>('skrócenie okresu');
+  overFrom = signal<Date>(new Date(2026, 4, 1));
+  overTo = signal<Date>(new Date(2046, 3, 1));
+
+  // nadpłaty — docelowa rata miesięczna (B)
+  targetRata = signal(0);
+  targetFrom = signal<Date>(new Date(2026, 4, 1));
+  targetTo = signal<Date>(new Date(2046, 3, 1));
+  targetEffect = signal<OverpaymentEffect>('niższa rata');
+
+  // nadpłaty — prowizja za wcześniejszą spłatę (C)
+  earlyRepayFee = signal(0);
+  earlyRepayFeeUntil = signal<Date>(new Date(2029, 3, 1));
 
   // tweaks
   tweaks = signal<Tweaks>(this.loadTweaks());
