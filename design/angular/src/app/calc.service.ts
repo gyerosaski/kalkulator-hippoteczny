@@ -10,6 +10,7 @@ import {
   OverpaymentEffect,
   RatePeriod,
   Tweaks,
+  ExtraCost,
 } from './models';
 
 export function addMonths(d: Date, n: number): Date {
@@ -69,12 +70,72 @@ export class CalcService {
   }
   startDate = signal<Date>(new Date(2026, 3, 1));
 
-  // koszty
+  // koszty — sekcje 1–3
   commissionPct = signal(1.5);
   valuationFee = signal(400);
   bridgeRate = signal(1.2);
   bridgeMonths = signal(6);
+
+  // 4. Ubezpieczenie nieruchomości
+  propInsFreq = signal<'co rok' | 'co miesiąc'>('co rok');
+  propInsMode = signal<
+    '% wartości nieruchomości' | '% kwoty kredytu' | '% salda kredytu' | 'znam kwotę'
+  >('% wartości nieruchomości');
   insurancePct = signal(0.0008);
+  propInsFrom = signal<Date>(new Date(2026, 4, 1));
+  propInsTo = signal<Date>(new Date(2046, 3, 1));
+
+  // 5. Ubezpieczenie niskiego wkładu
+  lowDownRate = signal(0);
+
+  // 6. Ubezpieczenie na życie
+  lifeFreq = signal<'co rok' | 'co miesiąc' | 'jednorazowo'>('co rok');
+  lifeMode = signal<'% kwoty kredytu' | '% salda kredytu' | 'znam kwotę'>('% kwoty kredytu');
+  lifeValue = signal(0);
+  lifeFrom = signal<Date>(new Date(2026, 4, 1));
+  lifeTo = signal<Date>(new Date(2046, 3, 1));
+
+  // 7. Ubezpieczenie od utraty pracy
+  jobFreq = signal<'jednorazowo' | 'co rok' | 'co miesiąc'>('jednorazowo');
+  jobMode = signal<'% kwoty kredytu' | '% salda kredytu' | 'znam kwotę'>('% kwoty kredytu');
+  jobValue = signal(0);
+  jobFrom = signal<Date>(new Date(2026, 4, 1));
+
+  // 8. Dodatkowe koszty — lista
+  extraCosts = signal<ExtraCost[]>([
+    {
+      id: 1,
+      name: '',
+      freq: 'jednorazowo',
+      mode: 'znam kwotę',
+      value: 0,
+      from: new Date(2026, 4, 1),
+    },
+  ]);
+  addExtraCost() {
+    this.extraCosts.update((arr) => [
+      ...arr,
+      {
+        id: Date.now(),
+        name: '',
+        freq: 'jednorazowo',
+        mode: 'znam kwotę',
+        value: 0,
+        from: new Date(2026, 4, 1),
+      },
+    ]);
+  }
+  updateExtraCost(id: number, patch: Partial<ExtraCost>) {
+    this.extraCosts.update((arr) => arr.map((c) => (c.id === id ? { ...c, ...patch } : c)));
+  }
+  removeExtraCost(id: number) {
+    this.extraCosts.update((arr) => arr.filter((c) => c.id !== id));
+  }
+
+  // 9. Promocyjna wysokość oprocentowania
+  promoRate = signal(0);
+  promoFrom = signal<Date>(new Date(2026, 4, 1));
+  promoTo = signal<Date>(new Date(2027, 3, 1));
 
   // przełączniki sekcji
   costsEnabled = signal(true);

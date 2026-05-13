@@ -12,6 +12,26 @@ export interface Costs {
   insurancePct: number; // % wartości nieruchomości / rok
 }
 
+export type PropertyInsuranceFreq = 'co rok' | 'co miesiąc';
+export type PropertyInsuranceMode =
+  | '% wartości nieruchomości'
+  | '% kwoty kredytu'
+  | '% salda kredytu'
+  | 'znam kwotę';
+export type LifeInsuranceFreq = 'co rok' | 'co miesiąc' | 'jednorazowo';
+export type LifeInsuranceMode = '% kwoty kredytu' | '% salda kredytu' | 'znam kwotę';
+export type ExtraCostFreq = 'jednorazowo' | 'co rok' | 'co miesiąc';
+export type ExtraCostMode = '% kwoty kredytu' | '% salda kredytu' | 'znam kwotę';
+
+export interface ExtraCost {
+  id: number;
+  name: string;
+  freq: ExtraCostFreq;
+  mode: ExtraCostMode;
+  value: number;
+  from: Date;
+}
+
 export interface Overpayments {
   frequency: FrequencyAll;
   amount: number;
