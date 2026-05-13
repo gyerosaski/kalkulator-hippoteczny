@@ -15,7 +15,7 @@ import { MonthPickerComponent } from '../../ui/month-picker/month-picker.compone
 import { SelectComponent } from '../../ui/select/select.component';
 import { BtnAddComponent } from '../../ui/btn-add/btn-add.component';
 import { CardComponent } from '../../ui/card/card.component';
-import { SubsecComponent } from '../../ui/subsec/subsec.component';
+import { SubsectionComponent } from '../../ui/subsection/subsection.component';
 import { DividerComponent } from '../../ui/divider/divider.component';
 
 @Component({
@@ -31,7 +31,7 @@ import { DividerComponent } from '../../ui/divider/divider.component';
     SelectComponent,
     BtnAddComponent,
     CardComponent,
-    SubsecComponent,
+    SubsectionComponent,
     DividerComponent,
     InsuranceFrequencyLabelPipe,
     InsuranceCalcMethodLabelPipe,
