@@ -56,11 +56,6 @@ export type {
 
 @Injectable({ providedIn: 'root' })
 export class CalculatorService {
-  // Bezpieczne zaokrąglenie do 2 miejsc (PL waluty)
-  private round2(x: number): number {
-    return x;
-  }
-
   private asNonNegativeNumber(value: unknown): number {
     return Math.max(0, Number(value) || 0);
   }
@@ -91,8 +86,8 @@ export class CalculatorService {
 
   private annuityPayment(principal: number, monthlyRate: number, periods: number): number {
     if (periods <= 0) return 0;
-    if (monthlyRate === 0) return this.round2(principal / periods);
-    return this.round2((principal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -periods)));
+    if (monthlyRate === 0) return principal / periods;
+    return (principal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -periods));
   }
 
   private isMonthInRange(month: string, from: string, to?: string): boolean {
@@ -121,7 +116,7 @@ export class CalculatorService {
   private prepaymentFromRule(month: string, rule: PrepaymentRule): number {
     if (!this.isMonthInRange(month, rule.from, rule.to)) return 0;
     if (!this.matchesFrequency(month, rule)) return 0;
-    return this.round2(this.asNonNegativeNumber(rule.amount));
+    return this.asNonNegativeNumber(rule.amount);
   }
 
   // Spójność LTV/kwota/wartość
@@ -139,11 +134,11 @@ export class CalculatorService {
 
     if (edited === 'ltv') {
       // Kwota = Wartość * LTV/100
-      resultAmount = this.round2(safePV * (resultLtv / 100));
+      resultAmount = safePV * (resultLtv / 100);
     } else if (edited === 'loanAmount' || edited === 'propertyValue') {
       // LTV = Kwota / Wartość * 100 (jeśli PV > 0)
       if (safePV > 0) {
-        resultLtv = this.round2((resultAmount / safePV) * 100);
+        resultLtv = (resultAmount / safePV) * 100;
       } else {
         resultLtv = 0;
       }
@@ -151,12 +146,12 @@ export class CalculatorService {
     // Ograniczenia domenowe
     if (resultPV > 0 && resultAmount > resultPV) {
       resultAmount = resultPV;
-      resultLtv = safePV > 0 ? this.round2((resultAmount / safePV) * 100) : 0;
+      resultLtv = safePV > 0 ? (resultAmount / safePV) * 100 : 0;
     }
     if (resultLtv < 0) resultLtv = 0;
     if (resultLtv > 100) {
       resultLtv = 100;
-      resultAmount = this.round2(safePV * (resultLtv / 100));
+      resultAmount = safePV * (resultLtv / 100);
     }
 
     return { propertyValue: resultPV, loanAmount: resultAmount, ltv: resultLtv };
@@ -187,10 +182,8 @@ export class CalculatorService {
             saldo,
           );
           const amount =
-            pi.calcMethod === InsuranceCalcMethod.FIXED_AMOUNT
-              ? pi.value
-              : this.round2((base * pi.value) / 100);
-          cost = this.round2(cost + amount);
+            pi.calcMethod === InsuranceCalcMethod.FIXED_AMOUNT ? pi.value : (base * pi.value) / 100;
+          cost += amount;
         }
       }
     }
@@ -211,8 +204,8 @@ export class CalculatorService {
           const amount =
             li.calcMethod === LifeInsuranceCalcMethod.FIXED_AMOUNT
               ? li.value
-              : this.round2((base * li.value) / 100);
-          cost = this.round2(cost + amount);
+              : (base * li.value) / 100;
+          cost += amount;
         }
       }
     }
@@ -233,8 +226,8 @@ export class CalculatorService {
           const amount =
             jl.calcMethod === LifeInsuranceCalcMethod.FIXED_AMOUNT
               ? jl.value
-              : this.round2((base * jl.value) / 100);
-          cost = this.round2(cost + amount);
+              : (base * jl.value) / 100;
+          cost += amount;
         }
       }
     }
@@ -256,8 +249,8 @@ export class CalculatorService {
         const amount =
           ac.calcMethod === LifeInsuranceCalcMethod.FIXED_AMOUNT
             ? ac.value
-            : this.round2((base * ac.value) / 100);
-        cost = this.round2(cost + amount);
+            : (base * ac.value) / 100;
+        cost += amount;
       }
     }
 
@@ -395,9 +388,7 @@ export class CalculatorService {
         if (amt > 0 && t.date) {
           trancheMap.set(t.date, (trancheMap.get(t.date) || 0) + amt);
         }
-        trancheDisbursementFees = this.round2(
-          trancheDisbursementFees + this.asNonNegativeNumber(t.disbursementFee),
-        );
+        trancheDisbursementFees += this.asNonNegativeNumber(t.disbursementFee);
       }
     }
 
@@ -409,7 +400,7 @@ export class CalculatorService {
         : this.asNonNegativeNumber(inputs.loanAmount);
     let remainingAmortMonths = amortMonths;
     let equalRate = this.annuityPayment(saldo, initialI, amortMonths);
-    let decreasingCapitalPart = amortMonths > 0 ? this.round2(saldo / amortMonths) : 0;
+    let decreasingCapitalPart = amortMonths > 0 ? saldo / amortMonths : 0;
     let prevPeriod = initialPeriod;
     // Flaga: transza uruchomiona w tym miesiącu – przelicz ratę dopiero w kolejnym
     let needsRateRecalcAfterTranche = false;
@@ -431,7 +422,7 @@ export class CalculatorService {
         if (inputs.installmentType === InstallmentType.EQUAL) {
           equalRate = this.annuityPayment(saldo, iCurrent, Math.max(1, remainingAmortMonths));
         } else {
-          decreasingCapitalPart = this.round2(saldo / Math.max(1, remainingAmortMonths));
+          decreasingCapitalPart = saldo / Math.max(1, remainingAmortMonths);
         }
       }
 
@@ -442,7 +433,7 @@ export class CalculatorService {
           if (inputs.installmentType === InstallmentType.EQUAL) {
             equalRate = this.annuityPayment(saldo, iCurrent, remainingAmortMonths);
           } else {
-            decreasingCapitalPart = this.round2(saldo / remainingAmortMonths);
+            decreasingCapitalPart = saldo / remainingAmortMonths;
           }
         }
       }
@@ -455,7 +446,7 @@ export class CalculatorService {
         oc,
       );
       const iMonth = this.monthlyRate(monthEffRate);
-      const interest = this.round2(saldo * iMonth);
+      const interest = saldo * iMonth;
 
       let capital = 0;
       let baseRate = 0;
@@ -466,26 +457,26 @@ export class CalculatorService {
       } else if (inputs.installmentType === InstallmentType.EQUAL) {
         const planned =
           equalRate > 0 ? equalRate : this.annuityPayment(saldo, iCurrent, remainingAmortMonths);
-        capital = this.round2(planned - interest);
+        capital = planned - interest;
         if (capital < 0) capital = 0;
-        if (capital > saldo) capital = this.round2(saldo);
-        baseRate = this.round2(interest + capital);
+        if (capital > saldo) capital = saldo;
+        baseRate = interest + capital;
       } else {
         const capitalConst =
           decreasingCapitalPart > 0
             ? decreasingCapitalPart
-            : this.round2(saldo / Math.max(1, remainingAmortMonths));
-        capital = this.round2(Math.min(saldo, capitalConst));
-        baseRate = this.round2(interest + capital);
+            : saldo / Math.max(1, remainingAmortMonths);
+        capital = Math.min(saldo, capitalConst);
+        baseRate = interest + capital;
       }
 
-      saldo = this.round2(Math.max(0, saldo - capital));
+      saldo = Math.max(0, saldo - capital);
 
       // Transza uruchamiana w tym miesiącu: dodaj do salda PO obliczeniu raty,
       // żeby rata wzrosła dopiero w kolejnym miesiącu
       const trancheAmount = trancheMap.get(date) || 0;
       if (trancheAmount > 0) {
-        saldo = this.round2(saldo + trancheAmount);
+        saldo += trancheAmount;
         needsRateRecalcAfterTranche = true;
       }
 
@@ -496,9 +487,9 @@ export class CalculatorService {
         const amount = this.prepaymentFromRule(date, rule);
         if (amount <= 0) continue;
         if (rule.effect === PrepaymentEffect.LOWER_INSTALLMENT) {
-          prepaymentLower = this.round2(prepaymentLower + amount);
+          prepaymentLower += amount;
         } else {
-          prepaymentShorten = this.round2(prepaymentShorten + amount);
+          prepaymentShorten += amount;
         }
       }
 
@@ -507,33 +498,33 @@ export class CalculatorService {
         this.isMonthInRange(date, targetInstallmentRule.from, targetInstallmentRule.to)
       ) {
         const targetRate = this.asNonNegativeNumber(targetInstallmentRule.targetRate);
-        const targetPrepayment = this.round2(Math.max(0, targetRate - baseRate));
+        const targetPrepayment = Math.max(0, targetRate - baseRate);
         if (targetPrepayment > 0) {
           if (targetInstallmentRule.effect === PrepaymentEffect.LOWER_INSTALLMENT) {
-            prepaymentLower = this.round2(prepaymentLower + targetPrepayment);
+            prepaymentLower += targetPrepayment;
           } else {
-            prepaymentShorten = this.round2(prepaymentShorten + targetPrepayment);
+            prepaymentShorten += targetPrepayment;
           }
         }
       }
 
-      let prepayment = this.round2(prepaymentLower + prepaymentShorten);
+      let prepayment = prepaymentLower + prepaymentShorten;
       if (prepayment > saldo) {
-        prepayment = this.round2(saldo);
+        prepayment = saldo;
       }
-      saldo = this.round2(Math.max(0, saldo - prepayment));
+      saldo = Math.max(0, saldo - prepayment);
 
       const commission =
         prepayment > 0 &&
         commissionRatePct > 0 &&
         (!commissionValidUntil || date <= commissionValidUntil)
-          ? this.round2(prepayment * (commissionRatePct / 100))
+          ? prepayment * (commissionRatePct / 100)
           : 0;
 
       // Koszt ubezpieczeń i dodatkowych kosztów w tym miesiącu
       const insuranceCost = oc ? this.calcInsuranceCostForMonth(date, saldo, inputs, oc, idx) : 0;
 
-      const totalRateForMonth = this.round2(baseRate);
+      const totalRateForMonth = baseRate;
 
       schedule.push({
         index: idx,
@@ -556,7 +547,7 @@ export class CalculatorService {
           if (inputs.installmentType === InstallmentType.EQUAL) {
             equalRate = this.annuityPayment(saldo, iCurrent, Math.max(1, remainingAmortMonths));
           } else {
-            decreasingCapitalPart = this.round2(saldo / remainingAmortMonths);
+            decreasingCapitalPart = saldo / remainingAmortMonths;
           }
         }
       } else if (inGrace && hasLowerRatePrepayment && remainingAmortMonths > 0) {
@@ -578,9 +569,7 @@ export class CalculatorService {
     const totalInterest = schedule.reduce((s, r) => s + r.interest, 0);
 
     const totalInsuranceCosts = schedule.reduce((s, r) => s + r.insuranceCost, 0);
-    const loanCommission = oc
-      ? this.round2((inputs.loanAmount * (oc.commissionPct || 0)) / 100)
-      : 0;
+    const loanCommission = oc ? (inputs.loanAmount * (oc.commissionPct || 0)) / 100 : 0;
     const appraisalFee = oc ? oc.appraisalFee || 0 : 0;
     const earlyRepaymentCommissions = schedule.reduce((s, r) => s + r.commission, 0);
 
