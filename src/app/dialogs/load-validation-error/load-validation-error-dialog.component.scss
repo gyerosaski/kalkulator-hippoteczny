@@ -1,0 +1,66 @@
+dialog {
+  border: none;
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  color: var(--ink);
+  padding: 28px;
+  width: 520px;
+  max-width: calc(100vw - 32px);
+  box-shadow:
+    0 4px 6px oklch(0% 0 0 / 4%),
+    0 16px 48px oklch(0% 0 0 / 14%);
+
+  &::backdrop {
+    background: oklch(0% 0 0 / 35%);
+  }
+}
+
+.dialog-title {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.dialog-desc {
+  margin: 0 0 16px;
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+
+.error-list {
+  margin: 0 0 4px;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.error-list__item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  border-radius: var(--r-sm);
+  background: color-mix(in oklch, var(--c-int) 8%, transparent);
+  border-left: 3px solid var(--c-int);
+}
+
+.error-path {
+  font-size: 11px;
+  font-family: var(--font-mono, monospace);
+  color: var(--ink-muted);
+  word-break: break-all;
+}
+
+.error-msg {
+  font-size: 13px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}

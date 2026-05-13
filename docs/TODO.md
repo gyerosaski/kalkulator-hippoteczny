@@ -22,3 +22,4 @@
 - [x] usunąć metodę CalculatorService.round2
 - przy dwóch regułach nadpłaty jeden skracającej okres, a drugiej obniżającej ratę okres kredytowania nie ulega skróceniu
 - [x] dodaj regułę, żeby preferować użycie enumów zamiast literal types, zamień wszystkie wykorzystania, enumy powinny mieć klucze i wartości w języku angielskim, THIS_WAY, konwersja enumów na docelowe labelki w języku polskim powinna odbywać się w pipe'ach
+- [x] stwórz scheme opisującą strukturę zapisanych ustawień w formacie .json, waliduj .json na podstawie schemy przy wczytywaniu ustawień - jeśli walidacje nie przebiegnie pomyślnie, prezentuj natywny dialog wzorem SaveCalculationDialogComponent z informacją o tym, które pola są niepoprawne/mają niepoprawne wartości

@@ -27,7 +27,9 @@ import {
 } from '../../model/mortgage.model';
 import { CalculatorService } from '../../services/calculator/calculator.service';
 import { FormService } from '../../services/form/form';
+import { SchemaValidatorService } from '../../services/schema-validator/schema-validator.service';
 import { SaveCalculationDialogComponent } from '../../dialogs/save-calculation/save-calculation-dialog.component';
+import { LoadValidationErrorDialogComponent } from '../../dialogs/load-validation-error/load-validation-error-dialog.component';
 import { BasicDataFormComponent } from '../../components/form/basic-data-form/basic-data-form.component';
 import { OverheadCostsFormComponent } from '../../components/form/overhead-costs-form/overhead-costs-form.component';
 import { TranchesFormComponent } from '../../components/form/tranches-form/tranches-form.component';
@@ -55,6 +57,7 @@ function nextMonthStr(date = new Date()): string {
   imports: [
     ReactiveFormsModule,
     SaveCalculationDialogComponent,
+    LoadValidationErrorDialogComponent,
     BasicDataFormComponent,
     OverheadCostsFormComponent,
     TranchesFormComponent,
@@ -72,8 +75,10 @@ function nextMonthStr(date = new Date()): string {
 export class LayoutComponent {
   private calc = inject(CalculatorService);
   private formService = inject(FormService);
+  private schemaValidator = inject(SchemaValidatorService);
   private ngZone = inject(NgZone);
   private saveDialog = viewChild.required(SaveCalculationDialogComponent);
+  private validationErrorDialog = viewChild.required(LoadValidationErrorDialogComponent);
   private fileInputEl = viewChild.required<ElementRef<HTMLInputElement>>('fileInputEl');
 
   get form() {
@@ -279,6 +284,11 @@ export class LayoutComponent {
       try {
         const parsed = JSON.parse(e.target?.result as string);
         const formData = parsed?.data ?? parsed;
+        const errors = this.schemaValidator.validate(formData);
+        if (errors.length > 0) {
+          this.ngZone.run(() => this.validationErrorDialog().open(errors));
+          return;
+        }
         this.ngZone.run(() => this.formService.loadFromFile(formData));
       } catch {
         window.alert(
