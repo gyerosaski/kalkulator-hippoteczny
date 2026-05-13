@@ -75,7 +75,7 @@ function crossFieldValidator(control: import('@angular/forms').AbstractControl) 
   const errors: Record<string, unknown> = {};
   if (pv && la && la > pv) errors['loanGtProperty'] = true;
 
-  if (tranchesIncluded && transzeArray && transzeArray.length > 1 && la > 0) {
+  if (tranchesIncluded && transzeArray && transzeArray.length >= 1 && la > 0) {
     let transzeSum = 0;
     for (let i = 0; i < transzeArray.length; i++) {
       transzeSum += Number(transzeArray.at(i).get('amount')?.value) || 0;
