@@ -107,9 +107,20 @@ export interface CalcInput {
 export type Palette = 'sage' | 'peach' | 'lavender' | 'mist';
 export type Density = 'cozy' | 'comfy' | 'roomy';
 export type FontPair = 'inter' | 'fraunces' | 'system';
+export type ViewState = 'auto' | 'results' | 'errors';
 
 export interface Tweaks {
   palette: Palette;
   density: Density;
   fontPair: FontPair;
+  viewState: ViewState;
+}
+
+export interface FormError {
+  section: 'Dane podstawowe' | 'Transze' | 'Nadpłaty' | 'Koszty okołokredytowe i promocje';
+  message: string;
+  detail?: string;
+  fieldNum?: string;
+  fieldLabel: string;
+  fieldId: string;
 }

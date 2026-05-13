@@ -11,6 +11,8 @@ import { FirstInstallmentComponent } from './results/first-installment.component
 import { TrendChartComponent } from './results/trend-chart.component';
 import { ScheduleTableComponent } from './results/schedule-table.component';
 import { TweaksPanelComponent } from './tweaks/tweaks-panel.component';
+import { ErrorsPanelComponent } from './results/errors-panel.component';
+import { FormError } from './models';
 
 @Component({
   selector: 'app-root',
@@ -27,6 +29,7 @@ import { TweaksPanelComponent } from './tweaks/tweaks-panel.component';
     TrendChartComponent,
     ScheduleTableComponent,
     TweaksPanelComponent,
+    ErrorsPanelComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -77,13 +80,17 @@ import { TweaksPanelComponent } from './tweaks/tweaks-panel.component';
           <app-overpayments />
         </div>
         <div class="col col--results">
-          <app-kpi-strip />
-          <div class="result-grid">
-            <app-payment-structure />
-            <app-first-installment />
-          </div>
-          <app-trend-chart />
-          <app-schedule-table />
+          @if (calc.showErrors()) {
+            <app-errors-panel [errors]="calc.errors()" (goto)="handleGoto($event)" />
+          } @else {
+            <app-kpi-strip />
+            <div class="result-grid">
+              <app-payment-structure />
+              <app-first-installment />
+            </div>
+            <app-trend-chart />
+            <app-schedule-table />
+          }
         </div>
       </main>
 
@@ -93,4 +100,13 @@ import { TweaksPanelComponent } from './tweaks/tweaks-panel.component';
 })
 export class AppComponent {
   calc = inject(CalcService);
+
+  handleGoto(err: FormError) {
+    const el = document.getElementById(err.fieldId);
+    if (!el) return;
+    const top = el.getBoundingClientRect().top + window.scrollY - 120;
+    window.scrollTo({ top, behavior: 'smooth' });
+    el.classList.add('field--err-target');
+    setTimeout(() => el.classList.remove('field--err-target'), 2400);
+  }
 }

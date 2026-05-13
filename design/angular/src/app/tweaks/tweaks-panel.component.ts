@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { CalcService } from '../calc.service';
-import { Palette, Density, FontPair } from '../models';
+import { Palette, Density, FontPair, ViewState } from '../models';
 
 @Component({
   selector: 'app-tweaks-panel',
@@ -50,6 +50,19 @@ import { Palette, Density, FontPair } from '../models';
                   (click)="calc.saveTweaks({ fontPair: f.value })"
                 >
                   {{ f.label }}
+                </button>
+              }
+            </div>
+          </div>
+          <div class="tw-section">
+            <div class="tw-label">Stan widoku</div>
+            <div class="tw-radio tw-radio--3">
+              @for (v of views; track v.value) {
+                <button
+                  [class.is-on]="calc.tweaks().viewState === v.value"
+                  (click)="calc.saveTweaks({ viewState: v.value })"
+                >
+                  {{ v.label }}
                 </button>
               }
             </div>
@@ -118,6 +131,9 @@ import { Palette, Density, FontPair } from '../models';
         border-radius: 10px;
         padding: 3px;
       }
+      .tw-radio--3 {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
       .tw-radio button {
         border: 0;
         padding: 8px 10px;
@@ -155,5 +171,10 @@ export class TweaksPanelComponent {
     { value: 'inter', label: 'Inter Tight' },
     { value: 'fraunces', label: 'Söhne+Plex' },
     { value: 'system', label: 'System' },
+  ];
+  views: { value: ViewState; label: string }[] = [
+    { value: 'auto', label: 'Auto' },
+    { value: 'results', label: 'Wyniki' },
+    { value: 'errors', label: 'Błędy' },
   ];
 }

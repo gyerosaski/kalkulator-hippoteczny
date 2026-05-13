@@ -11,6 +11,7 @@ import {
   RatePeriod,
   Tweaks,
   ExtraCost,
+  FormError,
 } from './models';
 
 export function addMonths(d: Date, n: number): Date {
@@ -32,6 +33,11 @@ const MONTHS_PL = [
   'gru',
 ];
 export const monthLabel = (d: Date) => `${MONTHS_PL[d.getMonth()]} ${d.getFullYear()}`;
+export const fmtPLN = (v: number, decimals = 0) =>
+  new Intl.NumberFormat('pl-PL', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(v);
 
 @Injectable({ providedIn: 'root' })
 export class CalcService {
@@ -69,6 +75,7 @@ export class CalcService {
     this.ratePeriods.update((rp) => rp.filter((p) => p.id !== id));
   }
   startDate = signal<Date>(new Date(2026, 3, 1));
+  firstRepaymentDate = signal<Date>(new Date(2026, 4, 1));
 
   // koszty — sekcje 1–3
   commissionPct = signal(1.5);
@@ -203,12 +210,156 @@ export class CalcService {
     this.loanAmount.set((this.propertyValue() * pct) / 100);
   }
 
+  // ====================== walidacja formularza ======================
+  // Suma transz — w prototypie zawsze 1 transza równa kwocie kredytu.
+  tranchesTotal = computed(() => this.loanAmount());
+
+  realErrors = computed<FormError[]>(() => {
+    const errs: FormError[] = [];
+    const loan = this.loanAmount();
+    const prop = this.propertyValue();
+    const totalMonths = this.years() * 12 + this.months();
+
+    if (loan > prop) {
+      const diff = loan - prop;
+      errs.push({
+        section: 'Dane podstawowe',
+        message: 'Kwota kredytu nie może być większa niż wartość nieruchomości.',
+        detail: `${fmtPLN(loan)} zł kwoty kredytu vs ${fmtPLN(prop)} zł wartości — różnica ${fmtPLN(diff)} zł`,
+        fieldNum: '2',
+        fieldLabel: 'Kwota kredytu',
+        fieldId: 'field-loan',
+      });
+    }
+    if (totalMonths <= 0) {
+      errs.push({
+        section: 'Dane podstawowe',
+        message: 'Łączna liczba miesięcy musi być większa od 0.',
+        detail: 'Ustaw okres kredytowania na co najmniej 1 miesiąc.',
+        fieldNum: '4',
+        fieldLabel: 'Okres kredytowania',
+        fieldId: 'field-period',
+      });
+    }
+    if (this.firstRepaymentDate() < this.startDate()) {
+      errs.push({
+        section: 'Dane podstawowe',
+        message: 'Początek spłat kapitału nie może być wcześniejszy niż data uruchomienia.',
+        detail: `uruchomienie ${monthLabel(this.startDate())} → start spłat ${monthLabel(this.firstRepaymentDate())}`,
+        fieldNum: '6',
+        fieldLabel: 'Początek spłat kapitału',
+        fieldId: 'field-first-repayment',
+      });
+    }
+    if (this.overpaymentsEnabled() && this.overFrom() > this.overTo()) {
+      errs.push({
+        section: 'Nadpłaty',
+        message: 'W regule nadpłaty data „do” nie może być wcześniejsza niż data „od”.',
+        detail: `od ${monthLabel(this.overFrom())} → do ${monthLabel(this.overTo())}`,
+        fieldNum: '2',
+        fieldLabel: 'Reguła nadpłat — okres',
+        fieldId: 'field-over-dates',
+      });
+    }
+    if (this.overpaymentsEnabled() && this.targetFrom() > this.targetTo()) {
+      errs.push({
+        section: 'Nadpłaty',
+        message: 'W regule docelowej raty data „do” nie może być wcześniejsza niż data „od”.',
+        detail: `od ${monthLabel(this.targetFrom())} → do ${monthLabel(this.targetTo())}`,
+        fieldNum: '6',
+        fieldLabel: 'Docelowa rata — okres',
+        fieldId: 'field-target-dates',
+      });
+    }
+    if (this.tranchesEnabled() && Math.abs(this.tranchesTotal() - loan) > 0.5) {
+      const diff = loan - this.tranchesTotal();
+      errs.push({
+        section: 'Transze',
+        message: 'Suma transz musi być równa kwocie kredytu.',
+        detail: `suma ${fmtPLN(this.tranchesTotal())} zł vs kwota ${fmtPLN(loan)} zł — ${diff > 0 ? 'brakuje' : 'nadwyżka'} ${fmtPLN(Math.abs(diff))} zł`,
+        fieldNum: '∑',
+        fieldLabel: 'Suma transz',
+        fieldId: 'field-tranches',
+      });
+    }
+    return errs;
+  });
+
+  // Demo: pełna lista przykładowych błędów na potrzeby podglądu projektu.
+  readonly demoErrors: FormError[] = [
+    {
+      section: 'Dane podstawowe',
+      message: 'Kwota kredytu nie może być większa niż wartość nieruchomości.',
+      detail: '520 000 zł kwoty kredytu vs 500 000 zł wartości — różnica 20 000 zł',
+      fieldNum: '2',
+      fieldLabel: 'Kwota kredytu',
+      fieldId: 'field-loan',
+    },
+    {
+      section: 'Dane podstawowe',
+      message: 'Łączna liczba miesięcy musi być większa od 0.',
+      detail: 'Ustaw okres kredytowania na co najmniej 1 miesiąc.',
+      fieldNum: '4',
+      fieldLabel: 'Okres kredytowania',
+      fieldId: 'field-period',
+    },
+    {
+      section: 'Dane podstawowe',
+      message: 'Początek spłat kapitału nie może być wcześniejszy niż data uruchomienia.',
+      detail: 'uruchomienie kwi 2026 → start spłat mar 2026',
+      fieldNum: '6',
+      fieldLabel: 'Początek spłat kapitału',
+      fieldId: 'field-first-repayment',
+    },
+    {
+      section: 'Transze',
+      message: 'Suma transz musi być równa kwocie kredytu.',
+      detail: 'suma 350 000 zł vs kwota 400 000 zł — brakuje 50 000 zł',
+      fieldNum: '∑',
+      fieldLabel: 'Suma transz',
+      fieldId: 'field-tranches',
+    },
+    {
+      section: 'Nadpłaty',
+      message: 'W regule nadpłaty data „do” nie może być wcześniejsza niż data „od”.',
+      detail: 'od maj 2028 → do sty 2027',
+      fieldNum: '2',
+      fieldLabel: 'Reguła nadpłat — okres',
+      fieldId: 'field-over-dates',
+    },
+    {
+      section: 'Nadpłaty',
+      message: 'W regule docelowej raty data „do” nie może być wcześniejsza niż data „od”.',
+      detail: 'od maj 2030 → do sty 2028',
+      fieldNum: '6',
+      fieldLabel: 'Docelowa rata — okres',
+      fieldId: 'field-target-dates',
+    },
+  ];
+
+  errors = computed<FormError[]>(() =>
+    this.tweaks().viewState === 'errors' ? this.demoErrors : this.realErrors(),
+  );
+
+  showErrors = computed<boolean>(() => {
+    const v = this.tweaks().viewState;
+    if (v === 'errors') return true;
+    if (v === 'results') return false;
+    return this.realErrors().length > 0;
+  });
+
   private loadTweaks(): Tweaks {
+    const defaults: Tweaks = {
+      palette: 'sage',
+      density: 'cozy',
+      fontPair: 'inter',
+      viewState: 'errors',
+    };
     try {
       const raw = localStorage.getItem('khip:tweaks');
-      if (raw) return JSON.parse(raw);
+      if (raw) return { ...defaults, ...JSON.parse(raw) };
     } catch {}
-    return { palette: 'sage', density: 'cozy', fontPair: 'inter' };
+    return defaults;
   }
   saveTweaks(t: Partial<Tweaks>) {
     this.tweaks.update((prev) => {

@@ -47,6 +47,7 @@ src/
       first-installment.component.ts
       trend-chart.component.ts
       schedule-table.component.ts
+      errors-panel.component.ts
     tweaks/
       tweaks-panel.component.ts
 ```
@@ -66,3 +67,21 @@ src/
 ## Stan globalny
 
 `CalcService` trzyma sygnały wejściowe (`propertyValue`, `loanAmount`, ...) oraz wystawia `schedule = computed(...)`. Komponenty wstrzykują serwis i wiążą sygnały dwukierunkowo.
+
+## Walidacja formularza
+
+`CalcService` udostępnia trzy sygnały związane z błędami:
+
+- `realErrors: Signal<FormError[]>` — wynik walidacji bieżącego stanu (kwota vs wartość, okres > 0, kolejność dat itp.).
+- `errors: Signal<FormError[]>` — błędy faktycznie prezentowane (z uwzględnieniem trybu demo).
+- `showErrors: Signal<boolean>` — czy prawa kolumna ma renderować `app-errors-panel` zamiast wyników.
+
+O trybie decyduje `tweaks().viewState`:
+
+| wartość     | zachowanie                                                                    |
+| ----------- | ----------------------------------------------------------------------------- |
+| `'auto'`    | pokaż błędy jeśli `realErrors.length > 0`, w przeciwnym razie wyniki          |
+| `'results'` | zawsze wyniki (błędy ukryte — do podglądu designu)                            |
+| `'errors'`  | zawsze pełen zestaw przykładowych błędów (`demoErrors`) — do podglądu designu |
+
+`AppComponent.handleGoto(err)` przewija stronę do elementu `#{{ err.fieldId }}` i przygasza go klasą `.field--err-target` (pulsujące obramowanie). Anchory są wstawione w `BasicDataComponent`, `TranchesComponent`, `OverpaymentsComponent` — każdy błąd w `FormError` ma odpowiadające `fieldId`.

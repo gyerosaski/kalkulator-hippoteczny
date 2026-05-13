@@ -52,7 +52,7 @@ import { SelectComponent } from '../ui/select.component';
             />
           </app-field>
         </div>
-        <div class="row row--2">
+        <div class="row row--2" id="field-over-dates">
           <app-field label="Data nadpłaty — od" num="2">
             <app-month-picker [value]="calc.overFrom()" />
           </app-field>
@@ -83,7 +83,7 @@ import { SelectComponent } from '../ui/select.component';
             />
           </app-field>
         </div>
-        <div class="row row--2">
+        <div class="row row--2" id="field-target-dates">
           <app-field label="Data nadpłaty — od" num="6">
             <app-month-picker [value]="calc.targetFrom()" />
           </app-field>

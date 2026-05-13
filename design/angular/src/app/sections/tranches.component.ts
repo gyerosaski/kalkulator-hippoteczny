@@ -37,7 +37,7 @@ import { PlnPipe } from '../pipes/pln.pipe';
         <button class="ico-btn" [disabled]="true">−</button>
       </div>
       <button class="btn btn--add">＋ Dodaj transzę</button>
-      <div class="suma-row">
+      <div class="suma-row" id="field-tranches">
         <span class="muted">Suma transz</span>
         <span class="mono"
           ><b>{{ calc.loanAmount() | pln }}</b> zł</span

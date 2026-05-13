@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
-import { CalcService, addMonths } from '../calc.service';
+import { CalcService } from '../calc.service';
 import { SectionComponent } from '../ui/section.component';
 import { FieldComponent } from '../ui/field.component';
 import { NumberInputComponent } from '../ui/number-input.component';
@@ -22,20 +22,24 @@ import { PeriodUnit, RatePeriod, RateType } from '../models';
     <app-section title="Dane podstawowe" badge="krok 1" [defaultOpen]="true">
       <div class="row row--2">
         <app-field label="Wartość nieruchomości" num="1">
-          <app-number-input
-            [value]="calc.propertyValue()"
-            (valueChange)="calc.propertyValue.set($event)"
-            suffix="zł"
-            [decimals]="0"
-          />
+          <div id="field-property">
+            <app-number-input
+              [value]="calc.propertyValue()"
+              (valueChange)="calc.propertyValue.set($event)"
+              suffix="zł"
+              [decimals]="0"
+            />
+          </div>
         </app-field>
         <app-field label="Kwota kredytu" num="2">
-          <app-number-input
-            [value]="calc.loanAmount()"
-            (valueChange)="calc.loanAmount.set($event)"
-            suffix="zł"
-            [decimals]="0"
-          />
+          <div id="field-loan">
+            <app-number-input
+              [value]="calc.loanAmount()"
+              (valueChange)="calc.loanAmount.set($event)"
+              suffix="zł"
+              [decimals]="0"
+            />
+          </div>
         </app-field>
       </div>
       <div class="row row--2">
@@ -48,7 +52,7 @@ import { PeriodUnit, RatePeriod, RateType } from '../models';
           />
         </app-field>
         <app-field label="Okres kredytowania" num="4">
-          <div class="period-input">
+          <div id="field-period" class="period-input">
             <app-number-input
               [value]="periodValue()"
               (valueChange)="onPeriodChange($event)"
@@ -79,8 +83,8 @@ import { PeriodUnit, RatePeriod, RateType } from '../models';
           <app-month-picker [value]="calc.startDate()" />
         </app-field>
         <app-field label="Początek spłat kapitału" num="6">
-          <div class="inline">
-            <app-month-picker [value]="nextMonth()" [disabled]="true" />
+          <div id="field-first-repayment" class="inline">
+            <app-month-picker [value]="calc.firstRepaymentDate()" />
             <button class="btn btn--mini">Edytuj</button>
           </div>
         </app-field>
@@ -226,8 +230,6 @@ export class BasicDataComponent {
       m = this.calc.months();
     return this.periodUnit() === 'lata' ? y + m / 12 : y * 12 + m;
   });
-
-  nextMonth = computed(() => addMonths(this.calc.startDate(), 1));
 
   clampMonth(v: number): number {
     return Math.max(1, Math.round(v));
