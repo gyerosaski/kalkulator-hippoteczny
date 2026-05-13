@@ -25,19 +25,22 @@ import {
   MortgageResults,
 } from '../../model/mortgage.model';
 
-export type {
+export {
   InstallmentType,
-  RatePeriod,
   RateType,
   PrepaymentFrequency,
   PrepaymentEffect,
+  InsuranceFrequency,
+  InsuranceCalcMethod,
+  LifeInsuranceCalcMethod,
+};
+
+export type {
+  RatePeriod,
   PrepaymentRule,
   TargetInstallmentRule,
   EarlyRepaymentCommission,
   Tranche,
-  InsuranceFrequency,
-  InsuranceCalcMethod,
-  LifeInsuranceCalcMethod,
   BridgeInsurance,
   PropertyInsurance,
   LowEquityInsurance,
@@ -102,13 +105,13 @@ export class CalculatorService {
     const diff = this.monthDiff(rule.from, month);
     if (diff < 0) return false;
     switch (rule.frequency) {
-      case 'jednorazowo':
+      case PrepaymentFrequency.ONE_TIME:
         return diff === 0;
-      case 'co miesiąc':
+      case PrepaymentFrequency.MONTHLY:
         return true;
-      case 'co kwartał':
+      case PrepaymentFrequency.QUARTERLY:
         return diff % 3 === 0;
-      case 'co rok':
+      case PrepaymentFrequency.YEARLY:
         return diff % 12 === 0;
       default:
         return false;
@@ -174,7 +177,8 @@ export class CalculatorService {
       const diffFromStart = this.monthDiff(pi.from, date);
       if (diffFromStart >= 0) {
         const shouldCharge =
-          pi.frequency === 'co miesiąc' || (pi.frequency === 'co rok' && diffFromStart % 12 === 0);
+          pi.frequency === InsuranceFrequency.MONTHLY ||
+          (pi.frequency === InsuranceFrequency.YEARLY && diffFromStart % 12 === 0);
         if (shouldCharge) {
           const base = this.getInsuranceBase(
             pi.calcMethod,
@@ -183,7 +187,9 @@ export class CalculatorService {
             saldo,
           );
           const amount =
-            pi.calcMethod === 'znam kwotę' ? pi.value : this.round2((base * pi.value) / 100);
+            pi.calcMethod === InsuranceCalcMethod.FIXED_AMOUNT
+              ? pi.value
+              : this.round2((base * pi.value) / 100);
           cost = this.round2(cost + amount);
         }
       }
@@ -195,15 +201,17 @@ export class CalculatorService {
       const diffFromStart = this.monthDiff(li.from, date);
       if (diffFromStart >= 0) {
         const shouldCharge =
-          li.frequency === 'jednorazowo'
+          li.frequency === InsuranceFrequency.ONE_TIME
             ? diffFromStart === 0
-            : li.frequency === 'co miesiąc'
+            : li.frequency === InsuranceFrequency.MONTHLY
               ? true
-              : diffFromStart % 12 === 0; // co rok
+              : diffFromStart % 12 === 0;
         if (shouldCharge) {
           const base = this.getInsuranceBaseNoProperty(li.calcMethod, inputs.loanAmount, saldo);
           const amount =
-            li.calcMethod === 'znam kwotę' ? li.value : this.round2((base * li.value) / 100);
+            li.calcMethod === LifeInsuranceCalcMethod.FIXED_AMOUNT
+              ? li.value
+              : this.round2((base * li.value) / 100);
           cost = this.round2(cost + amount);
         }
       }
@@ -215,15 +223,17 @@ export class CalculatorService {
       const diffFromStart = this.monthDiff(jl.from, date);
       if (diffFromStart >= 0) {
         const shouldCharge =
-          jl.frequency === 'jednorazowo'
+          jl.frequency === InsuranceFrequency.ONE_TIME
             ? diffFromStart === 0
-            : jl.frequency === 'co miesiąc'
+            : jl.frequency === InsuranceFrequency.MONTHLY
               ? true
               : diffFromStart % 12 === 0;
         if (shouldCharge) {
           const base = this.getInsuranceBaseNoProperty(jl.calcMethod, inputs.loanAmount, saldo);
           const amount =
-            jl.calcMethod === 'znam kwotę' ? jl.value : this.round2((base * jl.value) / 100);
+            jl.calcMethod === LifeInsuranceCalcMethod.FIXED_AMOUNT
+              ? jl.value
+              : this.round2((base * jl.value) / 100);
           cost = this.round2(cost + amount);
         }
       }
@@ -236,15 +246,17 @@ export class CalculatorService {
       const diffFromStart = this.monthDiff(ac.from, date);
       if (diffFromStart < 0) continue;
       const shouldCharge =
-        ac.frequency === 'jednorazowo'
+        ac.frequency === InsuranceFrequency.ONE_TIME
           ? diffFromStart === 0
-          : ac.frequency === 'co miesiąc'
+          : ac.frequency === InsuranceFrequency.MONTHLY
             ? true
             : diffFromStart % 12 === 0;
       if (shouldCharge) {
         const base = this.getInsuranceBaseNoProperty(ac.calcMethod, inputs.loanAmount, saldo);
         const amount =
-          ac.calcMethod === 'znam kwotę' ? ac.value : this.round2((base * ac.value) / 100);
+          ac.calcMethod === LifeInsuranceCalcMethod.FIXED_AMOUNT
+            ? ac.value
+            : this.round2((base * ac.value) / 100);
         cost = this.round2(cost + amount);
       }
     }
@@ -259,11 +271,11 @@ export class CalculatorService {
     saldo: number,
   ): number {
     switch (method) {
-      case '% wartości nieruchomości':
+      case InsuranceCalcMethod.PCT_PROPERTY_VALUE:
         return propertyValue;
-      case '% kwoty kredytu':
+      case InsuranceCalcMethod.PCT_LOAN_AMOUNT:
         return loanAmount;
-      case '% salda kredytu':
+      case InsuranceCalcMethod.PCT_BALANCE:
         return saldo;
       default:
         return 0;
@@ -276,9 +288,9 @@ export class CalculatorService {
     saldo: number,
   ): number {
     switch (method) {
-      case '% kwoty kredytu':
+      case LifeInsuranceCalcMethod.PCT_LOAN_AMOUNT:
         return loanAmount;
-      case '% salda kredytu':
+      case LifeInsuranceCalcMethod.PCT_BALANCE:
         return saldo;
       default:
         return 0;
@@ -331,7 +343,7 @@ export class CalculatorService {
     );
     const fallbackPeriod: RatePeriod = {
       from: inputs.startDate,
-      rateType: 'zmienna',
+      rateType: RateType.VARIABLE,
       nominalRate: 9,
       wibor: 7,
       margin: 2,
@@ -348,7 +360,7 @@ export class CalculatorService {
     };
 
     const getBaseEffectiveRate = (period: RatePeriod): number =>
-      period.rateType === 'zmienna'
+      period.rateType === RateType.VARIABLE
         ? (Number(period.wibor) || 0) + (Number(period.margin) || 0)
         : Number(period.nominalRate) || 0;
 
@@ -359,11 +371,11 @@ export class CalculatorService {
     const initialI = this.monthlyRate(initialBaseRate);
 
     const prepaymentRules = (inputs.prepaymentRules ?? [])
-      .filter((r) => r?.from && (r?.frequency === 'jednorazowo' || !!r?.to))
+      .filter((r) => r?.from && (r?.frequency === PrepaymentFrequency.ONE_TIME || !!r?.to))
       .map((r) => ({
         frequency: r.frequency,
         from: r.from,
-        to: r.frequency === 'jednorazowo' ? r.from : r.to || r.from,
+        to: r.frequency === PrepaymentFrequency.ONE_TIME ? r.from : r.to || r.from,
         amount: this.asNonNegativeNumber(r.amount),
         effect: r.effect,
       }));
@@ -416,7 +428,7 @@ export class CalculatorService {
       // Odroczone przeliczenie raty po transzy z poprzedniego miesiąca
       if (needsRateRecalcAfterTranche && !inGrace && remainingAmortMonths > 0) {
         needsRateRecalcAfterTranche = false;
-        if (inputs.installmentType === 'rowne') {
+        if (inputs.installmentType === InstallmentType.EQUAL) {
           equalRate = this.annuityPayment(saldo, iCurrent, Math.max(1, remainingAmortMonths));
         } else {
           decreasingCapitalPart = this.round2(saldo / Math.max(1, remainingAmortMonths));
@@ -427,7 +439,7 @@ export class CalculatorService {
       if (period !== prevPeriod) {
         prevPeriod = period;
         if (!inGrace && remainingAmortMonths > 0) {
-          if (inputs.installmentType === 'rowne') {
+          if (inputs.installmentType === InstallmentType.EQUAL) {
             equalRate = this.annuityPayment(saldo, iCurrent, remainingAmortMonths);
           } else {
             decreasingCapitalPart = this.round2(saldo / remainingAmortMonths);
@@ -451,7 +463,7 @@ export class CalculatorService {
       if (inGrace || remainingAmortMonths <= 0) {
         capital = 0;
         baseRate = interest;
-      } else if (inputs.installmentType === 'rowne') {
+      } else if (inputs.installmentType === InstallmentType.EQUAL) {
         const planned =
           equalRate > 0 ? equalRate : this.annuityPayment(saldo, iCurrent, remainingAmortMonths);
         capital = this.round2(planned - interest);
@@ -483,7 +495,7 @@ export class CalculatorService {
       for (const rule of prepaymentRules) {
         const amount = this.prepaymentFromRule(date, rule);
         if (amount <= 0) continue;
-        if (rule.effect === 'niższa rata') {
+        if (rule.effect === PrepaymentEffect.LOWER_INSTALLMENT) {
           prepaymentLower = this.round2(prepaymentLower + amount);
         } else {
           prepaymentShorten = this.round2(prepaymentShorten + amount);
@@ -497,7 +509,7 @@ export class CalculatorService {
         const targetRate = this.asNonNegativeNumber(targetInstallmentRule.targetRate);
         const targetPrepayment = this.round2(Math.max(0, targetRate - baseRate));
         if (targetPrepayment > 0) {
-          if (targetInstallmentRule.effect === 'niższa rata') {
+          if (targetInstallmentRule.effect === PrepaymentEffect.LOWER_INSTALLMENT) {
             prepaymentLower = this.round2(prepaymentLower + targetPrepayment);
           } else {
             prepaymentShorten = this.round2(prepaymentShorten + targetPrepayment);
@@ -541,14 +553,14 @@ export class CalculatorService {
         if (saldo <= 0) {
           remainingAmortMonths = 0;
         } else if (hasLowerRatePrepayment) {
-          if (inputs.installmentType === 'rowne') {
+          if (inputs.installmentType === InstallmentType.EQUAL) {
             equalRate = this.annuityPayment(saldo, iCurrent, Math.max(1, remainingAmortMonths));
           } else {
             decreasingCapitalPart = this.round2(saldo / remainingAmortMonths);
           }
         }
       } else if (inGrace && hasLowerRatePrepayment && remainingAmortMonths > 0) {
-        if (inputs.installmentType === 'rowne') {
+        if (inputs.installmentType === InstallmentType.EQUAL) {
           equalRate = this.annuityPayment(saldo, iCurrent, Math.max(1, remainingAmortMonths));
         } else {
           decreasingCapitalPart = saldo / Math.max(1, remainingAmortMonths);

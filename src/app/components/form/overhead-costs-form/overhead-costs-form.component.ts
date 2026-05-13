@@ -4,6 +4,9 @@ import { map } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';
 import { InsuranceCalcMethod, InsuranceFrequency, LifeInsuranceCalcMethod } from '../../../model';
 import { FormService } from '../../../services/form/form';
+import { InsuranceFrequencyLabelPipe } from '../../../pipes/insurance-frequency-label/insurance-frequency-label.pipe';
+import { InsuranceCalcMethodLabelPipe } from '../../../pipes/insurance-calc-method-label/insurance-calc-method-label.pipe';
+import { LifeInsuranceCalcMethodLabelPipe } from '../../../pipes/life-insurance-calc-method-label/life-insurance-calc-method-label.pipe';
 import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
 import { SectionComponent } from '../../ui/section/section.component';
 import { FieldComponent } from '../../ui/field/field.component';
@@ -28,6 +31,9 @@ import { CardsGroupComponent } from '../../ui/cards-group/cards-group.component'
     BtnAddComponent,
     CardComponent,
     CardsGroupComponent,
+    InsuranceFrequencyLabelPipe,
+    InsuranceCalcMethodLabelPipe,
+    LifeInsuranceCalcMethodLabelPipe,
   ],
   templateUrl: './overhead-costs-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,23 +41,10 @@ import { CardsGroupComponent } from '../../ui/cards-group/cards-group.component'
 export class OverheadCostsFormComponent {
   private formService = inject(FormService);
 
-  readonly insuranceFrequencyOptions: InsuranceFrequency[] = [
-    'co rok',
-    'co miesiąc',
-    'jednorazowo',
-  ];
-  readonly propertyInsFrequencyOptions: ('co rok' | 'co miesiąc')[] = ['co rok', 'co miesiąc'];
-  readonly propertyInsCalcOptions: InsuranceCalcMethod[] = [
-    '% wartości nieruchomości',
-    '% kwoty kredytu',
-    '% salda kredytu',
-    'znam kwotę',
-  ];
-  readonly lifeInsCalcOptions: LifeInsuranceCalcMethod[] = [
-    '% kwoty kredytu',
-    '% salda kredytu',
-    'znam kwotę',
-  ];
+  readonly insuranceFrequencyOptions = Object.values(InsuranceFrequency);
+  readonly propertyInsFrequencyOptions = [InsuranceFrequency.YEARLY, InsuranceFrequency.MONTHLY];
+  readonly propertyInsCalcOptions = Object.values(InsuranceCalcMethod);
+  readonly lifeInsCalcOptions = Object.values(LifeInsuranceCalcMethod);
 
   get section() {
     return this.formService.overheadCostsSection;
@@ -84,23 +77,32 @@ export class OverheadCostsFormComponent {
   });
 
   get propInsSuffix(): string {
-    return this.form?.get('propInsCalcMethod')?.value === 'znam kwotę' ? 'zł' : '%';
+    return this.form?.get('propInsCalcMethod')?.value === InsuranceCalcMethod.FIXED_AMOUNT
+      ? 'zł'
+      : '%';
   }
   get propInsDecimals(): number {
-    return this.form?.get('propInsCalcMethod')?.value === 'znam kwotę' ? 2 : 4;
+    return this.form?.get('propInsCalcMethod')?.value === InsuranceCalcMethod.FIXED_AMOUNT ? 2 : 4;
   }
   get lifeInsSuffix(): string {
-    return this.form?.get('lifeInsCalcMethod')?.value === 'znam kwotę' ? 'zł' : '%';
+    return this.form?.get('lifeInsCalcMethod')?.value === LifeInsuranceCalcMethod.FIXED_AMOUNT
+      ? 'zł'
+      : '%';
   }
   get lifeInsDecimals(): number {
-    return this.form?.get('lifeInsCalcMethod')?.value === 'znam kwotę' ? 2 : 5;
+    return this.form?.get('lifeInsCalcMethod')?.value === LifeInsuranceCalcMethod.FIXED_AMOUNT
+      ? 2
+      : 5;
   }
   get jobLossInsSuffix(): string {
-    return this.form?.get('jobLossInsCalcMethod')?.value === 'znam kwotę' ? 'zł' : '%';
+    return this.form?.get('jobLossInsCalcMethod')?.value === LifeInsuranceCalcMethod.FIXED_AMOUNT
+      ? 'zł'
+      : '%';
   }
 
   getAdditionalCostSuffix(index: number): string {
-    return this.additionalCostsArray.at(index).get('calcMethod')?.value === 'znam kwotę'
+    return this.additionalCostsArray.at(index).get('calcMethod')?.value ===
+      LifeInsuranceCalcMethod.FIXED_AMOUNT
       ? 'zł'
       : '%';
   }

@@ -12,6 +12,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { startWith } from 'rxjs';
 import {
+  InsuranceCalcMethod,
+  InsuranceFrequency,
+  LifeInsuranceCalcMethod,
   MortgageInputs,
   MortgageResults,
   OverheadCostsInputs,
@@ -96,11 +99,11 @@ export class LayoutComponent {
 
       const prepaymentRules = prepaymentsIncluded
         ? ((v.prepayments.fields.prepaymentRules ?? []) as any[])
-            .filter((r) => r && r.from && (r.frequency === 'jednorazowo' || r.to))
+            .filter((r) => r && r.from && (r.frequency === PrepaymentFrequency.ONE_TIME || r.to))
             .map((r) => ({
               frequency: r.frequency as PrepaymentFrequency,
               from: r.from,
-              to: r.frequency === 'jednorazowo' ? r.from : r.to || r.from,
+              to: r.frequency === PrepaymentFrequency.ONE_TIME ? r.from : r.to || r.from,
               amount: Number(r.amount) || 0,
               effect: r.effect as PrepaymentEffect,
             }))
@@ -174,23 +177,23 @@ export class LayoutComponent {
             appraisalFee: 0,
             bridgeInsurance: { rateIncrease: 0, months: 0 },
             propertyInsurance: {
-              frequency: 'co rok' as any,
-              calcMethod: '% wartości nieruchomości' as any,
+              frequency: InsuranceFrequency.YEARLY,
+              calcMethod: InsuranceCalcMethod.PCT_PROPERTY_VALUE,
               value: 0,
               from: nextMonthStr(),
               to: nextMonthStr(),
             },
             lowEquityInsurance: { rateIncrease: 0 },
             lifeInsurance: {
-              frequency: 'co rok' as any,
-              calcMethod: '% kwoty kredytu' as any,
+              frequency: InsuranceFrequency.YEARLY,
+              calcMethod: LifeInsuranceCalcMethod.PCT_LOAN_AMOUNT,
               value: 0,
               from: nextMonthStr(),
               to: nextMonthStr(),
             },
             jobLossInsurance: {
-              frequency: 'jednorazowo' as any,
-              calcMethod: '% kwoty kredytu' as any,
+              frequency: InsuranceFrequency.ONE_TIME,
+              calcMethod: LifeInsuranceCalcMethod.PCT_LOAN_AMOUNT,
               value: 0,
               from: nextMonthStr(),
             },
@@ -227,13 +230,14 @@ export class LayoutComponent {
               targetRate: Number(rataDocelowa.targetRate) || 0,
               from: rataDocelowa.from || nextMonthStr(),
               to: rataDocelowa.to || nextMonthStr(),
-              effect: (rataDocelowa.effect as PrepaymentEffect) || 'niższa rata',
+              effect:
+                (rataDocelowa.effect as PrepaymentEffect) || PrepaymentEffect.LOWER_INSTALLMENT,
             }
           : {
               targetRate: 0,
               from: nextMonthStr(),
               to: nextMonthStr(),
-              effect: 'niższa rata',
+              effect: PrepaymentEffect.LOWER_INSTALLMENT,
             },
         earlyRepaymentCommission: prepaymentsIncluded
           ? {

@@ -1,13 +1,15 @@
 import { Component, input, ChangeDetectionStrategy, inject, computed } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { MortgageResults } from '../../../model/mortgage.model';
+import { InstallmentType, MortgageResults, RateType } from '../../../model/mortgage.model';
 import { FormService } from '../../../services/form/form';
+import { InstallmentTypeLabelPipe } from '../../../pipes/installment-type-label/installment-type-label.pipe';
+import { RateTypeLabelPipe } from '../../../pipes/rate-type-label/rate-type-label.pipe';
 import { KpiComponent } from '../../ui/kpi/kpi.component';
 
 @Component({
   selector: 'app-results-summary',
   standalone: true,
-  imports: [DecimalPipe, KpiComponent],
+  imports: [DecimalPipe, KpiComponent, InstallmentTypeLabelPipe, RateTypeLabelPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './results-summary.component.html',
 })
@@ -19,14 +21,14 @@ export class ResultsSummaryComponent {
     maximumFractionDigits: 2,
   });
 
-  get installmentTypeLabel(): string {
-    const v = this.formService.form.controls.basicData.controls.installmentType.value;
-    return v === 'malejace' ? 'malejące' : 'równe';
+  get installmentType(): InstallmentType {
+    return this.formService.form.controls.basicData.controls.installmentType.value;
   }
 
-  get rateTypeLabel(): string {
-    const rp = this.formService.ratePeriodsArray.at(0);
-    return rp?.value?.rateType === 'stala' ? 'stałe' : 'zmienne';
+  get rateType(): RateType {
+    return (
+      (this.formService.ratePeriodsArray.at(0)?.value?.rateType as RateType) ?? RateType.VARIABLE
+    );
   }
 
   get isPrepaymentIncluded(): boolean {

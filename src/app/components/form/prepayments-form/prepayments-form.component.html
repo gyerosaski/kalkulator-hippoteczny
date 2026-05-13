@@ -21,10 +21,11 @@
                 <ui-select
                   formControlName="frequency"
                   [options]="prepaymentFrequencyOptions"
+                  [labels]="prepaymentFrequencyOptions | prepaymentFrequencyLabel"
                   (valueChange)="onNadplataFrequencyChanged($index)"
                 />
               </ui-field>
-              @if (rule.get('frequency')?.value === 'jednorazowo') {
+              @if (rule.get('frequency')?.value === PrepaymentFrequency.ONE_TIME) {
                 <ui-field label="Data nadpłaty">
                   <ui-month-picker
                     formControlName="from"
@@ -46,7 +47,11 @@
                 <ui-number-input formControlName="amount" suffix="zł" [decimals]="2" />
               </ui-field>
               <ui-field label="Skutek nadpłaty">
-                <ui-select formControlName="effect" [options]="prepaymentEffectOptions" />
+                <ui-select
+                  formControlName="effect"
+                  [options]="prepaymentEffectOptions"
+                  [labels]="prepaymentEffectOptions | prepaymentEffectLabel"
+                />
               </ui-field>
             </div>
           </ui-card>
@@ -67,7 +72,11 @@
           <ui-month-picker formControlName="to" />
         </ui-field>
         <ui-field label="Skutek nadpłaty">
-          <ui-select formControlName="effect" [options]="prepaymentEffectOptions" />
+          <ui-select
+            formControlName="effect"
+            [options]="prepaymentEffectOptions"
+            [labels]="prepaymentEffectOptions | prepaymentEffectLabel"
+          />
         </ui-field>
       </div>
     </ui-card>

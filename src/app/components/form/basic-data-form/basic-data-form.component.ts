@@ -2,6 +2,10 @@ import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormService } from '../../../services/form/form';
 import { CalculatorService } from '../../../services/calculator/calculator.service';
+import { InstallmentType, LoanPeriodUnit, RateType } from '../../../model/mortgage.model';
+import { InstallmentTypeLabelPipe } from '../../../pipes/installment-type-label/installment-type-label.pipe';
+import { RateTypeLabelPipe } from '../../../pipes/rate-type-label/rate-type-label.pipe';
+import { LoanPeriodUnitLabelPipe } from '../../../pipes/loan-period-unit-label/loan-period-unit-label.pipe';
 import { SectionComponent } from '../../ui/section/section.component';
 import { FieldComponent } from '../../ui/field/field.component';
 import { NumberInputComponent } from '../../ui/number-input/number-input.component';
@@ -24,6 +28,9 @@ import { CardsGroupComponent } from '../../ui/cards-group/cards-group.component'
     BtnAddComponent,
     CardComponent,
     CardsGroupComponent,
+    InstallmentTypeLabelPipe,
+    RateTypeLabelPipe,
+    LoanPeriodUnitLabelPipe,
   ],
   templateUrl: './basic-data-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,7 +38,16 @@ import { CardsGroupComponent } from '../../ui/cards-group/cards-group.component'
 export class BasicDataFormComponent {
   private readonly formService = inject(FormService);
   private readonly calculatorService = inject(CalculatorService);
-  loanPeriodUnit: 'lata' | 'miesiące' = 'lata';
+
+  protected readonly InstallmentType = InstallmentType;
+  protected readonly RateType = RateType;
+  protected readonly LoanPeriodUnit = LoanPeriodUnit;
+
+  readonly installmentTypeOptions = Object.values(InstallmentType);
+  readonly rateTypeOptions = Object.values(RateType);
+  readonly loanPeriodUnitOptions = Object.values(LoanPeriodUnit);
+
+  loanPeriodUnit: LoanPeriodUnit = LoanPeriodUnit.YEARS;
 
   get form() {
     return this.formService.form;
@@ -47,17 +63,20 @@ export class BasicDataFormComponent {
 
   get loanPeriodDisplayValue(): number {
     const months = this.basicData.controls.loanPeriod.value;
-    return this.loanPeriodUnit === 'lata' ? Math.round((months / 12) * 100) / 100 : months;
+    return this.loanPeriodUnit === LoanPeriodUnit.YEARS
+      ? Math.round((months / 12) * 100) / 100
+      : months;
   }
 
   onLoanPeriodValueChanged(val: number): void {
-    const months = this.loanPeriodUnit === 'lata' ? Math.round(val * 12) : Math.round(val);
+    const months =
+      this.loanPeriodUnit === LoanPeriodUnit.YEARS ? Math.round(val * 12) : Math.round(val);
     this.basicData.controls.loanPeriod.setValue(months);
     this.form.updateValueAndValidity();
   }
 
   onLoanPeriodUnitChanged(unit: string): void {
-    this.loanPeriodUnit = unit as 'lata' | 'miesiące';
+    this.loanPeriodUnit = unit as LoanPeriodUnit;
   }
 
   onLtvChanged() {

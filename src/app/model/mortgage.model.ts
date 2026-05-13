@@ -1,16 +1,32 @@
-export type InstallmentType = 'rowne' | 'malejace';
-export type RateType = 'zmienna' | 'stala';
+export enum InstallmentType {
+  EQUAL = 'EQUAL',
+  DECREASING = 'DECREASING',
+}
+
+export enum RateType {
+  VARIABLE = 'VARIABLE',
+  FIXED = 'FIXED',
+}
 
 export interface RatePeriod {
   from: string; // 'YYYY-MM' - start date for this rate period
   rateType: RateType;
-  nominalRate: number; // % (used when rateType === 'stala')
-  wibor: number; // % (used when rateType === 'zmienna')
-  margin: number; // % (used when rateType === 'zmienna')
+  nominalRate: number; // % (used when rateType === RateType.FIXED)
+  wibor: number; // % (used when rateType === RateType.VARIABLE)
+  margin: number; // % (used when rateType === RateType.VARIABLE)
 }
 
-export type PrepaymentFrequency = 'jednorazowo' | 'co miesiąc' | 'co kwartał' | 'co rok';
-export type PrepaymentEffect = 'niższa rata' | 'skrócenie okresu';
+export enum PrepaymentFrequency {
+  ONE_TIME = 'ONE_TIME',
+  MONTHLY = 'MONTHLY',
+  QUARTERLY = 'QUARTERLY',
+  YEARLY = 'YEARLY',
+}
+
+export enum PrepaymentEffect {
+  LOWER_INSTALLMENT = 'LOWER_INSTALLMENT',
+  SHORTEN_PERIOD = 'SHORTEN_PERIOD',
+}
 
 export interface PrepaymentRule {
   frequency: PrepaymentFrequency;
@@ -38,13 +54,29 @@ export interface Tranche {
   disbursementFee?: number; // PLN (dla transz dodatkowych)
 }
 
-export type InsuranceFrequency = 'co rok' | 'co miesiąc' | 'jednorazowo';
-export type InsuranceCalcMethod =
-  | '% wartości nieruchomości'
-  | '% kwoty kredytu'
-  | '% salda kredytu'
-  | 'znam kwotę';
-export type LifeInsuranceCalcMethod = '% kwoty kredytu' | '% salda kredytu' | 'znam kwotę';
+export enum InsuranceFrequency {
+  YEARLY = 'YEARLY',
+  MONTHLY = 'MONTHLY',
+  ONE_TIME = 'ONE_TIME',
+}
+
+export enum InsuranceCalcMethod {
+  PCT_PROPERTY_VALUE = 'PCT_PROPERTY_VALUE',
+  PCT_LOAN_AMOUNT = 'PCT_LOAN_AMOUNT',
+  PCT_BALANCE = 'PCT_BALANCE',
+  FIXED_AMOUNT = 'FIXED_AMOUNT',
+}
+
+export enum LifeInsuranceCalcMethod {
+  PCT_LOAN_AMOUNT = 'PCT_LOAN_AMOUNT',
+  PCT_BALANCE = 'PCT_BALANCE',
+  FIXED_AMOUNT = 'FIXED_AMOUNT',
+}
+
+export enum LoanPeriodUnit {
+  YEARS = 'YEARS',
+  MONTHS = 'MONTHS',
+}
 
 export interface BridgeInsurance {
   rateIncrease: number; // % podwyższenia oprocentowania
@@ -52,7 +84,7 @@ export interface BridgeInsurance {
 }
 
 export interface PropertyInsurance {
-  frequency: 'co rok' | 'co miesiąc';
+  frequency: InsuranceFrequency;
   calcMethod: InsuranceCalcMethod;
   value: number; // % lub kwota zł
   from: string; // 'YYYY-MM'

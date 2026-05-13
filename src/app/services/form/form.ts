@@ -96,7 +96,12 @@ function crossFieldValidator(control: import('@angular/forms').AbstractControl) 
 
   if (prepaymentsIncluded) {
     for (const rule of prepaymentRules) {
-      if (rule.frequency !== 'jednorazowo' && rule.from && rule.to && rule.to < rule.from) {
+      if (
+        rule.frequency !== PrepaymentFrequency.ONE_TIME &&
+        rule.from &&
+        rule.to &&
+        rule.to < rule.from
+      ) {
         errors['prepaymentDateRangeInvalid'] = true;
       }
       if ((Number(rule.amount) || 0) < 0) {
@@ -192,7 +197,9 @@ export class FormService {
     const from = initial?.from ?? (this.form?.controls.basicData?.get('startDate')?.value || ym());
     return new FormGroup<RatePeriodFormGroup>({
       from: new FormControl(from, { nonNullable: true, validators: [Validators.required] }),
-      rateType: new FormControl<RateType>(initial?.rateType ?? 'zmienna', { nonNullable: true }),
+      rateType: new FormControl<RateType>(initial?.rateType ?? RateType.VARIABLE, {
+        nonNullable: true,
+      }),
       nominalRate: new FormControl(initial?.nominalRate ?? 9.0, {
         nonNullable: true,
         validators: [Validators.min(0), Validators.max(50)],
@@ -232,7 +239,9 @@ export class FormService {
         nonNullable: true,
         validators: [Validators.required],
       }),
-      installmentType: new FormControl<InstallmentType>('rowne', { nonNullable: true }),
+      installmentType: new FormControl<InstallmentType>(InstallmentType.EQUAL, {
+        nonNullable: true,
+      }),
       ratePeriods: new FormArray([this.createRatePeriodGroup({ from: today })]) as FormArray<
         FormGroup<RatePeriodFormGroup>
       >,
@@ -270,7 +279,7 @@ export class FormService {
                 nonNullable: true,
                 validators: [Validators.required],
               }),
-              effect: new FormControl<PrepaymentEffect>('niższa rata', {
+              effect: new FormControl<PrepaymentEffect>(PrepaymentEffect.LOWER_INSTALLMENT, {
                 nonNullable: true,
                 validators: [Validators.required],
               }),
@@ -305,10 +314,15 @@ export class FormService {
         validators: [Validators.min(0)],
       }),
       bridgeMonths: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
-      propInsFrequency: new FormControl<'co rok' | 'co miesiąc'>('co rok', { nonNullable: true }),
-      propInsCalcMethod: new FormControl<InsuranceCalcMethod>('% wartości nieruchomości', {
+      propInsFrequency: new FormControl<InsuranceFrequency>(InsuranceFrequency.YEARLY, {
         nonNullable: true,
       }),
+      propInsCalcMethod: new FormControl<InsuranceCalcMethod>(
+        InsuranceCalcMethod.PCT_PROPERTY_VALUE,
+        {
+          nonNullable: true,
+        },
+      ),
       propInsValue: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
       propInsFrom: new FormControl(nextMonthStr(), { nonNullable: true }),
       propInsTo: new FormControl(endOfLoanDate(), { nonNullable: true }),
@@ -316,19 +330,27 @@ export class FormService {
         nonNullable: true,
         validators: [Validators.min(0)],
       }),
-      lifeInsFrequency: new FormControl<InsuranceFrequency>('co rok', { nonNullable: true }),
-      lifeInsCalcMethod: new FormControl<LifeInsuranceCalcMethod>('% kwoty kredytu', {
+      lifeInsFrequency: new FormControl<InsuranceFrequency>(InsuranceFrequency.YEARLY, {
         nonNullable: true,
       }),
+      lifeInsCalcMethod: new FormControl<LifeInsuranceCalcMethod>(
+        LifeInsuranceCalcMethod.PCT_LOAN_AMOUNT,
+        {
+          nonNullable: true,
+        },
+      ),
       lifeInsValue: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
       lifeInsFrom: new FormControl(nextMonthStr(), { nonNullable: true }),
       lifeInsTo: new FormControl(endOfLoanDate(), { nonNullable: true }),
-      jobLossInsFrequency: new FormControl<InsuranceFrequency>('jednorazowo', {
+      jobLossInsFrequency: new FormControl<InsuranceFrequency>(InsuranceFrequency.ONE_TIME, {
         nonNullable: true,
       }),
-      jobLossInsCalcMethod: new FormControl<LifeInsuranceCalcMethod>('% kwoty kredytu', {
-        nonNullable: true,
-      }),
+      jobLossInsCalcMethod: new FormControl<LifeInsuranceCalcMethod>(
+        LifeInsuranceCalcMethod.PCT_LOAN_AMOUNT,
+        {
+          nonNullable: true,
+        },
+      ),
       jobLossInsValue: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
       jobLossInsFrom: new FormControl(nextMonthStr(), { nonNullable: true }),
       additionalCosts: new FormArray([this.createAdditionalCostGroup()]),
@@ -366,9 +388,10 @@ export class FormService {
   createPrepaymentRuleGroup(
     initial: Partial<PrepaymentRule> = {},
   ): FormGroup<PrepaymentRuleFormGroup> {
-    const frequency = initial.frequency ?? 'jednorazowo';
+    const frequency = initial.frequency ?? PrepaymentFrequency.ONE_TIME;
     const from = initial.from ?? nextMonthStr();
-    const to = frequency === 'jednorazowo' ? from : (initial.to ?? addMonthsStr(from, 12));
+    const to =
+      frequency === PrepaymentFrequency.ONE_TIME ? from : (initial.to ?? addMonthsStr(from, 12));
     return new FormGroup<PrepaymentRuleFormGroup>({
       frequency: new FormControl<PrepaymentFrequency>(frequency, {
         nonNullable: true,
@@ -380,18 +403,25 @@ export class FormService {
         nonNullable: true,
         validators: [Validators.min(0)],
       }),
-      effect: new FormControl<PrepaymentEffect>(initial.effect ?? 'niższa rata', {
-        nonNullable: true,
-        validators: [Validators.required],
-      }),
+      effect: new FormControl<PrepaymentEffect>(
+        initial.effect ?? PrepaymentEffect.LOWER_INSTALLMENT,
+        {
+          nonNullable: true,
+          validators: [Validators.required],
+        },
+      ),
     });
   }
 
   createAdditionalCostGroup(): FormGroup<AdditionalCostFormGroup> {
     return new FormGroup<AdditionalCostFormGroup>({
       name: new FormControl('', { nonNullable: true }),
-      frequency: new FormControl<InsuranceFrequency>('jednorazowo', { nonNullable: true }),
-      calcMethod: new FormControl<LifeInsuranceCalcMethod>('znam kwotę', { nonNullable: true }),
+      frequency: new FormControl<InsuranceFrequency>(InsuranceFrequency.ONE_TIME, {
+        nonNullable: true,
+      }),
+      calcMethod: new FormControl<LifeInsuranceCalcMethod>(LifeInsuranceCalcMethod.FIXED_AMOUNT, {
+        nonNullable: true,
+      }),
       value: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
       from: new FormControl(nextMonthStr(), { nonNullable: true }),
     });
@@ -474,9 +504,9 @@ export class FormService {
     const from = ruleGroup.controls.from.value;
     const toControl = ruleGroup.controls.to;
 
-    if (frequency === 'jednorazowo' && from) {
+    if (frequency === PrepaymentFrequency.ONE_TIME && from) {
       toControl.setValue(from);
-    } else if (frequency !== 'jednorazowo' && !toControl.value && from) {
+    } else if (frequency !== PrepaymentFrequency.ONE_TIME && !toControl.value && from) {
       toControl.setValue(addMonthsStr(from, 12));
     }
 
@@ -490,7 +520,7 @@ export class FormService {
     const frequency = ruleGroup.controls.frequency.value;
     const from = ruleGroup.controls.from.value;
     const toControl = ruleGroup.controls.to;
-    if (frequency === 'jednorazowo' && from && toControl.value !== from) {
+    if (frequency === PrepaymentFrequency.ONE_TIME && from && toControl.value !== from) {
       toControl.setValue(from);
     }
     this.form.updateValueAndValidity();
@@ -505,7 +535,7 @@ export class FormService {
         loanPeriod: 20 * 12,
         startDate: ym(),
         capitalStartDate: nextMonthStr(),
-        installmentType: 'rowne',
+        installmentType: InstallmentType.EQUAL,
       },
       prepayments: {
         fields: {
@@ -513,7 +543,7 @@ export class FormService {
             targetRate: 0,
             from: nextMonthStr(),
             to: addMonthsStr(nextMonthStr(), 12),
-            effect: 'niższa rata',
+            effect: PrepaymentEffect.LOWER_INSTALLMENT,
           },
           prowizjaWczesniejszaSplata: {
             ratePct: 0,
@@ -527,7 +557,7 @@ export class FormService {
       new FormArray([
         this.createRatePeriodGroup({
           from: ym(),
-          rateType: 'zmienna',
+          rateType: RateType.VARIABLE,
           wibor: 7.0,
           margin: 2.0,
           nominalRate: 9.0,
@@ -550,19 +580,19 @@ export class FormService {
       appraisalFee: 400,
       bridgeRateIncrease: 1.2,
       bridgeMonths: 6,
-      propInsFrequency: 'co rok',
-      propInsCalcMethod: '% wartości nieruchomości',
+      propInsFrequency: InsuranceFrequency.YEARLY,
+      propInsCalcMethod: InsuranceCalcMethod.PCT_PROPERTY_VALUE,
       propInsValue: 0.0008,
       propInsFrom: nextMonthStr(),
       propInsTo: endOfLoanDate(),
       lowEquityRateIncrease: 0,
-      lifeInsFrequency: 'co rok',
-      lifeInsCalcMethod: '% kwoty kredytu',
+      lifeInsFrequency: InsuranceFrequency.YEARLY,
+      lifeInsCalcMethod: LifeInsuranceCalcMethod.PCT_LOAN_AMOUNT,
       lifeInsValue: 0,
       lifeInsFrom: nextMonthStr(),
       lifeInsTo: endOfLoanDate(),
-      jobLossInsFrequency: 'jednorazowo',
-      jobLossInsCalcMethod: '% kwoty kredytu',
+      jobLossInsFrequency: InsuranceFrequency.ONE_TIME,
+      jobLossInsCalcMethod: LifeInsuranceCalcMethod.PCT_LOAN_AMOUNT,
       jobLossInsValue: 0,
       jobLossInsFrom: nextMonthStr(),
       promoRateDecrease: 0,

@@ -77,7 +77,8 @@ Dialogs (`src/app/dialogs/`): `SaveCalculationDialogComponent`, `LoadCalculation
 - **Component templates always live in a separate `.html` file** (`templateUrl`) — never use inline `template: \`...\``in the`@Component` decorator.
 - **SVG icons are always separate components** placed in `src/app/components/icons/<icon-name>/`. Never inline SVG markup directly in templates — always use the corresponding icon component (e.g. `<icon-calculator />`). Exception: data-driven chart SVGs (like donut charts with Angular bindings) stay in their own chart components.
 - **Signals** for derived/output state; Reactive Forms for input state.
-- **Locale:** `pl-PL` — all labels, months, and number formats are Polish. Domain terms stay in Polish (`rowne`/`malejace`, `jednorazowo`, `co rok`, etc.).
+- **Locale:** `pl-PL` — all labels, months, and number formats are Polish.
+- **Prefer enums over literal types** — domain string unions must be defined as `enum` with `SCREAMING_SNAKE_CASE` keys and English string values (e.g. `enum PrepaymentFrequency { ONE_TIME = 'ONE_TIME', MONTHLY = 'MONTHLY' }`). Polish display labels are derived exclusively in dedicated pipes located in `src/app/pipes/<enum-name>-label/` — never hardcode Polish strings in components or services. Use `Object.values(SomeEnum)` to build option arrays for `ui-select`/`ui-segmented` and pipe the result to `[labels]`. Expose the enum class in the component as `protected readonly SomeEnum = SomeEnum` when needed for template comparisons.
 - **Strict TypeScript** (`strict: true`, `strictTemplates: true`). No `any`.
 - **Tests use Vitest** (not Karma/Jasmine). `describe`/`it`/`expect` are auto-imported via `vitest/globals`.
 - SCSS for component styles; global styles in `src/styles.scss`.

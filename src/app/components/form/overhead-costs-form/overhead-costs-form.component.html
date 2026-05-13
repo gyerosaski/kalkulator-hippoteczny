@@ -43,10 +43,18 @@
     <ui-card tag="UBEZPIECZENIE NIERUCHOMOŚCI">
       <div class="row row--2">
         <ui-field label="Jak często opłacana jest składka?">
-          <ui-select formControlName="propInsFrequency" [options]="propertyInsFrequencyOptions" />
+          <ui-select
+            formControlName="propInsFrequency"
+            [options]="propertyInsFrequencyOptions"
+            [labels]="propertyInsFrequencyOptions | insuranceFrequencyLabel"
+          />
         </ui-field>
         <ui-field label="Jak wyliczana jest składka?">
-          <ui-select formControlName="propInsCalcMethod" [options]="propertyInsCalcOptions" />
+          <ui-select
+            formControlName="propInsCalcMethod"
+            [options]="propertyInsCalcOptions"
+            [labels]="propertyInsCalcOptions | insuranceCalcMethodLabel"
+          />
         </ui-field>
         <ui-field label="Wartość składki">
           <ui-number-input
@@ -77,10 +85,18 @@
     <ui-card tag="UBEZPIECZENIE NA ŻYCIE">
       <div class="row row--2">
         <ui-field label="Jak często opłacana jest składka?">
-          <ui-select formControlName="lifeInsFrequency" [options]="insuranceFrequencyOptions" />
+          <ui-select
+            formControlName="lifeInsFrequency"
+            [options]="insuranceFrequencyOptions"
+            [labels]="insuranceFrequencyOptions | insuranceFrequencyLabel"
+          />
         </ui-field>
         <ui-field label="Jak wyliczana jest składka?">
-          <ui-select formControlName="lifeInsCalcMethod" [options]="lifeInsCalcOptions" />
+          <ui-select
+            formControlName="lifeInsCalcMethod"
+            [options]="lifeInsCalcOptions"
+            [labels]="lifeInsCalcOptions | lifeInsuranceCalcMethodLabel"
+          />
         </ui-field>
         <ui-field label="Wartość składki">
           <ui-number-input
@@ -103,10 +119,18 @@
     <ui-card tag="UBEZPIECZENIE OD UTRATY PRACY">
       <div class="row row--2">
         <ui-field label="Jak często opłacana jest składka?">
-          <ui-select formControlName="jobLossInsFrequency" [options]="insuranceFrequencyOptions" />
+          <ui-select
+            formControlName="jobLossInsFrequency"
+            [options]="insuranceFrequencyOptions"
+            [labels]="insuranceFrequencyOptions | insuranceFrequencyLabel"
+          />
         </ui-field>
         <ui-field label="Jak wyliczana jest składka?">
-          <ui-select formControlName="jobLossInsCalcMethod" [options]="lifeInsCalcOptions" />
+          <ui-select
+            formControlName="jobLossInsCalcMethod"
+            [options]="lifeInsCalcOptions"
+            [labels]="lifeInsCalcOptions | lifeInsuranceCalcMethodLabel"
+          />
         </ui-field>
         <ui-field label="Wartość składki">
           <ui-number-input
@@ -137,10 +161,18 @@
                 </div>
               </ui-field>
               <ui-field label="Jak często pobierana jest opłata?">
-                <ui-select formControlName="frequency" [options]="insuranceFrequencyOptions" />
+                <ui-select
+                  formControlName="frequency"
+                  [options]="insuranceFrequencyOptions"
+                  [labels]="insuranceFrequencyOptions | insuranceFrequencyLabel"
+                />
               </ui-field>
               <ui-field label="Jak wyliczana jest opłata?">
-                <ui-select formControlName="calcMethod" [options]="lifeInsCalcOptions" />
+                <ui-select
+                  formControlName="calcMethod"
+                  [options]="lifeInsCalcOptions"
+                  [labels]="lifeInsCalcOptions | lifeInsuranceCalcMethodLabel"
+                />
               </ui-field>
               <ui-field label="Kwota">
                 <ui-number-input

@@ -1,6 +1,13 @@
-import { CalculatorService, MortgageInputs, PrepaymentEffect } from './calculator.service';
+import {
+  CalculatorService,
+  InstallmentType,
+  MortgageInputs,
+  PrepaymentEffect,
+  PrepaymentFrequency,
+  RateType,
+} from './calculator.service';
 
-function baseInputs(effect: PrepaymentEffect = 'skrócenie okresu'): MortgageInputs {
+function baseInputs(effect: PrepaymentEffect = PrepaymentEffect.SHORTEN_PERIOD): MortgageInputs {
   return {
     propertyValue: 500_000,
     loanAmount: 300_000,
@@ -8,11 +15,11 @@ function baseInputs(effect: PrepaymentEffect = 'skrócenie okresu'): MortgageInp
     loanPeriod: 20 * 12,
     startDate: '2026-01',
     capitalStartDate: '2026-02',
-    installmentType: 'rowne',
+    installmentType: InstallmentType.EQUAL,
     ratePeriods: [
       {
         from: '2026-01',
-        rateType: 'stala',
+        rateType: RateType.FIXED,
         nominalRate: 8,
         wibor: 0,
         margin: 0,
@@ -20,7 +27,7 @@ function baseInputs(effect: PrepaymentEffect = 'skrócenie okresu'): MortgageInp
     ],
     prepaymentRules: [
       {
-        frequency: 'jednorazowo',
+        frequency: PrepaymentFrequency.ONE_TIME,
         from: '2026-03',
         to: '2026-03',
         amount: 10_000,
@@ -31,7 +38,7 @@ function baseInputs(effect: PrepaymentEffect = 'skrócenie okresu'): MortgageInp
       targetRate: 0,
       from: '2026-01',
       to: '2026-01',
-      effect: 'niższa rata',
+      effect: PrepaymentEffect.LOWER_INSTALLMENT,
     },
     earlyRepaymentCommission: {
       ratePct: 2,
@@ -62,11 +69,11 @@ describe('MortgageCalcService (nadpłaty)', () => {
     const inputs = baseInputs();
     inputs.prepaymentRules = [
       {
-        frequency: 'jednorazowo',
+        frequency: PrepaymentFrequency.ONE_TIME,
         from: '2027-01',
         to: '2027-01',
         amount: 5_000,
-        effect: 'skrócenie okresu',
+        effect: PrepaymentEffect.SHORTEN_PERIOD,
       },
     ];
 
@@ -82,11 +89,11 @@ describe('MortgageCalcService (nadpłaty)', () => {
     const inputs = baseInputs();
     inputs.prepaymentRules = [
       {
-        frequency: 'jednorazowo',
+        frequency: PrepaymentFrequency.ONE_TIME,
         from: '2026-05',
         to: '',
         amount: 7_500,
-        effect: 'skrócenie okresu',
+        effect: PrepaymentEffect.SHORTEN_PERIOD,
       },
     ];
 
@@ -98,8 +105,8 @@ describe('MortgageCalcService (nadpłaty)', () => {
   });
 
   it('dla efektu "niższa rata" powinien obniżyć kolejną ratę względem "skrócenia okresu"', () => {
-    const withLowerRate = service.compute(baseInputs('niższa rata'));
-    const withShorten = service.compute(baseInputs('skrócenie okresu'));
+    const withLowerRate = service.compute(baseInputs(PrepaymentEffect.LOWER_INSTALLMENT));
+    const withShorten = service.compute(baseInputs(PrepaymentEffect.SHORTEN_PERIOD));
 
     const rowAfterEventLower = withLowerRate.schedule.find((r) => r.date === '2026-04');
     const rowAfterEventShorten = withShorten.schedule.find((r) => r.date === '2026-04');
@@ -116,7 +123,7 @@ describe('MortgageCalcService (nadpłaty)', () => {
       targetRate: 3_000,
       from: '2026-02',
       to: '2026-06',
-      effect: 'skrócenie okresu',
+      effect: PrepaymentEffect.SHORTEN_PERIOD,
     };
 
     const result = service.compute(inputs);
@@ -134,7 +141,7 @@ describe('MortgageCalcService (nadpłaty)', () => {
       targetRate: 100,
       from: '2026-02',
       to: '2026-06',
-      effect: 'skrócenie okresu',
+      effect: PrepaymentEffect.SHORTEN_PERIOD,
     };
 
     const result = service.compute(inputs);
@@ -148,8 +155,8 @@ describe('MortgageCalcService (nadpłaty)', () => {
     const inputs = baseInputs();
     inputs.prepaymentRules = [];
     inputs.ratePeriods = [
-      { from: '2026-01', rateType: 'stala', nominalRate: 8, wibor: 0, margin: 0 },
-      { from: '2027-01', rateType: 'stala', nominalRate: 4, wibor: 0, margin: 0 },
+      { from: '2026-01', rateType: RateType.FIXED, nominalRate: 8, wibor: 0, margin: 0 },
+      { from: '2027-01', rateType: RateType.FIXED, nominalRate: 4, wibor: 0, margin: 0 },
     ];
 
     const result = service.compute(inputs);
@@ -170,10 +177,17 @@ function trancheInputs(): MortgageInputs {
     loanPeriod: 20 * 12,
     startDate: '2026-01',
     capitalStartDate: '2026-02',
-    installmentType: 'rowne',
-    ratePeriods: [{ from: '2026-01', rateType: 'stala', nominalRate: 8, wibor: 0, margin: 0 }],
+    installmentType: InstallmentType.EQUAL,
+    ratePeriods: [
+      { from: '2026-01', rateType: RateType.FIXED, nominalRate: 8, wibor: 0, margin: 0 },
+    ],
     prepaymentRules: [],
-    targetInstallmentRule: { targetRate: 0, from: '2026-01', to: '2026-01', effect: 'niższa rata' },
+    targetInstallmentRule: {
+      targetRate: 0,
+      from: '2026-01',
+      to: '2026-01',
+      effect: PrepaymentEffect.LOWER_INSTALLMENT,
+    },
     tranches: [
       { amount: 200_000, date: '2026-01', disbursementFee: 0 },
       { amount: 100_000, date: '2026-04', disbursementFee: 0 },

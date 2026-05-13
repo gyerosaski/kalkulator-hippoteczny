@@ -42,7 +42,8 @@
             (valueChange)="onLoanPeriodValueChanged($event)"
           />
           <ui-segmented
-            [options]="['lata', 'miesiące']"
+            [options]="loanPeriodUnitOptions"
+            [labels]="loanPeriodUnitOptions | loanPeriodUnitLabel"
             [value]="loanPeriodUnit"
             (valueChange)="onLoanPeriodUnitChanged($event)"
             [compact]="true"
@@ -63,8 +64,8 @@
       <ui-field num="7" label="Typ rat">
         <ui-segmented
           formControlName="installmentType"
-          [options]="['rowne', 'malejace']"
-          [labels]="['równe', 'malejące']"
+          [options]="installmentTypeOptions"
+          [labels]="installmentTypeOptions | installmentTypeLabel"
         />
       </ui-field>
     </div>
@@ -91,8 +92,8 @@
             <ui-field label="Stopa" num="8">
               <ui-segmented
                 formControlName="rateType"
-                [options]="['zmienna', 'stala']"
-                [labels]="['zmienna', 'stała']"
+                [options]="rateTypeOptions"
+                [labels]="rateTypeOptions | rateTypeLabel"
               />
             </ui-field>
             <div class="row row--3">
@@ -100,10 +101,12 @@
                 num="9"
                 label="Oprocentowanie"
                 [hint]="
-                  period.get('rateType')?.value === 'zmienna' ? 'WIBOR + Marża' : 'wartość stała'
+                  period.get('rateType')?.value === RateType.VARIABLE
+                    ? 'WIBOR + Marża'
+                    : 'wartość stała'
                 "
               >
-                @if (period.get('rateType')?.value === 'zmienna') {
+                @if (period.get('rateType')?.value === RateType.VARIABLE) {
                   <div class="inp inp--disabled">
                     <input
                       type="text"
@@ -121,7 +124,7 @@
                   <ui-number-input formControlName="nominalRate" suffix="%" [decimals]="2" />
                 }
               </ui-field>
-              @if (period.get('rateType')?.value === 'zmienna') {
+              @if (period.get('rateType')?.value === RateType.VARIABLE) {
                 <ui-field num="9a" label="WIBOR">
                   <ui-number-input formControlName="wibor" suffix="%" [decimals]="2" />
                 </ui-field>

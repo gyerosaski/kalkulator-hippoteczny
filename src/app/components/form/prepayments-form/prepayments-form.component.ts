@@ -4,6 +4,8 @@ import { map } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormService } from '../../../services/form/form';
 import { PrepaymentFrequency, PrepaymentEffect } from '../../../model/mortgage.model';
+import { PrepaymentFrequencyLabelPipe } from '../../../pipes/prepayment-frequency-label/prepayment-frequency-label.pipe';
+import { PrepaymentEffectLabelPipe } from '../../../pipes/prepayment-effect-label/prepayment-effect-label.pipe';
 import { SectionComponent } from '../../ui/section/section.component';
 import { FieldComponent } from '../../ui/field/field.component';
 import { NumberInputComponent } from '../../ui/number-input/number-input.component';
@@ -26,6 +28,8 @@ import { CardsGroupComponent } from '../../ui/cards-group/cards-group.component'
     BtnAddComponent,
     CardComponent,
     CardsGroupComponent,
+    PrepaymentFrequencyLabelPipe,
+    PrepaymentEffectLabelPipe,
   ],
   templateUrl: './prepayments-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,13 +37,10 @@ import { CardsGroupComponent } from '../../ui/cards-group/cards-group.component'
 export class PrepaymentsFormComponent {
   readonly formService = inject(FormService);
 
-  readonly prepaymentFrequencyOptions: PrepaymentFrequency[] = [
-    'jednorazowo',
-    'co miesiąc',
-    'co kwartał',
-    'co rok',
-  ];
-  readonly prepaymentEffectOptions: PrepaymentEffect[] = ['niższa rata', 'skrócenie okresu'];
+  protected readonly PrepaymentFrequency = PrepaymentFrequency;
+
+  readonly prepaymentFrequencyOptions = Object.values(PrepaymentFrequency);
+  readonly prepaymentEffectOptions = Object.values(PrepaymentEffect);
 
   get section() {
     return this.formService.prepaymentsSection;

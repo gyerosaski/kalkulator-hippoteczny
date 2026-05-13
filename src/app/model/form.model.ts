@@ -56,7 +56,7 @@ export interface OverheadCostsFormGroup {
   appraisalFee: FormControl<number>;
   bridgeRateIncrease: FormControl<number>;
   bridgeMonths: FormControl<number>;
-  propInsFrequency: FormControl<'co rok' | 'co miesiąc'>;
+  propInsFrequency: FormControl<InsuranceFrequency>;
   propInsCalcMethod: FormControl<InsuranceCalcMethod>;
   propInsValue: FormControl<number>;
   propInsFrom: FormControl<string>;
