@@ -9,7 +9,7 @@
         <ui-number-input
           formControlName="propertyValue"
           suffix="zł"
-          [decimals]="0"
+          [decimals]="2"
           (valueChange)="onPropertyValueChanged()"
         />
       </ui-field>
@@ -18,7 +18,7 @@
         <ui-number-input
           formControlName="loanAmount"
           suffix="zł"
-          [decimals]="0"
+          [decimals]="2"
           (valueChange)="onLoanAmountChanged()"
         />
       </ui-field>
