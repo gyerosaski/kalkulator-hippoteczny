@@ -7,7 +7,7 @@
   (enabledChange)="sectionEnabledControl.setValue($event)"
 >
   <div [formGroup]="form">
-    <ui-card tag="PROWIZJA ZA UDZIELENIE">
+    <ui-subsec [num]="1" title="Prowizja za udzielenie">
       <div class="row row--2">
         <ui-field label="Prowizja">
           <ui-number-input formControlName="commissionPct" suffix="%" [decimals]="2" />
@@ -19,17 +19,21 @@
           </div>
         </ui-field>
       </div>
-    </ui-card>
+    </ui-subsec>
 
-    <ui-card tag="OPŁATA ZA WYCENĘ">
+    <ui-divider />
+
+    <ui-subsec [num]="2" title="Opłata za wycenę">
       <div class="row row--2">
         <ui-field label="Kwota">
           <ui-number-input formControlName="appraisalFee" suffix="zł" [decimals]="2" />
         </ui-field>
       </div>
-    </ui-card>
+    </ui-subsec>
 
-    <ui-card tag="UBEZPIECZENIE POMOSTOWE">
+    <ui-divider />
+
+    <ui-subsec [num]="3" title="Ubezpieczenie pomostowe">
       <div class="row row--2">
         <ui-field label="Bank podwyższa oprocentowanie o">
           <ui-number-input formControlName="bridgeRateIncrease" suffix="%" [decimals]="2" />
@@ -38,10 +42,12 @@
           <ui-number-input formControlName="bridgeMonths" suffix="mies." [decimals]="0" />
         </ui-field>
       </div>
-    </ui-card>
+    </ui-subsec>
 
-    <ui-card tag="UBEZPIECZENIE NIERUCHOMOŚCI">
-      <div class="row row--2">
+    <ui-divider />
+
+    <ui-subsec [num]="4" title="Ubezpieczenie nieruchomości">
+      <div class="row row--3">
         <ui-field label="Jak często opłacana jest składka?">
           <ui-select
             formControlName="propInsFrequency"
@@ -63,27 +69,31 @@
             [decimals]="propInsDecimals"
           />
         </ui-field>
-        <div class="row row--2">
-          <ui-field label="Od">
-            <ui-month-picker formControlName="propInsFrom" />
-          </ui-field>
-          <ui-field label="do">
-            <ui-month-picker formControlName="propInsTo" />
-          </ui-field>
-        </div>
       </div>
-    </ui-card>
+      <div class="row row--2">
+        <ui-field label="Od">
+          <ui-month-picker formControlName="propInsFrom" />
+        </ui-field>
+        <ui-field label="do">
+          <ui-month-picker formControlName="propInsTo" />
+        </ui-field>
+      </div>
+    </ui-subsec>
 
-    <ui-card tag="UBEZPIECZENIE NISKIEGO WKŁADU">
+    <ui-divider />
+
+    <ui-subsec [num]="5" title="Ubezpieczenie niskiego wkładu">
       <div class="row row--2">
         <ui-field label="Bank podwyższa oprocentowanie o">
           <ui-number-input formControlName="lowEquityRateIncrease" suffix="%" [decimals]="2" />
         </ui-field>
       </div>
-    </ui-card>
+    </ui-subsec>
 
-    <ui-card tag="UBEZPIECZENIE NA ŻYCIE">
-      <div class="row row--2">
+    <ui-divider />
+
+    <ui-subsec [num]="6" title="Ubezpieczenie na życie">
+      <div class="row row--3">
         <ui-field label="Jak często opłacana jest składka?">
           <ui-select
             formControlName="lifeInsFrequency"
@@ -105,19 +115,21 @@
             [decimals]="lifeInsDecimals"
           />
         </ui-field>
-        <div class="row row--2">
-          <ui-field label="Od">
-            <ui-month-picker formControlName="lifeInsFrom" />
-          </ui-field>
-          <ui-field label="do">
-            <ui-month-picker formControlName="lifeInsTo" />
-          </ui-field>
-        </div>
       </div>
-    </ui-card>
-
-    <ui-card tag="UBEZPIECZENIE OD UTRATY PRACY">
       <div class="row row--2">
+        <ui-field label="Od">
+          <ui-month-picker formControlName="lifeInsFrom" />
+        </ui-field>
+        <ui-field label="do">
+          <ui-month-picker formControlName="lifeInsTo" />
+        </ui-field>
+      </div>
+    </ui-subsec>
+
+    <ui-divider />
+
+    <ui-subsec [num]="7" title="Ubezpieczenie od utraty pracy">
+      <div class="row row--3">
         <ui-field label="Jak często opłacana jest składka?">
           <ui-select
             formControlName="jobLossInsFrequency"
@@ -139,18 +151,22 @@
             [decimals]="2"
           />
         </ui-field>
+      </div>
+      <div class="row row--2">
         <ui-field label="Od">
           <ui-month-picker formControlName="jobLossInsFrom" />
         </ui-field>
       </div>
-    </ui-card>
+    </ui-subsec>
 
-    <ui-cards-group>
+    <ui-divider />
+
+    <ui-subsec [num]="8" title="Dodatkowe koszty">
       <div formArrayName="additionalCosts">
         @for (cost of additionalCostsArray.controls; track $index) {
           <ui-card
-            [tag]="'DODATKOWY KOSZT ' + ($index + 1)"
-            [removable]="$index > 0"
+            [tag]="($index + 1).toString()"
+            [removable]="additionalCostsArray.length > 1"
             (remove)="removeAdditionalCost($index)"
             [formGroupName]="$index"
           >
@@ -160,6 +176,8 @@
                   <input type="text" formControlName="name" class="mono" />
                 </div>
               </ui-field>
+            </div>
+            <div class="row row--3">
               <ui-field label="Jak często pobierana jest opłata?">
                 <ui-select
                   formControlName="frequency"
@@ -181,6 +199,8 @@
                   [decimals]="2"
                 />
               </ui-field>
+            </div>
+            <div class="row row--2">
               <ui-field label="Okres ponoszenia kosztu (Od)">
                 <ui-month-picker formControlName="from" />
               </ui-field>
@@ -189,22 +209,22 @@
         }
       </div>
       <ui-btn-add label="Dodaj koszt" (add)="addAdditionalCost()" />
-    </ui-cards-group>
+    </ui-subsec>
 
-    <ui-card tag="PROMOCJA OPROCENTOWANIA">
-      <div class="row row--2">
+    <ui-divider />
+
+    <ui-subsec [num]="9" title="Promocja oprocentowania">
+      <div class="row row--3">
         <ui-field label="Bank obniża oprocentowanie o">
           <ui-number-input formControlName="promoRateDecrease" suffix="%" [decimals]="2" />
         </ui-field>
-        <div class="row row--2">
-          <ui-field label="Od">
-            <ui-month-picker formControlName="promoFrom" />
-          </ui-field>
-          <ui-field label="do">
-            <ui-month-picker formControlName="promoTo" />
-          </ui-field>
-        </div>
+        <ui-field label="Od">
+          <ui-month-picker formControlName="promoFrom" />
+        </ui-field>
+        <ui-field label="do">
+          <ui-month-picker formControlName="promoTo" />
+        </ui-field>
       </div>
-    </ui-card>
+    </ui-subsec>
   </div>
 </ui-section>

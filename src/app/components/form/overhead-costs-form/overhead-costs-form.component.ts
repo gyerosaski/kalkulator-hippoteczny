@@ -15,7 +15,8 @@ import { MonthPickerComponent } from '../../ui/month-picker/month-picker.compone
 import { SelectComponent } from '../../ui/select/select.component';
 import { BtnAddComponent } from '../../ui/btn-add/btn-add.component';
 import { CardComponent } from '../../ui/card/card.component';
-import { CardsGroupComponent } from '../../ui/cards-group/cards-group.component';
+import { SubsecComponent } from '../../ui/subsec/subsec.component';
+import { DividerComponent } from '../../ui/divider/divider.component';
 
 @Component({
   selector: 'app-overhead-costs-form',
@@ -30,7 +31,8 @@ import { CardsGroupComponent } from '../../ui/cards-group/cards-group.component'
     SelectComponent,
     BtnAddComponent,
     CardComponent,
-    CardsGroupComponent,
+    SubsecComponent,
+    DividerComponent,
     InsuranceFrequencyLabelPipe,
     InsuranceCalcMethodLabelPipe,
     LifeInsuranceCalcMethodLabelPipe,

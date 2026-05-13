@@ -10,7 +10,9 @@
       "Bash(xargs grep -l \"app-field\\\\|btn-add\\\\|btn-remove\\\\|app-segmented\\\\|app-select\\\\|app-month-picker\\\\|app-foldable-section\\\\|app-section\\\\|app-number-input\\\\|app-donut\")",
       "Bash(python -c \"import sys,json; cfg=json.load\\(sys.stdin\\); print\\(json.dumps\\(cfg.get\\('vitest',cfg.get\\('test',{}\\)\\), indent=2\\)\\)\")",
       "Bash(Get-ChildItem -Path \"D:\\\\repozytoria\\\\kalkulator-hipoteczny\\\\src\\\\app\\\\dialogs\" -Recurse -Directory)",
-      "Bash(Select-Object -ExpandProperty FullName)"
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Get-ChildItem *)",
+      "Bash(Select-Object FullName, Name)"
     ]
   }
 }
