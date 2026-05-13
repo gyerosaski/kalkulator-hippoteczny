@@ -14,12 +14,21 @@ import {
 } from '../../model/mortgage.model';
 import {
   AdditionalCostFormGroup,
+  AdditionalCostsSectionFormGroup,
+  AppraisalFormGroup,
   BasicDataFormGroup,
+  BridgeInsuranceFormGroup,
+  CommissionFormGroup,
   EarlyRepaymentCommissionFormGroup,
+  JobLossInsuranceFormGroup,
+  LifeInsuranceFormGroup,
+  LowEquityInsuranceFormGroup,
   MortgageFormGroup,
   OverheadCostsFormGroup,
   PrepaymentsFieldsFormGroup,
   PrepaymentRuleFormGroup,
+  PropertyInsuranceFormGroup,
+  PromoRateFormGroup,
   RatePeriodFormGroup,
   TargetInstallmentFormGroup,
   ToggleableSectionFormGroup,
@@ -156,7 +165,7 @@ export class FormService {
   }
 
   get additionalCostsArray(): FormArray<FormGroup<AdditionalCostFormGroup>> {
-    return this.overheadCostsGroup.controls.additionalCosts;
+    return this.overheadCostsGroup.controls.additionalCosts.controls.items;
   }
 
   get transzeSuma(): number {
@@ -304,59 +313,83 @@ export class FormService {
 
   private createOverheadCostsGroup(): FormGroup<OverheadCostsFormGroup> {
     return new FormGroup<OverheadCostsFormGroup>({
-      commissionPct: new FormControl(0, {
-        nonNullable: true,
-        validators: [Validators.min(0), Validators.max(100)],
-      }),
-      appraisalFee: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
-      bridgeRateIncrease: new FormControl(0, {
-        nonNullable: true,
-        validators: [Validators.min(0)],
-      }),
-      bridgeMonths: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
-      propInsFrequency: new FormControl<InsuranceFrequency>(InsuranceFrequency.YEARLY, {
-        nonNullable: true,
-      }),
-      propInsCalcMethod: new FormControl<InsuranceCalcMethod>(
-        InsuranceCalcMethod.PCT_PROPERTY_VALUE,
-        {
+      commission: new FormGroup<CommissionFormGroup>({
+        expanded: new FormControl(false, { nonNullable: true }),
+        commissionPct: new FormControl(0, {
           nonNullable: true,
-        },
-      ),
-      propInsValue: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
-      propInsFrom: new FormControl(nextMonthStr(), { nonNullable: true }),
-      propInsTo: new FormControl(endOfLoanDate(), { nonNullable: true }),
-      lowEquityRateIncrease: new FormControl(0, {
-        nonNullable: true,
-        validators: [Validators.min(0)],
+          validators: [Validators.min(0), Validators.max(100)],
+        }),
       }),
-      lifeInsFrequency: new FormControl<InsuranceFrequency>(InsuranceFrequency.YEARLY, {
-        nonNullable: true,
+      appraisal: new FormGroup<AppraisalFormGroup>({
+        expanded: new FormControl(false, { nonNullable: true }),
+        appraisalFee: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
       }),
-      lifeInsCalcMethod: new FormControl<LifeInsuranceCalcMethod>(
-        LifeInsuranceCalcMethod.PCT_LOAN_AMOUNT,
-        {
+      bridge: new FormGroup<BridgeInsuranceFormGroup>({
+        expanded: new FormControl(false, { nonNullable: true }),
+        bridgeRateIncrease: new FormControl(0, {
           nonNullable: true,
-        },
-      ),
-      lifeInsValue: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
-      lifeInsFrom: new FormControl(nextMonthStr(), { nonNullable: true }),
-      lifeInsTo: new FormControl(endOfLoanDate(), { nonNullable: true }),
-      jobLossInsFrequency: new FormControl<InsuranceFrequency>(InsuranceFrequency.ONE_TIME, {
-        nonNullable: true,
+          validators: [Validators.min(0)],
+        }),
+        bridgeMonths: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
       }),
-      jobLossInsCalcMethod: new FormControl<LifeInsuranceCalcMethod>(
-        LifeInsuranceCalcMethod.PCT_LOAN_AMOUNT,
-        {
+      propertyInsurance: new FormGroup<PropertyInsuranceFormGroup>({
+        expanded: new FormControl(false, { nonNullable: true }),
+        propInsFrequency: new FormControl<InsuranceFrequency>(InsuranceFrequency.YEARLY, {
           nonNullable: true,
-        },
-      ),
-      jobLossInsValue: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
-      jobLossInsFrom: new FormControl(nextMonthStr(), { nonNullable: true }),
-      additionalCosts: new FormArray([this.createAdditionalCostGroup()]),
-      promoRateDecrease: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
-      promoFrom: new FormControl(nextMonthStr(), { nonNullable: true }),
-      promoTo: new FormControl(addMonthsStr(nextMonthStr(), 12), { nonNullable: true }),
+        }),
+        propInsCalcMethod: new FormControl<InsuranceCalcMethod>(
+          InsuranceCalcMethod.PCT_PROPERTY_VALUE,
+          { nonNullable: true },
+        ),
+        propInsValue: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
+        propInsFrom: new FormControl(nextMonthStr(), { nonNullable: true }),
+        propInsTo: new FormControl(endOfLoanDate(), { nonNullable: true }),
+      }),
+      lowEquityInsurance: new FormGroup<LowEquityInsuranceFormGroup>({
+        expanded: new FormControl(false, { nonNullable: true }),
+        lowEquityRateIncrease: new FormControl(0, {
+          nonNullable: true,
+          validators: [Validators.min(0)],
+        }),
+      }),
+      lifeInsurance: new FormGroup<LifeInsuranceFormGroup>({
+        expanded: new FormControl(false, { nonNullable: true }),
+        lifeInsFrequency: new FormControl<InsuranceFrequency>(InsuranceFrequency.YEARLY, {
+          nonNullable: true,
+        }),
+        lifeInsCalcMethod: new FormControl<LifeInsuranceCalcMethod>(
+          LifeInsuranceCalcMethod.PCT_LOAN_AMOUNT,
+          { nonNullable: true },
+        ),
+        lifeInsValue: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
+        lifeInsFrom: new FormControl(nextMonthStr(), { nonNullable: true }),
+        lifeInsTo: new FormControl(endOfLoanDate(), { nonNullable: true }),
+      }),
+      jobLossInsurance: new FormGroup<JobLossInsuranceFormGroup>({
+        expanded: new FormControl(false, { nonNullable: true }),
+        jobLossInsFrequency: new FormControl<InsuranceFrequency>(InsuranceFrequency.ONE_TIME, {
+          nonNullable: true,
+        }),
+        jobLossInsCalcMethod: new FormControl<LifeInsuranceCalcMethod>(
+          LifeInsuranceCalcMethod.PCT_LOAN_AMOUNT,
+          { nonNullable: true },
+        ),
+        jobLossInsValue: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
+        jobLossInsFrom: new FormControl(nextMonthStr(), { nonNullable: true }),
+      }),
+      additionalCosts: new FormGroup<AdditionalCostsSectionFormGroup>({
+        expanded: new FormControl(false, { nonNullable: true }),
+        items: new FormArray([this.createAdditionalCostGroup()]),
+      }),
+      promoRate: new FormGroup<PromoRateFormGroup>({
+        expanded: new FormControl(false, { nonNullable: true }),
+        promoRateDecrease: new FormControl(0, {
+          nonNullable: true,
+          validators: [Validators.min(0)],
+        }),
+        promoFrom: new FormControl(nextMonthStr(), { nonNullable: true }),
+        promoTo: new FormControl(addMonthsStr(nextMonthStr(), 12), { nonNullable: true }),
+      }),
     });
   }
 
@@ -576,31 +609,38 @@ export class FormService {
 
   setOverheadDefaults(): void {
     this.overheadCostsGroup.patchValue({
-      commissionPct: 0,
-      appraisalFee: 400,
-      bridgeRateIncrease: 1.2,
-      bridgeMonths: 6,
-      propInsFrequency: InsuranceFrequency.YEARLY,
-      propInsCalcMethod: InsuranceCalcMethod.PCT_PROPERTY_VALUE,
-      propInsValue: 0.0008,
-      propInsFrom: nextMonthStr(),
-      propInsTo: endOfLoanDate(),
-      lowEquityRateIncrease: 0,
-      lifeInsFrequency: InsuranceFrequency.YEARLY,
-      lifeInsCalcMethod: LifeInsuranceCalcMethod.PCT_LOAN_AMOUNT,
-      lifeInsValue: 0,
-      lifeInsFrom: nextMonthStr(),
-      lifeInsTo: endOfLoanDate(),
-      jobLossInsFrequency: InsuranceFrequency.ONE_TIME,
-      jobLossInsCalcMethod: LifeInsuranceCalcMethod.PCT_LOAN_AMOUNT,
-      jobLossInsValue: 0,
-      jobLossInsFrom: nextMonthStr(),
-      promoRateDecrease: 0,
-      promoFrom: nextMonthStr(),
-      promoTo: addMonthsStr(nextMonthStr(), 12),
+      commission: { commissionPct: 0 },
+      appraisal: { appraisalFee: 400 },
+      bridge: { bridgeRateIncrease: 1.2, bridgeMonths: 6 },
+      propertyInsurance: {
+        propInsFrequency: InsuranceFrequency.YEARLY,
+        propInsCalcMethod: InsuranceCalcMethod.PCT_PROPERTY_VALUE,
+        propInsValue: 0.0008,
+        propInsFrom: nextMonthStr(),
+        propInsTo: endOfLoanDate(),
+      },
+      lowEquityInsurance: { lowEquityRateIncrease: 0 },
+      lifeInsurance: {
+        lifeInsFrequency: InsuranceFrequency.YEARLY,
+        lifeInsCalcMethod: LifeInsuranceCalcMethod.PCT_LOAN_AMOUNT,
+        lifeInsValue: 0,
+        lifeInsFrom: nextMonthStr(),
+        lifeInsTo: endOfLoanDate(),
+      },
+      jobLossInsurance: {
+        jobLossInsFrequency: InsuranceFrequency.ONE_TIME,
+        jobLossInsCalcMethod: LifeInsuranceCalcMethod.PCT_LOAN_AMOUNT,
+        jobLossInsValue: 0,
+        jobLossInsFrom: nextMonthStr(),
+      },
+      promoRate: {
+        promoRateDecrease: 0,
+        promoFrom: nextMonthStr(),
+        promoTo: addMonthsStr(nextMonthStr(), 12),
+      },
     });
-    this.overheadCostsGroup.setControl(
-      'additionalCosts',
+    this.overheadCostsGroup.controls.additionalCosts.setControl(
+      'items',
       new FormArray([this.createAdditionalCostGroup()]),
     );
   }
@@ -638,9 +678,9 @@ export class FormService {
       ),
     );
 
-    const additionalCosts: any[] = data?.overheadCosts?.fields?.additionalCosts ?? [];
-    this.overheadCostsGroup.setControl(
-      'additionalCosts',
+    const additionalCosts: any[] = data?.overheadCosts?.fields?.additionalCosts?.items ?? [];
+    this.overheadCostsGroup.controls.additionalCosts.setControl(
+      'items',
       new FormArray(
         additionalCosts.length > 0
           ? additionalCosts.map((ac: any) => {

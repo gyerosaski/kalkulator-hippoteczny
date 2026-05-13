@@ -51,30 +51,75 @@ export interface AdditionalCostFormGroup {
   from: FormControl<string>;
 }
 
-export interface OverheadCostsFormGroup {
+export interface CommissionFormGroup {
+  expanded: FormControl<boolean>;
   commissionPct: FormControl<number>;
+}
+
+export interface AppraisalFormGroup {
+  expanded: FormControl<boolean>;
   appraisalFee: FormControl<number>;
+}
+
+export interface BridgeInsuranceFormGroup {
+  expanded: FormControl<boolean>;
   bridgeRateIncrease: FormControl<number>;
   bridgeMonths: FormControl<number>;
+}
+
+export interface PropertyInsuranceFormGroup {
+  expanded: FormControl<boolean>;
   propInsFrequency: FormControl<InsuranceFrequency>;
   propInsCalcMethod: FormControl<InsuranceCalcMethod>;
   propInsValue: FormControl<number>;
   propInsFrom: FormControl<string>;
   propInsTo: FormControl<string>;
+}
+
+export interface LowEquityInsuranceFormGroup {
+  expanded: FormControl<boolean>;
   lowEquityRateIncrease: FormControl<number>;
+}
+
+export interface LifeInsuranceFormGroup {
+  expanded: FormControl<boolean>;
   lifeInsFrequency: FormControl<InsuranceFrequency>;
   lifeInsCalcMethod: FormControl<LifeInsuranceCalcMethod>;
   lifeInsValue: FormControl<number>;
   lifeInsFrom: FormControl<string>;
   lifeInsTo: FormControl<string>;
+}
+
+export interface JobLossInsuranceFormGroup {
+  expanded: FormControl<boolean>;
   jobLossInsFrequency: FormControl<InsuranceFrequency>;
   jobLossInsCalcMethod: FormControl<LifeInsuranceCalcMethod>;
   jobLossInsValue: FormControl<number>;
   jobLossInsFrom: FormControl<string>;
-  additionalCosts: FormArray<FormGroup<AdditionalCostFormGroup>>;
+}
+
+export interface AdditionalCostsSectionFormGroup {
+  expanded: FormControl<boolean>;
+  items: FormArray<FormGroup<AdditionalCostFormGroup>>;
+}
+
+export interface PromoRateFormGroup {
+  expanded: FormControl<boolean>;
   promoRateDecrease: FormControl<number>;
   promoFrom: FormControl<string>;
   promoTo: FormControl<string>;
+}
+
+export interface OverheadCostsFormGroup {
+  commission: FormGroup<CommissionFormGroup>;
+  appraisal: FormGroup<AppraisalFormGroup>;
+  bridge: FormGroup<BridgeInsuranceFormGroup>;
+  propertyInsurance: FormGroup<PropertyInsuranceFormGroup>;
+  lowEquityInsurance: FormGroup<LowEquityInsuranceFormGroup>;
+  lifeInsurance: FormGroup<LifeInsuranceFormGroup>;
+  jobLossInsurance: FormGroup<JobLossInsuranceFormGroup>;
+  additionalCosts: FormGroup<AdditionalCostsSectionFormGroup>;
+  promoRate: FormGroup<PromoRateFormGroup>;
 }
 
 export interface PrepaymentsFieldsFormGroup {

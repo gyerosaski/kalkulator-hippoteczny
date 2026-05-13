@@ -6,7 +6,20 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 14px;
+}
+
+.subsec-toggle {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  min-width: 0;
 }
 
 .subsec-num {
@@ -29,6 +42,18 @@
   letter-spacing: -0.005em;
 }
 
-.subsec-remove {
+.subsec-chev {
   margin-left: auto;
+  display: inline-flex;
+  color: var(--muted);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.subsec-toggle.is-open .subsec-chev {
+  transform: rotate(90deg);
+}
+
+.subsec-body {
+  margin-top: 14px;
 }

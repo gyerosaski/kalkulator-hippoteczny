@@ -135,46 +135,48 @@ export class LayoutComponent {
 
       const overheadCosts: OverheadCostsInputs = overheadEnabled
         ? {
-            commissionPct: Number(overheadCostsRaw.commissionPct) || 0,
-            appraisalFee: Number(overheadCostsRaw.appraisalFee) || 0,
+            commissionPct: Number(overheadCostsRaw.commission?.commissionPct) || 0,
+            appraisalFee: Number(overheadCostsRaw.appraisal?.appraisalFee) || 0,
             bridgeInsurance: {
-              rateIncrease: Number(overheadCostsRaw.bridgeRateIncrease) || 0,
-              months: Number(overheadCostsRaw.bridgeMonths) || 0,
+              rateIncrease: Number(overheadCostsRaw.bridge?.bridgeRateIncrease) || 0,
+              months: Number(overheadCostsRaw.bridge?.bridgeMonths) || 0,
             },
             propertyInsurance: {
-              frequency: overheadCostsRaw.propInsFrequency,
-              calcMethod: overheadCostsRaw.propInsCalcMethod,
-              value: Number(overheadCostsRaw.propInsValue) || 0,
-              from: overheadCostsRaw.propInsFrom,
-              to: overheadCostsRaw.propInsTo,
+              frequency: overheadCostsRaw.propertyInsurance?.propInsFrequency,
+              calcMethod: overheadCostsRaw.propertyInsurance?.propInsCalcMethod,
+              value: Number(overheadCostsRaw.propertyInsurance?.propInsValue) || 0,
+              from: overheadCostsRaw.propertyInsurance?.propInsFrom,
+              to: overheadCostsRaw.propertyInsurance?.propInsTo,
             },
             lowEquityInsurance: {
-              rateIncrease: Number(overheadCostsRaw.lowEquityRateIncrease) || 0,
+              rateIncrease: Number(overheadCostsRaw.lowEquityInsurance?.lowEquityRateIncrease) || 0,
             },
             lifeInsurance: {
-              frequency: overheadCostsRaw.lifeInsFrequency,
-              calcMethod: overheadCostsRaw.lifeInsCalcMethod,
-              value: Number(overheadCostsRaw.lifeInsValue) || 0,
-              from: overheadCostsRaw.lifeInsFrom,
-              to: overheadCostsRaw.lifeInsTo,
+              frequency: overheadCostsRaw.lifeInsurance?.lifeInsFrequency,
+              calcMethod: overheadCostsRaw.lifeInsurance?.lifeInsCalcMethod,
+              value: Number(overheadCostsRaw.lifeInsurance?.lifeInsValue) || 0,
+              from: overheadCostsRaw.lifeInsurance?.lifeInsFrom,
+              to: overheadCostsRaw.lifeInsurance?.lifeInsTo,
             },
             jobLossInsurance: {
-              frequency: overheadCostsRaw.jobLossInsFrequency,
-              calcMethod: overheadCostsRaw.jobLossInsCalcMethod,
-              value: Number(overheadCostsRaw.jobLossInsValue) || 0,
-              from: overheadCostsRaw.jobLossInsFrom,
+              frequency: overheadCostsRaw.jobLossInsurance?.jobLossInsFrequency,
+              calcMethod: overheadCostsRaw.jobLossInsurance?.jobLossInsCalcMethod,
+              value: Number(overheadCostsRaw.jobLossInsurance?.jobLossInsValue) || 0,
+              from: overheadCostsRaw.jobLossInsurance?.jobLossInsFrom,
             },
-            additionalCosts: ((overheadCostsRaw.additionalCosts ?? []) as any[]).map((ac: any) => ({
-              name: ac.name || '',
-              frequency: ac.frequency,
-              calcMethod: ac.calcMethod,
-              value: Number(ac.value) || 0,
-              from: ac.from,
-            })),
+            additionalCosts: ((overheadCostsRaw.additionalCosts?.items ?? []) as any[]).map(
+              (ac: any) => ({
+                name: ac.name || '',
+                frequency: ac.frequency,
+                calcMethod: ac.calcMethod,
+                value: Number(ac.value) || 0,
+                from: ac.from,
+              }),
+            ),
             promotionalRate: {
-              rateDecrease: Number(overheadCostsRaw.promoRateDecrease) || 0,
-              from: overheadCostsRaw.promoFrom,
-              to: overheadCostsRaw.promoTo,
+              rateDecrease: Number(overheadCostsRaw.promoRate?.promoRateDecrease) || 0,
+              from: overheadCostsRaw.promoRate?.promoFrom,
+              to: overheadCostsRaw.promoRate?.promoTo,
             },
           }
         : {

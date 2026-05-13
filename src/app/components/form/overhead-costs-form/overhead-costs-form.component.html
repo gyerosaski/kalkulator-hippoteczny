@@ -7,223 +7,291 @@
   (enabledChange)="sectionEnabledControl.setValue($event)"
 >
   <div [formGroup]="form">
-    <ui-subsection [num]="1" title="Prowizja za udzielenie">
-      <div class="row row--2">
-        <ui-field label="Prowizja" num="1a">
-          <ui-number-input formControlName="commissionPct" suffix="%" [decimals]="2" />
-        </ui-field>
-        <ui-field label="Przeliczenie" num="1b">
-          <div class="inp inp--disabled">
-            <input type="text" class="mono" [value]="commissionAmount() | formatAmount" readonly />
-            <span class="suffix">zł</span>
-          </div>
-        </ui-field>
-      </div>
-    </ui-subsection>
-
-    <ui-divider />
-
-    <ui-subsection [num]="2" title="Opłata za wycenę">
-      <div class="row row--2">
-        <ui-field label="Kwota" num="2a">
-          <ui-number-input formControlName="appraisalFee" suffix="zł" [decimals]="2" />
-        </ui-field>
-      </div>
-    </ui-subsection>
-
-    <ui-divider />
-
-    <ui-subsection [num]="3" title="Ubezpieczenie pomostowe">
-      <div class="row row--2">
-        <ui-field label="Bank podwyższa oprocentowanie o" num="3a">
-          <ui-number-input formControlName="bridgeRateIncrease" suffix="%" [decimals]="2" />
-        </ui-field>
-        <ui-field label="przez" num="3b">
-          <ui-number-input formControlName="bridgeMonths" suffix="mies." [decimals]="0" />
-        </ui-field>
-      </div>
-    </ui-subsection>
-
-    <ui-divider />
-
-    <ui-subsection [num]="4" title="Ubezpieczenie nieruchomości">
-      <div class="row row--3">
-        <ui-field label="Jak często opłacana jest składka?" num="4a">
-          <ui-select
-            formControlName="propInsFrequency"
-            [options]="propertyInsFrequencyOptions"
-            [labels]="propertyInsFrequencyOptions | insuranceFrequencyLabel"
-          />
-        </ui-field>
-        <ui-field label="Jak wyliczana jest składka?" num="4b">
-          <ui-select
-            formControlName="propInsCalcMethod"
-            [options]="propertyInsCalcOptions"
-            [labels]="propertyInsCalcOptions | insuranceCalcMethodLabel"
-          />
-        </ui-field>
-        <ui-field label="Wartość składki" num="4c">
-          <ui-number-input
-            formControlName="propInsValue"
-            [suffix]="propInsSuffix"
-            [decimals]="propInsDecimals"
-          />
-        </ui-field>
-      </div>
-      <div class="row row--2">
-        <ui-field label="Od" num="4d">
-          <ui-month-picker formControlName="propInsFrom" />
-        </ui-field>
-        <ui-field label="do" num="4e">
-          <ui-month-picker formControlName="propInsTo" />
-        </ui-field>
-      </div>
-    </ui-subsection>
-
-    <ui-divider />
-
-    <ui-subsection [num]="5" title="Ubezpieczenie niskiego wkładu">
-      <div class="row row--2">
-        <ui-field label="Bank podwyższa oprocentowanie o" num="5a">
-          <ui-number-input formControlName="lowEquityRateIncrease" suffix="%" [decimals]="2" />
-        </ui-field>
-      </div>
-    </ui-subsection>
-
-    <ui-divider />
-
-    <ui-subsection [num]="6" title="Ubezpieczenie na życie">
-      <div class="row row--3">
-        <ui-field label="Jak często opłacana jest składka?" num="6a">
-          <ui-select
-            formControlName="lifeInsFrequency"
-            [options]="insuranceFrequencyOptions"
-            [labels]="insuranceFrequencyOptions | insuranceFrequencyLabel"
-          />
-        </ui-field>
-        <ui-field label="Jak wyliczana jest składka?" num="6b">
-          <ui-select
-            formControlName="lifeInsCalcMethod"
-            [options]="lifeInsCalcOptions"
-            [labels]="lifeInsCalcOptions | lifeInsuranceCalcMethodLabel"
-          />
-        </ui-field>
-        <ui-field label="Wartość składki" num="6c">
-          <ui-number-input
-            formControlName="lifeInsValue"
-            [suffix]="lifeInsSuffix"
-            [decimals]="lifeInsDecimals"
-          />
-        </ui-field>
-      </div>
-      <div class="row row--2">
-        <ui-field label="Od" num="6d">
-          <ui-month-picker formControlName="lifeInsFrom" />
-        </ui-field>
-        <ui-field label="do" num="6e">
-          <ui-month-picker formControlName="lifeInsTo" />
-        </ui-field>
-      </div>
-    </ui-subsection>
-
-    <ui-divider />
-
-    <ui-subsection [num]="7" title="Ubezpieczenie od utraty pracy">
-      <div class="row row--3">
-        <ui-field label="Jak często opłacana jest składka?" num="7a">
-          <ui-select
-            formControlName="jobLossInsFrequency"
-            [options]="insuranceFrequencyOptions"
-            [labels]="insuranceFrequencyOptions | insuranceFrequencyLabel"
-          />
-        </ui-field>
-        <ui-field label="Jak wyliczana jest składka?" num="7b">
-          <ui-select
-            formControlName="jobLossInsCalcMethod"
-            [options]="lifeInsCalcOptions"
-            [labels]="lifeInsCalcOptions | lifeInsuranceCalcMethodLabel"
-          />
-        </ui-field>
-        <ui-field label="Wartość składki" num="7c">
-          <ui-number-input
-            formControlName="jobLossInsValue"
-            [suffix]="jobLossInsSuffix"
-            [decimals]="2"
-          />
-        </ui-field>
-      </div>
-      <div class="row row--2">
-        <ui-field label="Od" num="7d">
-          <ui-month-picker formControlName="jobLossInsFrom" />
-        </ui-field>
-      </div>
-    </ui-subsection>
-
-    <ui-divider />
-
-    <ui-subsection [num]="8" title="Dodatkowe koszty">
-      <div formArrayName="additionalCosts">
-        @for (cost of additionalCostsArray.controls; track $index) {
-          <ui-card
-            [tag]="($index + 1).toString()"
-            [removable]="additionalCostsArray.length > 1"
-            (remove)="removeAdditionalCost($index)"
-            [formGroupName]="$index"
-          >
-            <div class="row row--2">
-              <ui-field label="Nazwa kosztu" num="8a">
-                <div class="inp">
-                  <input type="text" formControlName="name" class="mono" />
-                </div>
-              </ui-field>
+    <ui-subsection
+      [num]="1"
+      title="Prowizja za udzielenie"
+      [open]="subsectionsOpen().commission"
+      (openChange)="setSubsectionOpen('commission', $event)"
+    >
+      <div formGroupName="commission">
+        <div class="row row--2">
+          <ui-field label="Prowizja" num="1a">
+            <ui-number-input formControlName="commissionPct" suffix="%" [decimals]="2" />
+          </ui-field>
+          <ui-field label="Przeliczenie" num="1b">
+            <div class="inp inp--disabled">
+              <input
+                type="text"
+                class="mono"
+                [value]="commissionAmount() | formatAmount"
+                readonly
+              />
+              <span class="suffix">zł</span>
             </div>
-            <div class="row row--3">
-              <ui-field label="Jak często pobierana jest opłata?" num="8b">
-                <ui-select
-                  formControlName="frequency"
-                  [options]="insuranceFrequencyOptions"
-                  [labels]="insuranceFrequencyOptions | insuranceFrequencyLabel"
-                />
-              </ui-field>
-              <ui-field label="Jak wyliczana jest opłata?" num="8c">
-                <ui-select
-                  formControlName="calcMethod"
-                  [options]="lifeInsCalcOptions"
-                  [labels]="lifeInsCalcOptions | lifeInsuranceCalcMethodLabel"
-                />
-              </ui-field>
-              <ui-field label="Kwota" num="8d">
-                <ui-number-input
-                  formControlName="value"
-                  [suffix]="getAdditionalCostSuffix($index)"
-                  [decimals]="2"
-                />
-              </ui-field>
-            </div>
-            <div class="row row--2">
-              <ui-field label="Okres ponoszenia kosztu (Od)" num="8e">
-                <ui-month-picker formControlName="from" />
-              </ui-field>
-            </div>
-          </ui-card>
-        }
+          </ui-field>
+        </div>
       </div>
-      <ui-btn-add label="Dodaj koszt" (add)="addAdditionalCost()" />
     </ui-subsection>
 
     <ui-divider />
 
-    <ui-subsection [num]="9" title="Promocja oprocentowania">
-      <div class="row row--3">
-        <ui-field label="Bank obniża oprocentowanie o" num="9a">
-          <ui-number-input formControlName="promoRateDecrease" suffix="%" [decimals]="2" />
-        </ui-field>
-        <ui-field label="Od" num="9b">
-          <ui-month-picker formControlName="promoFrom" />
-        </ui-field>
-        <ui-field label="do" num="9c">
-          <ui-month-picker formControlName="promoTo" />
-        </ui-field>
+    <ui-subsection
+      [num]="2"
+      title="Opłata za wycenę"
+      [open]="subsectionsOpen().appraisal"
+      (openChange)="setSubsectionOpen('appraisal', $event)"
+    >
+      <div formGroupName="appraisal">
+        <div class="row row--2">
+          <ui-field label="Kwota" num="2a">
+            <ui-number-input formControlName="appraisalFee" suffix="zł" [decimals]="2" />
+          </ui-field>
+        </div>
+      </div>
+    </ui-subsection>
+
+    <ui-divider />
+
+    <ui-subsection
+      [num]="3"
+      title="Ubezpieczenie pomostowe"
+      [open]="subsectionsOpen().bridge"
+      (openChange)="setSubsectionOpen('bridge', $event)"
+    >
+      <div formGroupName="bridge">
+        <div class="row row--2">
+          <ui-field label="Bank podwyższa oprocentowanie o" num="3a">
+            <ui-number-input formControlName="bridgeRateIncrease" suffix="%" [decimals]="2" />
+          </ui-field>
+          <ui-field label="przez" num="3b">
+            <ui-number-input formControlName="bridgeMonths" suffix="mies." [decimals]="0" />
+          </ui-field>
+        </div>
+      </div>
+    </ui-subsection>
+
+    <ui-divider />
+
+    <ui-subsection
+      [num]="4"
+      title="Ubezpieczenie nieruchomości"
+      [open]="subsectionsOpen().propertyInsurance"
+      (openChange)="setSubsectionOpen('propertyInsurance', $event)"
+    >
+      <div formGroupName="propertyInsurance">
+        <div class="row row--3">
+          <ui-field label="Jak często opłacana jest składka?" num="4a">
+            <ui-select
+              formControlName="propInsFrequency"
+              [options]="propertyInsFrequencyOptions"
+              [labels]="propertyInsFrequencyOptions | insuranceFrequencyLabel"
+            />
+          </ui-field>
+          <ui-field label="Jak wyliczana jest składka?" num="4b">
+            <ui-select
+              formControlName="propInsCalcMethod"
+              [options]="propertyInsCalcOptions"
+              [labels]="propertyInsCalcOptions | insuranceCalcMethodLabel"
+            />
+          </ui-field>
+          <ui-field label="Wartość składki" num="4c">
+            <ui-number-input
+              formControlName="propInsValue"
+              [suffix]="propInsSuffix"
+              [decimals]="propInsDecimals"
+            />
+          </ui-field>
+        </div>
+        <div class="row row--2">
+          <ui-field label="Od" num="4d">
+            <ui-month-picker formControlName="propInsFrom" />
+          </ui-field>
+          <ui-field label="do" num="4e">
+            <ui-month-picker formControlName="propInsTo" />
+          </ui-field>
+        </div>
+      </div>
+    </ui-subsection>
+
+    <ui-divider />
+
+    <ui-subsection
+      [num]="5"
+      title="Ubezpieczenie niskiego wkładu"
+      [open]="subsectionsOpen().lowEquityInsurance"
+      (openChange)="setSubsectionOpen('lowEquityInsurance', $event)"
+    >
+      <div formGroupName="lowEquityInsurance">
+        <div class="row row--2">
+          <ui-field label="Bank podwyższa oprocentowanie o" num="5a">
+            <ui-number-input formControlName="lowEquityRateIncrease" suffix="%" [decimals]="2" />
+          </ui-field>
+        </div>
+      </div>
+    </ui-subsection>
+
+    <ui-divider />
+
+    <ui-subsection
+      [num]="6"
+      title="Ubezpieczenie na życie"
+      [open]="subsectionsOpen().lifeInsurance"
+      (openChange)="setSubsectionOpen('lifeInsurance', $event)"
+    >
+      <div formGroupName="lifeInsurance">
+        <div class="row row--3">
+          <ui-field label="Jak często opłacana jest składka?" num="6a">
+            <ui-select
+              formControlName="lifeInsFrequency"
+              [options]="insuranceFrequencyOptions"
+              [labels]="insuranceFrequencyOptions | insuranceFrequencyLabel"
+            />
+          </ui-field>
+          <ui-field label="Jak wyliczana jest składka?" num="6b">
+            <ui-select
+              formControlName="lifeInsCalcMethod"
+              [options]="lifeInsCalcOptions"
+              [labels]="lifeInsCalcOptions | lifeInsuranceCalcMethodLabel"
+            />
+          </ui-field>
+          <ui-field label="Wartość składki" num="6c">
+            <ui-number-input
+              formControlName="lifeInsValue"
+              [suffix]="lifeInsSuffix"
+              [decimals]="lifeInsDecimals"
+            />
+          </ui-field>
+        </div>
+        <div class="row row--2">
+          <ui-field label="Od" num="6d">
+            <ui-month-picker formControlName="lifeInsFrom" />
+          </ui-field>
+          <ui-field label="do" num="6e">
+            <ui-month-picker formControlName="lifeInsTo" />
+          </ui-field>
+        </div>
+      </div>
+    </ui-subsection>
+
+    <ui-divider />
+
+    <ui-subsection
+      [num]="7"
+      title="Ubezpieczenie od utraty pracy"
+      [open]="subsectionsOpen().jobLossInsurance"
+      (openChange)="setSubsectionOpen('jobLossInsurance', $event)"
+    >
+      <div formGroupName="jobLossInsurance">
+        <div class="row row--3">
+          <ui-field label="Jak często opłacana jest składka?" num="7a">
+            <ui-select
+              formControlName="jobLossInsFrequency"
+              [options]="insuranceFrequencyOptions"
+              [labels]="insuranceFrequencyOptions | insuranceFrequencyLabel"
+            />
+          </ui-field>
+          <ui-field label="Jak wyliczana jest składka?" num="7b">
+            <ui-select
+              formControlName="jobLossInsCalcMethod"
+              [options]="lifeInsCalcOptions"
+              [labels]="lifeInsCalcOptions | lifeInsuranceCalcMethodLabel"
+            />
+          </ui-field>
+          <ui-field label="Wartość składki" num="7c">
+            <ui-number-input
+              formControlName="jobLossInsValue"
+              [suffix]="jobLossInsSuffix"
+              [decimals]="2"
+            />
+          </ui-field>
+        </div>
+        <div class="row row--2">
+          <ui-field label="Od" num="7d">
+            <ui-month-picker formControlName="jobLossInsFrom" />
+          </ui-field>
+        </div>
+      </div>
+    </ui-subsection>
+
+    <ui-divider />
+
+    <ui-subsection
+      [num]="8"
+      title="Dodatkowe koszty"
+      [open]="subsectionsOpen().additionalCosts"
+      (openChange)="setSubsectionOpen('additionalCosts', $event)"
+    >
+      <div formGroupName="additionalCosts">
+        <div formArrayName="items">
+          @for (cost of additionalCostsArray.controls; track $index) {
+            <ui-card
+              [tag]="($index + 1).toString()"
+              [removable]="additionalCostsArray.length > 1"
+              (remove)="removeAdditionalCost($index)"
+              [formGroupName]="$index"
+            >
+              <div class="row row--2">
+                <ui-field label="Nazwa kosztu" num="8a">
+                  <div class="inp">
+                    <input type="text" formControlName="name" class="mono" />
+                  </div>
+                </ui-field>
+              </div>
+              <div class="row row--3">
+                <ui-field label="Jak często pobierana jest opłata?" num="8b">
+                  <ui-select
+                    formControlName="frequency"
+                    [options]="insuranceFrequencyOptions"
+                    [labels]="insuranceFrequencyOptions | insuranceFrequencyLabel"
+                  />
+                </ui-field>
+                <ui-field label="Jak wyliczana jest opłata?" num="8c">
+                  <ui-select
+                    formControlName="calcMethod"
+                    [options]="lifeInsCalcOptions"
+                    [labels]="lifeInsCalcOptions | lifeInsuranceCalcMethodLabel"
+                  />
+                </ui-field>
+                <ui-field label="Kwota" num="8d">
+                  <ui-number-input
+                    formControlName="value"
+                    [suffix]="getAdditionalCostSuffix($index)"
+                    [decimals]="2"
+                  />
+                </ui-field>
+              </div>
+              <div class="row row--2">
+                <ui-field label="Okres ponoszenia kosztu (Od)" num="8e">
+                  <ui-month-picker formControlName="from" />
+                </ui-field>
+              </div>
+            </ui-card>
+          }
+        </div>
+        <ui-btn-add label="Dodaj koszt" (add)="addAdditionalCost()" />
+      </div>
+    </ui-subsection>
+
+    <ui-divider />
+
+    <ui-subsection
+      [num]="9"
+      title="Promocja oprocentowania"
+      [open]="subsectionsOpen().promoRate"
+      (openChange)="setSubsectionOpen('promoRate', $event)"
+    >
+      <div formGroupName="promoRate">
+        <div class="row row--3">
+          <ui-field label="Bank obniża oprocentowanie o" num="9a">
+            <ui-number-input formControlName="promoRateDecrease" suffix="%" [decimals]="2" />
+          </ui-field>
+          <ui-field label="Od" num="9b">
+            <ui-month-picker formControlName="promoFrom" />
+          </ui-field>
+          <ui-field label="do" num="9c">
+            <ui-month-picker formControlName="promoTo" />
+          </ui-field>
+        </div>
       </div>
     </ui-subsection>
   </div>

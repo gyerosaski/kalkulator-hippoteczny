@@ -1,10 +1,22 @@
 <div class="subsec-head">
-  <span class="subsec-num">{{ num() }}</span>
-  @if (title()) {
-    <span class="subsec-title">{{ title() }}</span>
-  }
+  <button
+    type="button"
+    class="subsec-toggle"
+    [class.is-open]="open()"
+    (click)="openChange.emit(!open())"
+  >
+    <span class="subsec-num">{{ num() }}</span>
+    @if (title()) {
+      <span class="subsec-title">{{ title() }}</span>
+    }
+    <span class="subsec-chev"><icon-chevron-right /></span>
+  </button>
   @if (removable()) {
-    <ui-btn-remove class="subsec-remove" (remove)="remove.emit()" />
+    <ui-btn-remove (remove)="remove.emit()" />
   }
 </div>
-<ng-content />
+@if (open()) {
+  <div class="subsec-body">
+    <ng-content />
+  </div>
+}

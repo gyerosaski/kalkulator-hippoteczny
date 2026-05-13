@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { InsuranceCalcMethod, InsuranceFrequency, LifeInsuranceCalcMethod } from '../../../model';
 import { FormService } from '../../../services/form/form';
 import { InsuranceFrequencyLabelPipe } from '../../../pipes/insurance-frequency-label/insurance-frequency-label.pipe';
@@ -69,37 +69,68 @@ export class OverheadCostsFormComponent {
     return this.formService.additionalCostsArray;
   }
 
+  private getExpandedStates() {
+    const f = this.form.controls;
+    return {
+      commission: f.commission.controls.expanded.value,
+      appraisal: f.appraisal.controls.expanded.value,
+      bridge: f.bridge.controls.expanded.value,
+      propertyInsurance: f.propertyInsurance.controls.expanded.value,
+      lowEquityInsurance: f.lowEquityInsurance.controls.expanded.value,
+      lifeInsurance: f.lifeInsurance.controls.expanded.value,
+      jobLossInsurance: f.jobLossInsurance.controls.expanded.value,
+      additionalCosts: f.additionalCosts.controls.expanded.value,
+      promoRate: f.promoRate.controls.expanded.value,
+    };
+  }
+
+  readonly subsectionsOpen = toSignal(
+    this.form.valueChanges.pipe(map(() => this.getExpandedStates())),
+    { initialValue: this.getExpandedStates() },
+  );
+
+  setSubsectionOpen(key: string, open: boolean): void {
+    (this.form.get(`${key}.expanded`) as unknown as FormControl<boolean>)?.setValue(open);
+  }
+
   readonly commissionAmount = computed(() => {
     const mainForm = this.formService.form;
     const loanAmount = mainForm?.get('loanAmount')?.value || 0;
-    const commPct = this.form?.get('commissionPct')?.value || 0;
+    const commPct = this.form.controls.commission.controls.commissionPct.value || 0;
     return Math.round(loanAmount * commPct) / 100;
   });
 
   get propInsSuffix(): string {
-    return this.form?.get('propInsCalcMethod')?.value === InsuranceCalcMethod.FIXED_AMOUNT
+    return this.form.controls.propertyInsurance.controls.propInsCalcMethod.value ===
+      InsuranceCalcMethod.FIXED_AMOUNT
       ? 'zł'
       : '%';
   }
 
   get propInsDecimals(): number {
-    return this.form?.get('propInsCalcMethod')?.value === InsuranceCalcMethod.FIXED_AMOUNT ? 2 : 4;
+    return this.form.controls.propertyInsurance.controls.propInsCalcMethod.value ===
+      InsuranceCalcMethod.FIXED_AMOUNT
+      ? 2
+      : 4;
   }
 
   get lifeInsSuffix(): string {
-    return this.form?.get('lifeInsCalcMethod')?.value === LifeInsuranceCalcMethod.FIXED_AMOUNT
+    return this.form.controls.lifeInsurance.controls.lifeInsCalcMethod.value ===
+      LifeInsuranceCalcMethod.FIXED_AMOUNT
       ? 'zł'
       : '%';
   }
 
   get lifeInsDecimals(): number {
-    return this.form?.get('lifeInsCalcMethod')?.value === LifeInsuranceCalcMethod.FIXED_AMOUNT
+    return this.form.controls.lifeInsurance.controls.lifeInsCalcMethod.value ===
+      LifeInsuranceCalcMethod.FIXED_AMOUNT
       ? 2
       : 5;
   }
 
   get jobLossInsSuffix(): string {
-    return this.form?.get('jobLossInsCalcMethod')?.value === LifeInsuranceCalcMethod.FIXED_AMOUNT
+    return this.form.controls.jobLossInsurance.controls.jobLossInsCalcMethod.value ===
+      LifeInsuranceCalcMethod.FIXED_AMOUNT
       ? 'zł'
       : '%';
   }
