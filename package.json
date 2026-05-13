@@ -7,8 +7,11 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "prettier": "prettier --write ."
+    "prettier": "prettier --write .",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix"
   },
+  "type": "module",
   "private": true,
   "packageManager": "npm@11.8.0",
   "dependencies": {
@@ -29,9 +32,12 @@
     "@angular/build": "^21.2.8",
     "@angular/cli": "^21.2.8",
     "@angular/compiler-cli": "^21.2.0",
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "eslint": "^10.3.0",
     "jsdom": "^28.0.0",
     "prettier": "^3.8.1",
     "typescript": "~5.9.2",
+    "typescript-eslint": "^8.59.3",
     "vitest": "^4.0.8"
   }
 }

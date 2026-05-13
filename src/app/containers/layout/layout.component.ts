@@ -98,11 +98,11 @@ export class LayoutComponent {
   private recalculate() {
     const v = this.form.getRawValue();
     if (this.form.valid) {
-      const prepaymentsIncluded = v.prepayments.included;
-      const tranchesIncluded = v.tranches.included;
-      const overheadIncluded = v.overheadCosts.included;
+      const prepaymentsEnabled = v.prepayments.enabled;
+      const tranchesEnabled = v.tranches.enabled;
+      const overheadEnabled = v.overheadCosts.enabled;
 
-      const prepaymentRules = prepaymentsIncluded
+      const prepaymentRules = prepaymentsEnabled
         ? ((v.prepayments.fields.prepaymentRules ?? []) as any[])
             .filter((r) => r && r.from && (r.frequency === PrepaymentFrequency.ONE_TIME || r.to))
             .map((r) => ({
@@ -114,14 +114,14 @@ export class LayoutComponent {
             }))
         : [];
 
-      const rataDocelowa = prepaymentsIncluded
+      const rataDocelowa = prepaymentsEnabled
         ? ((v.prepayments.fields.rataDocelowaRegula ?? {}) as any)
         : ({} as any);
-      const prowizja = prepaymentsIncluded
+      const prowizja = prepaymentsEnabled
         ? ((v.prepayments.fields.prowizjaWczesniejszaSplata ?? {}) as any)
         : ({} as any);
 
-      const tranches: Tranche[] = tranchesIncluded
+      const tranches: Tranche[] = tranchesEnabled
         ? ((v.tranches.fields.transze ?? []) as any[]).map((t: any) => ({
             amount: Number(t.amount) || 0,
             date: t.date || '',
@@ -129,11 +129,11 @@ export class LayoutComponent {
           }))
         : [];
 
-      const overheadCostsRaw = overheadIncluded
+      const overheadCostsRaw = overheadEnabled
         ? ((v.overheadCosts.fields ?? {}) as any)
         : ({} as any);
 
-      const overheadCosts: OverheadCostsInputs = overheadIncluded
+      const overheadCosts: OverheadCostsInputs = overheadEnabled
         ? {
             commissionPct: Number(overheadCostsRaw.commissionPct) || 0,
             appraisalFee: Number(overheadCostsRaw.appraisalFee) || 0,
@@ -230,7 +230,7 @@ export class LayoutComponent {
         ratePeriods,
         prepaymentRules,
         tranches,
-        targetInstallmentRule: prepaymentsIncluded
+        targetInstallmentRule: prepaymentsEnabled
           ? {
               targetRate: Number(rataDocelowa.targetRate) || 0,
               from: rataDocelowa.from || nextMonthStr(),
@@ -244,7 +244,7 @@ export class LayoutComponent {
               to: nextMonthStr(),
               effect: PrepaymentEffect.LOWER_INSTALLMENT,
             },
-        earlyRepaymentCommission: prepaymentsIncluded
+        earlyRepaymentCommission: prepaymentsEnabled
           ? {
               ratePct: Number(prowizja.ratePct) || 0,
               validUntil: prowizja.validUntil || nextMonthStr(),

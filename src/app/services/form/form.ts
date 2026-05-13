@@ -58,15 +58,15 @@ function crossFieldValidator(control: import('@angular/forms').AbstractControl) 
   const capStart = basicData.get('capitalStartDate')?.value as string;
 
   const tranchesSection = group.controls.tranches;
-  const tranchesIncluded = tranchesSection.controls.included.value;
+  const tranchesEnabled = tranchesSection.controls.enabled.value;
   const transzeArray = tranchesSection.controls.fields.controls.transze;
 
   const prepaymentsSection = group.controls.prepayments;
-  const prepaymentsIncluded = prepaymentsSection.controls.included.value;
-  const prepaymentRules = prepaymentsIncluded
+  const prepaymentsEnabled = prepaymentsSection.controls.enabled.value;
+  const prepaymentRules = prepaymentsEnabled
     ? (prepaymentsSection.controls.fields.controls.prepaymentRules.value ?? [])
     : [];
-  const rataDocelowaRegula = prepaymentsIncluded
+  const rataDocelowaRegula = prepaymentsEnabled
     ? ((
         prepaymentsSection.controls.fields.controls.rataDocelowaRegula as FormGroup
       )?.getRawValue() ?? ({} as any))
@@ -75,7 +75,7 @@ function crossFieldValidator(control: import('@angular/forms').AbstractControl) 
   const errors: Record<string, unknown> = {};
   if (pv && la && la > pv) errors['loanGtProperty'] = true;
 
-  if (tranchesIncluded && transzeArray && transzeArray.length >= 1 && la > 0) {
+  if (tranchesEnabled && transzeArray && transzeArray.length >= 1 && la > 0) {
     let transzeSum = 0;
     for (let i = 0; i < transzeArray.length; i++) {
       transzeSum += Number(transzeArray.at(i).get('amount')?.value) || 0;
@@ -94,7 +94,7 @@ function crossFieldValidator(control: import('@angular/forms').AbstractControl) 
     if (capStart < start) errors['capitalBeforeStart'] = true;
   }
 
-  if (prepaymentsIncluded) {
+  if (prepaymentsEnabled) {
     for (const rule of prepaymentRules) {
       if (
         rule.frequency !== PrepaymentFrequency.ONE_TIME &&
@@ -173,16 +173,16 @@ export class FormService {
     return this.form.controls.prepayments;
   }
 
-  get isPrepaymentIncluded() {
-    return this.form.controls.prepayments.controls.included.value;
+  get isPrepaymentEnabled() {
+    return this.form.controls.prepayments.controls.enabled.value;
   }
 
-  get isOverheadCostsIncluded() {
-    return this.form.controls.overheadCosts.controls.included.value;
+  get isOverheadCostsEnabled() {
+    return this.form.controls.overheadCosts.controls.enabled.value;
   }
 
-  get isTrancheIncluded() {
-    return this.form.controls.tranches.controls.included.value;
+  get isTranchesEnabled() {
+    return this.form.controls.tranches.controls.enabled.value;
   }
 
   get tranchesSection(): FormGroup<ToggleableSectionFormGroup<TranchesFieldsFormGroup>> {
@@ -253,17 +253,17 @@ export class FormService {
       {
         basicData: this.createBasicDataGroup(),
         overheadCosts: new FormGroup<ToggleableSectionFormGroup<OverheadCostsFormGroup>>({
-          included: new FormControl(false, { nonNullable: true }),
+          enabled: new FormControl(false, { nonNullable: true }),
           fields: this.createOverheadCostsGroup(),
         }),
         tranches: new FormGroup<ToggleableSectionFormGroup<TranchesFieldsFormGroup>>({
-          included: new FormControl(false, { nonNullable: true }),
+          enabled: new FormControl(false, { nonNullable: true }),
           fields: new FormGroup<TranchesFieldsFormGroup>({
             transze: new FormArray([this.createTrancheGroup(true)]),
           }),
         }),
         prepayments: new FormGroup<ToggleableSectionFormGroup<PrepaymentsFieldsFormGroup>>({
-          included: new FormControl(false, { nonNullable: true }),
+          enabled: new FormControl(false, { nonNullable: true }),
           fields: new FormGroup<PrepaymentsFieldsFormGroup>({
             prepaymentRules: new FormArray([this.createPrepaymentRuleGroup()]),
             rataDocelowaRegula: new FormGroup<TargetInstallmentFormGroup>({

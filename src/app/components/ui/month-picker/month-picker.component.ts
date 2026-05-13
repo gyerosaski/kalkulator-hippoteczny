@@ -42,12 +42,15 @@ export class MonthPickerComponent implements ControlValueAccessor {
   writeValue(v: string): void {
     this._value.set(v ?? '');
   }
+
   registerOnChange(fn: (v: string) => void): void {
     this._onChange = fn;
   }
+
   registerOnTouched(fn: () => void): void {
     this._onTouched = fn;
   }
+
   setDisabledState(d: boolean): void {
     this.disabled.set(d);
   }

@@ -49,22 +49,20 @@ export class OverheadCostsFormComponent {
   get section() {
     return this.formService.overheadCostsSection;
   }
-  get included() {
-    return this.section.controls.included;
+
+  get sectionEnabledControl() {
+    return this.section.controls.enabled;
   }
-  readonly includedEnabled = toSignal(
-    this.formService.overheadCostsSection.controls.included.valueChanges,
-    { initialValue: this.formService.overheadCostsSection.controls.included.value },
+
+  readonly isSectionEnabled = toSignal(
+    this.formService.overheadCostsSection.controls.enabled.valueChanges,
+    { initialValue: this.formService.overheadCostsSection.controls.enabled.value },
   );
-  private readonly additionalCostsCount = toSignal(
-    this.formService.additionalCostsArray.valueChanges.pipe(
-      map(() => this.formService.additionalCostsArray.length),
-    ),
-    { initialValue: this.formService.additionalCostsArray.length },
-  );
+
   get form() {
     return this.formService.overheadCostsGroup;
   }
+
   get additionalCostsArray() {
     return this.formService.additionalCostsArray;
   }
@@ -81,19 +79,23 @@ export class OverheadCostsFormComponent {
       ? 'zł'
       : '%';
   }
+
   get propInsDecimals(): number {
     return this.form?.get('propInsCalcMethod')?.value === InsuranceCalcMethod.FIXED_AMOUNT ? 2 : 4;
   }
+
   get lifeInsSuffix(): string {
     return this.form?.get('lifeInsCalcMethod')?.value === LifeInsuranceCalcMethod.FIXED_AMOUNT
       ? 'zł'
       : '%';
   }
+
   get lifeInsDecimals(): number {
     return this.form?.get('lifeInsCalcMethod')?.value === LifeInsuranceCalcMethod.FIXED_AMOUNT
       ? 2
       : 5;
   }
+
   get jobLossInsSuffix(): string {
     return this.form?.get('jobLossInsCalcMethod')?.value === LifeInsuranceCalcMethod.FIXED_AMOUNT
       ? 'zł'
@@ -110,6 +112,7 @@ export class OverheadCostsFormComponent {
   addAdditionalCost() {
     this.formService.addAdditionalCost();
   }
+
   removeAdditionalCost(index: number) {
     this.formService.removeAdditionalCost(index);
   }

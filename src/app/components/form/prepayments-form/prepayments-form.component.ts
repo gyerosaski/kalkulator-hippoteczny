@@ -45,27 +45,33 @@ export class PrepaymentsFormComponent {
   get section() {
     return this.formService.prepaymentsSection;
   }
-  get included() {
-    return this.section.controls.included;
+
+  get sectionEnabledControl() {
+    return this.section.controls.enabled;
   }
-  readonly includedEnabled = toSignal(
-    this.formService.prepaymentsSection.controls.included.valueChanges,
-    { initialValue: this.formService.prepaymentsSection.controls.included.value },
+
+  readonly isSectionEnabled = toSignal(
+    this.formService.prepaymentsSection.controls.enabled.valueChanges,
+    { initialValue: this.formService.prepaymentsSection.controls.enabled.value },
   );
+
   private readonly nadplatyCount = toSignal(
     this.formService.nadplatyRegulyArray.valueChanges.pipe(
       map(() => this.formService.nadplatyRegulyArray.length),
     ),
     { initialValue: this.formService.nadplatyRegulyArray.length },
   );
+
   readonly badge = computed(() =>
-    this.includedEnabled() && this.nadplatyCount()! > 1
+    this.isSectionEnabled() && this.nadplatyCount()! > 1
       ? `liczba reguł: ${this.nadplatyCount()}`
       : 'opcjonalne',
   );
+
   get fieldsGroup() {
     return this.section.controls.fields;
   }
+
   get nadplatyRegulyArray() {
     return this.formService.nadplatyRegulyArray;
   }
@@ -73,12 +79,15 @@ export class PrepaymentsFormComponent {
   addNadplataRegula() {
     this.formService.addNadplataRegula();
   }
+
   removeNadplataRegula(index: number) {
     this.formService.removeNadplataRegula(index);
   }
+
   onNadplataFrequencyChanged(index: number) {
     this.formService.onNadplataFrequencyChanged(index);
   }
+
   onNadplataFromChanged(index: number) {
     this.formService.onNadplataFromChanged(index);
   }

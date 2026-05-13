@@ -3,8 +3,8 @@
   badge="opcjonalne"
   [toggleable]="true"
   [defaultOpen]="false"
-  [enabled]="includedEnabled()"
-  (enabledChange)="included.setValue($event)"
+  [enabled]="isSectionEnabled()"
+  (enabledChange)="sectionEnabledControl.setValue($event)"
 >
   <div [formGroup]="form">
     <ui-card tag="PROWIZJA ZA UDZIELENIE">

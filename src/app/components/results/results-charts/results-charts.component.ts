@@ -39,14 +39,14 @@ export class ResultsChartsComponent {
       { label: 'Kapitał', value: r.totals.totalCapital, color: 'var(--c-cap)' },
       { label: 'Odsetki', value: r.totals.totalInterest, color: 'var(--c-int)' },
     ];
-    if (this.formService.isOverheadCostsIncluded && r.totals.overheadCosts > 0) {
+    if (this.formService.isOverheadCostsEnabled && r.totals.overheadCosts > 0) {
       slices.push({
         label: 'Koszty okołokredytowe',
         value: r.totals.overheadCosts,
         color: 'var(--c-cost)',
       });
     }
-    if (this.formService.isPrepaymentIncluded && r.totals.prepayments > 0) {
+    if (this.formService.isPrepaymentEnabled && r.totals.prepayments > 0) {
       slices.push({ label: 'Nadpłaty', value: r.totals.prepayments, color: 'var(--c-over)' });
     }
     return slices;

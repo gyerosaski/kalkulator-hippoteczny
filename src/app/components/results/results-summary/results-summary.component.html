@@ -10,7 +10,7 @@
     <ui-kpi label="Odsetki" [value]="r.totals.totalInterest">
       {{ intPct() | number: '1.1-1' }}% kapitału
     </ui-kpi>
-    @if (isOverheadCostsIncluded || isPrepaymentIncluded) {
+    @if (isOverheadCostsEnabled || isPrepaymentEnabled) {
       <ui-kpi [label]="kpi4Label" [value]="kpi4Value()">
         @if (kpi4Meta()) {
           {{ kpi4Meta() }}

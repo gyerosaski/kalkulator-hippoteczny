@@ -90,6 +90,7 @@ export class BasicDataFormComponent {
     this.basicData.patchValue(synced, { emitEvent: false });
     this.form.updateValueAndValidity();
   }
+
   onLoanAmountChanged() {
     const v = this.basicData.getRawValue();
     const synced = this.calculatorService.syncLtvAmountValue(
@@ -101,6 +102,7 @@ export class BasicDataFormComponent {
     this.basicData.patchValue(synced, { emitEvent: false });
     this.form.updateValueAndValidity();
   }
+
   onPropertyValueChanged() {
     const v = this.basicData.getRawValue();
     const synced = this.calculatorService.syncLtvAmountValue(

@@ -31,36 +31,40 @@ import { CardsGroupComponent } from '../../ui/cards-group/cards-group.component'
 })
 export class TranchesFormComponent {
   readonly formService = inject(FormService);
-
-  collapsed = false;
-
   get section() {
     return this.formService.tranchesSection;
   }
-  get included() {
-    return this.section.controls.included;
+
+  get sectionEnabledControl() {
+    return this.section.controls.enabled;
   }
-  readonly includedEnabled = toSignal(
-    this.formService.tranchesSection.controls.included.valueChanges,
-    { initialValue: this.formService.tranchesSection.controls.included.value },
+
+  readonly isSectionEnabled = toSignal(
+    this.formService.tranchesSection.controls.enabled.valueChanges,
+    { initialValue: this.formService.tranchesSection.controls.enabled.value },
   );
+
   private readonly transzeCount = toSignal(
     this.formService.transzeArray.valueChanges.pipe(
       map(() => this.formService.transzeArray.length),
     ),
     { initialValue: this.formService.transzeArray.length },
   );
+
   readonly badge = computed(() =>
-    this.includedEnabled() && this.transzeCount()! > 1
+    this.isSectionEnabled() && this.transzeCount()! > 1
       ? `liczba transz: ${this.transzeCount()}`
       : 'opcjonalne',
   );
+
   get fieldsGroup() {
     return this.section.controls.fields;
   }
+
   get transzeArray() {
     return this.formService.transzeArray;
   }
+
   get transzeSuma() {
     return this.formService.transzeSuma;
   }
@@ -68,14 +72,8 @@ export class TranchesFormComponent {
   addTransza() {
     this.formService.addTransza();
   }
+
   removeTransza(index: number) {
     this.formService.removeTransza(index);
-  }
-  clearTransze() {
-    this.formService.clearTransze();
-  }
-
-  toggleCollapsed() {
-    this.collapsed = !this.collapsed;
   }
 }

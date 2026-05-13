@@ -90,7 +90,7 @@ export interface TranchesFieldsFormGroup {
 export interface ToggleableSectionFormGroup<
   T extends { [K in keyof T]: import('@angular/forms').AbstractControl },
 > {
-  included: FormControl<boolean>;
+  enabled: FormControl<boolean>;
   fields: FormGroup<T>;
 }
 

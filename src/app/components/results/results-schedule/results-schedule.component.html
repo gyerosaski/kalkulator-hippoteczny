@@ -10,10 +10,10 @@
         <div>Rata</div>
         <div>Kapitał</div>
         <div>Odsetki</div>
-        @if (isPrepaymentIncluded) {
+        @if (isPrepaymentEnabled) {
           <div>Nadpłaty</div>
         }
-        @if (isOverheadCostsIncluded) {
+        @if (isOverheadCostsEnabled) {
           <div>Koszty</div>
         }
         <div>Pozostało</div>
@@ -35,10 +35,10 @@
           <div class="mono">{{ y.sumRate | formatAmount }}</div>
           <div class="mono">{{ y.sumCapital | formatAmount }}</div>
           <div class="mono">{{ y.sumInterest | formatAmount }}</div>
-          @if (isPrepaymentIncluded) {
+          @if (isPrepaymentEnabled) {
             <div class="mono">{{ y.sumPrepayment | formatAmount }}</div>
           }
-          @if (isOverheadCostsIncluded) {
+          @if (isOverheadCostsEnabled) {
             <div class="mono">{{ y.sumInsuranceCost | formatAmount }}</div>
           }
           <div class="mono">
@@ -52,10 +52,10 @@
               <div class="mono">{{ r.rate | formatAmount }}</div>
               <div class="mono">{{ r.capital | formatAmount }}</div>
               <div class="mono">{{ r.interest | formatAmount }}</div>
-              @if (isPrepaymentIncluded) {
+              @if (isPrepaymentEnabled) {
                 <div class="mono">{{ r.prepayment | formatAmount }}</div>
               }
-              @if (isOverheadCostsIncluded) {
+              @if (isOverheadCostsEnabled) {
                 <div class="mono">{{ r.insuranceCost | formatAmount }}</div>
               }
               <div class="mono">{{ r.remaining | formatAmount }}</div>

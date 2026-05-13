@@ -155,9 +155,9 @@
     },
     "OverheadCostsSection": {
       "type": "object",
-      "required": ["included", "fields"],
+      "required": ["enabled", "fields"],
       "properties": {
-        "included": { "type": "boolean" },
+        "enabled": { "type": "boolean" },
         "fields": { "$ref": "#/$defs/OverheadCostsFields" }
       }
     },
@@ -172,9 +172,9 @@
     },
     "TranchesSection": {
       "type": "object",
-      "required": ["included", "fields"],
+      "required": ["enabled", "fields"],
       "properties": {
-        "included": { "type": "boolean" },
+        "enabled": { "type": "boolean" },
         "fields": {
           "type": "object",
           "required": ["transze"],
@@ -219,9 +219,9 @@
     },
     "PrepaymentsSection": {
       "type": "object",
-      "required": ["included", "fields"],
+      "required": ["enabled", "fields"],
       "properties": {
-        "included": { "type": "boolean" },
+        "enabled": { "type": "boolean" },
         "fields": {
           "type": "object",
           "required": ["prepaymentRules", "rataDocelowaRegula", "prowizjaWczesniejszaSplata"],

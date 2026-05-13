@@ -31,25 +31,25 @@ export class ResultsSummaryComponent {
     );
   }
 
-  get isPrepaymentIncluded(): boolean {
-    return this.formService.isPrepaymentIncluded;
+  get isPrepaymentEnabled(): boolean {
+    return this.formService.isPrepaymentEnabled;
   }
 
-  get isOverheadCostsIncluded(): boolean {
-    return this.formService.isOverheadCostsIncluded;
+  get isOverheadCostsEnabled(): boolean {
+    return this.formService.isOverheadCostsEnabled;
   }
 
-  get isTrancheIncluded(): boolean {
-    return this.formService.isTrancheIncluded;
+  get isTranchesEnabled(): boolean {
+    return this.formService.isTranchesEnabled;
   }
 
   get firstInstallmentLabel(): string {
-    return this.isTrancheIncluded ? 'Pierwsza pełna rata' : 'Pierwsza rata';
+    return this.isTranchesEnabled ? 'Pierwsza pełna rata' : 'Pierwsza rata';
   }
 
   get kpi4Label(): string {
-    if (this.isOverheadCostsIncluded && this.isPrepaymentIncluded) return 'Koszty i nadpłaty';
-    if (this.isPrepaymentIncluded) return 'Nadpłaty';
+    if (this.isOverheadCostsEnabled && this.isPrepaymentEnabled) return 'Koszty i nadpłaty';
+    if (this.isPrepaymentEnabled) return 'Nadpłaty';
     return 'Koszty okołokredytowe';
   }
 
@@ -69,10 +69,10 @@ export class ResultsSummaryComponent {
     const r = this.results();
     if (!r) return '';
     const parts: string[] = [];
-    if (this.isOverheadCostsIncluded && r.totals.overheadCosts) {
+    if (this.isOverheadCostsEnabled && r.totals.overheadCosts) {
       parts.push(`koszty ${this.fmt.format(r.totals.overheadCosts)} zł`);
     }
-    if (this.isPrepaymentIncluded && r.totals.prepayments) {
+    if (this.isPrepaymentEnabled && r.totals.prepayments) {
       parts.push(`nadpłaty ${this.fmt.format(r.totals.prepayments)} zł`);
     }
     return parts.join(' · ');

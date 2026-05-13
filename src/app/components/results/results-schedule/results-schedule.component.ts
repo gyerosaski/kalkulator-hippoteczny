@@ -19,18 +19,18 @@ export class ResultsScheduleComponent {
 
   expandedYear = signal<number | null>(null);
 
-  get isPrepaymentIncluded(): boolean {
-    return this.formService.isPrepaymentIncluded;
+  get isPrepaymentEnabled(): boolean {
+    return this.formService.isPrepaymentEnabled;
   }
 
-  get isOverheadCostsIncluded(): boolean {
-    return this.formService.isOverheadCostsIncluded;
+  get isOverheadCostsEnabled(): boolean {
+    return this.formService.isOverheadCostsEnabled;
   }
 
   get gridColumns(): string {
     const cols = ['1.4fr', '1fr', '1fr', '1fr'];
-    if (this.isPrepaymentIncluded) cols.push('1fr');
-    if (this.isOverheadCostsIncluded) cols.push('1fr');
+    if (this.isPrepaymentEnabled) cols.push('1fr');
+    if (this.isOverheadCostsEnabled) cols.push('1fr');
     cols.push('1.2fr');
     return cols.join(' ');
   }
