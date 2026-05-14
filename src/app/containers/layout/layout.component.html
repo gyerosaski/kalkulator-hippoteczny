@@ -40,10 +40,13 @@
     </div>
 
     <div class="column">
-      <app-results-summary [results]="results()" />
-      <app-results-charts [results]="results()" />
-      <app-results-schedule [yearlyGroups]="yearlyGroups()" />
-      <app-results-errors />
+      @if (results() && yearlyGroups()?.length) {
+        <app-results-summary [results]="results()" />
+        <app-results-charts [results]="results()" />
+        <app-results-schedule [yearlyGroups]="yearlyGroups()" />
+      } @else {
+        <app-results-errors />
+      }
     </div>
   </div>
 

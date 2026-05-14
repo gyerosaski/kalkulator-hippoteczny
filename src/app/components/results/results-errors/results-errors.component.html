@@ -1,103 +1,101 @@
-@if (errors().length) {
-  <div class="errors-view">
-    <div class="err-hero">
-      <div class="err-hero-ico">
-        <icon-warning />
-      </div>
-      <div class="err-hero-text">
-        <div class="err-hero-tag">FORMULARZ WYMAGA POPRAWEK</div>
-        <h2 class="err-hero-title">
-          Popraw <span class="err-hero-count">{{ totalLabel() }}</span
-          >, aby zobaczyć harmonogram
-        </h2>
-        <p class="err-hero-sub">
-          Wykresy, podsumowanie i tabela spłat pojawią się tutaj, gdy formularz po lewej będzie
-          kompletny i spójny.
-        </p>
-      </div>
+<div class="errors-view">
+  <div class="err-hero">
+    <div class="err-hero-ico">
+      <icon-warning />
     </div>
+    <div class="err-hero-text">
+      <div class="err-hero-tag">FORMULARZ WYMAGA POPRAWEK</div>
+      <h2 class="err-hero-title">
+        Popraw <span class="err-hero-count">{{ totalLabel() }}</span
+        >, aby zobaczyć harmonogram
+      </h2>
+      <p class="err-hero-sub">
+        Wykresy, podsumowanie i tabela spłat pojawią się tutaj, gdy formularz po lewej będzie
+        kompletny i spójny.
+      </p>
+    </div>
+  </div>
 
-    <div class="err-groups">
-      @for (g of groups(); track g.section) {
-        <div class="err-card">
-          <div class="err-card-head">
-            <h3 class="err-card-title">{{ g.section }}</h3>
-            <span class="err-card-count">{{ pluralFor(g.items.length) }}</span>
-          </div>
-          <ul class="err-list">
-            @for (err of g.items; track $index) {
-              <li class="err-row">
-                <span class="err-row-bullet" aria-hidden="true">
-                  <icon-warning-sm />
-                </span>
-                <div class="err-row-body">
-                  <div class="err-row-msg">{{ err.message }}</div>
-                  @if (err.detail) {
-                    <div class="err-row-detail mono">{{ err.detail }}</div>
-                  }
-                  <div class="err-row-meta">
-                    <span class="err-row-field">
-                      @if (err.fieldNum) {
-                        <span class="err-row-num">{{ err.fieldNum }}</span>
-                      }
-                      <span>{{ err.fieldLabel }}</span>
-                    </span>
-                  </div>
+  <div class="err-groups">
+    @for (g of groups(); track g.section) {
+      <div class="err-card">
+        <div class="err-card-head">
+          <h3 class="err-card-title">{{ g.section }}</h3>
+          <span class="err-card-count">{{ pluralFor(g.items.length) }}</span>
+        </div>
+        <ul class="err-list">
+          @for (err of g.items; track $index) {
+            <li class="err-row">
+              <span class="err-row-bullet" aria-hidden="true">
+                <icon-warning-sm />
+              </span>
+              <div class="err-row-body">
+                <div class="err-row-msg">{{ err.message }}</div>
+                @if (err.detail) {
+                  <div class="err-row-detail mono">{{ err.detail }}</div>
+                }
+                <div class="err-row-meta">
+                  <span class="err-row-field">
+                    @if (err.fieldNum) {
+                      <span class="err-row-num">{{ err.fieldNum }}</span>
+                    }
+                    <span>{{ err.fieldLabel }}</span>
+                  </span>
                 </div>
-              </li>
-            }
-          </ul>
+              </div>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </div>
+
+  <div class="err-ghost" aria-hidden="true">
+    <div class="err-ghost-tag">
+      <span class="err-ghost-dot"></span>
+      podgląd wyników niedostępny
+    </div>
+    <div class="err-ghost-kpis">
+      @for (_ of [0, 1, 2, 3]; track $index) {
+        <div class="err-ghost-kpi">
+          <div class="err-ghost-line err-ghost-line--xs"></div>
+          <div class="err-ghost-line err-ghost-line--lg"></div>
+          <div class="err-ghost-line err-ghost-line--xs"></div>
         </div>
       }
     </div>
-
-    <div class="err-ghost" aria-hidden="true">
-      <div class="err-ghost-tag">
-        <span class="err-ghost-dot"></span>
-        podgląd wyników niedostępny
-      </div>
-      <div class="err-ghost-kpis">
-        @for (_ of [0, 1, 2, 3]; track $index) {
-          <div class="err-ghost-kpi">
-            <div class="err-ghost-line err-ghost-line--xs"></div>
-            <div class="err-ghost-line err-ghost-line--lg"></div>
-            <div class="err-ghost-line err-ghost-line--xs"></div>
-          </div>
-        }
-      </div>
-      <div class="err-ghost-charts">
-        <div class="err-ghost-card">
-          <svg viewBox="0 0 120 120" class="err-ghost-donut">
-            <circle
-              cx="60"
-              cy="60"
-              r="46"
-              fill="none"
-              stroke="var(--err-ghost-line)"
-              stroke-width="14"
-              stroke-dasharray="4 6"
-            />
-          </svg>
-          <div class="err-ghost-legend">
-            <div class="err-ghost-line err-ghost-line--sm"></div>
-            <div class="err-ghost-line err-ghost-line--sm"></div>
-            <div class="err-ghost-line err-ghost-line--sm"></div>
-            <div class="err-ghost-line err-ghost-line--sm"></div>
-          </div>
+    <div class="err-ghost-charts">
+      <div class="err-ghost-card">
+        <svg viewBox="0 0 120 120" class="err-ghost-donut">
+          <circle
+            cx="60"
+            cy="60"
+            r="46"
+            fill="none"
+            stroke="var(--err-ghost-line)"
+            stroke-width="14"
+            stroke-dasharray="4 6"
+          />
+        </svg>
+        <div class="err-ghost-legend">
+          <div class="err-ghost-line err-ghost-line--sm"></div>
+          <div class="err-ghost-line err-ghost-line--sm"></div>
+          <div class="err-ghost-line err-ghost-line--sm"></div>
+          <div class="err-ghost-line err-ghost-line--sm"></div>
         </div>
-        <div class="err-ghost-card err-ghost-card--chart">
-          <svg viewBox="0 0 240 80" preserveAspectRatio="none" class="err-ghost-trend">
-            <path
-              d="M0 70 C 40 60, 70 50, 110 38 S 200 18, 240 10"
-              fill="none"
-              stroke="var(--err-ghost-line)"
-              stroke-width="1.5"
-              stroke-dasharray="3 4"
-            />
-            <path d="M0 78 L240 78" stroke="var(--err-ghost-line)" stroke-opacity="0.5" />
-          </svg>
-        </div>
+      </div>
+      <div class="err-ghost-card err-ghost-card--chart">
+        <svg viewBox="0 0 240 80" preserveAspectRatio="none" class="err-ghost-trend">
+          <path
+            d="M0 70 C 40 60, 70 50, 110 38 S 200 18, 240 10"
+            fill="none"
+            stroke="var(--err-ghost-line)"
+            stroke-width="1.5"
+            stroke-dasharray="3 4"
+          />
+          <path d="M0 78 L240 78" stroke="var(--err-ghost-line)" stroke-opacity="0.5" />
+        </svg>
       </div>
     </div>
   </div>
-}
+</div>
