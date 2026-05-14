@@ -752,6 +752,12 @@ ui-cards-group + ui-card {
   letter-spacing: 0.04em;
   font-weight: 500;
 }
+.tbl-head > div:not(:first-child) {
+  text-align: right;
+}
+.tbl .mono {
+  text-align: right;
+}
 .tbl-row {
   border-top: 1px solid var(--line);
   width: 100%;
@@ -778,10 +784,10 @@ ui-cards-group + ui-card {
 .tbl-row--month {
   background: oklch(98% 0.014 95);
   color: var(--ink-2);
-  padding-left: 36px;
   cursor: default;
 }
 .tbl-row--month .cell-month {
+  padding-left: 16px;
   color: var(--muted);
   font-size: 12px;
 }
