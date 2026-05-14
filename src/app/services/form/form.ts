@@ -1,16 +1,16 @@
 import { inject, Injectable } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import {
+  InstallmentType,
   InsuranceCalcMethod,
   InsuranceFrequency,
-  InstallmentType,
   LifeInsuranceCalcMethod,
   PrepaymentEffect,
   PrepaymentFrequency,
+  PrepaymentRule,
   RatePeriod,
   RateType,
   Tranche,
-  PrepaymentRule,
 } from '../../model/mortgage.model';
 import {
   AdditionalCostFormGroup,
@@ -25,11 +25,11 @@ import {
   LowEquityInsuranceFormGroup,
   MortgageFormGroup,
   OverheadCostsFormGroup,
-  PrepaymentsFieldsFormGroup,
   PrepaymentRuleFormGroup,
   PrepaymentRulesSectionFormGroup,
-  PropertyInsuranceFormGroup,
+  PrepaymentsFieldsFormGroup,
   PromoRateFormGroup,
+  PropertyInsuranceFormGroup,
   RatePeriodFormGroup,
   TargetInstallmentFormGroup,
   ToggleableSectionFormGroup,
@@ -264,7 +264,7 @@ export class FormService {
   }
 
   private createForm(): FormGroup<MortgageFormGroup> {
-    const form = new FormGroup<MortgageFormGroup>(
+    return new FormGroup<MortgageFormGroup>(
       {
         basicData: this.createBasicDataGroup(),
         overheadCosts: new FormGroup<ToggleableSectionFormGroup<OverheadCostsFormGroup>>({
@@ -319,7 +319,6 @@ export class FormService {
       },
       { validators: [crossFieldValidator] },
     );
-    return form;
   }
 
   private createOverheadCostsGroup(): FormGroup<OverheadCostsFormGroup> {
