@@ -484,7 +484,10 @@ export class FormService {
   }
 
   setDefaults(): void {
-    this.form.patchValue({
+    this.form.reset();
+    this.ratePeriodsArray.clear({ emitEvent: false });
+    this.ratePeriodsArray.push(this.createRatePeriodGroup());
+    /*    this.form.reset({
       basicData: {
         propertyValue: 500_000,
         loanAmount: 400_000,
@@ -494,8 +497,10 @@ export class FormService {
         capitalStartDate: nextMonthStr(),
         installmentType: InstallmentType.EQUAL,
       },
+      overheadCosts: this.form.controls.overheadCosts.getRawValue(),
       tranches: { enabled: false },
       prepayments: {
+        enabled: false,
         fields: {
           rataDocelowaRegula: {
             targetRate: 0,
@@ -510,6 +515,7 @@ export class FormService {
         },
       },
     });
+
     this.ratePeriodsArray.clear({ emitEvent: false });
     this.ratePeriodsArray.push(
       this.createRatePeriodGroup({
@@ -520,12 +526,14 @@ export class FormService {
         nominalRate: 9.0,
       }),
     );
+
     const prepaymentItems =
       this.form.controls.prepayments.controls.fields.controls.prepaymentRules.controls.items;
     prepaymentItems.clear({ emitEvent: false });
     prepaymentItems.push(this.createPrepaymentRuleGroup());
+
     this.tranchesArray.clear({ emitEvent: false });
-    this.tranchesArray.push(this.createTrancheGroup(true));
+    this.tranchesArray.push(this.createTrancheGroup(true));*/
   }
 
   setOverheadDefaults(): void {

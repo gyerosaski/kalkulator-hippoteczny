@@ -35,7 +35,7 @@ import { CardsGroupComponent } from '../../ui/cards-group/cards-group.component'
     LoanPeriodUnitLabelPipe,
   ],
   templateUrl: './basic-data-form.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class BasicDataFormComponent {
   private readonly formService = inject(FormService);
