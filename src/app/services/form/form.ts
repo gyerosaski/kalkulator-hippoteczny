@@ -69,7 +69,7 @@ function crossFieldValidator(control: import('@angular/forms').AbstractControl) 
 
   const tranchesSection = group.controls.tranches;
   const tranchesEnabled = tranchesSection.controls.enabled.value;
-  const transzeArray = tranchesSection.controls.fields.controls.transze;
+  const tranchesArray = tranchesSection.controls.fields.controls.tranches;
 
   const prepaymentsSection = group.controls.prepayments;
   const prepaymentsEnabled = prepaymentsSection.controls.enabled.value;
@@ -85,17 +85,17 @@ function crossFieldValidator(control: import('@angular/forms').AbstractControl) 
   const errors: Record<string, unknown> = {};
   if (pv && la && la > pv) errors['loanGtProperty'] = true;
 
-  if (tranchesEnabled && transzeArray && transzeArray.length >= 1 && la > 0) {
-    let transzeSum = 0;
-    for (let i = 0; i < transzeArray.length; i++) {
-      transzeSum += Number(transzeArray.at(i).get('amount')?.value) || 0;
+  if (tranchesEnabled && tranchesArray && tranchesArray.length >= 1 && la > 0) {
+    let trancheSum = 0;
+    for (let i = 0; i < tranchesArray.length; i++) {
+      trancheSum += Number(tranchesArray.at(i).get('amount')?.value) || 0;
     }
-    transzeSum = Math.round(transzeSum * 100) / 100;
-    if (Math.abs(transzeSum - la) > 0.01) {
-      errors['transzeSumMismatch'] = {
+    trancheSum = Math.round(trancheSum * 100) / 100;
+    if (Math.abs(trancheSum - la) > 0.01) {
+      errors['trancheSumMismatch'] = {
         expected: la,
-        actual: transzeSum,
-        diff: Math.round((transzeSum - la) * 100) / 100,
+        actual: trancheSum,
+        diff: Math.round((trancheSum - la) * 100) / 100,
       };
     }
   }
@@ -145,7 +145,7 @@ export class FormService {
 
   constructor() {
     this.form.controls.basicData.controls.startDate.valueChanges.subscribe((newDate) => {
-      this.transzeArray.at(0)?.controls.date.setValue(newDate, { emitEvent: false });
+      this.tranchesArray.at(0)?.controls.date.setValue(newDate, { emitEvent: false });
     });
   }
 
@@ -161,8 +161,8 @@ export class FormService {
     return this.form.controls.prepayments.controls.fields;
   }
 
-  get transzeArray(): FormArray<FormGroup<TrancheFormGroup>> {
-    return this.form.controls.tranches.controls.fields.controls.transze;
+  get tranchesArray(): FormArray<FormGroup<TrancheFormGroup>> {
+    return this.form.controls.tranches.controls.fields.controls.tranches;
   }
 
   get overheadCostsGroup(): FormGroup<OverheadCostsFormGroup> {
@@ -173,12 +173,12 @@ export class FormService {
     return this.overheadCostsGroup.controls.additionalCosts.controls.items;
   }
 
-  get transzeSuma(): number {
-    const transze = this.transzeArray;
-    if (!transze) return 0;
+  get trancheSum(): number {
+    const tranches = this.tranchesArray;
+    if (!tranches) return 0;
     let sum = 0;
-    for (let i = 0; i < transze.length; i++) {
-      sum += Number(transze.at(i).get('amount')?.value) || 0;
+    for (let i = 0; i < tranches.length; i++) {
+      sum += Number(tranches.at(i).get('amount')?.value) || 0;
     }
     return Math.round(sum * 100) / 100;
   }
@@ -273,7 +273,7 @@ export class FormService {
         tranches: new FormGroup<ToggleableSectionFormGroup<TranchesFieldsFormGroup>>({
           enabled: new FormControl(false, { nonNullable: true }),
           fields: new FormGroup<TranchesFieldsFormGroup>({
-            transze: new FormArray([this.createTrancheGroup(true)]),
+            tranches: new FormArray([this.createTrancheGroup(true)]),
           }),
         }),
         prepayments: new FormGroup<ToggleableSectionFormGroup<PrepaymentsFieldsFormGroup>>({
@@ -494,24 +494,24 @@ export class FormService {
     this.form.updateValueAndValidity();
   }
 
-  addTransza(): void {
+  addTranche(): void {
     const startDate = this.form.controls.basicData.get('startDate')?.value || ym();
-    const nextDate = addMonthsStr(startDate, this.transzeArray.length);
-    this.transzeArray.push(this.createTrancheGroup(false, { date: nextDate }));
+    const nextDate = addMonthsStr(startDate, this.tranchesArray.length);
+    this.tranchesArray.push(this.createTrancheGroup(false, { date: nextDate }));
     this.form.updateValueAndValidity();
   }
 
-  removeTransza(index: number): void {
-    if (index === 0 || this.transzeArray.length <= 1) return;
-    this.transzeArray.removeAt(index);
+  removeTranche(index: number): void {
+    if (index === 0 || this.tranchesArray.length <= 1) return;
+    this.tranchesArray.removeAt(index);
     this.form.updateValueAndValidity();
   }
 
-  clearTransze(): void {
+  clearTranches(): void {
     const loanAmount = this.form.controls.basicData.get('loanAmount')?.value || 0;
     const startDate = this.form.controls.basicData.get('startDate')?.value || ym();
     this.form.controls.tranches.controls.fields.setControl(
-      'transze',
+      'tranches',
       new FormArray([this.createTrancheGroup(true, { amount: loanAmount, date: startDate })]),
     );
     this.form.updateValueAndValidity();
@@ -612,7 +612,7 @@ export class FormService {
       new FormArray([this.createPrepaymentRuleGroup()]),
     );
     this.form.controls.tranches.controls.fields.setControl(
-      'transze',
+      'tranches',
       new FormArray([this.createTrancheGroup(true)]),
     );
   }
@@ -668,12 +668,13 @@ export class FormService {
       ) as FormArray<FormGroup<RatePeriodFormGroup>>,
     );
 
-    const transze: any[] = data?.tranches?.fields?.transze ?? [];
+    const tranches: any[] =
+      data?.tranches?.fields?.tranches ?? data?.tranches?.fields?.transze ?? [];
     this.form.controls.tranches.controls.fields.setControl(
-      'transze',
+      'tranches',
       new FormArray(
-        transze.length > 0
-          ? transze.map((t: any, i: number) => this.createTrancheGroup(i === 0, t))
+        tranches.length > 0
+          ? tranches.map((t: any, i: number) => this.createTrancheGroup(i === 0, t))
           : [this.createTrancheGroup(true)],
       ),
     );

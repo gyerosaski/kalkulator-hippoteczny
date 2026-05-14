@@ -44,16 +44,16 @@ export class TranchesFormComponent {
     { initialValue: this.formService.tranchesSection.controls.enabled.value },
   );
 
-  private readonly transzeCount = toSignal(
-    this.formService.transzeArray.valueChanges.pipe(
-      map(() => this.formService.transzeArray.length),
+  private readonly tranchesCount = toSignal(
+    this.formService.tranchesArray.valueChanges.pipe(
+      map(() => this.formService.tranchesArray.length),
     ),
-    { initialValue: this.formService.transzeArray.length },
+    { initialValue: this.formService.tranchesArray.length },
   );
 
   readonly badge = computed(() =>
-    this.isSectionEnabled() && this.transzeCount()! > 1
-      ? `liczba transz: ${this.transzeCount()}`
+    this.isSectionEnabled() && this.tranchesCount()! > 1
+      ? `liczba transz: ${this.tranchesCount()}`
       : 'opcjonalne',
   );
 
@@ -61,19 +61,19 @@ export class TranchesFormComponent {
     return this.section.controls.fields;
   }
 
-  get transzeArray() {
-    return this.formService.transzeArray;
+  get tranchesArray() {
+    return this.formService.tranchesArray;
   }
 
-  get transzeSuma() {
-    return this.formService.transzeSuma;
+  get trancheSum() {
+    return this.formService.trancheSum;
   }
 
-  addTransza() {
-    this.formService.addTransza();
+  addTranche() {
+    this.formService.addTranche();
   }
 
-  removeTransza(index: number) {
-    this.formService.removeTransza(index);
+  removeTranche(index: number) {
+    this.formService.removeTranche(index);
   }
 }

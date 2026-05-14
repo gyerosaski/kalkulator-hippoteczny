@@ -88,7 +88,7 @@ export class ResultsErrorsComponent {
       });
     }
 
-    const mismatch = fe?.['transzeSumMismatch'];
+    const mismatch = fe?.['trancheSumMismatch'];
     if (mismatch) {
       const expected = (mismatch.expected as number).toLocaleString('pl-PL', {
         minimumFractionDigits: 2,
@@ -105,8 +105,8 @@ export class ResultsErrorsComponent {
       });
     }
 
-    const transze = this.formService.transzeArray;
-    if (transze.controls.some((c) => c.get('amount')?.invalid)) {
+    const tranches = this.formService.tranchesArray;
+    if (tranches.controls.some((c) => c.get('amount')?.invalid)) {
       errs.push({
         section: FormErrorSection.TRANCHES,
         message: 'Kwota każdej transzy musi być większa od zera.',
@@ -114,7 +114,7 @@ export class ResultsErrorsComponent {
         fieldId: 'trancheAmount',
       });
     }
-    if (transze.controls.some((c) => c.get('disbursementFee')?.errors?.['max'])) {
+    if (tranches.controls.some((c) => c.get('disbursementFee')?.errors?.['max'])) {
       errs.push({
         section: FormErrorSection.TRANCHES,
         message: 'Wysokość opłaty za uruchomienie transzy nie może być wyższa niż 1 000 zł.',

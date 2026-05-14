@@ -136,7 +136,7 @@ export interface PrepaymentsFieldsFormGroup {
 }
 
 export interface TranchesFieldsFormGroup {
-  transze: FormArray<FormGroup<TrancheFormGroup>>;
+  tranches: FormArray<FormGroup<TrancheFormGroup>>;
 }
 
 export interface ToggleableSectionFormGroup<

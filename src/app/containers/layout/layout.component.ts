@@ -104,7 +104,7 @@ export class LayoutComponent {
         : ({} as any);
 
       const tranches: Tranche[] = tranchesEnabled
-        ? ((v.tranches.fields.transze ?? []) as any[]).map((t: any) => ({
+        ? ((v.tranches.fields.tranches ?? []) as any[]).map((t: any) => ({
             amount: Number(t.amount) || 0,
             date: t.date || '',
             disbursementFee: Number(t.disbursementFee) || 0,
