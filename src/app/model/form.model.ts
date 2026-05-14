@@ -32,6 +32,7 @@ export interface PrepaymentRuleFormGroup {
 }
 
 export interface TargetInstallmentFormGroup {
+  expanded: FormControl<boolean>;
   targetRate: FormControl<number>;
   from: FormControl<string>;
   to: FormControl<string>;
@@ -39,8 +40,14 @@ export interface TargetInstallmentFormGroup {
 }
 
 export interface EarlyRepaymentCommissionFormGroup {
+  expanded: FormControl<boolean>;
   ratePct: FormControl<number>;
   validUntil: FormControl<string>;
+}
+
+export interface PrepaymentRulesSectionFormGroup {
+  expanded: FormControl<boolean>;
+  items: FormArray<FormGroup<PrepaymentRuleFormGroup>>;
 }
 
 export interface AdditionalCostFormGroup {
@@ -123,7 +130,7 @@ export interface OverheadCostsFormGroup {
 }
 
 export interface PrepaymentsFieldsFormGroup {
-  prepaymentRules: FormArray<FormGroup<PrepaymentRuleFormGroup>>;
+  prepaymentRules: FormGroup<PrepaymentRulesSectionFormGroup>;
   rataDocelowaRegula: FormGroup<TargetInstallmentFormGroup>;
   prowizjaWczesniejszaSplata: FormGroup<EarlyRepaymentCommissionFormGroup>;
 }

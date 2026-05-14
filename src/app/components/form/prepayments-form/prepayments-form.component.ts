@@ -1,9 +1,9 @@
 import { Component, inject, ChangeDetectionStrategy, computed } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FormService } from '../../../services/form/form';
-import { PrepaymentFrequency, PrepaymentEffect } from '../../../model/mortgage.model';
+import { PrepaymentFrequency, PrepaymentEffect } from '../../../model';
 import { PrepaymentFrequencyLabelPipe } from '../../../pipes/prepayment-frequency-label/prepayment-frequency-label.pipe';
 import { PrepaymentEffectLabelPipe } from '../../../pipes/prepayment-effect-label/prepayment-effect-label.pipe';
 import { SectionComponent } from '../../ui/section/section.component';
@@ -13,7 +13,8 @@ import { MonthPickerComponent } from '../../ui/month-picker/month-picker.compone
 import { SelectComponent } from '../../ui/select/select.component';
 import { BtnAddComponent } from '../../ui/btn-add/btn-add.component';
 import { CardComponent } from '../../ui/card/card.component';
-import { CardsGroupComponent } from '../../ui/cards-group/cards-group.component';
+import { SubsectionComponent } from '../../ui/subsection/subsection.component';
+import { DividerComponent } from '../../ui/divider/divider.component';
 
 @Component({
   selector: 'app-prepayments-form',
@@ -27,7 +28,8 @@ import { CardsGroupComponent } from '../../ui/cards-group/cards-group.component'
     SelectComponent,
     BtnAddComponent,
     CardComponent,
-    CardsGroupComponent,
+    SubsectionComponent,
+    DividerComponent,
     PrepaymentFrequencyLabelPipe,
     PrepaymentEffectLabelPipe,
   ],
@@ -35,7 +37,7 @@ import { CardsGroupComponent } from '../../ui/cards-group/cards-group.component'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PrepaymentsFormComponent {
-  readonly formService = inject(FormService);
+  private readonly formService = inject(FormService);
 
   protected readonly PrepaymentFrequency = PrepaymentFrequency;
 
@@ -68,8 +70,28 @@ export class PrepaymentsFormComponent {
       : 'opcjonalne',
   );
 
-  get fieldsGroup() {
-    return this.section.controls.fields;
+  get prepaymentsGroup() {
+    return this.formService.prepaymentsGroup;
+  }
+
+  private getExpandedStates() {
+    const f = this.prepaymentsGroup.controls;
+    return {
+      prepaymentRules: f.prepaymentRules.controls.expanded.value,
+      rataDocelowaRegula: f.rataDocelowaRegula.controls.expanded.value,
+      prowizjaWczesniejszaSplata: f.prowizjaWczesniejszaSplata.controls.expanded.value,
+    };
+  }
+
+  readonly subsectionsOpen = toSignal(
+    this.formService.prepaymentsGroup.valueChanges.pipe(map(() => this.getExpandedStates())),
+    { initialValue: this.getExpandedStates() },
+  );
+
+  setSubsectionOpen(key: string, open: boolean): void {
+    (this.prepaymentsGroup.get(`${key}.expanded`) as unknown as FormControl<boolean>)?.setValue(
+      open,
+    );
   }
 
   get nadplatyRegulyArray() {

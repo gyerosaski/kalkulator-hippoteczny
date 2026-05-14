@@ -85,7 +85,7 @@ export class LayoutComponent {
       const overheadEnabled = v.overheadCosts.enabled;
 
       const prepaymentRules = prepaymentsEnabled
-        ? ((v.prepayments.fields.prepaymentRules ?? []) as any[])
+        ? ((v.prepayments.fields.prepaymentRules.items ?? []) as any[])
             .filter((r) => r && r.from && (r.frequency === PrepaymentFrequency.ONE_TIME || r.to))
             .map((r) => ({
               frequency: r.frequency as PrepaymentFrequency,

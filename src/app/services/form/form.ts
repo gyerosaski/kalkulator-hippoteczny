@@ -27,6 +27,7 @@ import {
   OverheadCostsFormGroup,
   PrepaymentsFieldsFormGroup,
   PrepaymentRuleFormGroup,
+  PrepaymentRulesSectionFormGroup,
   PropertyInsuranceFormGroup,
   PromoRateFormGroup,
   RatePeriodFormGroup,
@@ -73,7 +74,7 @@ function crossFieldValidator(control: import('@angular/forms').AbstractControl) 
   const prepaymentsSection = group.controls.prepayments;
   const prepaymentsEnabled = prepaymentsSection.controls.enabled.value;
   const prepaymentRules = prepaymentsEnabled
-    ? (prepaymentsSection.controls.fields.controls.prepaymentRules.value ?? [])
+    ? (prepaymentsSection.controls.fields.controls.prepaymentRules.value?.items ?? [])
     : [];
   const rataDocelowaRegula = prepaymentsEnabled
     ? ((
@@ -153,7 +154,11 @@ export class FormService {
   }
 
   get nadplatyRegulyArray(): FormArray<FormGroup<PrepaymentRuleFormGroup>> {
-    return this.form.controls.prepayments.controls.fields.controls.prepaymentRules;
+    return this.form.controls.prepayments.controls.fields.controls.prepaymentRules.controls.items;
+  }
+
+  get prepaymentsGroup(): FormGroup<PrepaymentsFieldsFormGroup> {
+    return this.form.controls.prepayments.controls.fields;
   }
 
   get transzeArray(): FormArray<FormGroup<TrancheFormGroup>> {
@@ -274,8 +279,12 @@ export class FormService {
         prepayments: new FormGroup<ToggleableSectionFormGroup<PrepaymentsFieldsFormGroup>>({
           enabled: new FormControl(false, { nonNullable: true }),
           fields: new FormGroup<PrepaymentsFieldsFormGroup>({
-            prepaymentRules: new FormArray([this.createPrepaymentRuleGroup()]),
+            prepaymentRules: new FormGroup<PrepaymentRulesSectionFormGroup>({
+              expanded: new FormControl(false, { nonNullable: true }),
+              items: new FormArray([this.createPrepaymentRuleGroup()]),
+            }),
             rataDocelowaRegula: new FormGroup<TargetInstallmentFormGroup>({
+              expanded: new FormControl(false, { nonNullable: true }),
               targetRate: new FormControl(0, {
                 nonNullable: true,
                 validators: [Validators.min(0)],
@@ -294,6 +303,7 @@ export class FormService {
               }),
             }),
             prowizjaWczesniejszaSplata: new FormGroup<EarlyRepaymentCommissionFormGroup>({
+              expanded: new FormControl(false, { nonNullable: true }),
               ratePct: new FormControl(0, {
                 nonNullable: true,
                 validators: [Validators.min(0), Validators.max(100)],
@@ -597,8 +607,8 @@ export class FormService {
         }),
       ]) as FormArray<FormGroup<RatePeriodFormGroup>>,
     );
-    this.form.controls.prepayments.controls.fields.setControl(
-      'prepaymentRules',
+    this.form.controls.prepayments.controls.fields.controls.prepaymentRules.setControl(
+      'items',
       new FormArray([this.createPrepaymentRuleGroup()]),
     );
     this.form.controls.tranches.controls.fields.setControl(
@@ -668,9 +678,11 @@ export class FormService {
       ),
     );
 
-    const prepaymentRules: any[] = data?.prepayments?.fields?.prepaymentRules ?? [];
-    this.form.controls.prepayments.controls.fields.setControl(
-      'prepaymentRules',
+    const rawPrepaymentRules = data?.prepayments?.fields?.prepaymentRules;
+    const prepaymentRules: any[] =
+      (Array.isArray(rawPrepaymentRules) ? rawPrepaymentRules : rawPrepaymentRules?.items) ?? [];
+    this.form.controls.prepayments.controls.fields.controls.prepaymentRules.setControl(
+      'items',
       new FormArray(
         prepaymentRules.length > 0
           ? prepaymentRules.map((r: any) => this.createPrepaymentRuleGroup(r))
