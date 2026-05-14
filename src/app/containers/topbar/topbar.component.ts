@@ -9,9 +9,12 @@ import {
 
 import { FormService } from '../../services/form/form';
 import { SchemaValidatorService } from '../../services/schema-validator/schema-validator.service';
+import { ThemeService } from '../../services/theme/theme.service';
 import { SaveCalculationDialogComponent } from '../../dialogs/save-calculation/save-calculation-dialog.component';
 import { LoadValidationErrorDialogComponent } from '../../dialogs/load-validation-error/load-validation-error-dialog.component';
 import { IconCalculatorComponent } from '../../components/icons/icon-calculator/icon-calculator.component';
+import { IconSunComponent } from '../../components/icons/icon-sun/icon-sun.component';
+import { IconMoonComponent } from '../../components/icons/icon-moon/icon-moon.component';
 
 @Component({
   selector: 'app-topbar',
@@ -20,6 +23,8 @@ import { IconCalculatorComponent } from '../../components/icons/icon-calculator/
     SaveCalculationDialogComponent,
     LoadValidationErrorDialogComponent,
     IconCalculatorComponent,
+    IconSunComponent,
+    IconMoonComponent,
   ],
   templateUrl: './topbar.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,6 +32,7 @@ import { IconCalculatorComponent } from '../../components/icons/icon-calculator/
 export class TopbarComponent {
   private formService = inject(FormService);
   private schemaValidator = inject(SchemaValidatorService);
+  protected themeService = inject(ThemeService);
   private ngZone = inject(NgZone);
   private saveDialog = viewChild.required(SaveCalculationDialogComponent);
   private validationErrorDialog = viewChild.required(LoadValidationErrorDialogComponent);

@@ -9,8 +9,6 @@ body {
 }
 body {
   font-family: 'Inter Tight', system-ui, sans-serif;
-  background: var(--bg);
-  color: var(--ink);
   font-size: 14px;
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
@@ -27,6 +25,10 @@ body {
   --line-2: oklch(86% 0.014 95);
   --grid: oklch(90% 0.012 95);
   --track: oklch(94% 0.012 95);
+  --surface-stripe: oklch(98% 0.014 95);
+
+  background: var(--bg);
+  color: var(--ink);
 
   --accent: var(--accent-sage);
   --accent-deep: var(--accent-sage-deep);
@@ -88,6 +90,36 @@ body {
 }
 .app[data-font='system'] {
   font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+.app[data-theme='dark'] {
+  --bg: oklch(13% 0.01 250);
+  --surface: oklch(17% 0.012 250);
+  --surface-2: oklch(21% 0.014 250);
+  --surface-stripe: oklch(15% 0.01 250);
+  --ink: oklch(93% 0.006 95);
+  --ink-2: oklch(68% 0.01 250);
+  --muted: oklch(48% 0.01 250);
+  --line: oklch(25% 0.012 250);
+  --line-2: oklch(30% 0.014 250);
+  --grid: oklch(23% 0.012 250);
+  --track: oklch(22% 0.012 250);
+  --shadow-sm: 0 1px 0 oklch(5% 0.005 250 / 0.6);
+  --shadow: 0 1px 2px oklch(5% 0.005 250 / 0.2), 0 4px 16px oklch(5% 0.005 250 / 0.2);
+  --shadow-lg: 0 2px 4px oklch(5% 0.005 250 / 0.25), 0 12px 32px oklch(5% 0.005 250 / 0.3);
+
+  --accent-sage: oklch(62% 0.09 150);
+  --accent-sage-deep: oklch(73% 0.11 155);
+  --accent-peach: oklch(65% 0.1 50);
+  --accent-peach-deep: oklch(76% 0.13 45);
+  --accent-lav: oklch(65% 0.09 290);
+  --accent-lav-deep: oklch(74% 0.13 285);
+  --accent-mist: oklch(64% 0.07 230);
+  --accent-mist-deep: oklch(73% 0.11 235);
+
+  .btn--primary:hover {
+    background: oklch(80% 0.006 95);
+  }
 }
 
 .mono {
@@ -210,13 +242,21 @@ body {
   border-color: var(--accent);
 }
 .ico-btn {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 8px;
   border: 1px solid var(--line);
   background: var(--surface);
   color: var(--ink-2);
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+.ico-btn:hover {
+  background: var(--surface-2);
+  color: var(--ink);
 }
 .ico-btn:disabled {
   opacity: 0.4;
@@ -256,6 +296,7 @@ body {
   border: 0;
   cursor: pointer;
   font: inherit;
+  color: inherit;
 }
 .sec-chev {
   display: inline-flex;
@@ -789,6 +830,7 @@ ui-cards-group + ui-card {
   border-right: 0;
   border-bottom: 0;
   font: inherit;
+  color: inherit;
   cursor: pointer;
 }
 .tbl-row--year:hover {
@@ -804,7 +846,7 @@ ui-cards-group + ui-card {
   gap: 8px;
 }
 .tbl-row--month {
-  background: oklch(98% 0.014 95);
+  background: var(--surface-stripe);
   color: var(--ink-2);
   cursor: default;
 }

@@ -27,6 +27,18 @@
     <button class="btn btn--primary" type="button" (click)="saveCalculation()">
       Zapisz kalkulację
     </button>
+    <button
+      class="ico-btn"
+      type="button"
+      (click)="themeService.toggle()"
+      [title]="themeService.darkMode() ? 'Tryb jasny' : 'Tryb ciemny'"
+    >
+      @if (themeService.darkMode()) {
+        <icon-sun />
+      } @else {
+        <icon-moon />
+      }
+    </button>
   </div>
 </header>
 

@@ -19,6 +19,7 @@ import {
 } from '../../model/mortgage.model';
 import { CalculatorService } from '../../services/calculator/calculator.service';
 import { FormService } from '../../services/form/form';
+import { ThemeService } from '../../services/theme/theme.service';
 import { TopbarComponent } from '../topbar/topbar.component';
 import { BasicDataFormComponent } from '../../components/form/basic-data-form/basic-data-form.component';
 import { OverheadCostsFormComponent } from '../../components/form/overhead-costs-form/overhead-costs-form.component';
@@ -62,6 +63,7 @@ function nextMonthStr(date = new Date()): string {
 export class LayoutComponent {
   private calc = inject(CalculatorService);
   private formService = inject(FormService);
+  protected themeService = inject(ThemeService);
 
   get form() {
     return this.formService.form;
