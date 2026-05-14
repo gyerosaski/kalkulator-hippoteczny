@@ -89,17 +89,28 @@
                 </div>
               </ng-container>
             }
-            <ui-field label="Stopa" num="8">
-              <ui-segmented
-                formControlName="rateType"
-                [options]="rateTypeOptions"
-                [labels]="rateTypeOptions | rateTypeLabel"
-              />
-            </ui-field>
-            <div class="row row--3">
+            <div class="row row--4">
+              <ui-field label="Stopa" num="8">
+                <ui-segmented
+                  formControlName="rateType"
+                  [options]="rateTypeOptions"
+                  [labels]="rateTypeOptions | rateTypeLabel"
+                />
+              </ui-field>
+              @if (period.get('rateType')?.value === RateType.VARIABLE) {
+                <ui-field num="9a" label="WIBOR">
+                  <ui-number-input formControlName="wibor" suffix="%" [decimals]="2" />
+                </ui-field>
+                <ui-field num="9b" label="Marża">
+                  <ui-number-input formControlName="margin" suffix="%" [decimals]="2" />
+                </ui-field>
+              }
               <ui-field
                 num="9"
                 label="Oprocentowanie"
+                [style.gridColumn]="
+                  period.get('rateType')?.value !== RateType.VARIABLE ? 'span 3' : null
+                "
                 [hint]="
                   period.get('rateType')?.value === RateType.VARIABLE
                     ? 'WIBOR + Marża'
@@ -124,14 +135,6 @@
                   <ui-number-input formControlName="nominalRate" suffix="%" [decimals]="2" />
                 }
               </ui-field>
-              @if (period.get('rateType')?.value === RateType.VARIABLE) {
-                <ui-field num="9a" label="WIBOR">
-                  <ui-number-input formControlName="wibor" suffix="%" [decimals]="2" />
-                </ui-field>
-                <ui-field num="9b" label="Marża">
-                  <ui-number-input formControlName="margin" suffix="%" [decimals]="2" />
-                </ui-field>
-              }
             </div>
           </ui-card>
         }
