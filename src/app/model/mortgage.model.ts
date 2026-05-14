@@ -192,3 +192,19 @@ export interface YearGroup {
   lastRemaining: number;
   rows: ScheduleRow[];
 }
+
+export enum FormErrorSection {
+  BASIC_DATA = 'Dane podstawowe',
+  TRANCHES = 'Transze',
+  PREPAYMENTS = 'Nadpłaty',
+  OVERHEAD_COSTS = 'Koszty okołokredytowe i promocje',
+}
+
+export interface FormError {
+  section: FormErrorSection;
+  message: string;
+  detail?: string;
+  fieldNum?: string;
+  fieldLabel: string;
+  fieldId: string;
+}
