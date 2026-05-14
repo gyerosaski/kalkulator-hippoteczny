@@ -7,16 +7,12 @@
   (enabledChange)="sectionEnabledControl.setValue($event)"
 >
   <div [formGroup]="fieldsGroup">
-    <ui-cards-group>
-      <div formArrayName="transze">
-        @for (tranche of transzeArray.controls; track $index) {
-          <ui-card
-            [tag]="'TRANSZA ' + ($index + 1)"
-            [removable]="$index > 0"
-            (remove)="removeTransza($index)"
-            [formGroupName]="$index"
-          >
-            <div [class]="$index > 0 ? 'row row--3' : 'row row--2'">
+    <div formArrayName="transze">
+      @for (tranche of transzeArray.controls; track $index) {
+        <ui-card [formGroupName]="$index">
+          <div class="row-ctrl">
+            <span class="tranche-num">{{ $index + 1 }}</span>
+            <div class="row row--3">
               <ui-field label="Kwota">
                 <ui-number-input formControlName="amount" suffix="zł" [decimals]="2" />
               </ui-field>
@@ -29,12 +25,15 @@
                 </ui-field>
               }
             </div>
-          </ui-card>
-        }
-      </div>
+            @if ($index > 0) {
+              <ui-btn-remove (remove)="removeTransza($index)" />
+            }
+          </div>
+        </ui-card>
+      }
+    </div>
 
-      <ui-btn-add label="Dodaj transzę" (add)="addTransza()" />
-    </ui-cards-group>
+    <ui-btn-add label="Dodaj transzę" (add)="addTransza()" />
 
     <div class="suma-row">
       <span class="muted">Suma transz</span>

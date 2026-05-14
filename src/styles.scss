@@ -308,6 +308,28 @@ body {
 .row--4 {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
+.row-ctrl {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+
+  > .row {
+    flex: 1;
+  }
+}
+
+.tranche-num {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  color: var(--ink);
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
 
 .field {
   display: flex;
