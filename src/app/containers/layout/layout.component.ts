@@ -27,7 +27,7 @@ import { PrepaymentsFormComponent } from '../../components/form/prepayments-form
 import { ResultsSummaryComponent } from '../../components/results/results-summary/results-summary.component';
 import { ResultsChartsComponent } from '../../components/results/results-charts/results-charts.component';
 import { ResultsScheduleComponent } from '../../components/results/results-schedule/results-schedule.component';
-import { ResultsErrorsComponent } from '../../components/results/results-errors/results-errors.component';
+import { ResultsErrorsComponent } from '../../components/errors/results-errors/results-errors.component';
 
 function ym(date = new Date()): string {
   const y = date.getFullYear();

@@ -173,6 +173,7 @@ export class FormService {
     return this.overheadCostsGroup.controls.additionalCosts.controls.items;
   }
 
+  // TODO: przepisać z wykorzystaniem `array.reduce()`
   get trancheSum(): number {
     const tranches = this.tranchesArray;
     if (!tranches) return 0;
@@ -580,6 +581,7 @@ export class FormService {
         capitalStartDate: nextMonthStr(),
         installmentType: InstallmentType.EQUAL,
       },
+      tranches: { enabled: false },
       prepayments: {
         fields: {
           rataDocelowaRegula: {
@@ -595,26 +597,22 @@ export class FormService {
         },
       },
     });
-    this.form.controls.basicData.setControl(
-      'ratePeriods',
-      new FormArray([
-        this.createRatePeriodGroup({
-          from: ym(),
-          rateType: RateType.VARIABLE,
-          wibor: 7.0,
-          margin: 2.0,
-          nominalRate: 9.0,
-        }),
-      ]) as FormArray<FormGroup<RatePeriodFormGroup>>,
+    this.ratePeriodsArray.clear({ emitEvent: false });
+    this.ratePeriodsArray.push(
+      this.createRatePeriodGroup({
+        from: ym(),
+        rateType: RateType.VARIABLE,
+        wibor: 7.0,
+        margin: 2.0,
+        nominalRate: 9.0,
+      }),
     );
-    this.form.controls.prepayments.controls.fields.controls.prepaymentRules.setControl(
-      'items',
-      new FormArray([this.createPrepaymentRuleGroup()]),
-    );
-    this.form.controls.tranches.controls.fields.setControl(
-      'tranches',
-      new FormArray([this.createTrancheGroup(true)]),
-    );
+    const prepaymentItems =
+      this.form.controls.prepayments.controls.fields.controls.prepaymentRules.controls.items;
+    prepaymentItems.clear({ emitEvent: false });
+    prepaymentItems.push(this.createPrepaymentRuleGroup());
+    this.tranchesArray.clear({ emitEvent: false });
+    this.tranchesArray.push(this.createTrancheGroup(true));
   }
 
   setOverheadDefaults(): void {

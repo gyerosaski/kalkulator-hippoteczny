@@ -13,13 +13,24 @@
 
 /* Hero */
 .err-hero {
-  display: flex;
-  gap: 16px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 18px;
   align-items: flex-start;
-  padding: 20px;
-  background: oklch(99% 0.008 30);
-  border: 1px solid oklch(91% 0.04 30);
-  border-radius: var(--r-lg);
+  padding: 22px 22px 24px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  position: relative;
+  overflow: hidden;
+}
+
+.err-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--err-deep);
 }
 
 .err-hero-ico {

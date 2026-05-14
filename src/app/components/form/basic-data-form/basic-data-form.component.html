@@ -72,7 +72,7 @@
 
     <ui-cards-group>
       <div formArrayName="ratePeriods">
-        @for (period of ratePeriods.controls; track $index) {
+        @for (period of ratePeriodControls(); track $index) {
           <ui-card
             [tag]="'OKRES ' + ($index + 1)"
             [removable]="$index > 0"

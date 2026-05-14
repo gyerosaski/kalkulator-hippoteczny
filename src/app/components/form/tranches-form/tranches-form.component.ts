@@ -52,7 +52,7 @@ export class TranchesFormComponent {
   );
 
   readonly badge = computed(() =>
-    this.isSectionEnabled() && this.tranchesCount()! > 1
+    this.isSectionEnabled() && this.tranchesCount() > 1
       ? `liczba transz: ${this.tranchesCount()}`
       : 'opcjonalne',
   );

@@ -1,4 +1,6 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, computed } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormService } from '../../../services/form/form';
 import { CalculatorService } from '../../../services/calculator/calculator.service';
@@ -49,16 +51,22 @@ export class BasicDataFormComponent {
 
   loanPeriodUnit: LoanPeriodUnit = LoanPeriodUnit.YEARS;
 
+  private readonly _ratePeriodsSync = toSignal(
+    this.formService.ratePeriodsArray.valueChanges.pipe(map(() => null)),
+    { initialValue: null },
+  );
+
+  protected readonly ratePeriodControls = computed(() => {
+    this._ratePeriodsSync();
+    return this.formService.ratePeriodsArray.controls;
+  });
+
   get form() {
     return this.formService.form;
   }
 
   get basicData() {
     return this.formService.form.controls.basicData;
-  }
-
-  get ratePeriods() {
-    return this.formService.ratePeriodsArray;
   }
 
   get loanPeriodDisplayValue(): number {
