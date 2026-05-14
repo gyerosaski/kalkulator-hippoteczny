@@ -1,35 +1,5 @@
 <div class="app">
-  <header class="topbar">
-    <div class="brand">
-      <div class="brand-mark">
-        <icon-calculator />
-      </div>
-      <div>
-        <div class="brand-name">Kalkulator Hipoteczny</div>
-      </div>
-    </div>
-    <nav class="tabs">
-      <button class="tab is-on">Kalkulator</button>
-      <button class="tab">Twoje kalkulacje</button>
-      <button class="tab">Porównanie ofert</button>
-    </nav>
-    <div class="topbar-actions">
-      <input
-        type="file"
-        accept=".json"
-        #fileInputEl
-        (change)="onFileSelected($event)"
-        style="display: none"
-      />
-      <button class="btn btn--ghost" type="button" (click)="setDefaults()">Wstaw domyślne</button>
-      <button class="btn btn--ghost" type="button" (click)="loadCalculationFromFile()">
-        Wczytaj kalkulację
-      </button>
-      <button class="btn btn--primary" type="button" (click)="saveCalculation()">
-        Zapisz kalkulację
-      </button>
-    </div>
-  </header>
+  <app-topbar />
 
   <div class="two-column-layout">
     <div class="column">
@@ -49,7 +19,4 @@
       }
     </div>
   </div>
-
-  <app-save-calculation-dialog />
-  <app-load-validation-error-dialog />
 </div>

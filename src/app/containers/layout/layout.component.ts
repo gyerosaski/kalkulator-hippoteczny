@@ -1,12 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  inject,
-  NgZone,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 
 import { ReactiveFormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -27,9 +19,7 @@ import {
 } from '../../model/mortgage.model';
 import { CalculatorService } from '../../services/calculator/calculator.service';
 import { FormService } from '../../services/form/form';
-import { SchemaValidatorService } from '../../services/schema-validator/schema-validator.service';
-import { SaveCalculationDialogComponent } from '../../dialogs/save-calculation/save-calculation-dialog.component';
-import { LoadValidationErrorDialogComponent } from '../../dialogs/load-validation-error/load-validation-error-dialog.component';
+import { TopbarComponent } from '../topbar/topbar.component';
 import { BasicDataFormComponent } from '../../components/form/basic-data-form/basic-data-form.component';
 import { OverheadCostsFormComponent } from '../../components/form/overhead-costs-form/overhead-costs-form.component';
 import { TranchesFormComponent } from '../../components/form/tranches-form/tranches-form.component';
@@ -38,7 +28,6 @@ import { ResultsSummaryComponent } from '../../components/results/results-summar
 import { ResultsChartsComponent } from '../../components/results/results-charts/results-charts.component';
 import { ResultsScheduleComponent } from '../../components/results/results-schedule/results-schedule.component';
 import { ResultsErrorsComponent } from '../../components/results/results-errors/results-errors.component';
-import { IconCalculatorComponent } from '../../components/icons/icon-calculator/icon-calculator.component';
 
 function ym(date = new Date()): string {
   const y = date.getFullYear();
@@ -56,8 +45,7 @@ function nextMonthStr(date = new Date()): string {
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    SaveCalculationDialogComponent,
-    LoadValidationErrorDialogComponent,
+    TopbarComponent,
     BasicDataFormComponent,
     OverheadCostsFormComponent,
     TranchesFormComponent,
@@ -66,7 +54,6 @@ function nextMonthStr(date = new Date()): string {
     ResultsChartsComponent,
     ResultsScheduleComponent,
     ResultsErrorsComponent,
-    IconCalculatorComponent,
   ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss',
@@ -75,11 +62,6 @@ function nextMonthStr(date = new Date()): string {
 export class LayoutComponent {
   private calc = inject(CalculatorService);
   private formService = inject(FormService);
-  private schemaValidator = inject(SchemaValidatorService);
-  private ngZone = inject(NgZone);
-  private saveDialog = viewChild.required(SaveCalculationDialogComponent);
-  private validationErrorDialog = viewChild.required(LoadValidationErrorDialogComponent);
-  private fileInputEl = viewChild.required<ElementRef<HTMLInputElement>>('fileInputEl');
 
   get form() {
     return this.formService.form;
@@ -264,84 +246,6 @@ export class LayoutComponent {
       this.results.set(null);
       this.yearlyGroups.set(null);
     }
-  }
-
-  setDefaults() {
-    this.formService.setDefaults();
-    this.formService.setOverheadDefaults();
-  }
-
-  loadCalculationFromFile() {
-    const el = this.fileInputEl().nativeElement;
-    el.value = '';
-    el.click();
-  }
-
-  onFileSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const parsed = JSON.parse(e.target?.result as string);
-        const formData = parsed?.data ?? parsed;
-        const errors = this.schemaValidator.validate(formData);
-        if (errors.length > 0) {
-          this.ngZone.run(() => this.validationErrorDialog().open(errors));
-          return;
-        }
-        this.ngZone.run(() => this.formService.loadFromFile(formData));
-      } catch {
-        window.alert(
-          'Nie udało się wczytać pliku. Upewnij się, że to prawidłowy plik kalkulacji .json.',
-        );
-      }
-    };
-    reader.readAsText(file);
-  }
-
-  async saveCalculation() {
-    const defaultName = 'Kalkulacja ' + new Date().toLocaleDateString('pl-PL');
-    const name = await this.saveDialog().open(defaultName);
-    if (!name) return;
-    const data = this.form.getRawValue();
-    const all = JSON.parse(localStorage.getItem('kalkulacje') || '[]');
-    const existingIdx = all.findIndex((x: any) => x.name === name);
-    if (existingIdx >= 0) {
-      const overwrite = window.confirm(
-        `Istnieje już kalkulacja o nazwie "${name}". Czy chcesz ją nadpisać?`,
-      );
-      if (!overwrite) return;
-    }
-    const record = { name, createdAt: new Date().toISOString(), data };
-    if (existingIdx >= 0) {
-      all[existingIdx] = record;
-    } else {
-      all.push(record);
-    }
-    localStorage.setItem('kalkulacje', JSON.stringify(all));
-
-    const fileName = this.sanitizeFileName(name) + '.json';
-    this.downloadJsonFile(fileName, record);
-  }
-
-  private sanitizeFileName(name: string): string {
-    const s = (name || '').replace(/[\\\/:*?"<>|]/g, '_').trim();
-    return s || 'kalkulacja';
-  }
-
-  private downloadJsonFile(fileName: string, content: any): void {
-    const json = JSON.stringify(content, null, 2);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
   }
 }
 
