@@ -1,5 +1,11 @@
 import { inject, Injectable } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormArray,
+  FormGroup,
+  NonNullableFormBuilder,
+  Validators,
+} from '@angular/forms';
 import {
   InstallmentType,
   InsuranceCalcMethod,
@@ -14,40 +20,31 @@ import {
 } from '../../model/mortgage.model';
 import {
   AdditionalCostFormGroup,
-  AdditionalCostsSectionFormGroup,
-  AppraisalFormGroup,
   BasicDataFormGroup,
-  BridgeInsuranceFormGroup,
-  CommissionFormGroup,
-  EarlyRepaymentCommissionFormGroup,
-  JobLossInsuranceFormGroup,
-  LifeInsuranceFormGroup,
-  LowEquityInsuranceFormGroup,
   MortgageFormGroup,
   OverheadCostsFormGroup,
   PrepaymentRuleFormGroup,
-  PrepaymentRulesSectionFormGroup,
   PrepaymentsFieldsFormGroup,
-  PromoRateFormGroup,
-  PropertyInsuranceFormGroup,
   RatePeriodFormGroup,
-  TargetInstallmentFormGroup,
   ToggleableSectionFormGroup,
   TrancheFormGroup,
   TranchesFieldsFormGroup,
 } from '../../model/form.model';
 
+// TODO: wynieść do helpera date.helper.ts
 function ym(date = new Date()): string {
   const y = date.getFullYear();
   const m = date.getMonth() + 1;
   return `${y}-${m.toString().padStart(2, '0')}`;
 }
 
+// TODO: wynieść do helpera date.helper.ts
 function nextMonthStr(date = new Date()): string {
   const d = new Date(date.getFullYear(), date.getMonth() + 1, 1);
   return ym(d);
 }
 
+// TODO: wynieść do helpera date.helper.ts
 function addMonthsStr(baseYm: string, monthsToAdd: number): string {
   const [y, m] = baseYm.split('-').map((v) => parseInt(v, 10));
   const d = new Date(y, m - 1 + monthsToAdd, 1);
@@ -58,7 +55,7 @@ function endOfLoanDate(): string {
   return addMonthsStr(nextMonthStr(), 20 * 12 - 1);
 }
 
-function crossFieldValidator(control: import('@angular/forms').AbstractControl) {
+function crossFieldValidator(control: AbstractControl) {
   const group = control as FormGroup<MortgageFormGroup>;
   const basicData = group.controls.basicData;
   const pv = basicData.get('propertyValue')?.value ?? 0;
@@ -139,7 +136,7 @@ function crossFieldValidator(control: import('@angular/forms').AbstractControl) 
   providedIn: 'root',
 })
 export class FormService {
-  private fb = inject(FormBuilder);
+  private fb = inject(NonNullableFormBuilder);
 
   readonly form: FormGroup<MortgageFormGroup> = this.createForm();
 
@@ -210,109 +207,66 @@ export class FormService {
 
   createRatePeriodGroup(initial?: Partial<RatePeriod>): FormGroup<RatePeriodFormGroup> {
     const from = initial?.from ?? (this.form?.controls.basicData?.get('startDate')?.value || ym());
-    return new FormGroup<RatePeriodFormGroup>({
-      from: new FormControl(from, { nonNullable: true, validators: [Validators.required] }),
-      rateType: new FormControl<RateType>(initial?.rateType ?? RateType.VARIABLE, {
-        nonNullable: true,
-      }),
-      nominalRate: new FormControl(initial?.nominalRate ?? 9.0, {
-        nonNullable: true,
-        validators: [Validators.min(0), Validators.max(50)],
-      }),
-      wibor: new FormControl(initial?.wibor ?? 7.0, {
-        nonNullable: true,
-        validators: [Validators.min(0), Validators.max(50)],
-      }),
-      margin: new FormControl(initial?.margin ?? 2.0, {
-        nonNullable: true,
-        validators: [Validators.min(0), Validators.max(50)],
-      }),
+    return this.fb.group({
+      from: this.fb.control(from, [Validators.required]),
+      rateType: this.fb.control<RateType>(initial?.rateType ?? RateType.VARIABLE),
+      nominalRate: this.fb.control(initial?.nominalRate ?? 9.0, [
+        Validators.min(0),
+        Validators.max(50),
+      ]),
+      wibor: this.fb.control(initial?.wibor ?? 7.0, [Validators.min(0), Validators.max(50)]),
+      margin: this.fb.control(initial?.margin ?? 2.0, [Validators.min(0), Validators.max(50)]),
     });
   }
 
   private createBasicDataGroup(): FormGroup<BasicDataFormGroup> {
     const today = ym();
-    return new FormGroup<BasicDataFormGroup>({
-      propertyValue: new FormControl(500_000, {
-        nonNullable: true,
-        validators: [Validators.required, Validators.min(0.01)],
-      }),
-      loanAmount: new FormControl(400_000, {
-        nonNullable: true,
-        validators: [Validators.required, Validators.min(0.01)],
-      }),
-      ltv: new FormControl(80, {
-        nonNullable: true,
-        validators: [Validators.required, Validators.min(0), Validators.max(100)],
-      }),
-      loanPeriod: new FormControl(20 * 12, {
-        nonNullable: true,
-        validators: [Validators.required, Validators.min(1)],
-      }),
-      startDate: new FormControl(today, { nonNullable: true, validators: [Validators.required] }),
-      capitalStartDate: new FormControl(nextMonthStr(), {
-        nonNullable: true,
-        validators: [Validators.required],
-      }),
-      installmentType: new FormControl<InstallmentType>(InstallmentType.EQUAL, {
-        nonNullable: true,
-      }),
-      ratePeriods: new FormArray([this.createRatePeriodGroup({ from: today })]) as FormArray<
-        FormGroup<RatePeriodFormGroup>
-      >,
+    return this.fb.group({
+      propertyValue: this.fb.control(500_000, [Validators.required, Validators.min(0.01)]),
+      loanAmount: this.fb.control(400_000, [Validators.required, Validators.min(0.01)]),
+      ltv: this.fb.control(80, [Validators.required, Validators.min(0), Validators.max(100)]),
+      loanPeriod: this.fb.control(20 * 12, [Validators.required, Validators.min(1)]),
+      startDate: this.fb.control(today, [Validators.required]),
+      capitalStartDate: this.fb.control(nextMonthStr(), [Validators.required]),
+      installmentType: this.fb.control<InstallmentType>(InstallmentType.EQUAL),
+      ratePeriods: this.fb.array([this.createRatePeriodGroup({ from: today })]),
     });
   }
 
   private createForm(): FormGroup<MortgageFormGroup> {
-    return new FormGroup<MortgageFormGroup>(
+    return this.fb.group(
       {
         basicData: this.createBasicDataGroup(),
-        overheadCosts: new FormGroup<ToggleableSectionFormGroup<OverheadCostsFormGroup>>({
-          enabled: new FormControl(false, { nonNullable: true }),
+        overheadCosts: this.fb.group({
+          enabled: this.fb.control(false),
           fields: this.createOverheadCostsGroup(),
         }),
-        tranches: new FormGroup<ToggleableSectionFormGroup<TranchesFieldsFormGroup>>({
-          enabled: new FormControl(false, { nonNullable: true }),
-          fields: new FormGroup<TranchesFieldsFormGroup>({
-            tranches: new FormArray([this.createTrancheGroup(true)]),
+        tranches: this.fb.group({
+          enabled: this.fb.control(false),
+          fields: this.fb.group({
+            tranches: this.fb.array([this.createTrancheGroup(true)]),
           }),
         }),
-        prepayments: new FormGroup<ToggleableSectionFormGroup<PrepaymentsFieldsFormGroup>>({
-          enabled: new FormControl(false, { nonNullable: true }),
-          fields: new FormGroup<PrepaymentsFieldsFormGroup>({
-            prepaymentRules: new FormGroup<PrepaymentRulesSectionFormGroup>({
-              expanded: new FormControl(false, { nonNullable: true }),
-              items: new FormArray([this.createPrepaymentRuleGroup()]),
+        prepayments: this.fb.group({
+          enabled: this.fb.control(false),
+          fields: this.fb.group({
+            prepaymentRules: this.fb.group({
+              expanded: this.fb.control(false),
+              items: this.fb.array([this.createPrepaymentRuleGroup()]),
             }),
-            rataDocelowaRegula: new FormGroup<TargetInstallmentFormGroup>({
-              expanded: new FormControl(false, { nonNullable: true }),
-              targetRate: new FormControl(0, {
-                nonNullable: true,
-                validators: [Validators.min(0)],
-              }),
-              from: new FormControl(nextMonthStr(), {
-                nonNullable: true,
-                validators: [Validators.required],
-              }),
-              to: new FormControl(addMonthsStr(nextMonthStr(), 12), {
-                nonNullable: true,
-                validators: [Validators.required],
-              }),
-              effect: new FormControl<PrepaymentEffect>(PrepaymentEffect.LOWER_INSTALLMENT, {
-                nonNullable: true,
-                validators: [Validators.required],
-              }),
+            rataDocelowaRegula: this.fb.group({
+              expanded: this.fb.control(false),
+              targetRate: this.fb.control(0, [Validators.min(0)]),
+              from: this.fb.control(nextMonthStr(), [Validators.required]),
+              to: this.fb.control(addMonthsStr(nextMonthStr(), 12), [Validators.required]),
+              effect: this.fb.control<PrepaymentEffect>(PrepaymentEffect.LOWER_INSTALLMENT, [
+                Validators.required,
+              ]),
             }),
-            prowizjaWczesniejszaSplata: new FormGroup<EarlyRepaymentCommissionFormGroup>({
-              expanded: new FormControl(false, { nonNullable: true }),
-              ratePct: new FormControl(0, {
-                nonNullable: true,
-                validators: [Validators.min(0), Validators.max(100)],
-              }),
-              validUntil: new FormControl(addMonthsStr(nextMonthStr(), 36), {
-                nonNullable: true,
-                validators: [Validators.required],
-              }),
+            prowizjaWczesniejszaSplata: this.fb.group({
+              expanded: this.fb.control(false),
+              ratePct: this.fb.control(0, [Validators.min(0), Validators.max(100)]),
+              validUntil: this.fb.control(addMonthsStr(nextMonthStr(), 36), [Validators.required]),
             }),
           }),
         }),
@@ -322,83 +276,62 @@ export class FormService {
   }
 
   private createOverheadCostsGroup(): FormGroup<OverheadCostsFormGroup> {
-    return new FormGroup<OverheadCostsFormGroup>({
-      commission: new FormGroup<CommissionFormGroup>({
-        expanded: new FormControl(false, { nonNullable: true }),
-        commissionPct: new FormControl(0, {
-          nonNullable: true,
-          validators: [Validators.min(0), Validators.max(100)],
-        }),
+    return this.fb.group({
+      commission: this.fb.group({
+        expanded: this.fb.control(false),
+        commissionPct: this.fb.control(0, [Validators.min(0), Validators.max(100)]),
       }),
-      appraisal: new FormGroup<AppraisalFormGroup>({
-        expanded: new FormControl(false, { nonNullable: true }),
-        appraisalFee: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
+      appraisal: this.fb.group({
+        expanded: this.fb.control(false),
+        appraisalFee: this.fb.control(0, [Validators.min(0)]),
       }),
-      bridge: new FormGroup<BridgeInsuranceFormGroup>({
-        expanded: new FormControl(false, { nonNullable: true }),
-        bridgeRateIncrease: new FormControl(0, {
-          nonNullable: true,
-          validators: [Validators.min(0)],
-        }),
-        bridgeMonths: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
+      bridge: this.fb.group({
+        expanded: this.fb.control(false),
+        bridgeRateIncrease: this.fb.control(0, [Validators.min(0)]),
+        bridgeMonths: this.fb.control(0, [Validators.min(0)]),
       }),
-      propertyInsurance: new FormGroup<PropertyInsuranceFormGroup>({
-        expanded: new FormControl(false, { nonNullable: true }),
-        propInsFrequency: new FormControl<InsuranceFrequency>(InsuranceFrequency.YEARLY, {
-          nonNullable: true,
-        }),
-        propInsCalcMethod: new FormControl<InsuranceCalcMethod>(
+      propertyInsurance: this.fb.group({
+        expanded: this.fb.control(false),
+        propInsFrequency: this.fb.control<InsuranceFrequency>(InsuranceFrequency.YEARLY),
+        propInsCalcMethod: this.fb.control<InsuranceCalcMethod>(
           InsuranceCalcMethod.PCT_PROPERTY_VALUE,
-          { nonNullable: true },
         ),
-        propInsValue: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
-        propInsFrom: new FormControl(nextMonthStr(), { nonNullable: true }),
-        propInsTo: new FormControl(endOfLoanDate(), { nonNullable: true }),
+        propInsValue: this.fb.control(0, [Validators.min(0)]),
+        propInsFrom: this.fb.control(nextMonthStr()),
+        propInsTo: this.fb.control(endOfLoanDate()),
       }),
-      lowEquityInsurance: new FormGroup<LowEquityInsuranceFormGroup>({
-        expanded: new FormControl(false, { nonNullable: true }),
-        lowEquityRateIncrease: new FormControl(0, {
-          nonNullable: true,
-          validators: [Validators.min(0)],
-        }),
+      lowEquityInsurance: this.fb.group({
+        expanded: this.fb.control(false),
+        lowEquityRateIncrease: this.fb.control(0, [Validators.min(0)]),
       }),
-      lifeInsurance: new FormGroup<LifeInsuranceFormGroup>({
-        expanded: new FormControl(false, { nonNullable: true }),
-        lifeInsFrequency: new FormControl<InsuranceFrequency>(InsuranceFrequency.YEARLY, {
-          nonNullable: true,
-        }),
-        lifeInsCalcMethod: new FormControl<LifeInsuranceCalcMethod>(
+      lifeInsurance: this.fb.group({
+        expanded: this.fb.control(false),
+        lifeInsFrequency: this.fb.control<InsuranceFrequency>(InsuranceFrequency.YEARLY),
+        lifeInsCalcMethod: this.fb.control<LifeInsuranceCalcMethod>(
           LifeInsuranceCalcMethod.PCT_LOAN_AMOUNT,
-          { nonNullable: true },
         ),
-        lifeInsValue: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
-        lifeInsFrom: new FormControl(nextMonthStr(), { nonNullable: true }),
-        lifeInsTo: new FormControl(endOfLoanDate(), { nonNullable: true }),
+        lifeInsValue: this.fb.control(0, [Validators.min(0)]),
+        lifeInsFrom: this.fb.control(nextMonthStr()),
+        lifeInsTo: this.fb.control(endOfLoanDate()),
       }),
-      jobLossInsurance: new FormGroup<JobLossInsuranceFormGroup>({
-        expanded: new FormControl(false, { nonNullable: true }),
-        jobLossInsFrequency: new FormControl<InsuranceFrequency>(InsuranceFrequency.ONE_TIME, {
-          nonNullable: true,
-        }),
-        jobLossInsCalcMethod: new FormControl<LifeInsuranceCalcMethod>(
+      jobLossInsurance: this.fb.group({
+        expanded: this.fb.control(false),
+        jobLossInsFrequency: this.fb.control<InsuranceFrequency>(InsuranceFrequency.ONE_TIME),
+        jobLossInsCalcMethod: this.fb.control<LifeInsuranceCalcMethod>(
           LifeInsuranceCalcMethod.PCT_LOAN_AMOUNT,
-          { nonNullable: true },
         ),
-        jobLossInsValue: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
-        jobLossInsFrom: new FormControl(nextMonthStr(), { nonNullable: true }),
+        jobLossInsValue: this.fb.control(0, [Validators.min(0)]),
+        jobLossInsFrom: this.fb.control(nextMonthStr()),
       }),
-      additionalCosts: new FormGroup<AdditionalCostsSectionFormGroup>({
-        expanded: new FormControl(false, { nonNullable: true }),
-        items: new FormArray([this.createAdditionalCostGroup()]),
+      additionalCosts: this.fb.group({
+        expanded: this.fb.control(false),
+        items: this.fb.array([this.createAdditionalCostGroup()]),
       }),
-      promoRate: new FormGroup<PromoRateFormGroup>({
-        expanded: new FormControl(false, { nonNullable: true }),
-        promoRateDecrease: new FormControl(0, {
-          nonNullable: true,
-          validators: [Validators.min(0)],
-        }),
-        promoFrom: new FormControl(nextMonthStr(), { nonNullable: true }),
-        promoTo: new FormControl(addMonthsStr(nextMonthStr(), 12), { nonNullable: true }),
+      promoRate: this.fb.group({
+        expanded: this.fb.control(false),
+        promoRateDecrease: this.fb.control(0, [Validators.min(0)]),
+        promoFrom: this.fb.control(nextMonthStr()),
+        promoTo: this.fb.control(addMonthsStr(nextMonthStr(), 12)),
       }),
     });
   }
@@ -412,19 +345,13 @@ export class FormService {
       initial.amount ??
       (isFirst ? this.form?.controls.basicData?.get('loanAmount')?.value || 0 : 0);
     const date = isFirst ? startDate : (initial.date ?? startDate);
-    return new FormGroup<TrancheFormGroup>({
-      amount: new FormControl(amount, {
-        nonNullable: true,
-        validators: isFirst ? [] : [Validators.required, Validators.min(0.01)],
-      }),
-      date: new FormControl(
-        { value: date, disabled: isFirst },
-        { nonNullable: true, validators: [Validators.required] },
-      ),
-      disbursementFee: new FormControl(initial.disbursementFee ?? 0, {
-        nonNullable: true,
-        validators: [Validators.min(0), Validators.max(1000)],
-      }),
+    return this.fb.group({
+      amount: this.fb.control(amount, isFirst ? [] : [Validators.required, Validators.min(0.01)]),
+      date: this.fb.control({ value: date, disabled: isFirst }, [Validators.required]),
+      disbursementFee: this.fb.control(initial.disbursementFee ?? 0, [
+        Validators.min(0),
+        Validators.max(1000),
+      ]),
     });
   }
 
@@ -435,38 +362,25 @@ export class FormService {
     const from = initial.from ?? nextMonthStr();
     const to =
       frequency === PrepaymentFrequency.ONE_TIME ? from : (initial.to ?? addMonthsStr(from, 12));
-    return new FormGroup<PrepaymentRuleFormGroup>({
-      frequency: new FormControl<PrepaymentFrequency>(frequency, {
-        nonNullable: true,
-        validators: [Validators.required],
-      }),
-      from: new FormControl(from, { nonNullable: true, validators: [Validators.required] }),
-      to: new FormControl(to, { nonNullable: true, validators: [Validators.required] }),
-      amount: new FormControl(initial.amount ?? 0, {
-        nonNullable: true,
-        validators: [Validators.min(0)],
-      }),
-      effect: new FormControl<PrepaymentEffect>(
+    return this.fb.group({
+      frequency: this.fb.control<PrepaymentFrequency>(frequency, [Validators.required]),
+      from: this.fb.control(from, [Validators.required]),
+      to: this.fb.control(to, [Validators.required]),
+      amount: this.fb.control(initial.amount ?? 0, [Validators.min(0)]),
+      effect: this.fb.control<PrepaymentEffect>(
         initial.effect ?? PrepaymentEffect.LOWER_INSTALLMENT,
-        {
-          nonNullable: true,
-          validators: [Validators.required],
-        },
+        [Validators.required],
       ),
     });
   }
 
   createAdditionalCostGroup(): FormGroup<AdditionalCostFormGroup> {
-    return new FormGroup<AdditionalCostFormGroup>({
-      name: new FormControl('', { nonNullable: true }),
-      frequency: new FormControl<InsuranceFrequency>(InsuranceFrequency.ONE_TIME, {
-        nonNullable: true,
-      }),
-      calcMethod: new FormControl<LifeInsuranceCalcMethod>(LifeInsuranceCalcMethod.FIXED_AMOUNT, {
-        nonNullable: true,
-      }),
-      value: new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }),
-      from: new FormControl(nextMonthStr(), { nonNullable: true }),
+    return this.fb.group({
+      name: this.fb.control(''),
+      frequency: this.fb.control<InsuranceFrequency>(InsuranceFrequency.ONE_TIME),
+      calcMethod: this.fb.control<LifeInsuranceCalcMethod>(LifeInsuranceCalcMethod.FIXED_AMOUNT),
+      value: this.fb.control(0, [Validators.min(0)]),
+      from: this.fb.control(nextMonthStr()),
     });
   }
 
@@ -512,7 +426,7 @@ export class FormService {
     const startDate = this.form.controls.basicData.get('startDate')?.value || ym();
     this.form.controls.tranches.controls.fields.setControl(
       'tranches',
-      new FormArray([this.createTrancheGroup(true, { amount: loanAmount, date: startDate })]),
+      this.fb.array([this.createTrancheGroup(true, { amount: loanAmount, date: startDate })]),
     );
     this.form.updateValueAndValidity();
   }
@@ -648,7 +562,7 @@ export class FormService {
     });
     this.overheadCostsGroup.controls.additionalCosts.setControl(
       'items',
-      new FormArray([this.createAdditionalCostGroup()]),
+      this.fb.array([this.createAdditionalCostGroup()]),
     );
   }
 
@@ -658,18 +572,18 @@ export class FormService {
     const ratePeriods: any[] = data?.basicData?.ratePeriods ?? [];
     this.form.controls.basicData.setControl(
       'ratePeriods',
-      new FormArray(
+      this.fb.array(
         ratePeriods.length > 0
           ? ratePeriods.map((rp: any) => this.createRatePeriodGroup(rp))
           : [this.createRatePeriodGroup()],
-      ) as FormArray<FormGroup<RatePeriodFormGroup>>,
+      ),
     );
 
     const tranches: any[] =
       data?.tranches?.fields?.tranches ?? data?.tranches?.fields?.transze ?? [];
     this.form.controls.tranches.controls.fields.setControl(
       'tranches',
-      new FormArray(
+      this.fb.array(
         tranches.length > 0
           ? tranches.map((t: any, i: number) => this.createTrancheGroup(i === 0, t))
           : [this.createTrancheGroup(true)],
@@ -681,7 +595,7 @@ export class FormService {
       (Array.isArray(rawPrepaymentRules) ? rawPrepaymentRules : rawPrepaymentRules?.items) ?? [];
     this.form.controls.prepayments.controls.fields.controls.prepaymentRules.setControl(
       'items',
-      new FormArray(
+      this.fb.array(
         prepaymentRules.length > 0
           ? prepaymentRules.map((r: any) => this.createPrepaymentRuleGroup(r))
           : [this.createPrepaymentRuleGroup()],
@@ -691,7 +605,7 @@ export class FormService {
     const additionalCosts: any[] = data?.overheadCosts?.fields?.additionalCosts?.items ?? [];
     this.overheadCostsGroup.controls.additionalCosts.setControl(
       'items',
-      new FormArray(
+      this.fb.array(
         additionalCosts.length > 0
           ? additionalCosts.map((ac: any) => {
               const g = this.createAdditionalCostGroup();
