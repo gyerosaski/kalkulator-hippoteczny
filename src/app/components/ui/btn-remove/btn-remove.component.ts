@@ -1,11 +1,11 @@
 import { Component, ChangeDetectionStrategy, output } from '@angular/core';
-import { IconXComponent } from '../../icons/icon-x/icon-x.component';
+import { IconTrashComponent } from '../../icons/icon-trash/icon-trash.component';
 
 @Component({
   selector: 'ui-btn-remove',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IconXComponent],
+  imports: [IconTrashComponent],
   templateUrl: './btn-remove.component.html',
   styleUrl: './btn-remove.component.scss',
 })

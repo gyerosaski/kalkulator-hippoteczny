@@ -12,7 +12,10 @@
       "Bash(Get-ChildItem -Path \"D:\\\\repozytoria\\\\kalkulator-hipoteczny\\\\src\\\\app\\\\dialogs\" -Recurse -Directory)",
       "Bash(Select-Object -ExpandProperty FullName)",
       "Bash(Get-ChildItem *)",
-      "Bash(Select-Object FullName, Name)"
+      "Bash(Select-Object FullName, Name)",
+      "Bash(New-Item -ItemType Directory -Path \"D:\\\\repozytoria\\\\kalkulator-hipoteczny\\\\src\\\\app\\\\components\\\\icons\\\\icon-trash\" -Force)",
+      "Bash(Out-Null)",
+      "PowerShell(New-Item *)"
     ]
   }
 }

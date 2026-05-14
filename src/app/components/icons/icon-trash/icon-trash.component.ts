@@ -1,9 +1,9 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
-  selector: 'icon-x',
+  selector: 'icon-trash',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './icon-x.component.html',
+  templateUrl: './icon-trash.component.html',
 })
-export class IconXComponent {}
+export class IconTrashComponent {}
