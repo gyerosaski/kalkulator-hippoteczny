@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { CalcService } from '../calc.service';
-import { Palette, Density, FontPair, ViewState } from '../models';
+import { Palette, Density, FontPair, ViewState, ActiveTab } from '../models';
 
 @Component({
   selector: 'app-tweaks-panel',
@@ -50,6 +50,19 @@ import { Palette, Density, FontPair, ViewState } from '../models';
                   (click)="calc.saveTweaks({ fontPair: f.value })"
                 >
                   {{ f.label }}
+                </button>
+              }
+            </div>
+          </div>
+          <div class="tw-section">
+            <div class="tw-label">Aktywna zakładka</div>
+            <div class="tw-radio">
+              @for (t of tabs; track t.value) {
+                <button
+                  [class.is-on]="calc.tweaks().activeTab === t.value"
+                  (click)="calc.saveTweaks({ activeTab: t.value })"
+                >
+                  {{ t.label }}
                 </button>
               }
             </div>
@@ -176,5 +189,9 @@ export class TweaksPanelComponent {
     { value: 'auto', label: 'Auto' },
     { value: 'results', label: 'Wyniki' },
     { value: 'errors', label: 'Błędy' },
+  ];
+  tabs: { value: ActiveTab; label: string }[] = [
+    { value: 'kalkulator', label: 'Kalkulator' },
+    { value: 'kalkulacje', label: 'Twoje kalkulacje' },
   ];
 }

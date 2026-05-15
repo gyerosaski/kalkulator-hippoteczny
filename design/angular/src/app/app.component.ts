@@ -12,6 +12,7 @@ import { TrendChartComponent } from './results/trend-chart.component';
 import { ScheduleTableComponent } from './results/schedule-table.component';
 import { TweaksPanelComponent } from './tweaks/tweaks-panel.component';
 import { ErrorsPanelComponent } from './results/errors-panel.component';
+import { SavedCalculationsComponent } from './saved/saved-calculations.component';
 import { FormError } from './models';
 
 @Component({
@@ -30,6 +31,7 @@ import { FormError } from './models';
     ScheduleTableComponent,
     TweaksPanelComponent,
     ErrorsPanelComponent,
+    SavedCalculationsComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -60,8 +62,20 @@ import { FormError } from './models';
           </div>
         </div>
         <nav class="tabs">
-          <button class="tab is-on">Kalkulator</button>
-          <button class="tab">Twoje kalkulacje</button>
+          <button
+            class="tab"
+            [class.is-on]="calc.tweaks().activeTab === 'kalkulator'"
+            (click)="calc.saveTweaks({ activeTab: 'kalkulator' })"
+          >
+            Kalkulator
+          </button>
+          <button
+            class="tab"
+            [class.is-on]="calc.tweaks().activeTab === 'kalkulacje'"
+            (click)="calc.saveTweaks({ activeTab: 'kalkulacje' })"
+          >
+            Twoje kalkulacje
+          </button>
           <button class="tab">Porównanie ofert</button>
           <button class="tab">Słownik</button>
         </nav>
@@ -73,25 +87,29 @@ import { FormError } from './models';
       </header>
 
       <main class="grid">
-        <div class="col col--form">
-          <app-basic-data />
-          <app-costs />
-          <app-tranches />
-          <app-overpayments />
-        </div>
-        <div class="col col--results">
-          @if (calc.showErrors()) {
-            <app-errors-panel [errors]="calc.errors()" (goto)="handleGoto($event)" />
-          } @else {
-            <app-kpi-strip />
-            <div class="result-grid">
-              <app-payment-structure />
-              <app-first-installment />
-            </div>
-            <app-trend-chart />
-            <app-schedule-table />
-          }
-        </div>
+        @if (calc.tweaks().activeTab === 'kalkulacje') {
+          <app-saved-calculations />
+        } @else {
+          <div class="col col--form">
+            <app-basic-data />
+            <app-costs />
+            <app-tranches />
+            <app-overpayments />
+          </div>
+          <div class="col col--results">
+            @if (calc.showErrors()) {
+              <app-errors-panel [errors]="calc.errors()" (goto)="handleGoto($event)" />
+            } @else {
+              <app-kpi-strip />
+              <div class="result-grid">
+                <app-payment-structure />
+                <app-first-installment />
+              </div>
+              <app-trend-chart />
+              <app-schedule-table />
+            }
+          </div>
+        }
       </main>
 
       <app-tweaks-panel />

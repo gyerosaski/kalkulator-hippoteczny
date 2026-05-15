@@ -12,6 +12,7 @@ import {
   Tweaks,
   ExtraCost,
   FormError,
+  SavedCalculation,
 } from './models';
 
 export function addMonths(d: Date, n: number): Date {
@@ -168,6 +169,229 @@ export class CalcService {
 
   // tweaks
   tweaks = signal<Tweaks>(this.loadTweaks());
+
+  // ====================== TWOJE KALKULACJE ======================
+  savedCalculations = signal<SavedCalculation[]>([
+    {
+      id: 'c1',
+      name: 'Mieszkanie 65 m² · Wrocław Krzyki',
+      note: 'wersja z prowizją 1,5 %',
+      tag: null,
+      propertyValue: 685000,
+      loanAmount: 548000,
+      years: 25,
+      months: 0,
+      installmentType: 'równe',
+      rateType: 'zmienna',
+      wibor: 5.85,
+      margin: 1.9,
+      rate: 7.75,
+      firstInstallment: 4124.78,
+      totalInterest: 689420,
+      totalCosts: 18540,
+      overpaymentsEnabled: true,
+      tranches: 1,
+      updatedAt: new Date(2026, 4, 13, 17, 42),
+      createdAt: new Date(2026, 3, 28),
+    },
+    {
+      id: 'c2',
+      name: 'Dom 120 m² · podmiejski',
+      note: 'oferta z banku PKO',
+      tag: 'ulubiona',
+      propertyValue: 950000,
+      loanAmount: 712500,
+      years: 30,
+      months: 0,
+      installmentType: 'równe',
+      rateType: 'stała',
+      wibor: 0,
+      margin: 0,
+      rate: 7.39,
+      firstInstallment: 4923.65,
+      totalInterest: 1059314,
+      totalCosts: 22890,
+      overpaymentsEnabled: false,
+      tranches: 4,
+      updatedAt: new Date(2026, 4, 10, 9, 15),
+      createdAt: new Date(2026, 2, 14),
+    },
+    {
+      id: 'c3',
+      name: 'Refinansowanie 2026',
+      note: 'porównanie do obecnej oferty',
+      tag: null,
+      propertyValue: 580000,
+      loanAmount: 320000,
+      years: 20,
+      months: 0,
+      installmentType: 'malejące',
+      rateType: 'zmienna',
+      wibor: 5.85,
+      margin: 2.1,
+      rate: 7.95,
+      firstInstallment: 3454.2,
+      totalInterest: 268940,
+      totalCosts: 9810,
+      overpaymentsEnabled: false,
+      tranches: 1,
+      updatedAt: new Date(2026, 4, 8, 21, 3),
+      createdAt: new Date(2026, 4, 8),
+    },
+    {
+      id: 'c4',
+      name: 'Kawalerka inwestycyjna',
+      note: null,
+      tag: 'robocza',
+      propertyValue: 320000,
+      loanAmount: 256000,
+      years: 30,
+      months: 0,
+      installmentType: 'równe',
+      rateType: 'zmienna',
+      wibor: 5.85,
+      margin: 2.4,
+      rate: 8.25,
+      firstInstallment: 1924.1,
+      totalInterest: 436920,
+      totalCosts: 8740,
+      overpaymentsEnabled: false,
+      tranches: 1,
+      updatedAt: new Date(2026, 4, 6, 14, 22),
+      createdAt: new Date(2026, 1, 4),
+    },
+    {
+      id: 'c5',
+      name: 'Wersja z nadpłatą 1 000 zł / m-c',
+      note: 'skrócenie okresu',
+      tag: null,
+      propertyValue: 685000,
+      loanAmount: 548000,
+      years: 25,
+      months: 0,
+      installmentType: 'równe',
+      rateType: 'zmienna',
+      wibor: 5.85,
+      margin: 1.9,
+      rate: 7.75,
+      firstInstallment: 4124.78,
+      totalInterest: 412690,
+      totalCosts: 18540,
+      overpaymentsEnabled: true,
+      tranches: 1,
+      updatedAt: new Date(2026, 4, 2, 11, 8),
+      createdAt: new Date(2026, 3, 30),
+    },
+    {
+      id: 'c6',
+      name: 'Plan B — krótszy okres (15 lat)',
+      note: null,
+      tag: null,
+      propertyValue: 685000,
+      loanAmount: 548000,
+      years: 15,
+      months: 0,
+      installmentType: 'równe',
+      rateType: 'stała',
+      wibor: 0,
+      margin: 0,
+      rate: 7.1,
+      firstInstallment: 4938.1,
+      totalInterest: 340120,
+      totalCosts: 18540,
+      overpaymentsEnabled: false,
+      tranches: 1,
+      updatedAt: new Date(2026, 3, 28, 19, 51),
+      createdAt: new Date(2026, 3, 28),
+    },
+    {
+      id: 'c7',
+      name: 'Mieszkanie rodziców — Gdańsk',
+      note: 'bez ubezpieczeń, raty malejące',
+      tag: null,
+      propertyValue: 540000,
+      loanAmount: 432000,
+      years: 22,
+      months: 0,
+      installmentType: 'malejące',
+      rateType: 'zmienna',
+      wibor: 5.85,
+      margin: 1.75,
+      rate: 7.6,
+      firstInstallment: 4373.55,
+      totalInterest: 374230,
+      totalCosts: 5400,
+      overpaymentsEnabled: false,
+      tranches: 1,
+      updatedAt: new Date(2026, 3, 19, 8, 41),
+      createdAt: new Date(2026, 3, 19),
+    },
+    {
+      id: 'c8',
+      name: 'Symulacja wzrostu WIBOR do 9 %',
+      note: 'stress-test',
+      tag: 'robocza',
+      propertyValue: 685000,
+      loanAmount: 548000,
+      years: 25,
+      months: 0,
+      installmentType: 'równe',
+      rateType: 'zmienna',
+      wibor: 9.0,
+      margin: 1.9,
+      rate: 10.9,
+      firstInstallment: 5249.3,
+      totalInterest: 1027840,
+      totalCosts: 18540,
+      overpaymentsEnabled: false,
+      tranches: 1,
+      updatedAt: new Date(2026, 3, 11, 22, 14),
+      createdAt: new Date(2026, 3, 11),
+    },
+  ]);
+  activeCalculationId = signal<string | null>('c1');
+
+  renameSavedCalc(id: string, newName: string) {
+    this.savedCalculations.update((arr) =>
+      arr.map((c) => (c.id === id ? { ...c, name: newName, updatedAt: new Date() } : c)),
+    );
+  }
+  deleteSavedCalc(id: string) {
+    this.savedCalculations.update((arr) => arr.filter((c) => c.id !== id));
+    if (this.activeCalculationId() === id) this.activeCalculationId.set(null);
+  }
+  duplicateSavedCalc(id: string): SavedCalculation | null {
+    const src = this.savedCalculations().find((c) => c.id === id);
+    if (!src) return null;
+    const copy: SavedCalculation = {
+      ...src,
+      id: 'c' + Date.now(),
+      name: src.name + ' — kopia',
+      updatedAt: new Date(),
+      createdAt: new Date(),
+      tag: 'robocza',
+    };
+    this.savedCalculations.update((arr) => [copy, ...arr]);
+    return copy;
+  }
+  toggleFavSavedCalc(id: string) {
+    this.savedCalculations.update((arr) =>
+      arr.map((c) => (c.id === id ? { ...c, tag: c.tag === 'ulubiona' ? null : 'ulubiona' } : c)),
+    );
+  }
+  loadSavedCalc(c: SavedCalculation) {
+    this.propertyValue.set(c.propertyValue);
+    this.loanAmount.set(c.loanAmount);
+    this.years.set(c.years);
+    this.months.set(c.months);
+    this.installmentType.set(c.installmentType);
+    this.rateType.set(c.rateType);
+    this.wibor.set(c.wibor);
+    this.margin.set(c.margin);
+    this.rate.set(c.rate);
+    this.activeCalculationId.set(c.id);
+    this.saveTweaks({ activeTab: 'kalkulator' });
+  }
 
   // pochodne
   ltv = computed(() => {
@@ -354,6 +578,7 @@ export class CalcService {
       density: 'cozy',
       fontPair: 'inter',
       viewState: 'errors',
+      activeTab: 'kalkulator',
     };
     try {
       const raw = localStorage.getItem('khip:tweaks');

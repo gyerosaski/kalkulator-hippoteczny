@@ -50,6 +50,8 @@ src/
       errors-panel.component.ts
     tweaks/
       tweaks-panel.component.ts
+    saved/
+      saved-calculations.component.ts
 ```
 
 ## Mapowanie React → Angular
@@ -85,3 +87,21 @@ O trybie decyduje `tweaks().viewState`:
 | `'errors'`  | zawsze pełen zestaw przykładowych błędów (`demoErrors`) — do podglądu designu |
 
 `AppComponent.handleGoto(err)` przewija stronę do elementu `#{{ err.fieldId }}` i przygasza go klasą `.field--err-target` (pulsujące obramowanie). Anchory są wstawione w `BasicDataComponent`, `TranchesComponent`, `OverpaymentsComponent` — każdy błąd w `FormError` ma odpowiadające `fieldId`.
+
+## Twoje kalkulacje (`SavedCalculationsComponent`)
+
+Drugi widok aplikacji, przełączany przez topbar (`tweaks().activeTab`). Komponent samodzielny, zajmuje całą szerokość kontenera `.grid` (CSS `grid-column: 1 / -1`).
+
+Dane w `CalcService.savedCalculations: Signal<SavedCalculation[]>` (mock — 8 wpisów). Metody serwisu:
+
+| metoda                      | działanie                                                                     |
+| --------------------------- | ----------------------------------------------------------------------------- |
+| `renameSavedCalc(id, name)` | zmiana nazwy + aktualizacja `updatedAt`                                       |
+| `deleteSavedCalc(id)`       | trwałe usunięcie; jeśli była aktywna — `activeCalculationId = null`           |
+| `duplicateSavedCalc(id)`    | tworzy kopię z sufiksem „— kopia", tag `'robocza'`, ląduje na górze listy     |
+| `toggleFavSavedCalc(id)`    | przełączenie tagu `'ulubiona'`                                                |
+| `loadSavedCalc(c)`          | wpisuje parametry do sygnałów formularza i przełącza zakładkę na `kalkulator` |
+
+Widok zarządza lokalnie: pole wyszukiwania, filtr (wszystkie / ulubione / robocze), sortowanie (5 kryteriów), otwarte menu kontekstowe, modale (rename / delete), toast.
+
+Wszystkie akcje destrukcyjne idą przez modal potwierdzenia. Szczegóły UI: ikona ⭐ inline w wierszu, sparkline salda w SVG (cache'owany — dwa warianty: z nadpłatą i bez), kolorowy chip LTV (czerwony przy >80 %), tag „wczytana" na aktywnej kalkulacji.

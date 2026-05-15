@@ -108,12 +108,14 @@ export type Palette = 'sage' | 'peach' | 'lavender' | 'mist';
 export type Density = 'cozy' | 'comfy' | 'roomy';
 export type FontPair = 'inter' | 'fraunces' | 'system';
 export type ViewState = 'auto' | 'results' | 'errors';
+export type ActiveTab = 'kalkulator' | 'kalkulacje';
 
 export interface Tweaks {
   palette: Palette;
   density: Density;
   fontPair: FontPair;
   viewState: ViewState;
+  activeTab: ActiveTab;
 }
 
 export interface FormError {
@@ -124,3 +126,32 @@ export interface FormError {
   fieldLabel: string;
   fieldId: string;
 }
+
+/* ============ TWOJE KALKULACJE ============ */
+export type SavedCalcTag = 'ulubiona' | 'robocza' | null;
+
+export interface SavedCalculation {
+  id: string;
+  name: string;
+  note: string | null;
+  tag: SavedCalcTag;
+  propertyValue: number;
+  loanAmount: number;
+  years: number;
+  months: number;
+  installmentType: InstallmentType;
+  rateType: RateType;
+  wibor: number;
+  margin: number;
+  rate: number;
+  firstInstallment: number;
+  totalInterest: number;
+  totalCosts: number;
+  overpaymentsEnabled: boolean;
+  tranches: number;
+  updatedAt: Date;
+  createdAt: Date;
+}
+
+export type SavedCalcSort = 'updated' | 'created' | 'name' | 'loan' | 'rata';
+export type SavedCalcFilter = 'all' | 'fav' | 'work';
