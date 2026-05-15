@@ -40,7 +40,6 @@ export class TopbarComponent {
 
   setDefaults() {
     this.formService.setDefaults();
-    //this.formService.setOverheadDefaults();
   }
 
   loadCalculationFromFile() {

@@ -431,6 +431,12 @@ export class FormService {
     this.form.updateValueAndValidity();
   }
 
+  clearFormArrayExceptFirst(formArray: FormArray): void {
+    while (formArray.length > 1) {
+      formArray.removeAt(formArray.length - 1);
+    }
+  }
+
   addNadplataRegula(): void {
     this.nadplatyRegulyArray.push(this.createPrepaymentRuleGroup());
     this.form.updateValueAndValidity();
@@ -470,6 +476,7 @@ export class FormService {
     this.form.updateValueAndValidity();
   }
 
+  // TODO: Przejrzeć kod i zamienić `Nadpłata` na `Prepayment`
   onNadplataFromChanged(index: number): void {
     const ruleGroup = this.nadplatyRegulyArray.at(index);
     if (!ruleGroup) return;
@@ -484,94 +491,11 @@ export class FormService {
   }
 
   setDefaults(): void {
+    this.clearFormArrayExceptFirst(this.ratePeriodsArray);
+    this.clearFormArrayExceptFirst(this.tranchesArray);
+    this.clearFormArrayExceptFirst(this.additionalCostsArray);
+    this.clearFormArrayExceptFirst(this.nadplatyRegulyArray);
     this.form.reset();
-    this.ratePeriodsArray.clear({ emitEvent: false });
-    this.ratePeriodsArray.push(this.createRatePeriodGroup());
-    /*    this.form.reset({
-      basicData: {
-        propertyValue: 500_000,
-        loanAmount: 400_000,
-        ltv: 80,
-        loanPeriod: 20 * 12,
-        startDate: ym(),
-        capitalStartDate: nextMonthStr(),
-        installmentType: InstallmentType.EQUAL,
-      },
-      overheadCosts: this.form.controls.overheadCosts.getRawValue(),
-      tranches: { enabled: false },
-      prepayments: {
-        enabled: false,
-        fields: {
-          rataDocelowaRegula: {
-            targetRate: 0,
-            from: nextMonthStr(),
-            to: addMonthsStr(nextMonthStr(), 12),
-            effect: PrepaymentEffect.LOWER_INSTALLMENT,
-          },
-          prowizjaWczesniejszaSplata: {
-            ratePct: 0,
-            validUntil: addMonthsStr(nextMonthStr(), 36),
-          },
-        },
-      },
-    });
-
-    this.ratePeriodsArray.clear({ emitEvent: false });
-    this.ratePeriodsArray.push(
-      this.createRatePeriodGroup({
-        from: ym(),
-        rateType: RateType.VARIABLE,
-        wibor: 7.0,
-        margin: 2.0,
-        nominalRate: 9.0,
-      }),
-    );
-
-    const prepaymentItems =
-      this.form.controls.prepayments.controls.fields.controls.prepaymentRules.controls.items;
-    prepaymentItems.clear({ emitEvent: false });
-    prepaymentItems.push(this.createPrepaymentRuleGroup());
-
-    this.tranchesArray.clear({ emitEvent: false });
-    this.tranchesArray.push(this.createTrancheGroup(true));*/
-  }
-
-  setOverheadDefaults(): void {
-    this.overheadCostsGroup.patchValue({
-      commission: { commissionPct: 0 },
-      appraisal: { appraisalFee: 400 },
-      bridge: { bridgeRateIncrease: 1.2, bridgeMonths: 6 },
-      propertyInsurance: {
-        propInsFrequency: InsuranceFrequency.YEARLY,
-        propInsCalcMethod: InsuranceCalcMethod.PCT_PROPERTY_VALUE,
-        propInsValue: 0.0008,
-        propInsFrom: nextMonthStr(),
-        propInsTo: endOfLoanDate(),
-      },
-      lowEquityInsurance: { lowEquityRateIncrease: 0 },
-      lifeInsurance: {
-        lifeInsFrequency: InsuranceFrequency.YEARLY,
-        lifeInsCalcMethod: LifeInsuranceCalcMethod.PCT_LOAN_AMOUNT,
-        lifeInsValue: 0,
-        lifeInsFrom: nextMonthStr(),
-        lifeInsTo: endOfLoanDate(),
-      },
-      jobLossInsurance: {
-        jobLossInsFrequency: InsuranceFrequency.ONE_TIME,
-        jobLossInsCalcMethod: LifeInsuranceCalcMethod.PCT_LOAN_AMOUNT,
-        jobLossInsValue: 0,
-        jobLossInsFrom: nextMonthStr(),
-      },
-      promoRate: {
-        promoRateDecrease: 0,
-        promoFrom: nextMonthStr(),
-        promoTo: addMonthsStr(nextMonthStr(), 12),
-      },
-    });
-    this.overheadCostsGroup.controls.additionalCosts.setControl(
-      'items',
-      this.fb.array([this.createAdditionalCostGroup()]),
-    );
   }
 
   loadFromFile(savedData: any): void {
