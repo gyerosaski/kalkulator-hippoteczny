@@ -27,15 +27,15 @@ import { PlnPipe } from '../pipes/pln.pipe';
           oddasz <b>{{ oddasz() | number: '1.0-0' }}%</b> pożyczonej kwoty
         </div>
       </div>
-      <div class="kpi">
-        <div class="kpi-lab">Odsetki</div>
+      <div class="kpi kpi--int">
+        <div class="kpi-lab"><span class="kpi-dot"></span>Odsetki</div>
         <div class="kpi-val mono">
           {{ calc.schedule().totalInterest | pln }}<span class="kpi-unit">zł</span>
         </div>
         <div class="kpi-meta">{{ intPct() | number: '1.1-1' }}% od kapitału</div>
       </div>
-      <div class="kpi">
-        <div class="kpi-lab">Koszty okołokredytowe</div>
+      <div class="kpi kpi--cost">
+        <div class="kpi-lab"><span class="kpi-dot"></span>Koszty okołokredytowe</div>
         <div class="kpi-val mono">
           {{ calc.schedule().totalCosts | pln }}<span class="kpi-unit">zł</span>
         </div>

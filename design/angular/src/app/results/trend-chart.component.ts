@@ -26,17 +26,17 @@ interface ChartGeo {
           </div>
         </div>
         <div class="legend-inline">
-          <span><i class="dot" style="background:var(--accent-sage-deep)"></i>saldo</span>
-          <span><i class="dot" style="background:var(--accent-peach-deep)"></i>odsetki</span>
-          <span><i class="dot" style="background:var(--accent-lav-deep)"></i>kapitał</span>
+          <span><i class="dot" style="background:var(--ink-2)"></i>saldo</span>
+          <span><i class="dot" style="background:var(--c-cap)"></i>kapitał</span>
+          <span><i class="dot" style="background:var(--c-int)"></i>odsetki</span>
         </div>
       </div>
       @if (geo(); as g) {
         <svg viewBox="0 0 720 240" class="trend-chart" preserveAspectRatio="none">
           <defs>
             <linearGradient id="balGradA" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stop-color="var(--accent-sage)" stop-opacity="0.35" />
-              <stop offset="100%" stop-color="var(--accent-sage)" stop-opacity="0.02" />
+              <stop offset="0%" stop-color="var(--c-cap)" stop-opacity="0.28" />
+              <stop offset="100%" stop-color="var(--c-cap)" stop-opacity="0.02" />
             </linearGradient>
           </defs>
           @for (l of g.balLabels; track l.y) {
@@ -53,25 +53,20 @@ interface ChartGeo {
             </text>
           }
           <path [attr.d]="g.balanceArea" fill="url(#balGradA)" />
-          <path
-            [attr.d]="g.balancePath"
-            fill="none"
-            stroke="var(--accent-sage-deep)"
-            stroke-width="2"
-          />
+          <path [attr.d]="g.balancePath" fill="none" stroke="var(--ink-2)" stroke-width="2" />
           <path
             [attr.d]="g.interestPath"
             fill="none"
-            stroke="var(--accent-peach-deep)"
+            stroke="var(--c-int)"
             stroke-width="1.5"
-            opacity="0.85"
+            opacity="0.9"
           />
           <path
             [attr.d]="g.principalPath"
             fill="none"
-            stroke="var(--accent-lav-deep)"
+            stroke="var(--c-cap)"
             stroke-width="1.5"
-            opacity="0.85"
+            opacity="0.9"
           />
           @for (t of g.yearTicks; track t.year) {
             <text [attr.x]="t.x" [attr.y]="232" text-anchor="middle" class="ax-label">

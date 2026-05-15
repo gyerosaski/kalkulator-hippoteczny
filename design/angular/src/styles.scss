@@ -40,10 +40,28 @@ body {
   --accent-mist: oklch(85% 0.04 230);
   --accent-mist-deep: oklch(58% 0.08 235);
 
-  --c-cap: var(--accent-sage-deep);
-  --c-int: var(--accent-peach-deep);
-  --c-cost: var(--accent-lav-deep);
-  --c-over: var(--accent-mist-deep);
+  /* === SEMANTIC GROUP COLORS ============================================
+     Niezależne od palety. Zawsze:
+       kapitał  → zielony,
+       odsetki  → czerwony,
+       nadpłaty → niebieski,
+       koszty   → żółty/amber.
+     Stosowane w KPI, donutach, wykresie trendu i tabeli harmonogramu.    */
+  --c-cap: oklch(56% 0.13 150);
+  --c-cap-mid: oklch(72% 0.11 150);
+  --c-cap-soft: oklch(94% 0.05 150);
+
+  --c-int: oklch(58% 0.17 28);
+  --c-int-mid: oklch(74% 0.13 28);
+  --c-int-soft: oklch(95% 0.05 28);
+
+  --c-over: oklch(56% 0.14 250);
+  --c-over-mid: oklch(74% 0.1 250);
+  --c-over-soft: oklch(95% 0.04 250);
+
+  --c-cost: oklch(67% 0.15 82);
+  --c-cost-mid: oklch(82% 0.12 85);
+  --c-cost-soft: oklch(95% 0.06 85);
 
   --r-sm: 8px;
   --r: 12px;
@@ -671,11 +689,49 @@ body {
     var(--surface)
   );
 }
+/* Semantic KPI accent — top stripe + dot in label.
+   Matches the four group colors used in donuts/charts/table. */
+.kpi--cap {
+  --kpi-accent: var(--c-cap);
+}
+.kpi--int {
+  --kpi-accent: var(--c-int);
+}
+.kpi--over {
+  --kpi-accent: var(--c-over);
+}
+.kpi--cost {
+  --kpi-accent: var(--c-cost);
+}
+.kpi--cap::before,
+.kpi--int::before,
+.kpi--over::before,
+.kpi--cost::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--kpi-accent);
+  opacity: 0.9;
+}
 .kpi-lab {
   font-size: 11px;
   color: var(--ink-2);
   letter-spacing: 0.02em;
   text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.kpi-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--kpi-accent, var(--accent-deep));
+  display: inline-block;
+  flex: 0 0 auto;
 }
 .kpi-val {
   font-size: 26px;
@@ -834,6 +890,59 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.04em;
   font-weight: 500;
+}
+.tbl-head > div {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.col-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  display: inline-block;
+  flex: 0 0 auto;
+}
+.col-dot--cap {
+  background: var(--c-cap);
+}
+.col-dot--int {
+  background: var(--c-int);
+}
+.col-dot--over {
+  background: var(--c-over);
+}
+.col-dot--cost {
+  background: var(--c-cost);
+}
+/* Coloured numeric values in the four group columns — subtle, tabular nums stay aligned. */
+.tbl-row--year .num--cap {
+  color: var(--c-cap);
+}
+.tbl-row--year .num--int {
+  color: var(--c-int);
+}
+.tbl-row--year .num--over {
+  color: var(--c-over);
+}
+.tbl-row--year .num--cost {
+  color: var(--c-cost);
+}
+.tbl-row--month .num--cap {
+  color: color-mix(in oklch, var(--c-cap) 75%, var(--ink-2));
+}
+.tbl-row--month .num--int {
+  color: color-mix(in oklch, var(--c-int) 75%, var(--ink-2));
+}
+.tbl-row--month .num--over {
+  color: color-mix(in oklch, var(--c-over) 75%, var(--ink-2));
+}
+.tbl-row--month .num--cost {
+  color: color-mix(in oklch, var(--c-cost) 75%, var(--ink-2));
+}
+.num--zero {
+  color: var(--muted) !important;
+  opacity: 0.55;
 }
 .tbl-row {
   border-top: 1px solid var(--line);
