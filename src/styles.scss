@@ -42,10 +42,28 @@ body {
   --accent-mist: oklch(85% 0.04 230);
   --accent-mist-deep: oklch(58% 0.08 235);
 
-  --c-cap: var(--accent-sage-deep);
-  --c-int: var(--accent-peach-deep);
-  --c-cost: var(--accent-lav-deep);
-  --c-over: var(--accent-mist-deep);
+  /* === SEMANTIC GROUP COLORS ============================================
+     Niezależne od palety. Zawsze:
+       kapitał  → zielony,
+       odsetki  → czerwony,
+       nadpłaty → niebieski,
+       koszty   → żółty/amber.
+  */
+  --c-cap: oklch(56% 0.13 150);
+  --c-cap-mid: oklch(72% 0.11 150);
+  --c-cap-soft: oklch(94% 0.05 150);
+
+  --c-int: oklch(58% 0.17 28);
+  --c-int-mid: oklch(74% 0.13 28);
+  --c-int-soft: oklch(95% 0.05 28);
+
+  --c-over: oklch(56% 0.14 250);
+  --c-over-mid: oklch(74% 0.1 250);
+  --c-over-soft: oklch(95% 0.04 250);
+
+  --c-cost: oklch(67% 0.15 82);
+  --c-cost-mid: oklch(82% 0.12 85);
+  --c-cost-soft: oklch(95% 0.06 85);
 
   --r-sm: 8px;
   --r: 12px;
