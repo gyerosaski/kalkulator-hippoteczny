@@ -29,17 +29,7 @@ import { ResultsSummaryComponent } from '../../components/results/results-summar
 import { ResultsChartsComponent } from '../../components/results/results-charts/results-charts.component';
 import { ResultsScheduleComponent } from '../../components/results/results-schedule/results-schedule.component';
 import { ResultsErrorsComponent } from '../../components/errors/results-errors/results-errors.component';
-
-function ym(date = new Date()): string {
-  const y = date.getFullYear();
-  const m = date.getMonth() + 1;
-  return `${y}-${m.toString().padStart(2, '0')}`;
-}
-
-function nextMonthStr(date = new Date()): string {
-  const d = new Date(date.getFullYear(), date.getMonth() + 1, 1);
-  return ym(d);
-}
+import { nextMonthStr } from '../../helpers/date.helper';
 
 @Component({
   selector: 'app-layout',

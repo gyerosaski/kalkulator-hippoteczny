@@ -59,16 +59,16 @@ export class PrepaymentsFormComponent {
     { initialValue: this.formService.prepaymentsSection.controls.enabled.value },
   );
 
-  private readonly nadplatyCount = toSignal(
-    this.formService.nadplatyRegulyArray.valueChanges.pipe(
-      map(() => this.formService.nadplatyRegulyArray.length),
+  private readonly prepaymentRulesCount = toSignal(
+    this.formService.prepaymentRulesArray.valueChanges.pipe(
+      map(() => this.formService.prepaymentRulesArray.length),
     ),
-    { initialValue: this.formService.nadplatyRegulyArray.length },
+    { initialValue: this.formService.prepaymentRulesArray.length },
   );
 
   readonly badge = computed(() =>
-    this.isSectionEnabled() && this.nadplatyCount()! > 1
-      ? `liczba reguł: ${this.nadplatyCount()}`
+    this.isSectionEnabled() && this.prepaymentRulesCount()! > 1
+      ? `liczba reguł: ${this.prepaymentRulesCount()}`
       : 'opcjonalne',
   );
 
@@ -96,23 +96,23 @@ export class PrepaymentsFormComponent {
     );
   }
 
-  get nadplatyRegulyArray() {
-    return this.formService.nadplatyRegulyArray;
+  get prepaymentRulesArray() {
+    return this.formService.prepaymentRulesArray;
   }
 
-  addNadplataRegula() {
-    this.formService.addNadplataRegula();
+  addPrepaymentRule() {
+    this.formService.addPrepaymentRule();
   }
 
-  removeNadplataRegula(index: number) {
-    this.formService.removeNadplataRegula(index);
+  removePrepaymentRule(index: number) {
+    this.formService.removePrepaymentRule(index);
   }
 
-  onNadplataFrequencyChanged(index: number) {
-    this.formService.onNadplataFrequencyChanged(index);
+  onPrepaymentFrequencyChanged(index: number) {
+    this.formService.onPrepaymentFrequencyChanged(index);
   }
 
-  onNadplataFromChanged(index: number) {
-    this.formService.onNadplataFromChanged(index);
+  onPrepaymentFromChanged(index: number) {
+    this.formService.onPrepaymentFromChanged(index);
   }
 }

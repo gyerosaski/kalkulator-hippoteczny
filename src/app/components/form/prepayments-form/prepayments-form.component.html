@@ -16,11 +16,11 @@
     >
       <div formGroupName="prepaymentRules">
         <div formArrayName="items">
-          @for (rule of nadplatyRegulyArray.controls; track $index) {
+          @for (rule of prepaymentRulesArray.controls; track $index) {
             <ui-card
               [tag]="($index + 1).toString()"
               [removable]="$index > 0"
-              (remove)="removeNadplataRegula($index)"
+              (remove)="removePrepaymentRule($index)"
               [formGroupName]="$index"
             >
               <div class="row row--2">
@@ -29,21 +29,21 @@
                     formControlName="frequency"
                     [options]="prepaymentFrequencyOptions"
                     [labels]="prepaymentFrequencyOptions | prepaymentFrequencyLabel"
-                    (valueChange)="onNadplataFrequencyChanged($index)"
+                    (valueChange)="onPrepaymentFrequencyChanged($index)"
                   />
                 </ui-field>
                 @if (rule.get('frequency')?.value === PrepaymentFrequency.ONE_TIME) {
                   <ui-field label="Data nadpłaty" num="1b">
                     <ui-month-picker
                       formControlName="from"
-                      (valueChange)="onNadplataFromChanged($index)"
+                      (valueChange)="onPrepaymentFromChanged($index)"
                     />
                   </ui-field>
                 } @else {
                   <ui-field label="Data nadpłaty od" num="1b">
                     <ui-month-picker
                       formControlName="from"
-                      (valueChange)="onNadplataFromChanged($index)"
+                      (valueChange)="onPrepaymentFromChanged($index)"
                     />
                   </ui-field>
                   <ui-field label="Data nadpłaty do" num="1c">
@@ -64,7 +64,7 @@
             </ui-card>
           }
         </div>
-        <ui-btn-add label="Dodaj regułę nadpłaty" (add)="addNadplataRegula()" />
+        <ui-btn-add label="Dodaj regułę nadpłaty" (add)="addPrepaymentRule()" />
       </div>
     </ui-subsection>
 

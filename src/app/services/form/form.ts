@@ -30,26 +30,7 @@ import {
   TrancheFormGroup,
   TranchesFieldsFormGroup,
 } from '../../model/form.model';
-
-// TODO: wynieść do helpera date.helper.ts
-function ym(date = new Date()): string {
-  const y = date.getFullYear();
-  const m = date.getMonth() + 1;
-  return `${y}-${m.toString().padStart(2, '0')}`;
-}
-
-// TODO: wynieść do helpera date.helper.ts
-function nextMonthStr(date = new Date()): string {
-  const d = new Date(date.getFullYear(), date.getMonth() + 1, 1);
-  return ym(d);
-}
-
-// TODO: wynieść do helpera date.helper.ts
-function addMonthsStr(baseYm: string, monthsToAdd: number): string {
-  const [y, m] = baseYm.split('-').map((v) => parseInt(v, 10));
-  const d = new Date(y, m - 1 + monthsToAdd, 1);
-  return ym(d);
-}
+import { addMonthsStr, nextMonthStr, ym } from '../../helpers/date.helper';
 
 function endOfLoanDate(): string {
   return addMonthsStr(nextMonthStr(), 20 * 12 - 1);
@@ -150,7 +131,7 @@ export class FormService {
     return this.form.controls.basicData.controls.ratePeriods;
   }
 
-  get nadplatyRegulyArray(): FormArray<FormGroup<PrepaymentRuleFormGroup>> {
+  get prepaymentRulesArray(): FormArray<FormGroup<PrepaymentRuleFormGroup>> {
     return this.form.controls.prepayments.controls.fields.controls.prepaymentRules.controls.items;
   }
 
@@ -170,15 +151,15 @@ export class FormService {
     return this.overheadCostsGroup.controls.additionalCosts.controls.items;
   }
 
-  // TODO: przepisać z wykorzystaniem `array.reduce()`
   get trancheSum(): number {
-    const tranches = this.tranchesArray;
-    if (!tranches) return 0;
-    let sum = 0;
-    for (let i = 0; i < tranches.length; i++) {
-      sum += Number(tranches.at(i).get('amount')?.value) || 0;
-    }
-    return Math.round(sum * 100) / 100;
+    return (
+      Math.round(
+        this.tranchesArray.controls.reduce(
+          (sum, control) => sum + (Number(control.get('amount')?.value) || 0),
+          0,
+        ) * 100,
+      ) / 100
+    );
   }
 
   get prepaymentsSection(): FormGroup<ToggleableSectionFormGroup<PrepaymentsFieldsFormGroup>> {
@@ -437,14 +418,14 @@ export class FormService {
     }
   }
 
-  addNadplataRegula(): void {
-    this.nadplatyRegulyArray.push(this.createPrepaymentRuleGroup());
+  addPrepaymentRule(): void {
+    this.prepaymentRulesArray.push(this.createPrepaymentRuleGroup());
     this.form.updateValueAndValidity();
   }
 
-  removeNadplataRegula(index: number): void {
-    if (this.nadplatyRegulyArray.length <= 1) return;
-    this.nadplatyRegulyArray.removeAt(index);
+  removePrepaymentRule(index: number): void {
+    if (this.prepaymentRulesArray.length <= 1) return;
+    this.prepaymentRulesArray.removeAt(index);
     this.form.updateValueAndValidity();
   }
 
@@ -459,8 +440,8 @@ export class FormService {
     this.form.updateValueAndValidity();
   }
 
-  onNadplataFrequencyChanged(index: number): void {
-    const ruleGroup = this.nadplatyRegulyArray.at(index);
+  onPrepaymentFrequencyChanged(index: number): void {
+    const ruleGroup = this.prepaymentRulesArray.at(index);
     if (!ruleGroup) return;
 
     const frequency = ruleGroup.controls.frequency.value;
@@ -476,9 +457,8 @@ export class FormService {
     this.form.updateValueAndValidity();
   }
 
-  // TODO: Przejrzeć kod i zamienić `Nadpłata` na `Prepayment`
-  onNadplataFromChanged(index: number): void {
-    const ruleGroup = this.nadplatyRegulyArray.at(index);
+  onPrepaymentFromChanged(index: number): void {
+    const ruleGroup = this.prepaymentRulesArray.at(index);
     if (!ruleGroup) return;
 
     const frequency = ruleGroup.controls.frequency.value;
@@ -494,7 +474,7 @@ export class FormService {
     this.clearFormArrayExceptFirst(this.ratePeriodsArray);
     this.clearFormArrayExceptFirst(this.tranchesArray);
     this.clearFormArrayExceptFirst(this.additionalCostsArray);
-    this.clearFormArrayExceptFirst(this.nadplatyRegulyArray);
+    this.clearFormArrayExceptFirst(this.prepaymentRulesArray);
     this.form.reset();
   }
 
