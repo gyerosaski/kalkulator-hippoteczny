@@ -7,13 +7,21 @@
     <div class="tbl-head">
       <div>Okres</div>
       <div>Rata</div>
-      <div>Kapitał</div>
-      <div>Odsetki</div>
+      <div class="col-head">
+        <ui-color-code-marker [variant]="ColorCodeMarkerVariant.CAPITAL" />Kapitał
+      </div>
+      <div class="col-head">
+        <ui-color-code-marker [variant]="ColorCodeMarkerVariant.INTEREST" />Odsetki
+      </div>
       @if (isPrepaymentEnabled) {
-        <div>Nadpłaty</div>
+        <div class="col-head">
+          <ui-color-code-marker [variant]="ColorCodeMarkerVariant.PREPAYMENT" />Nadpłaty
+        </div>
       }
       @if (isOverheadCostsEnabled) {
-        <div>Koszty</div>
+        <div class="col-head">
+          <ui-color-code-marker [variant]="ColorCodeMarkerVariant.COST" />Koszty
+        </div>
       }
       <div>Pozostało</div>
     </div>
@@ -32,13 +40,13 @@
           {{ y.year }}
         </div>
         <div class="mono">{{ y.sumRate | formatAmount }}</div>
-        <div class="mono">{{ y.sumCapital | formatAmount }}</div>
-        <div class="mono">{{ y.sumInterest | formatAmount }}</div>
+        <div class="mono c-cap">{{ y.sumCapital | formatAmount }}</div>
+        <div class="mono c-int">{{ y.sumInterest | formatAmount }}</div>
         @if (isPrepaymentEnabled) {
-          <div class="mono">{{ y.sumPrepayment | formatAmount }}</div>
+          <div class="mono c-over">{{ y.sumPrepayment | formatAmount }}</div>
         }
         @if (isOverheadCostsEnabled) {
-          <div class="mono">{{ y.sumInsuranceCost | formatAmount }}</div>
+          <div class="mono c-cost">{{ y.sumInsuranceCost | formatAmount }}</div>
         }
         <div class="mono">
           <b>{{ y.lastRemaining | formatAmount }}</b>
@@ -49,13 +57,13 @@
           <div class="tbl-row tbl-row--month">
             <div class="cell-month">{{ r.date | formatMonth }}</div>
             <div class="mono">{{ r.rate | formatAmount }}</div>
-            <div class="mono">{{ r.capital | formatAmount }}</div>
-            <div class="mono">{{ r.interest | formatAmount }}</div>
+            <div class="mono c-cap">{{ r.capital | formatAmount }}</div>
+            <div class="mono c-int">{{ r.interest | formatAmount }}</div>
             @if (isPrepaymentEnabled) {
-              <div class="mono">{{ r.prepayment | formatAmount }}</div>
+              <div class="mono c-over">{{ r.prepayment | formatAmount }}</div>
             }
             @if (isOverheadCostsEnabled) {
-              <div class="mono">{{ r.insuranceCost | formatAmount }}</div>
+              <div class="mono c-cost">{{ r.insuranceCost | formatAmount }}</div>
             }
             <div class="mono">{{ r.remaining | formatAmount }}</div>
           </div>

@@ -1,0 +1,19 @@
+.c-cap {
+  color: var(--c-cap);
+}
+.c-int {
+  color: var(--c-int);
+}
+.c-cost {
+  color: var(--c-cost);
+}
+.c-over {
+  color: var(--c-over);
+}
+
+.col-head {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}

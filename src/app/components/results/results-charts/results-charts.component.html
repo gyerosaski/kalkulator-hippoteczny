@@ -8,7 +8,7 @@
       <ul class="legend">
         @for (s of totalSlices(); track s.label) {
           <li>
-            <span class="dot" [style.background]="s.color"></span>
+            <ui-color-code-marker [variant]="s.variant" />
             <span class="leg-lab">{{ s.label }}</span>
             <span class="leg-val mono">{{ s.value | formatAmount }} zł</span>
           </li>
@@ -26,7 +26,7 @@
       <ul class="legend">
         @for (s of firstSlices(); track s.label) {
           <li>
-            <span class="dot" [style.background]="s.color"></span>
+            <ui-color-code-marker [variant]="s.variant" />
             <span class="leg-lab">{{ s.label }}</span>
             <span class="leg-val mono">{{ s.value | formatAmount }} zł</span>
           </li>

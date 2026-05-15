@@ -7,6 +7,7 @@ import { PrepaymentFrequency, PrepaymentEffect } from '../../../model';
 import { PrepaymentFrequencyLabelPipe } from '../../../pipes/prepayment-frequency-label/prepayment-frequency-label.pipe';
 import { PrepaymentEffectLabelPipe } from '../../../pipes/prepayment-effect-label/prepayment-effect-label.pipe';
 import { SectionComponent } from '../../ui/section/section.component';
+import { ColorCodeMarkerVariant } from '../../ui/color-code-marker/color-code-marker.component';
 import { FieldComponent } from '../../ui/field/field.component';
 import { NumberInputComponent } from '../../ui/number-input/number-input.component';
 import { MonthPickerComponent } from '../../ui/month-picker/month-picker.component';
@@ -39,6 +40,7 @@ import { DividerComponent } from '../../ui/divider/divider.component';
 export class PrepaymentsFormComponent {
   private readonly formService = inject(FormService);
 
+  protected readonly ColorCodeMarkerVariant = ColorCodeMarkerVariant;
   protected readonly PrepaymentFrequency = PrepaymentFrequency;
 
   readonly prepaymentFrequencyOptions = Object.values(PrepaymentFrequency);

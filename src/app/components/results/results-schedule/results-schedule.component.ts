@@ -5,15 +5,28 @@ import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
 import { FormService } from '../../../services/form/form';
 import { IconChevronRightComponent } from '../../icons/icon-chevron-right/icon-chevron-right.component';
 import { IconChevronDownComponent } from '../../icons/icon-chevron-down/icon-chevron-down.component';
+import {
+  ColorCodeMarkerComponent,
+  ColorCodeMarkerVariant,
+} from '../../ui/color-code-marker/color-code-marker.component';
 
 @Component({
   selector: 'app-results-schedule',
   standalone: true,
-  imports: [FormatMonthPipe, FormatAmountPipe, IconChevronRightComponent, IconChevronDownComponent],
+  imports: [
+    FormatMonthPipe,
+    FormatAmountPipe,
+    IconChevronRightComponent,
+    IconChevronDownComponent,
+    ColorCodeMarkerComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './results-schedule.component.html',
+  styleUrl: './results-schedule.component.scss',
 })
 export class ResultsScheduleComponent {
+  protected readonly ColorCodeMarkerVariant = ColorCodeMarkerVariant;
+
   yearlyGroups = input.required<YearGroup[] | null>();
   private readonly formService = inject(FormService);
 
