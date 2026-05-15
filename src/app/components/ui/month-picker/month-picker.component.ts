@@ -5,15 +5,15 @@ import {
   output,
   forwardRef,
   viewChild,
-  ElementRef,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { IconCalendarComponent } from '../../icons/icon-calendar/icon-calendar.component';
+import { MonthPickerDialogComponent } from '../../../dialogs/month-picker/month-picker-dialog.component';
 
 @Component({
   selector: 'ui-month-picker',
   standalone: true,
-  imports: [IconCalendarComponent],
+  imports: [IconCalendarComponent, MonthPickerDialogComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
@@ -30,10 +30,14 @@ export class MonthPickerComponent implements ControlValueAccessor {
   focused = signal(false);
   disabled = signal(false);
   readonly _value = signal('');
-  private readonly inputRef = viewChild.required<ElementRef<HTMLInputElement>>('inputRef');
 
-  openPicker(): void {
-    this.inputRef().nativeElement.showPicker();
+  private readonly monthPickerDialog = viewChild.required(MonthPickerDialogComponent);
+
+  async openPicker(): Promise<void> {
+    const result = await this.monthPickerDialog().open(this._value());
+    if (result !== null) {
+      this.onNativeChange(result);
+    }
   }
 
   private _onChange?: (v: string) => void;

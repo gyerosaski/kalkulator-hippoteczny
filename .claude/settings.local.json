@@ -19,7 +19,9 @@
       "Bash(Remove-Item *)",
       "Bash(Select-Object FullName)",
       "Bash(xargs -I {} sh -c 'grep -l \"interface\\\\|enum\\\\|type \" \"{}\" 2>/dev/null || true')",
-      "Bash(Select-Object Name)"
+      "Bash(Select-Object Name)",
+      "Bash(start npx *)",
+      "Bash(Copy-Item *)"
     ]
   }
 }

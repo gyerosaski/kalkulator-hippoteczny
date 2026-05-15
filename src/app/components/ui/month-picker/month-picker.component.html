@@ -1,6 +1,5 @@
 <div class="inp inp--date" [class.inp--focus]="focused()" [class.inp--disabled]="disabled()">
   <input
-    #inputRef
     type="month"
     [disabled]="disabled()"
     [value]="_value()"
@@ -11,3 +10,5 @@
   />
   <icon-calendar (click)="openPicker()" style="cursor: pointer" />
 </div>
+
+<ui-month-picker-dialog />

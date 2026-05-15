@@ -1,0 +1,93 @@
+<dialog #dialogEl (close)="onClose()">
+  <header class="mp-head">
+    <div class="mp-head-text">
+      <span class="mp-tag">Wybór daty</span>
+      <h3>Wybierz miesiąc</h3>
+    </div>
+    <button class="mp-close" type="button" (click)="cancel()" aria-label="Zamknij">×</button>
+  </header>
+
+  <div class="mp-preview">
+    <div class="mp-preview-col">
+      <div class="mp-preview-lab">Wybierane</div>
+      <div class="mp-preview-val">
+        <span class="mp-preview-month">{{ stagedMonthName() }}</span>
+        <span class="mp-preview-year mono">{{ stagedYear() }}</span>
+      </div>
+    </div>
+    @if (stagedChanged()) {
+      <div class="mp-preview-was">
+        <span>było</span>
+        <span class="mono">{{ originalValue() | formatMonth }}</span>
+      </div>
+    }
+  </div>
+
+  <div class="mp-decade-nav">
+    <button
+      class="ico-btn mp-nav-btn"
+      type="button"
+      (click)="shiftDecade(-10)"
+      aria-label="Cofnij o 10 lat"
+    >
+      <icon-chevron-right class="mp-nav-icon mp-nav-icon--prev" />
+    </button>
+    <div class="mp-decade-label">
+      <span class="mp-decade-range mono">{{ decadeStart() }}–{{ decadeStart() + 9 }}</span>
+      <span class="mp-decade-sub">Dekada</span>
+    </div>
+    <button
+      class="ico-btn mp-nav-btn"
+      type="button"
+      (click)="shiftDecade(10)"
+      aria-label="Naprzód o 10 lat"
+    >
+      <icon-chevron-right class="mp-nav-icon" />
+    </button>
+    <button class="btn btn--mini mp-today-btn" type="button" (click)="jumpToToday()">Dziś</button>
+  </div>
+
+  <div class="mp-years">
+    @for (year of years(); track year) {
+      <button
+        class="mp-year"
+        type="button"
+        [class.is-focused]="year === stagedYear()"
+        [class.is-selected]="isYearSelected(year)"
+        [class.is-today]="year === todayYear"
+        (click)="stagedYear.set(year)"
+      >
+        <span class="mp-year-num mono">{{ year }}</span>
+        @if (year === todayYear) {
+          <span class="mp-year-tag">dziś</span>
+        }
+      </button>
+    }
+  </div>
+
+  <div class="mp-months">
+    <div class="mp-months-head">
+      <span class="mp-months-lab">Miesiące</span>
+      <span class="mp-months-year mono">{{ stagedYear() }}</span>
+    </div>
+    <div class="mp-months-grid">
+      @for (monthName of monthNamesShort; track $index) {
+        <button
+          class="mp-month"
+          type="button"
+          [class.is-focused]="$index === stagedMonth()"
+          [class.is-selected]="isMonthSelected($index)"
+          [class.is-today]="$index === todayMonth && stagedYear() === todayYear"
+          (click)="pickMonth($index)"
+        >
+          {{ monthName }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <footer class="mp-foot">
+    <button class="btn btn--ghost" type="button" (click)="cancel()">Anuluj</button>
+    <button class="btn btn--primary" type="button" (click)="confirm()">Zatwierdź</button>
+  </footer>
+</dialog>
