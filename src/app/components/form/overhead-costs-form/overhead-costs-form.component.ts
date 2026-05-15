@@ -9,7 +9,7 @@ import { InsuranceCalcMethodLabelPipe } from '../../../pipes/insurance-calc-meth
 import { LifeInsuranceCalcMethodLabelPipe } from '../../../pipes/life-insurance-calc-method-label/life-insurance-calc-method-label.pipe';
 import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
 import { SectionComponent } from '../../ui/section/section.component';
-import { ColorCodeMarkerVariant } from '../../ui/color-code-marker/color-code-marker.component';
+import { ColorCodeMarkerVariant } from '../../../model';
 import { FieldComponent } from '../../ui/field/field.component';
 import { NumberInputComponent } from '../../ui/number-input/number-input.component';
 import { MonthPickerComponent } from '../../ui/month-picker/month-picker.component';

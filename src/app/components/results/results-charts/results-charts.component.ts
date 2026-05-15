@@ -1,16 +1,9 @@
 import { Component, input, ChangeDetectionStrategy, inject, computed } from '@angular/core';
-import { MortgageResults } from '../../../model/mortgage.model';
-import { DonutComponent, DonutSlice } from '../../ui/donut/donut.component';
+import { MortgageResults, ColorCodeMarkerVariant, ChartSlice } from '../../../model';
+import { DonutComponent } from '../../ui/donut/donut.component';
 import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
 import { FormService } from '../../../services/form/form';
-import {
-  ColorCodeMarkerComponent,
-  ColorCodeMarkerVariant,
-} from '../../ui/color-code-marker/color-code-marker.component';
-
-interface ChartSlice extends DonutSlice {
-  variant: ColorCodeMarkerVariant;
-}
+import { ColorCodeMarkerComponent } from '../../ui/color-code-marker/color-code-marker.component';
 
 @Component({
   selector: 'app-results-charts',

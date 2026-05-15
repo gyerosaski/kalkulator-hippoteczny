@@ -1,5 +1,5 @@
 import { Component, ElementRef, viewChild } from '@angular/core';
-import { ValidationError } from '../../services/schema-validator/schema-validator.service';
+import { ValidationError } from '../../model';
 
 @Component({
   selector: 'app-load-validation-error-dialog',

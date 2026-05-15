@@ -1,11 +1,7 @@
 import { Injectable } from '@angular/core';
 import Ajv, { ErrorObject } from 'ajv';
 import schema from '../../schemas/calculation.schema.json';
-
-export interface ValidationError {
-  path: string;
-  message: string;
-}
+import { ValidationError } from '../../model';
 
 @Injectable({ providedIn: 'root' })
 export class SchemaValidatorService {

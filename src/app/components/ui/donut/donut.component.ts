@@ -1,10 +1,5 @@
 import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
-
-export interface DonutSlice {
-  label: string;
-  value: number;
-  color: string;
-}
+import { DonutSlice } from '../../../model';
 
 @Component({
   selector: 'ui-donut',

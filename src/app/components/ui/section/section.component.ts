@@ -1,9 +1,7 @@
 import { Component, ChangeDetectionStrategy, input, output, signal } from '@angular/core';
 import { IconChevronRightComponent } from '../../icons/icon-chevron-right/icon-chevron-right.component';
-import {
-  ColorCodeMarkerComponent,
-  ColorCodeMarkerVariant,
-} from '../color-code-marker/color-code-marker.component';
+import { ColorCodeMarkerVariant } from '../../../model';
+import { ColorCodeMarkerComponent } from '../color-code-marker/color-code-marker.component';
 
 @Component({
   selector: 'ui-section',

@@ -208,3 +208,15 @@ export interface FormError {
   fieldLabel: string;
   fieldId: string;
 }
+
+export enum ColorCodeMarkerVariant {
+  CAPITAL = 'CAPITAL',
+  INTEREST = 'INTEREST',
+  COST = 'COST',
+  PREPAYMENT = 'PREPAYMENT',
+}
+
+export interface ValidationError {
+  path: string;
+  message: string;
+}

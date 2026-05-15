@@ -1,11 +1,5 @@
 import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
-
-export enum ColorCodeMarkerVariant {
-  CAPITAL = 'CAPITAL',
-  INTEREST = 'INTEREST',
-  COST = 'COST',
-  PREPAYMENT = 'PREPAYMENT',
-}
+import { ColorCodeMarkerVariant } from '../../../model';
 
 const COLOR_MAP: Record<ColorCodeMarkerVariant, string> = {
   [ColorCodeMarkerVariant.CAPITAL]: 'var(--c-cap)',
