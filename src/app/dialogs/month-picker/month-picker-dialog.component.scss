@@ -24,32 +24,18 @@ dialog {
 /* Header */
 .mp-head {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
   padding: 18px 20px 12px;
-}
 
-.mp-head-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.mp-head-text h3 {
-  margin: 4px 0 0;
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: -0.015em;
-  color: var(--ink);
-}
-
-.mp-tag {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--accent-deep);
+  h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+  }
 }
 
 .mp-close {
@@ -64,7 +50,6 @@ dialog {
   display: grid;
   place-items: center;
   line-height: 1;
-  margin-top: -2px;
 
   &:hover {
     background: var(--surface-2);
@@ -72,83 +57,13 @@ dialog {
   }
 }
 
-/* Preview */
-.mp-preview {
-  margin: 0 20px;
-  padding: 12px 14px;
-  background: color-mix(in oklch, var(--accent) 18%, var(--surface));
-  border: 1px solid color-mix(in oklch, var(--accent) 32%, var(--line));
-  border-radius: var(--r);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.mp-preview-col {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-
-.mp-preview-lab {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--accent-deep);
-}
-
-.mp-preview-val {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.mp-preview-month {
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: var(--ink);
-  text-transform: lowercase;
-}
-
-.mp-preview-year {
-  font-size: 18px;
-  color: var(--ink-2);
-  letter-spacing: -0.01em;
-  font-variant-numeric: tabular-nums;
-}
-
-.mp-preview-was {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-  font-size: 10px;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-
-  .mono {
-    font-size: 12px;
-    text-transform: none;
-    letter-spacing: 0;
-    color: var(--ink-2);
-    text-decoration: line-through;
-    text-decoration-color: color-mix(in oklch, var(--muted) 60%, transparent);
-  }
-}
-
 /* Decade nav */
 .mp-decade-nav {
   display: grid;
-  grid-template-columns: auto 1fr auto auto;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 10px;
-  padding: 16px 20px 10px;
+  padding: 0 20px 12px;
 }
 
 .mp-nav-btn {
@@ -174,31 +89,13 @@ dialog {
   transform: scaleX(-1);
 }
 
-.mp-decade-label {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  line-height: 1.15;
-}
-
 .mp-decade-range {
   font-size: 14px;
   font-weight: 600;
   letter-spacing: -0.005em;
   color: var(--ink);
   font-variant-numeric: tabular-nums;
-}
-
-.mp-decade-sub {
-  font-size: 9.5px;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.mp-today-btn {
-  border: 1px solid var(--line);
+  text-align: center;
 }
 
 /* Years grid */
@@ -206,103 +103,49 @@ dialog {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 6px;
-  padding: 6px 20px 8px;
+  padding: 0 20px 12px;
 }
 
 .mp-year {
-  position: relative;
   border: 1px solid transparent;
   background: var(--surface-2);
   font: inherit;
   font-size: 13px;
   color: var(--ink-2);
-  padding: 9px 0 8px;
+  padding: 9px 0;
   border-radius: 10px;
   cursor: pointer;
   transition:
     background 0.12s,
     color 0.12s,
     border-color 0.12s;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1px;
 
   &:hover {
     background: var(--line);
     color: var(--ink);
   }
 
-  &.is-today {
-    border-color: color-mix(in oklch, var(--accent-deep) 45%, var(--line-2));
-  }
-
   &.is-selected {
     background: color-mix(in oklch, var(--accent) 26%, var(--surface));
     color: var(--accent-deep);
     border-color: color-mix(in oklch, var(--accent) 40%, var(--line));
-
-    .mp-year-tag {
-      color: var(--accent-deep);
-    }
   }
 
   &.is-focused {
     background: var(--ink);
     color: var(--surface);
     border-color: var(--ink);
-
-    .mp-year-tag {
-      color: color-mix(in oklch, var(--surface) 75%, var(--ink));
-    }
   }
-}
-
-.mp-year-num {
-  font-size: 13px;
-  font-variant-numeric: tabular-nums;
-}
-
-.mp-year-tag {
-  font-size: 8.5px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
-  font-weight: 600;
 }
 
 /* Months panel */
 .mp-months {
-  margin: 6px 14px 14px;
+  margin: 0 14px 14px;
   padding: 12px 14px 14px;
   background: var(--surface-2);
   border: 1px solid var(--line);
   border-radius: var(--r);
   overflow: hidden;
-}
-
-.mp-months-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
-.mp-months-lab {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.mp-months-year {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ink);
-  letter-spacing: -0.01em;
-  font-variant-numeric: tabular-nums;
 }
 
 .mp-months-grid {
@@ -336,10 +179,6 @@ dialog {
     transform: translateY(1px);
   }
 
-  &.is-today {
-    border-color: color-mix(in oklch, var(--accent-deep) 45%, var(--line-2));
-  }
-
   &.is-selected {
     background: color-mix(in oklch, var(--accent) 22%, var(--surface));
     color: var(--accent-deep);
@@ -352,14 +191,4 @@ dialog {
     border-color: var(--accent-deep);
     font-weight: 600;
   }
-}
-
-/* Footer */
-.mp-foot {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  padding: 10px 16px 16px;
-  border-top: 1px solid var(--line);
-  background: var(--surface);
 }

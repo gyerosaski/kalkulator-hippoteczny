@@ -5,9 +5,7 @@ import {
   computed,
   viewChild,
   ElementRef,
-  HostListener,
 } from '@angular/core';
-import { FormatMonthPipe } from '../../pipes/format-month/format-month.pipe';
 import { IconChevronRightComponent } from '../../components/icons/icon-chevron-right/icon-chevron-right.component';
 
 const MONTH_NAMES_SHORT = [
@@ -25,25 +23,10 @@ const MONTH_NAMES_SHORT = [
   'gru',
 ];
 
-const MONTH_NAMES_LONG = [
-  'styczeń',
-  'luty',
-  'marzec',
-  'kwiecień',
-  'maj',
-  'czerwiec',
-  'lipiec',
-  'sierpień',
-  'wrzesień',
-  'październik',
-  'listopad',
-  'grudzień',
-];
-
 @Component({
   selector: 'ui-month-picker-dialog',
   standalone: true,
-  imports: [FormatMonthPipe, IconChevronRightComponent],
+  imports: [IconChevronRightComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './month-picker-dialog.component.html',
   styleUrl: './month-picker-dialog.component.scss',
@@ -52,13 +35,12 @@ export class MonthPickerDialogComponent {
   private readonly dialogRef = viewChild.required<ElementRef<HTMLDialogElement>>('dialogEl');
 
   protected readonly monthNamesShort = MONTH_NAMES_SHORT;
-  protected readonly todayYear = new Date().getFullYear();
-  protected readonly todayMonth = new Date().getMonth();
+  private readonly todayYear = new Date().getFullYear();
+  private readonly todayMonth = new Date().getMonth();
 
   protected readonly stagedYear = signal(this.todayYear);
   protected readonly stagedMonth = signal(this.todayMonth);
   protected readonly decadeStart = signal(Math.floor(this.todayYear / 10) * 10);
-  protected readonly originalValue = signal('');
   private readonly committedYear = signal(this.todayYear);
   private readonly committedMonth = signal(this.todayMonth);
 
@@ -70,13 +52,6 @@ export class MonthPickerDialogComponent {
     return Array.from({ length: 10 }, (_, index) => start + index);
   });
 
-  protected readonly stagedMonthName = computed(() => MONTH_NAMES_LONG[this.stagedMonth()]);
-
-  protected readonly stagedChanged = computed(
-    () =>
-      this.stagedYear() !== this.committedYear() || this.stagedMonth() !== this.committedMonth(),
-  );
-
   protected isYearSelected(year: number): boolean {
     return year === this.committedYear();
   }
@@ -87,7 +62,6 @@ export class MonthPickerDialogComponent {
 
   open(currentValue: string): Promise<string | null> {
     const [year, month] = this.parseYearMonth(currentValue);
-    this.originalValue.set(currentValue);
     this.committedYear.set(year);
     this.committedMonth.set(month - 1);
     this.stagedYear.set(year);
@@ -111,12 +85,6 @@ export class MonthPickerDialogComponent {
     this.decadeStart.update((current) => current + delta);
   }
 
-  protected jumpToToday(): void {
-    this.decadeStart.set(Math.floor(this.todayYear / 10) * 10);
-    this.stagedYear.set(this.todayYear);
-    this.stagedMonth.set(this.todayMonth);
-  }
-
   protected pickMonth(monthIndex: number): void {
     this.stagedMonth.set(monthIndex);
     this.confirm();
@@ -137,14 +105,5 @@ export class MonthPickerDialogComponent {
     this.resolvePromise?.(this.resolvedValue);
     this.resolvePromise = undefined;
     this.resolvedValue = null;
-  }
-
-  @HostListener('window:keydown', ['$event'])
-  onKeydown(event: KeyboardEvent): void {
-    if (!this.dialogRef().nativeElement.open) return;
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      this.confirm();
-    }
   }
 }
