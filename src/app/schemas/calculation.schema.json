@@ -100,57 +100,126 @@
     "OverheadCostsFields": {
       "type": "object",
       "required": [
-        "commissionPct",
-        "appraisalFee",
-        "bridgeRateIncrease",
-        "bridgeMonths",
-        "propInsFrequency",
-        "propInsCalcMethod",
-        "propInsValue",
-        "propInsFrom",
-        "propInsTo",
-        "lowEquityRateIncrease",
-        "lifeInsFrequency",
-        "lifeInsCalcMethod",
-        "lifeInsValue",
-        "lifeInsFrom",
-        "lifeInsTo",
-        "jobLossInsFrequency",
-        "jobLossInsCalcMethod",
-        "jobLossInsValue",
-        "jobLossInsFrom",
+        "commission",
+        "appraisal",
+        "bridge",
+        "propertyInsurance",
+        "lowEquityInsurance",
+        "lifeInsurance",
+        "jobLossInsurance",
         "additionalCosts",
-        "promoRateDecrease",
-        "promoFrom",
-        "promoTo"
+        "promoRate"
       ],
       "properties": {
-        "commissionPct": { "type": "number", "minimum": 0 },
-        "appraisalFee": { "type": "number", "minimum": 0 },
-        "bridgeRateIncrease": { "type": "number", "minimum": 0 },
-        "bridgeMonths": { "type": "integer", "minimum": 0 },
-        "propInsFrequency": { "$ref": "#/$defs/InsuranceFrequency" },
-        "propInsCalcMethod": { "$ref": "#/$defs/InsuranceCalcMethod" },
-        "propInsValue": { "type": "number", "minimum": 0 },
-        "propInsFrom": { "$ref": "#/$defs/YyyyMm" },
-        "propInsTo": { "$ref": "#/$defs/YyyyMm" },
-        "lowEquityRateIncrease": { "type": "number", "minimum": 0 },
-        "lifeInsFrequency": { "$ref": "#/$defs/InsuranceFrequency" },
-        "lifeInsCalcMethod": { "$ref": "#/$defs/LifeInsuranceCalcMethod" },
-        "lifeInsValue": { "type": "number", "minimum": 0 },
-        "lifeInsFrom": { "$ref": "#/$defs/YyyyMm" },
-        "lifeInsTo": { "$ref": "#/$defs/YyyyMm" },
-        "jobLossInsFrequency": { "$ref": "#/$defs/InsuranceFrequency" },
-        "jobLossInsCalcMethod": { "$ref": "#/$defs/LifeInsuranceCalcMethod" },
-        "jobLossInsValue": { "type": "number", "minimum": 0 },
-        "jobLossInsFrom": { "$ref": "#/$defs/YyyyMm" },
-        "additionalCosts": {
-          "type": "array",
-          "items": { "$ref": "#/$defs/AdditionalCost" }
+        "commission": {
+          "type": "object",
+          "required": ["expanded", "commissionPct"],
+          "properties": {
+            "expanded": { "type": "boolean" },
+            "commissionPct": { "type": "number", "minimum": 0, "maximum": 100 }
+          }
         },
-        "promoRateDecrease": { "type": "number", "minimum": 0 },
-        "promoFrom": { "$ref": "#/$defs/YyyyMm" },
-        "promoTo": { "$ref": "#/$defs/YyyyMm" }
+        "appraisal": {
+          "type": "object",
+          "required": ["expanded", "appraisalFee"],
+          "properties": {
+            "expanded": { "type": "boolean" },
+            "appraisalFee": { "type": "number", "minimum": 0 }
+          }
+        },
+        "bridge": {
+          "type": "object",
+          "required": ["expanded", "bridgeRateIncrease", "bridgeMonths"],
+          "properties": {
+            "expanded": { "type": "boolean" },
+            "bridgeRateIncrease": { "type": "number", "minimum": 0 },
+            "bridgeMonths": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "propertyInsurance": {
+          "type": "object",
+          "required": [
+            "expanded",
+            "propInsFrequency",
+            "propInsCalcMethod",
+            "propInsValue",
+            "propInsFrom",
+            "propInsTo"
+          ],
+          "properties": {
+            "expanded": { "type": "boolean" },
+            "propInsFrequency": { "$ref": "#/$defs/InsuranceFrequency" },
+            "propInsCalcMethod": { "$ref": "#/$defs/InsuranceCalcMethod" },
+            "propInsValue": { "type": "number", "minimum": 0 },
+            "propInsFrom": { "$ref": "#/$defs/YyyyMm" },
+            "propInsTo": { "$ref": "#/$defs/YyyyMm" }
+          }
+        },
+        "lowEquityInsurance": {
+          "type": "object",
+          "required": ["expanded", "lowEquityRateIncrease"],
+          "properties": {
+            "expanded": { "type": "boolean" },
+            "lowEquityRateIncrease": { "type": "number", "minimum": 0 }
+          }
+        },
+        "lifeInsurance": {
+          "type": "object",
+          "required": [
+            "expanded",
+            "lifeInsFrequency",
+            "lifeInsCalcMethod",
+            "lifeInsValue",
+            "lifeInsFrom",
+            "lifeInsTo"
+          ],
+          "properties": {
+            "expanded": { "type": "boolean" },
+            "lifeInsFrequency": { "$ref": "#/$defs/InsuranceFrequency" },
+            "lifeInsCalcMethod": { "$ref": "#/$defs/LifeInsuranceCalcMethod" },
+            "lifeInsValue": { "type": "number", "minimum": 0 },
+            "lifeInsFrom": { "$ref": "#/$defs/YyyyMm" },
+            "lifeInsTo": { "$ref": "#/$defs/YyyyMm" }
+          }
+        },
+        "jobLossInsurance": {
+          "type": "object",
+          "required": [
+            "expanded",
+            "jobLossInsFrequency",
+            "jobLossInsCalcMethod",
+            "jobLossInsValue",
+            "jobLossInsFrom"
+          ],
+          "properties": {
+            "expanded": { "type": "boolean" },
+            "jobLossInsFrequency": { "$ref": "#/$defs/InsuranceFrequency" },
+            "jobLossInsCalcMethod": { "$ref": "#/$defs/LifeInsuranceCalcMethod" },
+            "jobLossInsValue": { "type": "number", "minimum": 0 },
+            "jobLossInsFrom": { "$ref": "#/$defs/YyyyMm" }
+          }
+        },
+        "additionalCosts": {
+          "type": "object",
+          "required": ["expanded", "items"],
+          "properties": {
+            "expanded": { "type": "boolean" },
+            "items": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/AdditionalCost" }
+            }
+          }
+        },
+        "promoRate": {
+          "type": "object",
+          "required": ["expanded", "promoRateDecrease", "promoFrom", "promoTo"],
+          "properties": {
+            "expanded": { "type": "boolean" },
+            "promoRateDecrease": { "type": "number", "minimum": 0 },
+            "promoFrom": { "$ref": "#/$defs/YyyyMm" },
+            "promoTo": { "$ref": "#/$defs/YyyyMm" }
+          }
+        }
       }
     },
     "OverheadCostsSection": {
@@ -177,9 +246,9 @@
         "enabled": { "type": "boolean" },
         "fields": {
           "type": "object",
-          "required": ["transze"],
+          "required": ["tranches"],
           "properties": {
-            "transze": {
+            "tranches": {
               "type": "array",
               "minItems": 1,
               "items": { "$ref": "#/$defs/Tranche" }
@@ -201,8 +270,9 @@
     },
     "TargetInstallmentRule": {
       "type": "object",
-      "required": ["targetRate", "from", "to", "effect"],
+      "required": ["expanded", "targetRate", "from", "to", "effect"],
       "properties": {
+        "expanded": { "type": "boolean" },
         "targetRate": { "type": "number", "minimum": 0 },
         "from": { "$ref": "#/$defs/YyyyMm" },
         "to": { "$ref": "#/$defs/YyyyMm" },
@@ -211,8 +281,9 @@
     },
     "EarlyRepaymentCommission": {
       "type": "object",
-      "required": ["ratePct", "validUntil"],
+      "required": ["expanded", "ratePct", "validUntil"],
       "properties": {
+        "expanded": { "type": "boolean" },
         "ratePct": { "type": "number", "minimum": 0 },
         "validUntil": { "$ref": "#/$defs/YyyyMm" }
       }
@@ -227,8 +298,15 @@
           "required": ["prepaymentRules", "rataDocelowaRegula", "prowizjaWczesniejszaSplata"],
           "properties": {
             "prepaymentRules": {
-              "type": "array",
-              "items": { "$ref": "#/$defs/PrepaymentRule" }
+              "type": "object",
+              "required": ["expanded", "items"],
+              "properties": {
+                "expanded": { "type": "boolean" },
+                "items": {
+                  "type": "array",
+                  "items": { "$ref": "#/$defs/PrepaymentRule" }
+                }
+              }
             },
             "rataDocelowaRegula": { "$ref": "#/$defs/TargetInstallmentRule" },
             "prowizjaWczesniejszaSplata": { "$ref": "#/$defs/EarlyRepaymentCommission" }
