@@ -866,7 +866,25 @@ ui-cards-group + ui-card {
 .tbl-row--month {
   background: var(--surface-stripe);
   color: var(--ink-2);
-  cursor: default;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.tbl-row--month:hover {
+  background: color-mix(in oklch, var(--accent) 10%, var(--surface));
+}
+.tbl-row--month.is-selected {
+  background: color-mix(in oklch, var(--accent) 24%, var(--surface));
+  box-shadow: inset 3px 0 0 var(--accent-deep, var(--accent));
+}
+.tbl-row--month.is-selected .cell-month {
+  color: var(--ink);
+  font-weight: 600;
+}
+.app[data-theme='dark'] .tbl-row--month:hover {
+  background: color-mix(in oklch, var(--accent) 18%, oklch(17% 0.01 250));
+}
+.app[data-theme='dark'] .tbl-row--month.is-selected {
+  background: color-mix(in oklch, var(--accent) 30%, oklch(17% 0.01 250));
 }
 .tbl-row--month .cell-month {
   padding-left: 16px;
@@ -879,6 +897,25 @@ ui-cards-group + ui-card {
 }
 
 /* Misc */
+.link-btn {
+  background: transparent;
+  border: 0;
+  color: var(--accent-deep);
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 4px;
+  text-decoration: underline;
+}
+.link-btn:hover {
+  color: var(--ink);
+}
+.card-head-suffix {
+  font-weight: 500;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
 .muted {
   color: var(--muted);
 }

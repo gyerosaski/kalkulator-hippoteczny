@@ -10,6 +10,7 @@
     />
     @for (s of slices(); track s.slice.label) {
       <circle
+        class="donut-slice"
         [attr.cx]="c()"
         [attr.cy]="c()"
         [attr.r]="r()"
@@ -24,6 +25,6 @@
   </svg>
   <div class="donut-center">
     <div class="donut-label">{{ centerLabel() }}</div>
-    <div class="donut-value mono">{{ centerValue() }}</div>
+    <div class="donut-value mono" [@valueChange]="centerValue()">{{ centerValue() }}</div>
   </div>
 </div>

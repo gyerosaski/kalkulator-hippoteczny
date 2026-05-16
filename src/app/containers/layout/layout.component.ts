@@ -30,6 +30,7 @@ import { ResultsChartsComponent } from '../../components/results/results-charts/
 import { ResultsScheduleComponent } from '../../components/results/results-schedule/results-schedule.component';
 import { ResultsErrorsComponent } from '../../components/errors/results-errors/results-errors.component';
 import { nextMonthStr } from '../../helpers/date.helper';
+import { SelectedMonthService } from '../../services/selected-month/selected-month.service';
 
 @Component({
   selector: 'app-layout',
@@ -54,6 +55,7 @@ export class LayoutComponent {
   private calc = inject(CalculatorService);
   private formService = inject(FormService);
   protected themeService = inject(ThemeService);
+  private readonly selectedMonthService = inject(SelectedMonthService);
 
   get form() {
     return this.formService.form;
@@ -70,6 +72,7 @@ export class LayoutComponent {
   }
 
   private recalculate() {
+    this.selectedMonthService.clearSelectedMonth();
     const v = this.form.getRawValue();
     if (this.form.valid) {
       const prepaymentsEnabled = v.prepayments.enabled;

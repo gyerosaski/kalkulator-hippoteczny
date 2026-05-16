@@ -1,5 +1,6 @@
-import { Component, input, ChangeDetectionStrategy, inject, signal } from '@angular/core';
-import { YearGroup } from '../../../model/mortgage.model';
+import { Component, input, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
+import { YearGroup, ScheduleRow } from '../../../model/mortgage.model';
+import { SelectedMonthService } from '../../../services/selected-month/selected-month.service';
 import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
 import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
 import { FormService } from '../../../services/form/form';
@@ -27,8 +28,21 @@ export class ResultsScheduleComponent {
 
   yearlyGroups = input.required<YearGroup[] | null>();
   private readonly formService = inject(FormService);
+  private readonly selectedMonthService = inject(SelectedMonthService);
 
   expandedYear = signal<number | null>(null);
+
+  readonly selectedMonthIndex = this.selectedMonthService.selectedMonthIndex;
+
+  readonly selectedScheduleRow = computed<ScheduleRow | null>(() => {
+    const selectedIndex = this.selectedMonthIndex();
+    if (selectedIndex === null) return null;
+    for (const yearGroup of this.yearlyGroups() ?? []) {
+      const foundRow = yearGroup.rows.find((row) => row.index === selectedIndex);
+      if (foundRow) return foundRow;
+    }
+    return null;
+  });
 
   get isPrepaymentEnabled(): boolean {
     return this.formService.isPrepaymentEnabled;
@@ -48,5 +62,13 @@ export class ResultsScheduleComponent {
 
   toggle(year: number): void {
     this.expandedYear.update((curr) => (curr === year ? null : year));
+  }
+
+  selectMonth(rowIndex: number): void {
+    this.selectedMonthService.toggleSelectedMonth(rowIndex);
+  }
+
+  clearSelection(): void {
+    this.selectedMonthService.clearSelectedMonth();
   }
 }

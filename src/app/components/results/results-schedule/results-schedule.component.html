@@ -1,7 +1,15 @@
 <div class="card card--table">
   <div class="card-head">
-    <h3>Harmonogram spłaty</h3>
-    <div class="muted small">agregacja roczna · kliknij rok aby rozwinąć</div>
+    <div>
+      <h3>Harmonogram spłaty</h3>
+      <div class="muted small">
+        agregacja roczna · kliknij miesiąc aby zaznaczyć
+        @if (selectedScheduleRow(); as row) {
+          · zaznaczony: <b>{{ row.date | formatMonth }}</b>
+          <button type="button" class="link-btn" (click)="clearSelection()">odznacz</button>
+        }
+      </div>
+    </div>
   </div>
   <div class="tbl" [style.--tbl-cols]="gridColumns">
     <div class="tbl-head">
@@ -54,7 +62,13 @@
       </button>
       @if (expandedYear() === y.year) {
         @for (r of y.rows; track r.index) {
-          <div class="tbl-row tbl-row--month">
+          <button
+            type="button"
+            class="tbl-row tbl-row--month"
+            [class.is-selected]="selectedMonthIndex() === r.index"
+            [attr.aria-pressed]="selectedMonthIndex() === r.index"
+            (click)="selectMonth(r.index)"
+          >
             <div class="cell-month">{{ r.date | formatMonth }}</div>
             <div class="mono">{{ r.rate | formatAmount }}</div>
             <div class="mono c-cap">{{ r.capital | formatAmount }}</div>
@@ -66,7 +80,7 @@
               <div class="mono c-cost">{{ r.insuranceCost | formatAmount }}</div>
             }
             <div class="mono">{{ r.remaining | formatAmount }}</div>
-          </div>
+          </button>
         }
       }
     }

@@ -1,7 +1,24 @@
 <div class="result-grid">
+  @let row = selectedRow();
+
   <div class="card">
     <div class="card-head">
-      <h3>Struktura wszystkich płatności</h3>
+      <div>
+        <h3>
+          Struktura wszystkich płatności
+          @if (row) {
+            <span class="card-head-suffix"> do {{ row.date | formatMonth }}</span>
+          }
+        </h3>
+        <div class="muted small">
+          @if (row) {
+            narastająco od początku do wybranego miesiąca ·
+            <button class="link-btn" (click)="clearSelection()">pokaż cały okres</button>
+          } @else {
+            cały okres kredytowania
+          }
+        </div>
+      </div>
     </div>
     <div class="donut-row">
       <ui-donut [data]="totalSlices()" centerLabel="razem" [centerValue]="totalCenter()" />
@@ -19,7 +36,13 @@
 
   <div class="card">
     <div class="card-head">
-      <h3>Struktura pierwszej raty</h3>
+      <h3>
+        @if (row) {
+          Struktura raty w miesiącu {{ row.date | formatMonth }}
+        } @else {
+          Struktura pierwszej raty
+        }
+      </h3>
     </div>
     <div class="donut-row">
       <ui-donut [data]="firstSlices()" centerLabel="rata" [centerValue]="firstCenter()" />
