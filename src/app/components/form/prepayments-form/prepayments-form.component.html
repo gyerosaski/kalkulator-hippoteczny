@@ -14,7 +14,8 @@
       [open]="subsectionsOpen().prepaymentRules"
       (openChange)="setSubsectionOpen('prepaymentRules', $event)"
     >
-      @for (_ of prepaymentRulesArray.controls; track $index) {
+      @for (rule of prepaymentRulesArray.controls; track $index) {
+        @let ruleControls = rule.controls;
         <ui-card
           [tag]="($index + 1).toString()"
           [removable]="$index > 0"
@@ -23,40 +24,36 @@
           <div class="row row--2">
             <ui-field label="Jak często nadpłacasz?" num="1a">
               <ui-select
-                [formControl]="prepaymentRuleFrequencyControl($index)"
+                [formControl]="ruleControls.frequency"
                 [options]="prepaymentFrequencyOptions"
                 [labels]="prepaymentFrequencyOptions | prepaymentFrequencyLabel"
                 (valueChange)="onPrepaymentFrequencyChanged($index)"
               />
             </ui-field>
-            @if (prepaymentRuleFrequencyControl($index).value === PrepaymentFrequency.ONE_TIME) {
+            @if (ruleControls.frequency.value === PrepaymentFrequency.ONE_TIME) {
               <ui-field label="Data nadpłaty" num="1b">
                 <ui-month-picker
-                  [formControl]="prepaymentRuleFromControl($index)"
+                  [formControl]="ruleControls.from"
                   (valueChange)="onPrepaymentFromChanged($index)"
                 />
               </ui-field>
             } @else {
               <ui-field label="Data nadpłaty od" num="1b">
                 <ui-month-picker
-                  [formControl]="prepaymentRuleFromControl($index)"
+                  [formControl]="ruleControls.from"
                   (valueChange)="onPrepaymentFromChanged($index)"
                 />
               </ui-field>
               <ui-field label="Data nadpłaty do" num="1c">
-                <ui-month-picker [formControl]="prepaymentRuleToControl($index)" />
+                <ui-month-picker [formControl]="ruleControls.to" />
               </ui-field>
             }
             <ui-field label="Kwota nadpłaty" num="1d">
-              <ui-number-input
-                [formControl]="prepaymentRuleAmountControl($index)"
-                suffix="zł"
-                [decimals]="2"
-              />
+              <ui-number-input [formControl]="ruleControls.amount" suffix="zł" [decimals]="2" />
             </ui-field>
             <ui-field label="Skutek nadpłaty" num="1e">
               <ui-select
-                [formControl]="prepaymentRuleEffectControl($index)"
+                [formControl]="ruleControls.effect"
                 [options]="prepaymentEffectOptions"
                 [labels]="prepaymentEffectOptions | prepaymentEffectLabel"
               />

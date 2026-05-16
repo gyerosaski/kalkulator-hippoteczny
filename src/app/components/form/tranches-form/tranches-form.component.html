@@ -6,46 +6,41 @@
   [enabled]="isSectionEnabled()"
   (enabledChange)="sectionEnabledControl.setValue($event)"
 >
-  <div>
-    @for (_ of tranchesArray.controls; track $index) {
-      <ui-card>
-        <div class="row-ctrl">
-          <span class="tranche-num">{{ $index + 1 }}</span>
-          <div class="row row--3">
-            <ui-field label="Kwota">
+  @for (tranche of tranchesArray.controls; track $index) {
+    @let trancheControls = tranche.controls;
+    <ui-card>
+      <div class="row-ctrl">
+        <span class="tranche-num">{{ $index + 1 }}</span>
+        <div class="row row--3">
+          <ui-field label="Kwota">
+            <ui-number-input [formControl]="trancheControls.amount" suffix="zł" [decimals]="2" />
+          </ui-field>
+          <ui-field label="Data uruchomienia">
+            <ui-month-picker [formControl]="trancheControls.date" />
+          </ui-field>
+          @if ($index > 0) {
+            <ui-field label="Opłata za uruchomienie transzy">
               <ui-number-input
-                [formControl]="trancheAmountControl($index)"
+                [formControl]="trancheControls.disbursementFee"
                 suffix="zł"
                 [decimals]="2"
               />
             </ui-field>
-            <ui-field label="Data uruchomienia">
-              <ui-month-picker [formControl]="trancheDateControl($index)" />
-            </ui-field>
-            @if ($index > 0) {
-              <ui-field label="Opłata za uruchomienie transzy">
-                <ui-number-input
-                  [formControl]="trancheDisbursementFeeControl($index)"
-                  suffix="zł"
-                  [decimals]="2"
-                />
-              </ui-field>
-            }
-          </div>
-          @if ($index > 0) {
-            <ui-btn-remove (remove)="removeTranche($index)" />
           }
         </div>
-      </ui-card>
-    }
+        @if ($index > 0) {
+          <ui-btn-remove (remove)="removeTranche($index)" />
+        }
+      </div>
+    </ui-card>
+  }
 
-    <ui-btn-add label="Dodaj transzę" (add)="addTranche()" />
+  <ui-btn-add label="Dodaj transzę" (add)="addTranche()" />
 
-    <div class="suma-row">
-      <span class="muted">Suma transz</span>
-      <span class="mono"
-        ><b>{{ trancheSum | formatAmount }}</b> zł</span
-      >
-    </div>
+  <div class="suma-row">
+    <span class="muted">Suma transz</span>
+    <span class="mono"
+      ><b>{{ trancheSum | formatAmount }}</b> zł</span
+    >
   </div>
 </ui-section>

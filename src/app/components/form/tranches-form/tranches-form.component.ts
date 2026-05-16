@@ -1,7 +1,7 @@
 import { Component, inject, ChangeDetectionStrategy, computed } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { FormService } from '../../../services/form/form';
 import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
 import { SectionComponent } from '../../ui/section/section.component';
@@ -59,18 +59,6 @@ export class TranchesFormComponent {
 
   get tranchesArray() {
     return this.formService.tranchesArray;
-  }
-
-  trancheAmountControl(index: number): FormControl<number> {
-    return this.tranchesArray.at(index).controls.amount;
-  }
-
-  trancheDateControl(index: number): FormControl<string> {
-    return this.tranchesArray.at(index).controls.date;
-  }
-
-  trancheDisbursementFeeControl(index: number): FormControl<number> {
-    return this.tranchesArray.at(index).controls.disbursementFee;
   }
 
   get trancheSum() {
