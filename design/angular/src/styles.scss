@@ -980,11 +980,50 @@ body {
   background: oklch(98% 0.014 95);
   color: var(--ink-2);
   padding-left: 36px;
-  cursor: default;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.tbl-row--month:hover {
+  background: color-mix(in oklch, var(--accent) 10%, var(--surface));
+}
+.tbl-row--month.is-selected {
+  background: color-mix(in oklch, var(--accent) 24%, var(--surface));
+  box-shadow: inset 3px 0 0 var(--accent-deep, var(--accent));
+}
+.tbl-row--month.is-selected .cell-month {
+  color: var(--ink);
+  font-weight: 600;
 }
 .tbl-row--month .cell-month {
   color: var(--muted);
   font-size: 12px;
+}
+.app[data-theme='dark'] .tbl-row--month {
+  background: oklch(17% 0.01 250);
+}
+.app[data-theme='dark'] .tbl-row--month:hover {
+  background: color-mix(in oklch, var(--accent) 18%, oklch(17% 0.01 250));
+}
+.app[data-theme='dark'] .tbl-row--month.is-selected {
+  background: color-mix(in oklch, var(--accent) 30%, oklch(17% 0.01 250));
+}
+.card-head-suffix {
+  font-weight: 500;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.link-btn {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--accent-deep, var(--accent));
+  cursor: pointer;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.link-btn:hover {
+  color: var(--ink);
 }
 .tbl-foot {
   padding: 14px 20px;

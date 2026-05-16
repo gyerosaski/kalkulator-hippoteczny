@@ -2,16 +2,24 @@ import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/c
 import { CalcService } from '../calc.service';
 import { DonutComponent, DonutSlice } from './donut.component';
 import { PlnPipe } from '../pipes/pln.pipe';
+import { MonthLabelPipe } from '../pipes/month-label.pipe';
 
 @Component({
   selector: 'app-first-installment',
   standalone: true,
-  imports: [DonutComponent, PlnPipe],
+  imports: [DonutComponent, PlnPipe, MonthLabelPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="card">
       <div class="card-head">
-        <h3>Struktura pierwszej raty</h3>
+        <h3>
+          @if (selectedRow(); as row) {
+            Struktura raty w miesiącu
+            <span class="card-head-suffix">{{ row.date | monthLabel }}</span>
+          } @else {
+            Struktura pierwszej raty
+          }
+        </h3>
       </div>
       <div class="donut-row donut-row--single">
         <app-donut
@@ -19,7 +27,7 @@ import { PlnPipe } from '../pipes/pln.pipe';
           [size]="160"
           [thickness]="22"
           centerLabel="rata"
-          [centerValue]="calc.schedule().firstInstallment | pln: 0"
+          [centerValue]="rataValue() | pln: 0"
         />
         <ul class="legend">
           @for (s of slices(); track s.label) {
@@ -36,12 +44,19 @@ import { PlnPipe } from '../pipes/pln.pipe';
 })
 export class FirstInstallmentComponent {
   calc = inject(CalcService);
+  selectedRow = this.calc.selectedRow;
+
+  /** Wiersz, którego strukturę pokazujemy: zaznaczony przez użytkownika albo pierwszy. */
+  private displayRow = computed(() => this.selectedRow() ?? this.calc.schedule().rows[0] ?? null);
+
   slices = computed<DonutSlice[]>(() => {
-    const first = this.calc.schedule().rows[0];
-    if (!first) return [];
+    const row = this.displayRow();
+    if (!row) return [];
     return [
-      { label: 'Kapitał', value: first.principal, color: 'var(--c-cap)' },
-      { label: 'Odsetki', value: first.interest, color: 'var(--c-int)' },
+      { label: 'Kapitał', value: row.principal, color: 'var(--c-cap)' },
+      { label: 'Odsetki', value: row.interest, color: 'var(--c-int)' },
     ];
   });
+
+  rataValue = computed(() => this.displayRow()?.rata ?? this.calc.schedule().firstInstallment ?? 0);
 }

@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { IconChevronRightComponent } from '../../components/icons/icon-chevron-right/icon-chevron-right.component';
 
+// TODO: pozbyć się na rzecz FormatMonthPipe
 const MONTH_NAMES_SHORT = [
   'sty',
   'lut',

@@ -12,7 +12,13 @@ import { MonthLabelPipe } from '../pipes/month-label.pipe';
     <div class="card card--table">
       <div class="card-head">
         <h3>Tabela harmonogramu</h3>
-        <div class="muted small">agregacja roczna · kliknij rok aby rozwinąć</div>
+        <div class="muted small">
+          agregacja roczna · kliknij rok aby rozwinąć
+          @if (selectedRow(); as row) {
+            · zaznaczony: <b>{{ row.date | monthLabel }}</b>
+            <button class="link-btn" (click)="clearSelection()">odznacz</button>
+          }
+        </div>
       </div>
       <div class="tbl">
         <div class="tbl-head">
@@ -48,7 +54,13 @@ import { MonthLabelPipe } from '../pipes/month-label.pipe';
           </button>
           @if (expandedYear() === y.year) {
             @for (r of y.rows; track r.idx) {
-              <div class="tbl-row tbl-row--month">
+              <button
+                type="button"
+                class="tbl-row tbl-row--month"
+                [class.is-selected]="selectedIdx() === r.idx"
+                [attr.aria-pressed]="selectedIdx() === r.idx"
+                (click)="selectMonth(r.idx)"
+              >
                 <div class="cell-month">{{ r.date | monthLabel }}</div>
                 <div class="mono">{{ r.rata | pln }}</div>
                 <div class="mono num--cap" [class.num--zero]="!r.principal">
@@ -64,7 +76,7 @@ import { MonthLabelPipe } from '../pipes/month-label.pipe';
                   {{ r.monthlyCost | pln }}
                 </div>
                 <div class="mono">{{ r.balance | pln }}</div>
-              </div>
+              </button>
             }
           }
         }
@@ -80,8 +92,16 @@ export class ScheduleTableComponent {
   expandedYear = signal<number | null>(null);
   visibleYears = computed(() => this.calc.schedule().yearly.slice(0, 8));
   totalYears = computed(() => this.calc.schedule().yearly.length);
+  selectedIdx = this.calc.selectedMonthIdx;
+  selectedRow = this.calc.selectedRow;
 
   toggle(y: number) {
     this.expandedYear.update((curr) => (curr === y ? null : y));
+  }
+  selectMonth(idx: number) {
+    this.calc.toggleSelectedMonth(idx);
+  }
+  clearSelection() {
+    this.calc.clearSelectedMonth();
   }
 }

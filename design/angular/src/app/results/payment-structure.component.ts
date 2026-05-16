@@ -2,18 +2,31 @@ import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/c
 import { CalcService } from '../calc.service';
 import { DonutComponent, DonutSlice } from './donut.component';
 import { PlnPipe } from '../pipes/pln.pipe';
+import { MonthLabelPipe } from '../pipes/month-label.pipe';
 
 @Component({
   selector: 'app-payment-structure',
   standalone: true,
-  imports: [DonutComponent, PlnPipe],
+  imports: [DonutComponent, PlnPipe, MonthLabelPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="card">
       <div class="card-head">
         <div>
-          <h3>Struktura wszystkich płatności</h3>
-          <div class="muted small">cały okres kredytowania</div>
+          <h3>
+            Struktura wszystkich płatności
+            @if (selectedRow(); as row) {
+              <span class="card-head-suffix"> do {{ row.date | monthLabel }}</span>
+            }
+          </h3>
+          <div class="muted small">
+            @if (selectedRow()) {
+              narastająco od początku do wybranego miesiąca ·
+              <button class="link-btn" (click)="clearSelection()">pokaż cały okres</button>
+            } @else {
+              cały okres kredytowania
+            }
+          </div>
         </div>
         <button class="btn btn--mini">drukuj</button>
       </div>
@@ -34,8 +47,19 @@ import { PlnPipe } from '../pipes/pln.pipe';
 })
 export class PaymentStructureComponent {
   calc = inject(CalcService);
+  selectedRow = this.calc.selectedRow;
+
   slices = computed<DonutSlice[]>(() => {
+    const cum = this.calc.cumulativeToSelected();
     const r = this.calc.schedule();
+    if (cum) {
+      return [
+        { label: 'Kapitał', value: cum.principal, color: 'var(--c-cap)' },
+        { label: 'Odsetki', value: cum.interest, color: 'var(--c-int)' },
+        { label: 'Koszty okołokredytowe', value: cum.costs, color: 'var(--c-cost)' },
+        { label: 'Nadpłaty', value: cum.overpayment, color: 'var(--c-over)' },
+      ];
+    }
     return [
       { label: 'Kapitał', value: this.calc.loanAmount(), color: 'var(--c-cap)' },
       { label: 'Odsetki', value: r.totalInterest, color: 'var(--c-int)' },
@@ -43,5 +67,12 @@ export class PaymentStructureComponent {
       { label: 'Nadpłaty', value: r.totalOverpayments, color: 'var(--c-over)' },
     ];
   });
-  centerVal = computed(() => `${(this.calc.schedule().totalPayments / 1000).toFixed(0)}k`);
+  centerVal = computed(() => {
+    const total = this.calc.cumulativeToSelected()?.total ?? this.calc.schedule().totalPayments;
+    return `${(total / 1000).toFixed(0)}k`;
+  });
+
+  clearSelection() {
+    this.calc.clearSelectedMonth();
+  }
 }

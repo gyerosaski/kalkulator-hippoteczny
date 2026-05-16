@@ -167,6 +167,63 @@ export class CalcService {
   earlyRepayFee = signal(0);
   earlyRepayFeeUntil = signal<Date>(new Date(2029, 3, 1));
 
+  // ====================== zaznaczenie wiersza miesięcznego w tabeli ======================
+  // `idx` zaznaczonego wiersza (1-indexed), albo null gdy nic nie zaznaczone.
+  selectedMonthIdx = signal<number | null>(null);
+
+  toggleSelectedMonth(idx: number) {
+    this.selectedMonthIdx.update((curr) => (curr === idx ? null : idx));
+  }
+  clearSelectedMonth() {
+    this.selectedMonthIdx.set(null);
+  }
+
+  /** Wiersz miesięczny aktualnie zaznaczony — null, gdy brak zaznaczenia lub wiersz wypadł z harmonogramu. */
+  selectedRow = computed<ScheduleRow | null>(() => {
+    const idx = this.selectedMonthIdx();
+    if (idx == null) return null;
+    return this.schedule().rows.find((r) => r.idx === idx) ?? null;
+  });
+
+  /**
+   * Składowe płatności narastająco od początku do zaznaczonego miesiąca włącznie.
+   * Koszty jednorazowe (prowizja, wycena) doliczane są w całości — ponoszone na starcie.
+   */
+  cumulativeToSelected = computed<{
+    principal: number;
+    interest: number;
+    overpayment: number;
+    costs: number;
+    total: number;
+    rata: number;
+  } | null>(() => {
+    const row = this.selectedRow();
+    if (!row) return null;
+    const sched = this.schedule();
+    let principal = 0,
+      interest = 0,
+      overpayment = 0,
+      monthlyCost = 0,
+      rata = 0;
+    for (const r of sched.rows) {
+      principal += r.principal;
+      interest += r.interest;
+      overpayment += r.overpayment;
+      monthlyCost += r.monthlyCost;
+      rata += r.rata;
+      if (r.idx === row.idx) break;
+    }
+    const oneTimeCosts = (sched.commission || 0) + (sched.valuationFee || 0);
+    return {
+      principal,
+      interest,
+      overpayment,
+      costs: oneTimeCosts + monthlyCost,
+      total: principal + interest + overpayment + oneTimeCosts + monthlyCost,
+      rata,
+    };
+  });
+
   // tweaks
   tweaks = signal<Tweaks>(this.loadTweaks());
 
