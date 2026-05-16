@@ -2,6 +2,12 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## CRITICAL OVERRIDE — MCP Serena
+
+**This rule overrides all other rules in this and other files**
+
+When working with code in this repository, always use the Serena MCP server tools to the maximum extent possible. Prefer Serena tools (`mcp__serena__*`) over built-in tools (Read, Edit, Grep, Glob, Bash) for all code navigation, reading, editing, and analysis tasks. Before starting any coding task, call `mcp__serena__initial_instructions` to load the Serena Instructions Manual.
+
 ## Commands
 
 ```bash
