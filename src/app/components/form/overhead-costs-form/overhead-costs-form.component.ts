@@ -72,6 +72,102 @@ export class OverheadCostsFormComponent {
     return this.formService.additionalCostsArray;
   }
 
+  // commission
+  get commissionPctControl() {
+    return this.form.controls.commission.controls.commissionPct;
+  }
+
+  // appraisal
+  get appraisalFeeControl() {
+    return this.form.controls.appraisal.controls.appraisalFee;
+  }
+
+  // bridge
+  get bridgeRateIncreaseControl() {
+    return this.form.controls.bridge.controls.bridgeRateIncrease;
+  }
+
+  get bridgeMonthsControl() {
+    return this.form.controls.bridge.controls.bridgeMonths;
+  }
+
+  // propertyInsurance
+  get propInsFrequencyControl() {
+    return this.form.controls.propertyInsurance.controls.propInsFrequency;
+  }
+
+  get propInsCalcMethodControl() {
+    return this.form.controls.propertyInsurance.controls.propInsCalcMethod;
+  }
+
+  get propInsValueControl() {
+    return this.form.controls.propertyInsurance.controls.propInsValue;
+  }
+
+  get propInsFromControl() {
+    return this.form.controls.propertyInsurance.controls.propInsFrom;
+  }
+
+  get propInsToControl() {
+    return this.form.controls.propertyInsurance.controls.propInsTo;
+  }
+
+  // lowEquityInsurance
+  get lowEquityRateIncreaseControl() {
+    return this.form.controls.lowEquityInsurance.controls.lowEquityRateIncrease;
+  }
+
+  // lifeInsurance
+  get lifeInsFrequencyControl() {
+    return this.form.controls.lifeInsurance.controls.lifeInsFrequency;
+  }
+
+  get lifeInsCalcMethodControl() {
+    return this.form.controls.lifeInsurance.controls.lifeInsCalcMethod;
+  }
+
+  get lifeInsValueControl() {
+    return this.form.controls.lifeInsurance.controls.lifeInsValue;
+  }
+
+  get lifeInsFromControl() {
+    return this.form.controls.lifeInsurance.controls.lifeInsFrom;
+  }
+
+  get lifeInsToControl() {
+    return this.form.controls.lifeInsurance.controls.lifeInsTo;
+  }
+
+  // jobLossInsurance
+  get jobLossInsFrequencyControl() {
+    return this.form.controls.jobLossInsurance.controls.jobLossInsFrequency;
+  }
+
+  get jobLossInsCalcMethodControl() {
+    return this.form.controls.jobLossInsurance.controls.jobLossInsCalcMethod;
+  }
+
+  get jobLossInsValueControl() {
+    return this.form.controls.jobLossInsurance.controls.jobLossInsValue;
+  }
+
+  get jobLossInsFromControl() {
+    return this.form.controls.jobLossInsurance.controls.jobLossInsFrom;
+  }
+
+  // promoRate
+  get promoRateDecreaseControl() {
+    return this.form.controls.promoRate.controls.promoRateDecrease;
+  }
+
+  get promoFromControl() {
+    return this.form.controls.promoRate.controls.promoFrom;
+  }
+
+  get promoToControl() {
+    return this.form.controls.promoRate.controls.promoTo;
+  }
+
   private getExpandedStates() {
     const f = this.form.controls;
     return {
@@ -139,7 +235,7 @@ export class OverheadCostsFormComponent {
   }
 
   getAdditionalCostSuffix(index: number): string {
-    return this.additionalCostsArray.at(index).get('calcMethod')?.value ===
+    return this.additionalCostsArray.at(index).controls.calcMethod.value ===
       LifeInsuranceCalcMethod.FIXED_AMOUNT
       ? 'zł'
       : '%';
