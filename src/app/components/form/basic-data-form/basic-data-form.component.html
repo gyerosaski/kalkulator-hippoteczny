@@ -1,13 +1,13 @@
-﻿<ui-section
+<ui-section
   title="Dane podstawowe"
   badge="Dane wymagane do przeprowadzenia kalkulacji"
   [defaultOpen]="true"
 >
-  <div [formGroup]="basicData">
+  <div>
     <div class="row row--3">
       <ui-field num="1" label="Wartość nieruchomości">
         <ui-number-input
-          formControlName="propertyValue"
+          [formControl]="propertyValueControl"
           suffix="zł"
           [decimals]="2"
           (valueChange)="onPropertyValueChanged()"
@@ -16,7 +16,7 @@
 
       <ui-field num="2" label="Kwota kredytu">
         <ui-number-input
-          formControlName="loanAmount"
+          [formControl]="loanAmountControl"
           suffix="zł"
           [decimals]="2"
           (valueChange)="onLoanAmountChanged()"
@@ -25,7 +25,7 @@
 
       <ui-field num="3" label="LTV">
         <ui-number-input
-          formControlName="ltv"
+          [formControl]="ltvControl"
           suffix="%"
           [decimals]="2"
           (valueChange)="onLtvChanged()"
@@ -52,18 +52,18 @@
       </ui-field>
 
       <ui-field num="5" label="Data uruchomienia kredytu">
-        <ui-month-picker formControlName="startDate" />
+        <ui-month-picker [formControl]="startDateControl" />
       </ui-field>
 
       <ui-field num="6" label="Początek spłat kapitału">
-        <ui-month-picker formControlName="capitalStartDate" />
+        <ui-month-picker [formControl]="capitalStartDateControl" />
       </ui-field>
     </div>
 
     <div class="row row--3">
       <ui-field num="7" label="Typ rat">
         <ui-segmented
-          formControlName="installmentType"
+          [formControl]="installmentTypeControl"
           [options]="installmentTypeOptions"
           [labels]="installmentTypeOptions | installmentTypeLabel"
         />
@@ -71,13 +71,12 @@
     </div>
 
     <ui-cards-group>
-      <div formArrayName="ratePeriods">
+      <div>
         @for (period of ratePeriodControls(); track $index) {
           <ui-card
             [tag]="'OKRES ' + ($index + 1)"
             [removable]="$index > 0"
             (remove)="removeRatePeriod($index)"
-            [formGroupName]="$index"
           >
             @if ($index === 0) {
               <span slot="header" class="muted small">od daty uruchomienia kredytu</span>
@@ -85,45 +84,53 @@
               <ng-container slot="header">
                 <span class="muted small">od</span>
                 <div class="rate-period-from">
-                  <ui-month-picker formControlName="from" />
+                  <ui-month-picker [formControl]="period.controls.from" />
                 </div>
               </ng-container>
             }
             <div class="row row--4">
               <ui-field label="Stopa" num="8">
                 <ui-segmented
-                  formControlName="rateType"
+                  [formControl]="period.controls.rateType"
                   [options]="rateTypeOptions"
                   [labels]="rateTypeOptions | rateTypeLabel"
                 />
               </ui-field>
-              @if (period.get('rateType')?.value === RateType.VARIABLE) {
+              @if (period.controls.rateType.value === RateType.VARIABLE) {
                 <ui-field num="9a" label="WIBOR">
-                  <ui-number-input formControlName="wibor" suffix="%" [decimals]="2" />
+                  <ui-number-input
+                    [formControl]="period.controls.wibor"
+                    suffix="%"
+                    [decimals]="2"
+                  />
                 </ui-field>
                 <ui-field num="9b" label="Marża">
-                  <ui-number-input formControlName="margin" suffix="%" [decimals]="2" />
+                  <ui-number-input
+                    [formControl]="period.controls.margin"
+                    suffix="%"
+                    [decimals]="2"
+                  />
                 </ui-field>
               }
               <ui-field
                 num="9"
                 label="Oprocentowanie"
                 [style.gridColumn]="
-                  period.get('rateType')?.value !== RateType.VARIABLE ? 'span 1' : null
+                  period.controls.rateType.value !== RateType.VARIABLE ? 'span 1' : null
                 "
                 [hint]="
-                  period.get('rateType')?.value === RateType.VARIABLE
+                  period.controls.rateType.value === RateType.VARIABLE
                     ? 'WIBOR + Marża'
                     : 'wartość stała'
                 "
               >
-                @if (period.get('rateType')?.value === RateType.VARIABLE) {
+                @if (period.controls.rateType.value === RateType.VARIABLE) {
                   <div class="inp inp--disabled">
                     <input
                       type="text"
                       class="mono"
                       [value]="
-                        ((period.get('wibor')?.value || 0) + (period.get('margin')?.value || 0))
+                        ((period.controls.wibor.value || 0) + (period.controls.margin.value || 0))
                           .toFixed(2)
                           .replace('.', ',')
                       "
@@ -132,7 +139,11 @@
                     <span class="suffix">%</span>
                   </div>
                 } @else {
-                  <ui-number-input formControlName="nominalRate" suffix="%" [decimals]="2" />
+                  <ui-number-input
+                    [formControl]="period.controls.nominalRate"
+                    suffix="%"
+                    [decimals]="2"
+                  />
                 }
               </ui-field>
             </div>

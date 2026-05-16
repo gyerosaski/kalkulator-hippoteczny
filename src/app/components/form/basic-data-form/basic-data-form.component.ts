@@ -67,6 +67,30 @@ export class BasicDataFormComponent {
     return this.formService.form.controls.basicData;
   }
 
+  get propertyValueControl() {
+    return this.basicData.controls.propertyValue;
+  }
+
+  get loanAmountControl() {
+    return this.basicData.controls.loanAmount;
+  }
+
+  get ltvControl() {
+    return this.basicData.controls.ltv;
+  }
+
+  get startDateControl() {
+    return this.basicData.controls.startDate;
+  }
+
+  get capitalStartDateControl() {
+    return this.basicData.controls.capitalStartDate;
+  }
+
+  get installmentTypeControl() {
+    return this.basicData.controls.installmentType;
+  }
+
   get loanPeriodDisplayValue(): number {
     const months = this.basicData.controls.loanPeriod.value;
     return this.loanPeriodUnit === LoanPeriodUnit.YEARS
