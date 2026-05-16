@@ -17,7 +17,7 @@ import {
   RatePeriod,
   RateType,
   Tranche,
-} from '../../model/mortgage.model';
+} from '../../model';
 import {
   AdditionalCostFormGroup,
   BasicDataFormGroup,
@@ -29,7 +29,7 @@ import {
   ToggleableSectionFormGroup,
   TrancheFormGroup,
   TranchesFieldsFormGroup,
-} from '../../model/form.model';
+} from '../../model';
 import { addMonthsStr, nextMonthStr, ym } from '../../helpers/date.helper';
 
 function endOfLoanDate(): string {
@@ -402,16 +402,6 @@ export class FormService {
     this.form.updateValueAndValidity();
   }
 
-  clearTranches(): void {
-    const loanAmount = this.form.controls.basicData.get('loanAmount')?.value || 0;
-    const startDate = this.form.controls.basicData.get('startDate')?.value || ym();
-    this.form.controls.tranches.controls.fields.setControl(
-      'tranches',
-      this.fb.array([this.createTrancheGroup(true, { amount: loanAmount, date: startDate })]),
-    );
-    this.form.updateValueAndValidity();
-  }
-
   clearFormArrayExceptFirst(formArray: FormArray): void {
     while (formArray.length > 1) {
       formArray.removeAt(formArray.length - 1);
@@ -482,51 +472,36 @@ export class FormService {
     const data = savedData?.data ?? savedData;
 
     const ratePeriods: any[] = data?.basicData?.ratePeriods ?? [];
-    this.form.controls.basicData.setControl(
-      'ratePeriods',
-      this.fb.array(
-        ratePeriods.length > 0
-          ? ratePeriods.map((rp: any) => this.createRatePeriodGroup(rp))
-          : [this.createRatePeriodGroup()],
-      ),
-    );
+    this.ratePeriodsArray.clear();
+    (ratePeriods.length > 0
+      ? ratePeriods.map((rp: any) => this.createRatePeriodGroup(rp))
+      : [this.createRatePeriodGroup()]
+    ).forEach((group) => this.ratePeriodsArray.push(group));
 
-    const tranches: any[] =
-      data?.tranches?.fields?.tranches ?? data?.tranches?.fields?.transze ?? [];
-    this.form.controls.tranches.controls.fields.setControl(
-      'tranches',
-      this.fb.array(
-        tranches.length > 0
-          ? tranches.map((t: any, i: number) => this.createTrancheGroup(i === 0, t))
-          : [this.createTrancheGroup(true)],
-      ),
-    );
+    const tranches: any[] = data?.tranches?.fields?.tranches ?? [];
+    this.tranchesArray.clear();
+    (tranches.length > 0
+      ? tranches.map((t: any, i: number) => this.createTrancheGroup(i === 0, t))
+      : [this.createTrancheGroup(true)]
+    ).forEach((group) => this.tranchesArray.push(group));
 
-    const rawPrepaymentRules = data?.prepayments?.fields?.prepaymentRules;
-    const prepaymentRules: any[] =
-      (Array.isArray(rawPrepaymentRules) ? rawPrepaymentRules : rawPrepaymentRules?.items) ?? [];
-    this.form.controls.prepayments.controls.fields.controls.prepaymentRules.setControl(
-      'items',
-      this.fb.array(
-        prepaymentRules.length > 0
-          ? prepaymentRules.map((r: any) => this.createPrepaymentRuleGroup(r))
-          : [this.createPrepaymentRuleGroup()],
-      ),
-    );
+    const prepaymentRules: any[] = data?.prepayments?.fields?.prepaymentRules ?? [];
+    this.prepaymentRulesArray.clear();
+    (prepaymentRules.length > 0
+      ? prepaymentRules.map((r: any) => this.createPrepaymentRuleGroup(r))
+      : [this.createPrepaymentRuleGroup()]
+    ).forEach((group) => this.prepaymentRulesArray.push(group));
 
     const additionalCosts: any[] = data?.overheadCosts?.fields?.additionalCosts?.items ?? [];
-    this.overheadCostsGroup.controls.additionalCosts.setControl(
-      'items',
-      this.fb.array(
-        additionalCosts.length > 0
-          ? additionalCosts.map((ac: any) => {
-              const g = this.createAdditionalCostGroup();
-              g.patchValue(ac);
-              return g;
-            })
-          : [this.createAdditionalCostGroup()],
-      ),
-    );
+    this.additionalCostsArray.clear();
+    (additionalCosts.length > 0
+      ? additionalCosts.map((ac: any) => {
+          const g = this.createAdditionalCostGroup();
+          g.patchValue(ac);
+          return g;
+        })
+      : [this.createAdditionalCostGroup()]
+    ).forEach((group) => this.additionalCostsArray.push(group));
 
     this.form.patchValue(data);
     this.form.updateValueAndValidity();

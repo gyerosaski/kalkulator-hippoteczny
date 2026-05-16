@@ -4,7 +4,7 @@ import { map } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormService } from '../../../services/form/form';
 import { CalculatorService } from '../../../services/calculator/calculator.service';
-import { InstallmentType, LoanPeriodUnit, RateType } from '../../../model/mortgage.model';
+import { InstallmentType, LoanPeriodUnit, RateType } from '../../../model';
 import { InstallmentTypeLabelPipe } from '../../../pipes/installment-type-label/installment-type-label.pipe';
 import { RateTypeLabelPipe } from '../../../pipes/rate-type-label/rate-type-label.pipe';
 import { LoanPeriodUnitLabelPipe } from '../../../pipes/loan-period-unit-label/loan-period-unit-label.pipe';
@@ -41,9 +41,7 @@ export class BasicDataFormComponent {
   private readonly formService = inject(FormService);
   private readonly calculatorService = inject(CalculatorService);
 
-  protected readonly InstallmentType = InstallmentType;
   protected readonly RateType = RateType;
-  protected readonly LoanPeriodUnit = LoanPeriodUnit;
 
   readonly installmentTypeOptions = Object.values(InstallmentType);
   readonly rateTypeOptions = Object.values(RateType);
