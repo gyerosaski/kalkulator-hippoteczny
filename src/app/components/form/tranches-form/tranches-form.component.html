@@ -1,4 +1,4 @@
-﻿<ui-section
+<ui-section
   title="Transze"
   [badge]="badge()"
   [toggleable]="true"
@@ -6,32 +6,38 @@
   [enabled]="isSectionEnabled()"
   (enabledChange)="sectionEnabledControl.setValue($event)"
 >
-  <div [formGroup]="fieldsGroup">
-    <div formArrayName="tranches">
-      @for (tranche of tranchesArray.controls; track $index) {
-        <ui-card [formGroupName]="$index">
-          <div class="row-ctrl">
-            <span class="tranche-num">{{ $index + 1 }}</span>
-            <div class="row row--3">
-              <ui-field label="Kwota">
-                <ui-number-input formControlName="amount" suffix="zł" [decimals]="2" />
-              </ui-field>
-              <ui-field label="Data uruchomienia">
-                <ui-month-picker formControlName="date" />
-              </ui-field>
-              @if ($index > 0) {
-                <ui-field label="Opłata za uruchomienie transzy">
-                  <ui-number-input formControlName="disbursementFee" suffix="zł" [decimals]="2" />
-                </ui-field>
-              }
-            </div>
+  <div>
+    @for (_ of tranchesArray.controls; track $index) {
+      <ui-card>
+        <div class="row-ctrl">
+          <span class="tranche-num">{{ $index + 1 }}</span>
+          <div class="row row--3">
+            <ui-field label="Kwota">
+              <ui-number-input
+                [formControl]="trancheAmountControl($index)"
+                suffix="zł"
+                [decimals]="2"
+              />
+            </ui-field>
+            <ui-field label="Data uruchomienia">
+              <ui-month-picker [formControl]="trancheDateControl($index)" />
+            </ui-field>
             @if ($index > 0) {
-              <ui-btn-remove (remove)="removeTranche($index)" />
+              <ui-field label="Opłata za uruchomienie transzy">
+                <ui-number-input
+                  [formControl]="trancheDisbursementFeeControl($index)"
+                  suffix="zł"
+                  [decimals]="2"
+                />
+              </ui-field>
             }
           </div>
-        </ui-card>
-      }
-    </div>
+          @if ($index > 0) {
+            <ui-btn-remove (remove)="removeTranche($index)" />
+          }
+        </div>
+      </ui-card>
+    }
 
     <ui-btn-add label="Dodaj transzę" (add)="addTranche()" />
 
