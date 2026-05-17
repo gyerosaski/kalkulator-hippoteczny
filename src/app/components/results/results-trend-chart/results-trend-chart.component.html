@@ -6,18 +6,22 @@
         <span class="trend-chart-legend-swatch" style="background: var(--c-int)"></span>
         <span>Odsetki</span>
       </li>
-      <li>
-        <span class="trend-chart-legend-swatch" style="background: var(--c-cost)"></span>
-        <span>Koszty okołokredytowe</span>
-      </li>
+      @if (overheadCostsEnabled()) {
+        <li>
+          <span class="trend-chart-legend-swatch" style="background: var(--c-cost)"></span>
+          <span>Koszty okołokredytowe</span>
+        </li>
+      }
       <li>
         <span class="trend-chart-legend-swatch" style="background: var(--c-cap)"></span>
         <span>Kapitał</span>
       </li>
-      <li>
-        <span class="trend-chart-legend-swatch" style="background: var(--c-over)"></span>
-        <span>Nadpłaty</span>
-      </li>
+      @if (prepaymentsEnabled()) {
+        <li>
+          <span class="trend-chart-legend-swatch" style="background: var(--c-over)"></span>
+          <span>Nadpłaty</span>
+        </li>
+      }
       <li>
         <span class="trend-chart-legend-line">
           <svg width="28" height="10" aria-hidden="true">

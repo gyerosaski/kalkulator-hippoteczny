@@ -56,7 +56,7 @@
 }
 
 .trend-chart-axis-label {
-  font-size: 11px;
+  font-size: 14px;
   fill: var(--muted);
   font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
   font-feature-settings: 'tnum';
@@ -64,8 +64,9 @@
 }
 
 .trend-chart-axis-title {
-  font-size: 11px;
+  font-size: 14px;
   fill: var(--ink-2);
+  font-weight: 600;
   letter-spacing: 0.02em;
 }
 

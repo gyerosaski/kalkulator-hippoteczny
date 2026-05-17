@@ -17,8 +17,9 @@
           <app-results-trend-chart
             [yearlyGroups]="yearlyGroups()"
             [loanAmount]="loanAmount"
-            [startMonth]="resultsValue.schedule[0]?.date ?? null"
-            [endMonth]="resultsValue.schedule[resultsValue.schedule.length - 1]?.date ?? null"
+            [results]="resultsValue"
+            [overheadCostsEnabled]="overheadCostsEnabled"
+            [prepaymentsEnabled]="prepaymentsEnabled"
           />
           <app-results-schedule [yearlyGroups]="yearlyGroups()" />
         } @else {

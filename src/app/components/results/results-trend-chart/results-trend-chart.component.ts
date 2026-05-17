@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
+import { MortgageResults } from '../../../model';
 import {
   TrendAxisTick,
   TrendBarColumn,
@@ -60,14 +61,16 @@ function formatMonthYearLong(monthString: string | null | undefined): string {
 export class ResultsTrendChartComponent {
   yearlyGroups = input.required<YearGroup[] | null>();
   loanAmount = input.required<number | null>();
-  startMonth = input.required<string | null>();
-  endMonth = input.required<string | null>();
+  results = input.required<MortgageResults>();
+  overheadCostsEnabled = input.required<boolean>();
+  prepaymentsEnabled = input.required<boolean>();
 
   protected readonly hoveredYearIndex = signal<number | null>(null);
 
   protected readonly chartTitle = computed(() => {
-    const startLabel = formatMonthYearLong(this.startMonth());
-    const endLabel = formatMonthYearLong(this.endMonth());
+    const schedule = this.results().schedule;
+    const startLabel = formatMonthYearLong(schedule[0]?.date);
+    const endLabel = formatMonthYearLong(schedule[schedule.length - 1]?.date);
     if (!startLabel || !endLabel) return 'Harmonogram spłaty kredytu';
     return `Harmonogram spłaty kredytu: ${startLabel} - ${endLabel}`;
   });
@@ -90,6 +93,14 @@ export class ResultsTrendChartComponent {
     const columnWidth = innerWidth / yearCount;
     const barWidth = Math.max(8, columnWidth * 0.74);
     const xCenterForIndex = (index: number) => paddingLeft + columnWidth * (index + 0.5);
+
+    const visibleDescriptors = new Set(
+      STACK_SEGMENT_DESCRIPTORS.filter((descriptor) => {
+        if (descriptor.fieldKey === 'sumInsuranceCost') return this.overheadCostsEnabled();
+        if (descriptor.fieldKey === 'sumPrepayment') return this.prepaymentsEnabled();
+        return true;
+      }),
+    );
 
     const stackTotals = groups.map(
       (year) => year.sumInterest + year.sumInsuranceCost + year.sumCapital + year.sumPrepayment,
@@ -131,11 +142,13 @@ export class ResultsTrendChartComponent {
       let totalSum = 0;
       for (const descriptor of STACK_SEGMENT_DESCRIPTORS) {
         const segmentValue = year[descriptor.fieldKey];
-        segmentTotals.push({
-          label: descriptor.label,
-          value: segmentValue,
-          color: descriptor.color,
-        });
+        if (visibleDescriptors.has(descriptor)) {
+          segmentTotals.push({
+            label: descriptor.label,
+            value: segmentValue,
+            color: descriptor.color,
+          });
+        }
         totalSum += segmentValue;
         if (segmentValue <= 0) continue;
         const topY = yForStackValue(stackedSum + segmentValue);

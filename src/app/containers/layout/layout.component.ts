@@ -70,6 +70,14 @@ export class LayoutComponent {
     return this.formService.form.controls.basicData.controls.loanAmount.value ?? null;
   }
 
+  get overheadCostsEnabled(): boolean {
+    return this.formService.isOverheadCostsEnabled;
+  }
+
+  get prepaymentsEnabled(): boolean {
+    return this.formService.isPrepaymentEnabled;
+  }
+
   constructor() {
     this.recalculate();
     this.form.valueChanges
