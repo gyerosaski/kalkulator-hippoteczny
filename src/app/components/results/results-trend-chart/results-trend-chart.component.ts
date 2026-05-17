@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
-import { ColorCodeMarkerVariant, MortgageResults } from '../../../model';
+import { ColorCodeArea, MortgageResults } from '../../../model';
 import {
   TrendAxisTick,
   TrendBarColumn,
@@ -57,7 +57,7 @@ export class ResultsTrendChartComponent {
   overheadCostsEnabled = input.required<boolean>();
   prepaymentsEnabled = input.required<boolean>();
 
-  protected readonly ColorCodeMarkerVariant = ColorCodeMarkerVariant;
+  protected readonly ColorCodeMarkerVariant = ColorCodeArea;
   protected readonly hoveredYearIndex = signal<number | null>(null);
 
   protected readonly geometry = computed<TrendChartGeometry | null>(() => {

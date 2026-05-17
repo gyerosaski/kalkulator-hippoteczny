@@ -209,7 +209,7 @@ export interface FormError {
   fieldId: string;
 }
 
-export enum ColorCodeMarkerVariant {
+export enum ColorCodeArea {
   CAPITAL = 'CAPITAL',
   INTEREST = 'INTEREST',
   COST = 'COST',

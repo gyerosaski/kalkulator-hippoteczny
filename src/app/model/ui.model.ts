@@ -1,4 +1,4 @@
-import { ColorCodeMarkerVariant } from './mortgage.model';
+import { ColorCodeArea } from './mortgage.model';
 
 export interface DonutSlice {
   label: string;
@@ -7,7 +7,7 @@ export interface DonutSlice {
 }
 
 export interface ChartSlice extends DonutSlice {
-  variant: ColorCodeMarkerVariant;
+  variant: ColorCodeArea;
 }
 
 export interface TrendStackSegmentTotal {

@@ -1,11 +1,11 @@
 import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
-import { ColorCodeMarkerVariant } from '../../../model';
+import { ColorCodeArea } from '../../../model';
 
-const COLOR_MAP: Record<ColorCodeMarkerVariant, string> = {
-  [ColorCodeMarkerVariant.CAPITAL]: 'var(--c-cap)',
-  [ColorCodeMarkerVariant.INTEREST]: 'var(--c-int)',
-  [ColorCodeMarkerVariant.COST]: 'var(--c-cost)',
-  [ColorCodeMarkerVariant.PREPAYMENT]: 'var(--c-over)',
+const COLOR_MAP: Record<ColorCodeArea, string> = {
+  [ColorCodeArea.CAPITAL]: 'var(--c-cap)',
+  [ColorCodeArea.INTEREST]: 'var(--c-int)',
+  [ColorCodeArea.COST]: 'var(--c-cost)',
+  [ColorCodeArea.PREPAYMENT]: 'var(--c-over)',
 };
 
 @Component({
@@ -17,6 +17,6 @@ const COLOR_MAP: Record<ColorCodeMarkerVariant, string> = {
   host: { '[style.background]': 'background()' },
 })
 export class ColorCodeMarkerComponent {
-  variant = input.required<ColorCodeMarkerVariant>();
+  variant = input.required<ColorCodeArea>();
   protected readonly background = computed(() => COLOR_MAP[this.variant()]);
 }

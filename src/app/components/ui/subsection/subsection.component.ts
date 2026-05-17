@@ -1,28 +1,25 @@
 import { Component, ChangeDetectionStrategy, input, output, computed } from '@angular/core';
 import { BtnRemoveComponent } from '../btn-remove/btn-remove.component';
 import { IconChevronRightComponent } from '../../icons/icon-chevron-right/icon-chevron-right.component';
-import { ColorCodeMarkerVariant } from '../../../model';
+import { ColorCodeArea } from '../../../model';
 
-const NUM_COLOR_MAP: Record<
-  ColorCodeMarkerVariant,
-  { color: string; background: string; ring: string }
-> = {
-  [ColorCodeMarkerVariant.CAPITAL]: {
+const NUM_COLOR_MAP: Record<ColorCodeArea, { color: string; background: string; ring: string }> = {
+  [ColorCodeArea.CAPITAL]: {
     color: 'var(--c-cap)',
     background: 'var(--c-cap-soft)',
     ring: 'var(--c-cap-mid)',
   },
-  [ColorCodeMarkerVariant.INTEREST]: {
+  [ColorCodeArea.INTEREST]: {
     color: 'var(--c-int)',
     background: 'var(--c-int-soft)',
     ring: 'var(--c-int-mid)',
   },
-  [ColorCodeMarkerVariant.COST]: {
+  [ColorCodeArea.COST]: {
     color: 'var(--c-cost)',
     background: 'var(--c-cost-soft)',
     ring: 'var(--c-cost-mid)',
   },
-  [ColorCodeMarkerVariant.PREPAYMENT]: {
+  [ColorCodeArea.PREPAYMENT]: {
     color: 'var(--c-over)',
     background: 'var(--c-over-soft)',
     ring: 'var(--c-over-soft)',
@@ -49,7 +46,7 @@ export class SubsectionComponent {
   readonly openChange = output<boolean>();
   readonly removable = input<boolean>(false);
   readonly remove = output<void>();
-  readonly context = input<ColorCodeMarkerVariant | null>(null);
+  readonly context = input<ColorCodeArea | null>(null);
 
   protected readonly numColor = computed(() => {
     const ctx = this.context();

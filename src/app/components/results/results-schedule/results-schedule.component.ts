@@ -6,7 +6,7 @@ import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
 import { FormService } from '../../../services/form/form';
 import { IconChevronRightComponent } from '../../icons/icon-chevron-right/icon-chevron-right.component';
 import { IconChevronDownComponent } from '../../icons/icon-chevron-down/icon-chevron-down.component';
-import { ColorCodeMarkerVariant } from '../../../model';
+import { ColorCodeArea } from '../../../model';
 import { ColorCodeMarkerComponent } from '../../ui/color-code-marker/color-code-marker.component';
 import { CardComponent } from '../../ui/card/card.component';
 
@@ -40,7 +40,7 @@ export class ResultsScheduleComponent {
   yearlyGroups = input.required<YearGroup[] | null>();
   results = input.required<MortgageResults>();
 
-  protected readonly ColorCodeMarkerVariant = ColorCodeMarkerVariant;
+  protected readonly ColorCodeMarkerVariant = ColorCodeArea;
 
   private readonly formService = inject(FormService);
   private readonly selectedMonthService = inject(SelectedMonthService);

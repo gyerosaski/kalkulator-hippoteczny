@@ -1,5 +1,5 @@
 import { Component, input, ChangeDetectionStrategy, inject, computed } from '@angular/core';
-import { MortgageResults, ScheduleRow, ColorCodeMarkerVariant, ChartSlice } from '../../../model';
+import { MortgageResults, ScheduleRow, ColorCodeArea, ChartSlice } from '../../../model';
 import { SelectedMonthService } from '../../../services/selected-month/selected-month.service';
 import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
 import { DonutComponent } from '../../ui/donut/donut.component';
@@ -58,13 +58,13 @@ export class ResultsChartsComponent {
           label: 'Kapitał',
           value: selectedRow.capital,
           color: 'var(--c-cap)',
-          variant: ColorCodeMarkerVariant.CAPITAL,
+          variant: ColorCodeArea.CAPITAL,
         },
         {
           label: 'Odsetki',
           value: selectedRow.interest,
           color: 'var(--c-int)',
-          variant: ColorCodeMarkerVariant.INTEREST,
+          variant: ColorCodeArea.INTEREST,
         },
       ];
       if (this.formService.isOverheadCostsEnabled && selectedRow.insuranceCost > 0) {
@@ -72,7 +72,7 @@ export class ResultsChartsComponent {
           label: 'Koszty okołokredytowe',
           value: selectedRow.insuranceCost,
           color: 'var(--c-cost)',
-          variant: ColorCodeMarkerVariant.COST,
+          variant: ColorCodeArea.COST,
         });
       }
       if (this.formService.isPrepaymentEnabled && selectedRow.prepayment > 0) {
@@ -80,7 +80,7 @@ export class ResultsChartsComponent {
           label: 'Nadpłaty',
           value: selectedRow.prepayment,
           color: 'var(--c-over)',
-          variant: ColorCodeMarkerVariant.PREPAYMENT,
+          variant: ColorCodeArea.PREPAYMENT,
         });
       }
       return slices;
@@ -93,13 +93,13 @@ export class ResultsChartsComponent {
         label: 'Kapitał',
         value: firstInstallment.capital,
         color: 'var(--c-cap)',
-        variant: ColorCodeMarkerVariant.CAPITAL,
+        variant: ColorCodeArea.CAPITAL,
       },
       {
         label: 'Odsetki',
         value: firstInstallment.interest,
         color: 'var(--c-int)',
-        variant: ColorCodeMarkerVariant.INTEREST,
+        variant: ColorCodeArea.INTEREST,
       },
     ];
   });
@@ -120,13 +120,13 @@ export class ResultsChartsComponent {
           label: 'Kapitał',
           value: cumulative.capital,
           color: 'var(--c-cap)',
-          variant: ColorCodeMarkerVariant.CAPITAL,
+          variant: ColorCodeArea.CAPITAL,
         },
         {
           label: 'Odsetki',
           value: cumulative.interest,
           color: 'var(--c-int)',
-          variant: ColorCodeMarkerVariant.INTEREST,
+          variant: ColorCodeArea.INTEREST,
         },
       ];
       if (this.formService.isOverheadCostsEnabled && cumulative.costs > 0) {
@@ -134,7 +134,7 @@ export class ResultsChartsComponent {
           label: 'Koszty okołokredytowe',
           value: cumulative.costs,
           color: 'var(--c-cost)',
-          variant: ColorCodeMarkerVariant.COST,
+          variant: ColorCodeArea.COST,
         });
       }
       if (this.formService.isPrepaymentEnabled && cumulative.prepayments > 0) {
@@ -142,7 +142,7 @@ export class ResultsChartsComponent {
           label: 'Nadpłaty',
           value: cumulative.prepayments,
           color: 'var(--c-over)',
-          variant: ColorCodeMarkerVariant.PREPAYMENT,
+          variant: ColorCodeArea.PREPAYMENT,
         });
       }
       return slices;
@@ -154,13 +154,13 @@ export class ResultsChartsComponent {
         label: 'Kapitał',
         value: results.totals.totalCapital,
         color: 'var(--c-cap)',
-        variant: ColorCodeMarkerVariant.CAPITAL,
+        variant: ColorCodeArea.CAPITAL,
       },
       {
         label: 'Odsetki',
         value: results.totals.totalInterest,
         color: 'var(--c-int)',
-        variant: ColorCodeMarkerVariant.INTEREST,
+        variant: ColorCodeArea.INTEREST,
       },
     ];
     if (this.formService.isOverheadCostsEnabled && results.totals.overheadCosts > 0) {
@@ -168,7 +168,7 @@ export class ResultsChartsComponent {
         label: 'Koszty okołokredytowe',
         value: results.totals.overheadCosts,
         color: 'var(--c-cost)',
-        variant: ColorCodeMarkerVariant.COST,
+        variant: ColorCodeArea.COST,
       });
     }
     if (this.formService.isPrepaymentEnabled && results.totals.prepayments > 0) {
@@ -176,7 +176,7 @@ export class ResultsChartsComponent {
         label: 'Nadpłaty',
         value: results.totals.prepayments,
         color: 'var(--c-over)',
-        variant: ColorCodeMarkerVariant.PREPAYMENT,
+        variant: ColorCodeArea.PREPAYMENT,
       });
     }
     return slices;

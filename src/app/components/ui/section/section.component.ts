@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, input, output, signal } from '@angular/core';
 import { IconChevronRightComponent } from '../../icons/icon-chevron-right/icon-chevron-right.component';
-import { ColorCodeMarkerVariant } from '../../../model';
+import { ColorCodeArea } from '../../../model';
 import { ColorCodeMarkerComponent } from '../color-code-marker/color-code-marker.component';
 
 @Component({
@@ -14,7 +14,7 @@ export class SectionComponent {
   title = input.required<string>();
   num = input<string>('');
   badge = input<string>('');
-  marker = input<ColorCodeMarkerVariant | null>(null);
+  marker = input<ColorCodeArea | null>(null);
   defaultOpen = input<boolean>(true);
   toggleable = input<boolean>(false);
   enabled = input<boolean>(true);
