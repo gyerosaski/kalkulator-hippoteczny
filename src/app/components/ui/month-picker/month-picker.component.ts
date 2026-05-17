@@ -34,6 +34,7 @@ export class MonthPickerComponent implements ControlValueAccessor {
   private readonly monthPickerDialog = viewChild.required(MonthPickerDialogComponent);
 
   async openPicker(): Promise<void> {
+    if (this.disabled()) return;
     const result = await this.monthPickerDialog().open(this._value());
     if (result !== null) {
       this.onNativeChange(result);
