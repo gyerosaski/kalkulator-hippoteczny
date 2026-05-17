@@ -44,8 +44,7 @@
           <ui-segmented
             [options]="loanPeriodUnitOptions"
             [labels]="loanPeriodUnitOptions | loanPeriodUnitLabel"
-            [value]="loanPeriodUnitControl.value"
-            (valueChange)="onLoanPeriodUnitChanged($event)"
+            [formControl]="loanPeriodUnitControl"
             [compact]="true"
           />
         </div>

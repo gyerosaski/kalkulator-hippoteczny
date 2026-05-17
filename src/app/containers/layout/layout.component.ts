@@ -27,6 +27,7 @@ import { TranchesFormComponent } from '../../components/form/tranches-form/tranc
 import { PrepaymentsFormComponent } from '../../components/form/prepayments-form/prepayments-form.component';
 import { ResultsSummaryComponent } from '../../components/results/results-summary/results-summary.component';
 import { ResultsChartsComponent } from '../../components/results/results-charts/results-charts.component';
+import { ResultsTrendChartComponent } from '../../components/results/results-trend-chart/results-trend-chart.component';
 import { ResultsScheduleComponent } from '../../components/results/results-schedule/results-schedule.component';
 import { ResultsErrorsComponent } from '../../components/errors/results-errors/results-errors.component';
 import { nextMonthStr } from '../../helpers/date.helper';
@@ -44,6 +45,7 @@ import { SelectedMonthService } from '../../services/selected-month/selected-mon
     PrepaymentsFormComponent,
     ResultsSummaryComponent,
     ResultsChartsComponent,
+    ResultsTrendChartComponent,
     ResultsScheduleComponent,
     ResultsErrorsComponent,
   ],
@@ -63,6 +65,10 @@ export class LayoutComponent {
 
   results = signal<MortgageResults | null>(null);
   yearlyGroups = signal<YearGroup[] | null>(null);
+
+  get loanAmount(): number | null {
+    return this.formService.form.controls.basicData.controls.loanAmount.value ?? null;
+  }
 
   constructor() {
     this.recalculate();

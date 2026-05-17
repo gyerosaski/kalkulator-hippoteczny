@@ -1,12 +1,4 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  input,
-  output,
-  signal,
-  computed,
-  forwardRef,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, signal, forwardRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
@@ -26,19 +18,15 @@ export class SegmentedComponent implements ControlValueAccessor {
   options = input.required<string[]>();
   labels = input<string[]>([]);
   compact = input<boolean>(false);
-  /** Optional: use without formControlName by binding [value] directly. */
-  readonly value = input<string>('');
-  valueChange = output<string>();
 
   disabled = signal(false);
-  private readonly _cvaValue = signal<string | null>(null);
-  readonly _value = computed(() => this._cvaValue() ?? this.value());
+  readonly _value = signal<string | null>(null);
 
   private _onChange?: (v: string) => void;
   private _onTouched?: () => void;
 
   writeValue(v: string): void {
-    this._cvaValue.set(v ?? '');
+    this._value.set(v ?? '');
   }
 
   registerOnChange(fn: (v: string) => void): void {
@@ -55,9 +43,8 @@ export class SegmentedComponent implements ControlValueAccessor {
 
   select(option: string): void {
     if (this.disabled()) return;
-    this._cvaValue.set(option);
+    this._value.set(option);
     this._onChange?.(option);
     this._onTouched?.();
-    this.valueChange.emit(option);
   }
 }

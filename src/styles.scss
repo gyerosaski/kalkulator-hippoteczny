@@ -802,17 +802,6 @@ ui-cards-group + ui-card {
   vertical-align: middle;
 }
 
-/* Trend chart */
-.trend-chart {
-  width: 100%;
-  height: 240px;
-}
-.ax-label {
-  font-size: 10px;
-  fill: var(--muted);
-  font-family: 'IBM Plex Mono', monospace;
-}
-
 /* Table */
 .tbl {
   font-size: 13px;

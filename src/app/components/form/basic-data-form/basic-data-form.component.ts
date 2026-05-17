@@ -109,10 +109,6 @@ export class BasicDataFormComponent {
     this.form.updateValueAndValidity();
   }
 
-  onLoanPeriodUnitChanged(unit: string): void {
-    this.loanPeriodUnitControl.setValue(unit as LoanPeriodUnit);
-  }
-
   onLtvChanged() {
     const v = this.basicData.getRawValue();
     const synced = this.calculatorService.syncLtvAmountValue(

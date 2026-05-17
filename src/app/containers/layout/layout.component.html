@@ -10,10 +10,20 @@
     </div>
 
     <div class="column">
-      @if (results() && yearlyGroups()?.length) {
-        <app-results-summary [results]="results()" />
-        <app-results-charts [results]="results()" />
-        <app-results-schedule [yearlyGroups]="yearlyGroups()" />
+      @if (results(); as resultsValue) {
+        @if (yearlyGroups()?.length) {
+          <app-results-summary [results]="resultsValue" />
+          <app-results-charts [results]="resultsValue" />
+          <app-results-trend-chart
+            [yearlyGroups]="yearlyGroups()"
+            [loanAmount]="loanAmount"
+            [startMonth]="resultsValue.schedule[0]?.date ?? null"
+            [endMonth]="resultsValue.schedule[resultsValue.schedule.length - 1]?.date ?? null"
+          />
+          <app-results-schedule [yearlyGroups]="yearlyGroups()" />
+        } @else {
+          <app-results-errors />
+        }
       } @else {
         <app-results-errors />
       }

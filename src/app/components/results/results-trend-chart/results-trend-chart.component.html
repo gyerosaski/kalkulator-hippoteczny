@@ -1,0 +1,302 @@
+<div class="card trend-chart">
+  <div class="card-head trend-chart-head">
+    <h3>{{ chartTitle() }}</h3>
+    <ul class="trend-chart-legend">
+      <li>
+        <span class="trend-chart-legend-swatch" style="background: var(--c-int)"></span>
+        <span>Odsetki</span>
+      </li>
+      <li>
+        <span class="trend-chart-legend-swatch" style="background: var(--c-cost)"></span>
+        <span>Koszty okołokredytowe</span>
+      </li>
+      <li>
+        <span class="trend-chart-legend-swatch" style="background: var(--c-cap)"></span>
+        <span>Kapitał</span>
+      </li>
+      <li>
+        <span class="trend-chart-legend-swatch" style="background: var(--c-over)"></span>
+        <span>Nadpłaty</span>
+      </li>
+      <li>
+        <span class="trend-chart-legend-line">
+          <svg width="28" height="10" aria-hidden="true">
+            <line x1="2" y1="5" x2="26" y2="5" stroke="var(--ink)" stroke-width="2" />
+            <circle cx="9" cy="5" r="2.5" fill="var(--ink)" />
+            <circle cx="19" cy="5" r="2.5" fill="var(--ink)" />
+          </svg>
+        </span>
+        <span>Pozostało do spłaty</span>
+      </li>
+    </ul>
+  </div>
+
+  @if (geometry(); as geometry) {
+    <svg
+      class="trend-chart-svg"
+      [attr.viewBox]="'0 0 ' + geometry.width + ' ' + geometry.height"
+      preserveAspectRatio="xMidYMid meet"
+      (mouseleave)="setHoveredIndex(null)"
+    >
+      @for (tick of geometry.balanceTicks; track tick.value) {
+        <line
+          class="trend-chart-grid"
+          [attr.x1]="geometry.paddingLeft"
+          [attr.x2]="geometry.width - geometry.paddingRight"
+          [attr.y1]="tick.position"
+          [attr.y2]="tick.position"
+        />
+        <text
+          class="trend-chart-axis-label"
+          [attr.x]="geometry.paddingLeft - 10"
+          [attr.y]="tick.position + 4"
+          text-anchor="end"
+        >
+          {{ tick.label }}
+        </text>
+      }
+
+      @for (tick of geometry.stackTicks; track tick.value) {
+        <text
+          class="trend-chart-axis-label"
+          [attr.x]="geometry.width - geometry.paddingRight + 10"
+          [attr.y]="tick.position + 4"
+          text-anchor="start"
+        >
+          {{ tick.label }}
+        </text>
+      }
+
+      <text
+        class="trend-chart-axis-title"
+        [attr.x]="geometry.paddingLeft - 72"
+        [attr.y]="geometry.paddingTop + geometry.innerHeight / 2"
+        [attr.transform]="
+          'rotate(-90 ' +
+          (geometry.paddingLeft - 72) +
+          ' ' +
+          (geometry.paddingTop + geometry.innerHeight / 2) +
+          ')'
+        "
+        text-anchor="middle"
+      >
+        Kwota pozostała do spłaty
+      </text>
+      <text
+        class="trend-chart-axis-title"
+        [attr.x]="geometry.width - geometry.paddingRight + 72"
+        [attr.y]="geometry.paddingTop + geometry.innerHeight / 2"
+        [attr.transform]="
+          'rotate(-90 ' +
+          (geometry.width - geometry.paddingRight + 72) +
+          ' ' +
+          (geometry.paddingTop + geometry.innerHeight / 2) +
+          ')'
+        "
+        text-anchor="middle"
+      >
+        Suma płatności w danym roku
+      </text>
+
+      @for (bar of geometry.bars; track bar.year) {
+        <g class="trend-chart-bar-group" [class.is-hovered]="hoveredYearIndex() === $index">
+          @for (segment of bar.segments; track $index) {
+            <rect
+              [attr.x]="segment.x"
+              [attr.y]="segment.y"
+              [attr.width]="segment.width"
+              [attr.height]="segment.height"
+              [attr.fill]="segment.color"
+            />
+          }
+        </g>
+      }
+
+      <path
+        class="trend-chart-line"
+        [attr.d]="geometry.linePath"
+        fill="none"
+        stroke="var(--ink)"
+        stroke-width="2"
+        stroke-linejoin="round"
+        stroke-linecap="round"
+      />
+      @for (point of geometry.linePoints; track $index) {
+        <circle
+          class="trend-chart-line-point"
+          [attr.cx]="point.x"
+          [attr.cy]="point.y"
+          r="4"
+          fill="var(--ink)"
+          stroke="var(--surface)"
+          stroke-width="1.5"
+        />
+      }
+
+      @for (tick of geometry.xTicks; track tick.year) {
+        <text
+          class="trend-chart-axis-label"
+          [attr.x]="tick.x"
+          [attr.y]="geometry.paddingTop + geometry.innerHeight + 12"
+          [attr.transform]="
+            'rotate(-90 ' + tick.x + ' ' + (geometry.paddingTop + geometry.innerHeight + 12) + ')'
+          "
+          text-anchor="end"
+        >
+          {{ tick.year }}
+        </text>
+      }
+
+      <line
+        class="trend-chart-baseline"
+        [attr.x1]="geometry.paddingLeft"
+        [attr.x2]="geometry.width - geometry.paddingRight"
+        [attr.y1]="geometry.paddingTop + geometry.innerHeight"
+        [attr.y2]="geometry.paddingTop + geometry.innerHeight"
+      />
+
+      @for (bar of geometry.bars; track bar.year) {
+        <rect
+          class="trend-chart-hover-target"
+          [attr.x]="bar.centerX - geometry.columnWidth / 2"
+          [attr.y]="geometry.paddingTop"
+          [attr.width]="geometry.columnWidth"
+          [attr.height]="geometry.innerHeight"
+          (mouseenter)="setHoveredIndex($index)"
+        />
+      }
+
+      @let tooltipModel = tooltip();
+      @if (tooltipModel) {
+        <g class="trend-chart-tooltip" pointer-events="none">
+          <rect
+            class="trend-chart-tooltip-bg"
+            [attr.x]="tooltipModel.tooltipX"
+            [attr.y]="tooltipModel.tooltipY"
+            [attr.width]="tooltipModel.tooltipWidth"
+            [attr.height]="tooltipModel.tooltipHeight"
+            rx="8"
+            ry="8"
+          />
+          <text
+            class="trend-chart-tooltip-header"
+            [attr.x]="tooltipModel.tooltipX + tooltipModel.paddingX"
+            [attr.y]="tooltipModel.tooltipY + tooltipModel.paddingY + 12"
+          >
+            {{ tooltipModel.bar.year }}
+          </text>
+          @for (row of tooltipModel.bar.segmentTotals; track row.label) {
+            <circle
+              [attr.cx]="tooltipModel.tooltipX + tooltipModel.paddingX + 5"
+              [attr.cy]="
+                tooltipModel.tooltipY +
+                tooltipModel.paddingY +
+                12 +
+                tooltipModel.lineHeight * ($index + 1) -
+                4
+              "
+              r="4"
+              [attr.fill]="row.color"
+            />
+            <text
+              class="trend-chart-tooltip-row-label"
+              [attr.x]="tooltipModel.tooltipX + tooltipModel.paddingX + 16"
+              [attr.y]="
+                tooltipModel.tooltipY +
+                tooltipModel.paddingY +
+                12 +
+                tooltipModel.lineHeight * ($index + 1)
+              "
+            >
+              {{ row.label }}
+            </text>
+            <text
+              class="trend-chart-tooltip-row-value"
+              [attr.x]="tooltipModel.tooltipX + tooltipModel.tooltipWidth - tooltipModel.paddingX"
+              [attr.y]="
+                tooltipModel.tooltipY +
+                tooltipModel.paddingY +
+                12 +
+                tooltipModel.lineHeight * ($index + 1)
+              "
+              text-anchor="end"
+            >
+              {{ row.value | formatAmount }} zł
+            </text>
+          }
+          <line
+            class="trend-chart-tooltip-divider"
+            [attr.x1]="tooltipModel.tooltipX + tooltipModel.paddingX"
+            [attr.x2]="tooltipModel.tooltipX + tooltipModel.tooltipWidth - tooltipModel.paddingX"
+            [attr.y1]="
+              tooltipModel.tooltipY +
+              tooltipModel.paddingY +
+              12 +
+              tooltipModel.lineHeight * (tooltipModel.bar.segmentTotals.length + 1) -
+              10
+            "
+            [attr.y2]="
+              tooltipModel.tooltipY +
+              tooltipModel.paddingY +
+              12 +
+              tooltipModel.lineHeight * (tooltipModel.bar.segmentTotals.length + 1) -
+              10
+            "
+          />
+          <text
+            class="trend-chart-tooltip-row-label"
+            [attr.x]="tooltipModel.tooltipX + tooltipModel.paddingX"
+            [attr.y]="
+              tooltipModel.tooltipY +
+              tooltipModel.paddingY +
+              12 +
+              tooltipModel.lineHeight * (tooltipModel.bar.segmentTotals.length + 1)
+            "
+          >
+            Razem w roku
+          </text>
+          <text
+            class="trend-chart-tooltip-row-value trend-chart-tooltip-row-value--strong"
+            [attr.x]="tooltipModel.tooltipX + tooltipModel.tooltipWidth - tooltipModel.paddingX"
+            [attr.y]="
+              tooltipModel.tooltipY +
+              tooltipModel.paddingY +
+              12 +
+              tooltipModel.lineHeight * (tooltipModel.bar.segmentTotals.length + 1)
+            "
+            text-anchor="end"
+          >
+            {{ tooltipModel.bar.totalSum | formatAmount }} zł
+          </text>
+          <text
+            class="trend-chart-tooltip-row-label trend-chart-tooltip-row-label--footer"
+            [attr.x]="tooltipModel.tooltipX + tooltipModel.paddingX"
+            [attr.y]="
+              tooltipModel.tooltipY +
+              tooltipModel.paddingY +
+              12 +
+              tooltipModel.lineHeight * (tooltipModel.bar.segmentTotals.length + 2)
+            "
+          >
+            Saldo na koniec roku
+          </text>
+          <text
+            class="trend-chart-tooltip-row-value trend-chart-tooltip-row-value--footer"
+            [attr.x]="tooltipModel.tooltipX + tooltipModel.tooltipWidth - tooltipModel.paddingX"
+            [attr.y]="
+              tooltipModel.tooltipY +
+              tooltipModel.paddingY +
+              12 +
+              tooltipModel.lineHeight * (tooltipModel.bar.segmentTotals.length + 2)
+            "
+            text-anchor="end"
+          >
+            {{ tooltipModel.bar.endingBalance | formatAmount }} zł
+          </text>
+        </g>
+      }
+    </svg>
+  } @else {
+    <div class="trend-chart-empty">Brak danych do wyświetlenia.</div>
+  }
+</div>

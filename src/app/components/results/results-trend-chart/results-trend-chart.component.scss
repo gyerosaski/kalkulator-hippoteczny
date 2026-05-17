@@ -1,0 +1,147 @@
+:host {
+  display: block;
+}
+
+.trend-chart {
+  gap: 12px;
+}
+
+.trend-chart-head {
+  flex-wrap: wrap;
+  row-gap: 8px;
+}
+
+.trend-chart-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  font-size: 12px;
+  color: var(--ink-2);
+}
+
+.trend-chart-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.trend-chart-legend-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.trend-chart-legend-line {
+  display: inline-flex;
+  align-items: center;
+}
+
+.trend-chart-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.trend-chart-grid {
+  stroke: var(--grid);
+  stroke-dasharray: 2 4;
+}
+
+.trend-chart-baseline {
+  stroke: var(--line-2);
+}
+
+.trend-chart-axis-label {
+  font-size: 11px;
+  fill: var(--muted);
+  font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  font-feature-settings: 'tnum';
+  font-variant-numeric: tabular-nums;
+}
+
+.trend-chart-axis-title {
+  font-size: 11px;
+  fill: var(--ink-2);
+  letter-spacing: 0.02em;
+}
+
+.trend-chart-bar-group rect {
+  transition: opacity 0.15s ease;
+}
+
+.trend-chart-bar-group.is-hovered rect {
+  opacity: 0.85;
+}
+
+.trend-chart-line {
+  pointer-events: none;
+}
+
+.trend-chart-line-point {
+  pointer-events: none;
+}
+
+.trend-chart-hover-target {
+  fill: transparent;
+  cursor: pointer;
+}
+
+.trend-chart-hover-target:hover {
+  fill: color-mix(in oklch, var(--accent) 18%, transparent);
+}
+
+.trend-chart-tooltip-bg {
+  fill: var(--surface);
+  stroke: var(--line-2);
+  stroke-width: 1;
+  filter: drop-shadow(0 4px 12px oklch(40% 0.02 250 / 0.18));
+}
+
+.trend-chart-tooltip-header {
+  font-size: 13px;
+  font-weight: 600;
+  fill: var(--ink);
+}
+
+.trend-chart-tooltip-row-label {
+  font-size: 11px;
+  fill: var(--ink-2);
+}
+
+.trend-chart-tooltip-row-label--footer {
+  fill: var(--muted);
+  font-size: 10px;
+}
+
+.trend-chart-tooltip-row-value {
+  font-size: 11px;
+  fill: var(--ink);
+  font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  font-feature-settings: 'tnum';
+  font-variant-numeric: tabular-nums;
+}
+
+.trend-chart-tooltip-row-value--strong {
+  font-weight: 600;
+}
+
+.trend-chart-tooltip-row-value--footer {
+  fill: var(--muted);
+  font-size: 10px;
+}
+
+.trend-chart-tooltip-divider {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.trend-chart-empty {
+  padding: 32px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}

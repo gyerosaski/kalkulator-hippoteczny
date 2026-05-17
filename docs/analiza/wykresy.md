@@ -78,6 +78,8 @@ Najechanie kursorem na rok pokazuje pop-over z:
 
 #### 5.3.8. Wymagania techniczne
 
-- Implementacja docelowa: **Chart.js** (`type: 'bar'`, jedna z osi jako `type: 'line'`, mieszane datasety).
-- Responsywność: wykres zajmuje całą szerokość karty, wysokość ~360 px (desktop) / 280 px (compact density).
-- Motyw: dziedziczy zmienne CSS palety i kolorów semantycznych (`--c-int`, `--c-cost`, `--c-cap`, `--c-over`) — działa w trybie jasnym i ciemnym.
+- Implementacja: natywne SVG w komponencie `ResultsTrendChartComponent` (`src/app/components/results/results-trend-chart/`) — spójna z istniejącym `ui-donut`, bez zewnętrznych zależności typu Chart.js. Geometria liczona w `computed()` na podstawie `YearGroup[]` przekazanego z `LayoutComponent`.
+- SVG używa `viewBox="0 0 1100 520"` i `preserveAspectRatio="xMidYMid meet"`, dzięki czemu wykres skaluje się proporcjonalnie do szerokości karty (typowo ~320–460 px wysokości na desktopie) bez zniekształceń tekstu.
+- Tooltip (5.3.6) renderowany w obrębie tego samego SVG (grupa `<g>` z prostokątem tła i wierszami tekstu), aktywowany niewidoczną „strefą złapania kursora” (`<rect>`) na całą wysokość kolumny rocznej. Pozycja tooltipu przełącza się na lewą stronę kolumny, gdy jest ona w prawej połowie wykresu.
+- Motyw: dziedziczy zmienne CSS palety i kolorów semantycznych (`--c-int`, `--c-cost`, `--c-cap`, `--c-over`) oraz neutralnych (`--ink`, `--grid`, `--line-2`, `--surface`, `--muted`) — działa w trybie jasnym i ciemnym.
+- Tytuł korzysta z `Intl.DateTimeFormat('pl-PL', { month: 'long', year: 'numeric' })`, więc nazwy miesięcy są pełne (np. „czerwiec 2026 - maj 2046”).
