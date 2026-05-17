@@ -28,8 +28,9 @@
   width: 20px;
   height: 20px;
   border-radius: 6px;
-  background: color-mix(in oklch, var(--accent) 25%, var(--surface-2));
-  color: var(--accent-deep);
+  background: var(--num-bg, color-mix(in oklch, var(--accent) 25%, var(--surface-2)));
+  color: var(--num-color, var(--accent-deep));
+  box-shadow: 0 0 0 1px var(--num-ring, transparent);
   font-size: 10px;
   font-weight: 700;
   flex-shrink: 0;

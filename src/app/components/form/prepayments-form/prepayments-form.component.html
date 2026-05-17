@@ -9,6 +9,7 @@
 >
   <div>
     <ui-subsection
+      [context]="ColorCodeMarkerVariant.PREPAYMENT"
       [num]="1"
       title="Reguły nadpłat"
       [open]="subsectionsOpen().prepaymentRules"
@@ -67,6 +68,7 @@
     <ui-divider />
 
     <ui-subsection
+      [context]="ColorCodeMarkerVariant.PREPAYMENT"
       [num]="2"
       title="Docelowa rata"
       [open]="subsectionsOpen().rataDocelowaRegula"
@@ -95,6 +97,7 @@
     <ui-divider />
 
     <ui-subsection
+      [context]="ColorCodeMarkerVariant.PREPAYMENT"
       [num]="3"
       title="Prowizja za wcześniejszą spłatę"
       [open]="subsectionsOpen().prowizjaWczesniejszaSplata"
