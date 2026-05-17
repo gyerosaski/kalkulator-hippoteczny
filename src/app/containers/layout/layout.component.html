@@ -21,7 +21,7 @@
             [overheadCostsEnabled]="overheadCostsEnabled"
             [prepaymentsEnabled]="prepaymentsEnabled"
           />
-          <app-results-schedule [yearlyGroups]="yearlyGroups()" />
+          <app-results-schedule [yearlyGroups]="yearlyGroups()" [results]="resultsValue" />
         } @else {
           <app-results-errors />
         }

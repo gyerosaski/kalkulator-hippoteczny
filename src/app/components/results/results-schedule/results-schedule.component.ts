@@ -1,5 +1,5 @@
 import { Component, input, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
-import { YearGroup, ScheduleRow } from '../../../model/mortgage.model';
+import { YearGroup, ScheduleRow, MortgageResults } from '../../../model/mortgage.model';
 import { SelectedMonthService } from '../../../services/selected-month/selected-month.service';
 import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
 import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
@@ -9,6 +9,17 @@ import { IconChevronDownComponent } from '../../icons/icon-chevron-down/icon-che
 import { ColorCodeMarkerVariant } from '../../../model';
 import { ColorCodeMarkerComponent } from '../../ui/color-code-marker/color-code-marker.component';
 import { CardComponent } from '../../ui/card/card.component';
+
+function formatMonthYearLong(monthString: string | null | undefined): string {
+  if (!monthString || !/^\d{4}-\d{2}$/.test(monthString)) return '';
+  const [year, month] = monthString.split('-').map((part) => parseInt(part, 10));
+  return TITLE_MONTH_FORMATTER.format(new Date(year, month - 1, 1));
+}
+
+const TITLE_MONTH_FORMATTER = new Intl.DateTimeFormat('pl-PL', {
+  month: 'long',
+  year: 'numeric',
+});
 
 @Component({
   selector: 'app-results-schedule',
@@ -26,9 +37,11 @@ import { CardComponent } from '../../ui/card/card.component';
   styleUrl: './results-schedule.component.scss',
 })
 export class ResultsScheduleComponent {
+  yearlyGroups = input.required<YearGroup[] | null>();
+  results = input.required<MortgageResults>();
+
   protected readonly ColorCodeMarkerVariant = ColorCodeMarkerVariant;
 
-  yearlyGroups = input.required<YearGroup[] | null>();
   private readonly formService = inject(FormService);
   private readonly selectedMonthService = inject(SelectedMonthService);
 
@@ -61,6 +74,14 @@ export class ResultsScheduleComponent {
     cols.push('1.2fr');
     return cols.join(' ');
   }
+
+  protected readonly chartTitle = computed(() => {
+    const schedule = this.results().schedule;
+    const startLabel = formatMonthYearLong(schedule[0]?.date);
+    const endLabel = formatMonthYearLong(schedule[schedule.length - 1]?.date);
+    if (!startLabel || !endLabel) return 'Harmonogram spłaty kredytu';
+    return `Harmonogram spłaty kredytu: ${startLabel} - ${endLabel}`;
+  });
 
   toggle(year: number): void {
     this.expandedYear.update((curr) => (curr === year ? null : year));

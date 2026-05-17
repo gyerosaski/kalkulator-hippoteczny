@@ -31,10 +31,6 @@ const STACK_TICK_STEP = 5_000;
 const BALANCE_TICK_STEP = 50_000;
 
 const AXIS_AMOUNT_FORMATTER = new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 0 });
-const TITLE_MONTH_FORMATTER = new Intl.DateTimeFormat('pl-PL', {
-  month: 'long',
-  year: 'numeric',
-});
 
 function roundUpToStep(value: number, step: number): number {
   if (value <= 0) return step;
@@ -43,12 +39,6 @@ function roundUpToStep(value: number, step: number): number {
 
 function formatAxisAmount(value: number): string {
   return `${AXIS_AMOUNT_FORMATTER.format(value)} zł`;
-}
-
-function formatMonthYearLong(monthString: string | null | undefined): string {
-  if (!monthString || !/^\d{4}-\d{2}$/.test(monthString)) return '';
-  const [year, month] = monthString.split('-').map((part) => parseInt(part, 10));
-  return TITLE_MONTH_FORMATTER.format(new Date(year, month - 1, 1));
 }
 
 @Component({
@@ -67,14 +57,6 @@ export class ResultsTrendChartComponent {
   prepaymentsEnabled = input.required<boolean>();
 
   protected readonly hoveredYearIndex = signal<number | null>(null);
-
-  protected readonly chartTitle = computed(() => {
-    const schedule = this.results().schedule;
-    const startLabel = formatMonthYearLong(schedule[0]?.date);
-    const endLabel = formatMonthYearLong(schedule[schedule.length - 1]?.date);
-    if (!startLabel || !endLabel) return 'Harmonogram spłaty kredytu';
-    return `Harmonogram spłaty kredytu: ${startLabel} - ${endLabel}`;
-  });
 
   protected readonly geometry = computed<TrendChartGeometry | null>(() => {
     const groups = this.yearlyGroups();
