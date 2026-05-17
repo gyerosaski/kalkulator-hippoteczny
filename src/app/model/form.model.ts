@@ -4,6 +4,7 @@ import {
   InsuranceFrequency,
   InstallmentType,
   LifeInsuranceCalcMethod,
+  LoanPeriodUnit,
   PrepaymentEffect,
   PrepaymentFrequency,
   RateType,
@@ -151,6 +152,7 @@ export interface BasicDataFormGroup {
   loanAmount: FormControl<number>;
   ltv: FormControl<number>;
   loanPeriod: FormControl<number>;
+  loanPeriodUnit: FormControl<LoanPeriodUnit>; // Tylko na potrzeby prezentacji, wewnętrznie wartość przechowywana jest zawsze w miesiącach
   startDate: FormControl<string>;
   capitalStartDate: FormControl<string>;
   installmentType: FormControl<InstallmentType>;

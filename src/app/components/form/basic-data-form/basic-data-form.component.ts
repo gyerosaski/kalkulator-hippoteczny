@@ -47,8 +47,6 @@ export class BasicDataFormComponent {
   readonly rateTypeOptions = Object.values(RateType);
   readonly loanPeriodUnitOptions = Object.values(LoanPeriodUnit);
 
-  loanPeriodUnit: LoanPeriodUnit = LoanPeriodUnit.YEARS;
-
   private readonly _ratePeriodsSync = toSignal(
     this.formService.ratePeriodsArray.valueChanges.pipe(map(() => null)),
     { initialValue: null },
@@ -79,6 +77,10 @@ export class BasicDataFormComponent {
     return this.basicData.controls.ltv;
   }
 
+  get loanPeriodUnitControl() {
+    return this.basicData.controls.loanPeriodUnit;
+  }
+
   get startDateControl() {
     return this.basicData.controls.startDate;
   }
@@ -93,20 +95,22 @@ export class BasicDataFormComponent {
 
   get loanPeriodDisplayValue(): number {
     const months = this.basicData.controls.loanPeriod.value;
-    return this.loanPeriodUnit === LoanPeriodUnit.YEARS
+    return this.loanPeriodUnitControl.value === LoanPeriodUnit.YEARS
       ? Math.round((months / 12) * 100) / 100
       : months;
   }
 
   onLoanPeriodValueChanged(val: number): void {
     const months =
-      this.loanPeriodUnit === LoanPeriodUnit.YEARS ? Math.round(val * 12) : Math.round(val);
+      this.loanPeriodUnitControl.value === LoanPeriodUnit.YEARS
+        ? Math.round(val * 12)
+        : Math.round(val);
     this.basicData.controls.loanPeriod.setValue(months);
     this.form.updateValueAndValidity();
   }
 
   onLoanPeriodUnitChanged(unit: string): void {
-    this.loanPeriodUnit = unit as LoanPeriodUnit;
+    this.loanPeriodUnitControl.setValue(unit as LoanPeriodUnit);
   }
 
   onLtvChanged() {
