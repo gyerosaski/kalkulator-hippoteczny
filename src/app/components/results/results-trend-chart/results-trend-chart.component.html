@@ -3,27 +3,28 @@
     <h3>Relacja kosztów do kapitału w ujęciu rocznym</h3>
     <ul class="trend-chart-legend">
       <li>
-        <span class="trend-chart-legend-swatch" style="background: var(--c-int)"></span>
+        <ui-color-code-marker [variant]="ColorCodeMarkerVariant.INTEREST" />
         <span>Odsetki</span>
       </li>
       @if (overheadCostsEnabled()) {
         <li>
-          <span class="trend-chart-legend-swatch" style="background: var(--c-cost)"></span>
+          <ui-color-code-marker [variant]="ColorCodeMarkerVariant.COST" />
           <span>Koszty okołokredytowe</span>
         </li>
       }
       <li>
-        <span class="trend-chart-legend-swatch" style="background: var(--c-cap)"></span>
+        <ui-color-code-marker [variant]="ColorCodeMarkerVariant.CAPITAL" />
         <span>Kapitał</span>
       </li>
       @if (prepaymentsEnabled()) {
         <li>
-          <span class="trend-chart-legend-swatch" style="background: var(--c-over)"></span>
+          <ui-color-code-marker [variant]="ColorCodeMarkerVariant.PREPAYMENT" />
           <span>Nadpłaty</span>
         </li>
       }
       <li>
         <span class="trend-chart-legend-line">
+          <!--TODO: Wynieść jako ikonę do oddzielnego komponentu-->
           <svg width="28" height="10" aria-hidden="true">
             <line x1="2" y1="5" x2="26" y2="5" stroke="var(--ink)" stroke-width="2" />
             <circle cx="9" cy="5" r="2.5" fill="var(--ink)" />

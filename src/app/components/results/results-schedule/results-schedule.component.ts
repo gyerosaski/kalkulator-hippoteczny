@@ -1,5 +1,5 @@
 import { Component, input, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
-import { YearGroup, ScheduleRow, MortgageResults } from '../../../model/mortgage.model';
+import { YearGroup, ScheduleRow, MortgageResults } from '../../../model';
 import { SelectedMonthService } from '../../../services/selected-month/selected-month.service';
 import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
 import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';

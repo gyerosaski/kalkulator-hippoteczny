@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
-import { MortgageResults } from '../../../model';
+import { ColorCodeMarkerVariant, MortgageResults } from '../../../model';
 import {
   TrendAxisTick,
   TrendBarColumn,
@@ -13,6 +13,7 @@ import {
 } from '../../../model';
 import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
 import { CardComponent } from '../../ui/card/card.component';
+import { ColorCodeMarkerComponent } from '../../ui/color-code-marker/color-code-marker.component';
 
 interface StackSegmentDescriptor {
   readonly fieldKey: 'sumInterest' | 'sumInsuranceCost' | 'sumCapital' | 'sumPrepayment';
@@ -44,7 +45,7 @@ function formatAxisAmount(value: number): string {
 @Component({
   selector: 'app-results-trend-chart',
   standalone: true,
-  imports: [FormatAmountPipe, CardComponent],
+  imports: [FormatAmountPipe, CardComponent, ColorCodeMarkerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './results-trend-chart.component.html',
   styleUrl: './results-trend-chart.component.scss',
@@ -56,6 +57,7 @@ export class ResultsTrendChartComponent {
   overheadCostsEnabled = input.required<boolean>();
   prepaymentsEnabled = input.required<boolean>();
 
+  protected readonly ColorCodeMarkerVariant = ColorCodeMarkerVariant;
   protected readonly hoveredYearIndex = signal<number | null>(null);
 
   protected readonly geometry = computed<TrendChartGeometry | null>(() => {
