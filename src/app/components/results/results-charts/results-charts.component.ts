@@ -6,11 +6,18 @@ import { DonutComponent } from '../../ui/donut/donut.component';
 import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
 import { FormService } from '../../../services/form/form';
 import { ColorCodeMarkerComponent } from '../../ui/color-code-marker/color-code-marker.component';
+import { CardComponent } from '../../ui/card/card.component';
 
 @Component({
   selector: 'app-results-charts',
   standalone: true,
-  imports: [DonutComponent, FormatAmountPipe, FormatMonthPipe, ColorCodeMarkerComponent],
+  imports: [
+    DonutComponent,
+    FormatAmountPipe,
+    FormatMonthPipe,
+    ColorCodeMarkerComponent,
+    CardComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './results-charts.component.html',
 })

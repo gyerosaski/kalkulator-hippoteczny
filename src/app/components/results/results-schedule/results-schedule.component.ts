@@ -8,6 +8,7 @@ import { IconChevronRightComponent } from '../../icons/icon-chevron-right/icon-c
 import { IconChevronDownComponent } from '../../icons/icon-chevron-down/icon-chevron-down.component';
 import { ColorCodeMarkerVariant } from '../../../model';
 import { ColorCodeMarkerComponent } from '../../ui/color-code-marker/color-code-marker.component';
+import { CardComponent } from '../../ui/card/card.component';
 
 @Component({
   selector: 'app-results-schedule',
@@ -18,6 +19,7 @@ import { ColorCodeMarkerComponent } from '../../ui/color-code-marker/color-code-
     IconChevronRightComponent,
     IconChevronDownComponent,
     ColorCodeMarkerComponent,
+    CardComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './results-schedule.component.html',

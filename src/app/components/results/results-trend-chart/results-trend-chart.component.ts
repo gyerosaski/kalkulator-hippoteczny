@@ -12,6 +12,7 @@ import {
   YearGroup,
 } from '../../../model';
 import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
+import { CardComponent } from '../../ui/card/card.component';
 
 interface StackSegmentDescriptor {
   readonly fieldKey: 'sumInterest' | 'sumInsuranceCost' | 'sumCapital' | 'sumPrepayment';
@@ -53,7 +54,7 @@ function formatMonthYearLong(monthString: string | null | undefined): string {
 @Component({
   selector: 'app-results-trend-chart',
   standalone: true,
-  imports: [FormatAmountPipe],
+  imports: [FormatAmountPipe, CardComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './results-trend-chart.component.html',
   styleUrl: './results-trend-chart.component.scss',
