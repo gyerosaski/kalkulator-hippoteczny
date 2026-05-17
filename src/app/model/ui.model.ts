@@ -37,7 +37,7 @@ export interface TrendLinePoint {
   x: number;
   y: number;
   value: number;
-  year: number | null;
+  year: number;
 }
 
 export interface TrendAxisTick {
@@ -78,4 +78,5 @@ export interface TrendTooltipModel {
   paddingX: number;
   paddingY: number;
   lineHeight: number;
+  dividerGap: number;
 }

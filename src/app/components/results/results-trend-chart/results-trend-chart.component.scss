@@ -99,23 +99,23 @@
 }
 
 .trend-chart-tooltip-header {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   fill: var(--ink);
 }
 
 .trend-chart-tooltip-row-label {
-  font-size: 11px;
+  font-size: 13px;
   fill: var(--ink-2);
 }
 
 .trend-chart-tooltip-row-label--footer {
   fill: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .trend-chart-tooltip-row-value {
-  font-size: 11px;
+  font-size: 13px;
   fill: var(--ink);
   font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
   font-feature-settings: 'tnum';
@@ -128,7 +128,7 @@
 
 .trend-chart-tooltip-row-value--footer {
   fill: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .trend-chart-tooltip-divider {

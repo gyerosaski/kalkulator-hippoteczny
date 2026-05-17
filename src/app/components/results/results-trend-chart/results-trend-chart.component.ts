@@ -83,8 +83,8 @@ export class ResultsTrendChartComponent {
 
     const width = 1100;
     const height = 520;
-    const paddingLeft = 96;
-    const paddingRight = 96;
+    const paddingLeft = 112;
+    const paddingRight = 112;
     const paddingTop = 16;
     const paddingBottom = 72;
     const innerWidth = width - paddingLeft - paddingRight;
@@ -173,20 +173,12 @@ export class ResultsTrendChartComponent {
       };
     });
 
-    const linePoints: TrendLinePoint[] = [
-      {
-        x: paddingLeft,
-        y: yForBalanceValue(loanAmount),
-        value: loanAmount,
-        year: null,
-      },
-      ...groups.map((year, index) => ({
-        x: xCenterForIndex(index),
-        y: yForBalanceValue(year.lastRemaining),
-        value: year.lastRemaining,
-        year: year.year,
-      })),
-    ];
+    const linePoints: TrendLinePoint[] = groups.map((year, index) => ({
+      x: xCenterForIndex(index),
+      y: yForBalanceValue(year.lastRemaining),
+      value: year.lastRemaining,
+      year: year.year,
+    }));
 
     const linePath = linePoints
       .map(
@@ -227,10 +219,11 @@ export class ResultsTrendChartComponent {
 
     const paddingX = 12;
     const paddingY = 12;
-    const lineHeight = 18;
+    const lineHeight = 22;
+    const dividerGap = 8;
     const segmentLineCount = bar.segmentTotals.length;
     const tooltipWidth = 240;
-    const tooltipHeight = paddingY * 2 + lineHeight * (segmentLineCount + 3) + 8;
+    const tooltipHeight = paddingY * 2 + lineHeight * (segmentLineCount + 2) + 16 + dividerGap;
 
     const chartRightEdge = geometry.paddingLeft + geometry.innerWidth;
     const placeOnLeftSide = bar.centerX > geometry.paddingLeft + geometry.innerWidth / 2;
@@ -258,6 +251,7 @@ export class ResultsTrendChartComponent {
       paddingX,
       paddingY,
       lineHeight,
+      dividerGap,
     };
   });
 

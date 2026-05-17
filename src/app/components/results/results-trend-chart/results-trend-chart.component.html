@@ -73,11 +73,11 @@
 
       <text
         class="trend-chart-axis-title"
-        [attr.x]="geometry.paddingLeft - 72"
+        [attr.x]="geometry.paddingLeft - 96"
         [attr.y]="geometry.paddingTop + geometry.innerHeight / 2"
         [attr.transform]="
           'rotate(-90 ' +
-          (geometry.paddingLeft - 72) +
+          (geometry.paddingLeft - 96) +
           ' ' +
           (geometry.paddingTop + geometry.innerHeight / 2) +
           ')'
@@ -88,11 +88,11 @@
       </text>
       <text
         class="trend-chart-axis-title"
-        [attr.x]="geometry.width - geometry.paddingRight + 72"
+        [attr.x]="geometry.width - geometry.paddingRight + 96"
         [attr.y]="geometry.paddingTop + geometry.innerHeight / 2"
         [attr.transform]="
           'rotate(-90 ' +
-          (geometry.width - geometry.paddingRight + 72) +
+          (geometry.width - geometry.paddingRight + 96) +
           ' ' +
           (geometry.paddingTop + geometry.innerHeight / 2) +
           ')'
@@ -254,7 +254,8 @@
               tooltipModel.tooltipY +
               tooltipModel.paddingY +
               12 +
-              tooltipModel.lineHeight * (tooltipModel.bar.segmentTotals.length + 1)
+              tooltipModel.lineHeight * (tooltipModel.bar.segmentTotals.length + 1) +
+              tooltipModel.dividerGap
             "
           >
             Razem w roku
@@ -266,7 +267,8 @@
               tooltipModel.tooltipY +
               tooltipModel.paddingY +
               12 +
-              tooltipModel.lineHeight * (tooltipModel.bar.segmentTotals.length + 1)
+              tooltipModel.lineHeight * (tooltipModel.bar.segmentTotals.length + 1) +
+              tooltipModel.dividerGap
             "
             text-anchor="end"
           >
@@ -279,7 +281,8 @@
               tooltipModel.tooltipY +
               tooltipModel.paddingY +
               12 +
-              tooltipModel.lineHeight * (tooltipModel.bar.segmentTotals.length + 2)
+              tooltipModel.lineHeight * (tooltipModel.bar.segmentTotals.length + 2) +
+              tooltipModel.dividerGap
             "
           >
             Saldo na koniec roku
@@ -291,7 +294,8 @@
               tooltipModel.tooltipY +
               tooltipModel.paddingY +
               12 +
-              tooltipModel.lineHeight * (tooltipModel.bar.segmentTotals.length + 2)
+              tooltipModel.lineHeight * (tooltipModel.bar.segmentTotals.length + 2) +
+              tooltipModel.dividerGap
             "
             text-anchor="end"
           >

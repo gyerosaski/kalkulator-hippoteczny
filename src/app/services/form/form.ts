@@ -463,10 +463,14 @@ export class FormService {
   }
 
   setDefaults(): void {
-    this.clearFormArrayExceptFirst(this.ratePeriodsArray);
-    this.clearFormArrayExceptFirst(this.tranchesArray);
-    this.clearFormArrayExceptFirst(this.additionalCostsArray);
-    this.clearFormArrayExceptFirst(this.prepaymentRulesArray);
+    this.ratePeriodsArray.clear();
+    this.ratePeriodsArray.push(this.createRatePeriodGroup());
+    this.tranchesArray.clear();
+    this.tranchesArray.push(this.createTrancheGroup(true));
+    this.additionalCostsArray.clear();
+    this.additionalCostsArray.push(this.createAdditionalCostGroup());
+    this.prepaymentRulesArray.clear();
+    this.prepaymentRulesArray.push(this.createPrepaymentRuleGroup());
     this.form.reset();
   }
 
