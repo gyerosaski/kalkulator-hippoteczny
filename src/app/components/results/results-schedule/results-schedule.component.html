@@ -33,53 +33,53 @@
       }
       <div>Pozostało</div>
     </div>
-    @for (y of yearlyGroups()!; track y.year) {
+    @for (year of yearlyGroups()!; track year.year) {
       <button
         class="tbl-row tbl-row--year"
-        [class.is-open]="expandedYear() === y.year"
-        (click)="toggle(y.year)"
+        [class.is-open]="expandedYear() === year.year"
+        (click)="toggle(year.year)"
       >
         <div class="cell-year">
-          @if (expandedYear() === y.year) {
+          @if (expandedYear() === year.year) {
             <icon-chevron-down />
           } @else {
             <icon-chevron-right />
           }
-          {{ y.year }}
+          {{ year.year }}
         </div>
-        <div class="mono">{{ y.sumRate | formatAmount }}</div>
-        <div class="mono c-cap">{{ y.sumCapital | formatAmount }}</div>
-        <div class="mono c-int">{{ y.sumInterest | formatAmount }}</div>
+        <div class="mono">{{ year.sumRate | formatAmount }}</div>
+        <div class="mono c-cap">{{ year.sumCapital | formatAmount }}</div>
+        <div class="mono c-int">{{ year.sumInterest | formatAmount }}</div>
         @if (isPrepaymentEnabled) {
-          <div class="mono c-over">{{ y.sumPrepayment | formatAmount }}</div>
+          <div class="mono c-over">{{ year.sumPrepayment | formatAmount }}</div>
         }
         @if (isOverheadCostsEnabled) {
-          <div class="mono c-cost">{{ y.sumInsuranceCost | formatAmount }}</div>
+          <div class="mono c-cost">{{ year.sumInsuranceCost | formatAmount }}</div>
         }
         <div class="mono">
-          <b>{{ y.lastRemaining | formatAmount }}</b>
+          <b>{{ year.lastRemaining | formatAmount }}</b>
         </div>
       </button>
-      @if (expandedYear() === y.year) {
-        @for (r of y.rows; track r.index) {
+      @if (expandedYear() === year.year) {
+        @for (row of year.rows; track row.index) {
           <button
             type="button"
             class="tbl-row tbl-row--month"
-            [class.is-selected]="selectedMonthIndex() === r.index"
-            [attr.aria-pressed]="selectedMonthIndex() === r.index"
-            (click)="selectMonth(r.index)"
+            [class.is-selected]="selectedMonthIndex() === row.index"
+            [attr.aria-pressed]="selectedMonthIndex() === row.index"
+            (click)="selectMonth(row.index)"
           >
-            <div class="cell-month">{{ r.date | formatMonth }}</div>
-            <div class="mono">{{ r.rate | formatAmount }}</div>
-            <div class="mono c-cap">{{ r.capital | formatAmount }}</div>
-            <div class="mono c-int">{{ r.interest | formatAmount }}</div>
+            <div class="cell-month">{{ row.date | formatMonth }}</div>
+            <div class="mono">{{ row.rate | formatAmount }}</div>
+            <div class="mono c-cap">{{ row.capital | formatAmount }}</div>
+            <div class="mono c-int">{{ row.interest | formatAmount }}</div>
             @if (isPrepaymentEnabled) {
-              <div class="mono c-over">{{ r.prepayment | formatAmount }}</div>
+              <div class="mono c-over">{{ row.prepayment | formatAmount }}</div>
             }
             @if (isOverheadCostsEnabled) {
-              <div class="mono c-cost">{{ r.insuranceCost | formatAmount }}</div>
+              <div class="mono c-cost">{{ row.insuranceCost | formatAmount }}</div>
             }
-            <div class="mono">{{ r.remaining | formatAmount }}</div>
+            <div class="mono">{{ row.remaining | formatAmount }}</div>
           </button>
         }
       }
