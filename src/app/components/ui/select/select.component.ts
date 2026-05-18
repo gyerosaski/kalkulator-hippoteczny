@@ -28,6 +28,7 @@ export class SelectComponent implements ControlValueAccessor {
   options = input.required<string[]>();
   labels = input<string[]>([]);
   readonly value = input<string>('');
+  inputId = input<string>('');
   valueChange = output<string>();
 
   disabled = signal(false);

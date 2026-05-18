@@ -1,5 +1,6 @@
 <div class="sel">
   <select
+    [attr.id]="inputId() || null"
     [disabled]="disabled()"
     [value]="_value()"
     (change)="onNativeChange($any($event.target).value)"

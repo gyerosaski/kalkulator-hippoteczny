@@ -1,6 +1,7 @@
 <div class="inp inp--date" [class.inp--focus]="focused()" [class.inp--disabled]="disabled()">
   <input
     type="month"
+    [attr.id]="inputId() || null"
     [disabled]="disabled()"
     [value]="_value()"
     class="mono"

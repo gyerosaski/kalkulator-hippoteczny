@@ -26,6 +26,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 export class NumberInputComponent implements ControlValueAccessor {
   /** Optional: use without formControlName by binding [value] directly. */
   readonly value = input<number | null>(null);
+  inputId = input<string>('');
   suffix = input<string>('');
   hint = input<string>('');
   decimals = input<number>(2);

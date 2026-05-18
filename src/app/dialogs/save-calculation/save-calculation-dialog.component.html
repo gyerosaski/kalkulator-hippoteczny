@@ -2,9 +2,14 @@
   <h2 class="dialog-title">Zapisz kalkulację</h2>
   <form (submit)="$event.preventDefault(); onSave()">
     <div class="field">
-      <span class="field-label">Nazwa kalkulacji</span>
+      <label class="field-label" for="save-calc-name">Nazwa kalkulacji</label>
       <div class="inp">
-        <input [formControl]="nameCtrl" placeholder="np. Moja kalkulacja" autocomplete="off" />
+        <input
+          id="save-calc-name"
+          [formControl]="nameCtrl"
+          placeholder="np. Moja kalkulacja"
+          autocomplete="off"
+        />
       </div>
       @if (nameCtrl.hasError('required') && nameCtrl.touched) {
         <span class="field-hint field-hint--error">Nazwa jest wymagana.</span>

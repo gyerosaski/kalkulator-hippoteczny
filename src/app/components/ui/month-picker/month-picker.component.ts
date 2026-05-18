@@ -1,6 +1,7 @@
 import {
   Component,
   ChangeDetectionStrategy,
+  input,
   signal,
   output,
   forwardRef,
@@ -26,6 +27,7 @@ import { MonthPickerDialogComponent } from '../../../dialogs/month-picker/month-
 })
 export class MonthPickerComponent implements ControlValueAccessor {
   valueChange = output<string>();
+  inputId = input<string>('');
 
   focused = signal(false);
   disabled = signal(false);

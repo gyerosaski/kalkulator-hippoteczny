@@ -1,5 +1,5 @@
 <div class="field">
-  <label class="field-label">
+  <label class="field-label" [attr.for]="inputId() || null">
     @if (num()) {
       <span class="field-num">{{ num() }}</span>
     }

@@ -5,8 +5,9 @@
 >
   <div>
     <div class="row row--3">
-      <ui-field num="1" label="Wartość nieruchomości">
+      <ui-field num="1" label="Wartość nieruchomości" inputId="property-value">
         <ui-number-input
+          inputId="property-value"
           [formControl]="propertyValueControl"
           suffix="zł"
           [decimals]="2"
@@ -14,8 +15,9 @@
         />
       </ui-field>
 
-      <ui-field num="2" label="Kwota kredytu">
+      <ui-field num="2" label="Kwota kredytu" inputId="loan-amount">
         <ui-number-input
+          inputId="loan-amount"
           [formControl]="loanAmountControl"
           suffix="zł"
           [decimals]="2"
@@ -23,8 +25,9 @@
         />
       </ui-field>
 
-      <ui-field num="3" label="LTV">
+      <ui-field num="3" label="LTV" inputId="ltv">
         <ui-number-input
+          inputId="ltv"
           [formControl]="ltvControl"
           suffix="%"
           [decimals]="2"
@@ -34,9 +37,10 @@
     </div>
 
     <div class="row row--3">
-      <ui-field num="4" label="Okres kredytowania">
+      <ui-field num="4" label="Okres kredytowania" inputId="loan-period">
         <div class="inline">
           <ui-number-input
+            inputId="loan-period"
             [value]="loanPeriodDisplayValue"
             [decimals]="0"
             (valueChange)="onLoanPeriodValueChanged($event)"
@@ -50,12 +54,12 @@
         </div>
       </ui-field>
 
-      <ui-field num="5" label="Data uruchomienia kredytu">
-        <ui-month-picker [formControl]="startDateControl" />
+      <ui-field num="5" label="Data uruchomienia kredytu" inputId="start-date">
+        <ui-month-picker inputId="start-date" [formControl]="startDateControl" />
       </ui-field>
 
-      <ui-field num="6" label="Początek spłat kapitału">
-        <ui-month-picker [formControl]="capitalStartDateControl" />
+      <ui-field num="6" label="Początek spłat kapitału" inputId="capital-start-date">
+        <ui-month-picker inputId="capital-start-date" [formControl]="capitalStartDateControl" />
       </ui-field>
     </div>
 
@@ -72,6 +76,9 @@
     <ui-cards-group>
       <div>
         @for (period of ratePeriodControls(); track $index) {
+          @let wiborId = 'rate-period-' + $index + '-wibor';
+          @let marginId = 'rate-period-' + $index + '-margin';
+          @let rateId = 'rate-period-' + $index + '-rate';
           <ui-card
             [tag]="'OKRES ' + ($index + 1)"
             [removable]="$index > 0"
@@ -96,15 +103,17 @@
                 />
               </ui-field>
               @if (period.controls.rateType.value === RateType.VARIABLE) {
-                <ui-field num="9a" label="WIBOR">
+                <ui-field num="9a" label="WIBOR" [inputId]="wiborId">
                   <ui-number-input
+                    [inputId]="wiborId"
                     [formControl]="period.controls.wibor"
                     suffix="%"
                     [decimals]="2"
                   />
                 </ui-field>
-                <ui-field num="9b" label="Marża">
+                <ui-field num="9b" label="Marża" [inputId]="marginId">
                   <ui-number-input
+                    [inputId]="marginId"
                     [formControl]="period.controls.margin"
                     suffix="%"
                     [decimals]="2"
@@ -114,6 +123,7 @@
               <ui-field
                 num="9"
                 label="Oprocentowanie"
+                [inputId]="rateId"
                 [style.gridColumn]="
                   period.controls.rateType.value !== RateType.VARIABLE ? 'span 1' : null
                 "
@@ -126,6 +136,7 @@
                 @if (period.controls.rateType.value === RateType.VARIABLE) {
                   <div class="inp inp--disabled">
                     <input
+                      [id]="rateId"
                       type="text"
                       class="mono"
                       [value]="
@@ -139,6 +150,7 @@
                   </div>
                 } @else {
                   <ui-number-input
+                    [inputId]="rateId"
                     [formControl]="period.controls.nominalRate"
                     suffix="%"
                     [decimals]="2"

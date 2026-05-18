@@ -2,6 +2,7 @@
   <input
     type="text"
     inputmode="decimal"
+    [attr.id]="inputId() || null"
     [disabled]="disabled()"
     [value]="display()"
     (focus)="onFocus()"

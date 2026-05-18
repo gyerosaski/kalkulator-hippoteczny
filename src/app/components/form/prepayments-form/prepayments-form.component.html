@@ -17,14 +17,20 @@
     >
       @for (rule of prepaymentRulesArray.controls; track $index) {
         @let ruleControls = rule.controls;
+        @let prepaymentFrequencyId = 'prepayment-' + $index + '-frequency';
+        @let prepaymentFromId = 'prepayment-' + $index + '-from';
+        @let prepaymentToId = 'prepayment-' + $index + '-to';
+        @let prepaymentAmountId = 'prepayment-' + $index + '-amount';
+        @let prepaymentEffectId = 'prepayment-' + $index + '-effect';
         <ui-card
           [tag]="($index + 1).toString()"
           [removable]="$index > 0"
           (remove)="removePrepaymentRule($index)"
         >
           <div class="row row--2">
-            <ui-field label="Jak często nadpłacasz?" num="1a">
+            <ui-field label="Jak często nadpłacasz?" num="1a" [inputId]="prepaymentFrequencyId">
               <ui-select
+                [inputId]="prepaymentFrequencyId"
                 [formControl]="ruleControls.frequency"
                 [options]="prepaymentFrequencyOptions"
                 [labels]="prepaymentFrequencyOptions | prepaymentFrequencyLabel"
@@ -32,28 +38,36 @@
               />
             </ui-field>
             @if (ruleControls.frequency.value === PrepaymentFrequency.ONE_TIME) {
-              <ui-field label="Data nadpłaty" num="1b">
+              <ui-field label="Data nadpłaty" num="1b" [inputId]="prepaymentFromId">
                 <ui-month-picker
+                  [inputId]="prepaymentFromId"
                   [formControl]="ruleControls.from"
                   (valueChange)="onPrepaymentFromChanged($index)"
                 />
               </ui-field>
             } @else {
-              <ui-field label="Data nadpłaty od" num="1b">
+              <ui-field label="Data nadpłaty od" num="1b" [inputId]="prepaymentFromId">
                 <ui-month-picker
+                  [inputId]="prepaymentFromId"
                   [formControl]="ruleControls.from"
                   (valueChange)="onPrepaymentFromChanged($index)"
                 />
               </ui-field>
-              <ui-field label="Data nadpłaty do" num="1c">
-                <ui-month-picker [formControl]="ruleControls.to" />
+              <ui-field label="Data nadpłaty do" num="1c" [inputId]="prepaymentToId">
+                <ui-month-picker [inputId]="prepaymentToId" [formControl]="ruleControls.to" />
               </ui-field>
             }
-            <ui-field label="Kwota nadpłaty" num="1d">
-              <ui-number-input [formControl]="ruleControls.amount" suffix="zł" [decimals]="2" />
+            <ui-field label="Kwota nadpłaty" num="1d" [inputId]="prepaymentAmountId">
+              <ui-number-input
+                [inputId]="prepaymentAmountId"
+                [formControl]="ruleControls.amount"
+                suffix="zł"
+                [decimals]="2"
+              />
             </ui-field>
-            <ui-field label="Skutek nadpłaty" num="1e">
+            <ui-field label="Skutek nadpłaty" num="1e" [inputId]="prepaymentEffectId">
               <ui-select
+                [inputId]="prepaymentEffectId"
                 [formControl]="ruleControls.effect"
                 [options]="prepaymentEffectOptions"
                 [labels]="prepaymentEffectOptions | prepaymentEffectLabel"
@@ -75,17 +89,33 @@
       (openChange)="setSubsectionOpen('rataDocelowaRegula', $event)"
     >
       <div class="row row--2">
-        <ui-field label="Chcę co miesiąc płacić do banku ratę w wysokości" num="2a">
-          <ui-number-input [formControl]="targetRateControl" suffix="zł" [decimals]="2" />
+        <ui-field
+          label="Chcę co miesiąc płacić do banku ratę w wysokości"
+          num="2a"
+          inputId="target-rate"
+        >
+          <ui-number-input
+            inputId="target-rate"
+            [formControl]="targetRateControl"
+            suffix="zł"
+            [decimals]="2"
+          />
         </ui-field>
-        <ui-field label="Data nadpłaty od" num="2b">
-          <ui-month-picker [formControl]="targetInstallmentFromControl" />
+        <ui-field label="Data nadpłaty od" num="2b" inputId="target-installment-from">
+          <ui-month-picker
+            inputId="target-installment-from"
+            [formControl]="targetInstallmentFromControl"
+          />
         </ui-field>
-        <ui-field label="Data nadpłaty do" num="2c">
-          <ui-month-picker [formControl]="targetInstallmentToControl" />
+        <ui-field label="Data nadpłaty do" num="2c" inputId="target-installment-to">
+          <ui-month-picker
+            inputId="target-installment-to"
+            [formControl]="targetInstallmentToControl"
+          />
         </ui-field>
-        <ui-field label="Skutek nadpłaty" num="2d">
+        <ui-field label="Skutek nadpłaty" num="2d" inputId="target-installment-effect">
           <ui-select
+            inputId="target-installment-effect"
             [formControl]="targetInstallmentEffectControl"
             [options]="prepaymentEffectOptions"
             [labels]="prepaymentEffectOptions | prepaymentEffectLabel"
@@ -104,11 +134,23 @@
       (openChange)="setSubsectionOpen('prowizjaWczesniejszaSplata', $event)"
     >
       <div class="row row--2">
-        <ui-field label="Wysokość prowizji za wcześniejszą spłatę" num="3a">
-          <ui-number-input [formControl]="earlyRepaymentRatePctControl" suffix="%" [decimals]="2" />
+        <ui-field
+          label="Wysokość prowizji za wcześniejszą spłatę"
+          num="3a"
+          inputId="early-repayment-rate"
+        >
+          <ui-number-input
+            inputId="early-repayment-rate"
+            [formControl]="earlyRepaymentRatePctControl"
+            suffix="%"
+            [decimals]="2"
+          />
         </ui-field>
-        <ui-field label="Bank pobiera prowizję do" num="3b">
-          <ui-month-picker [formControl]="earlyRepaymentValidUntilControl" />
+        <ui-field label="Bank pobiera prowizję do" num="3b" inputId="early-repayment-valid-until">
+          <ui-month-picker
+            inputId="early-repayment-valid-until"
+            [formControl]="earlyRepaymentValidUntilControl"
+          />
         </ui-field>
       </div>
     </ui-subsection>

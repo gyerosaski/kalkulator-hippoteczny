@@ -10,4 +10,5 @@ export class FieldComponent {
   label = input.required<string>();
   num = input<string>('');
   hint = input<string>('');
+  inputId = input<string>('');
 }
