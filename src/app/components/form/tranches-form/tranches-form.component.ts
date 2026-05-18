@@ -35,6 +35,10 @@ export class TranchesFormComponent {
     return this.formService.tranchesSection;
   }
 
+  get expandedControl() {
+    return this.section.controls.expanded;
+  }
+
   get sectionEnabledControl() {
     return this.section.controls.enabled;
   }

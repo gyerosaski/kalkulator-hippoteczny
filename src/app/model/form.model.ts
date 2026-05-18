@@ -143,11 +143,13 @@ export interface TranchesFieldsFormGroup {
 export interface ToggleableSectionFormGroup<
   T extends { [K in keyof T]: import('@angular/forms').AbstractControl },
 > {
+  expanded: FormControl<boolean>;
   enabled: FormControl<boolean>;
   fields: FormGroup<T>;
 }
 
 export interface BasicDataFormGroup {
+  expanded: FormControl<boolean>;
   propertyValue: FormControl<number>;
   loanAmount: FormControl<number>;
   ltv: FormControl<number>;

@@ -50,6 +50,10 @@ export class PrepaymentsFormComponent {
     return this.formService.prepaymentsSection;
   }
 
+  get expandedControl() {
+    return this.section.controls.expanded;
+  }
+
   get sectionEnabledControl() {
     return this.section.controls.enabled;
   }

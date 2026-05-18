@@ -204,6 +204,7 @@ export class FormService {
   private createBasicDataGroup(): FormGroup<BasicDataFormGroup> {
     const today = ym();
     return this.fb.group({
+      expanded: this.fb.control(true),
       propertyValue: this.fb.control(500_000, [Validators.required, Validators.min(0.01)]),
       loanAmount: this.fb.control(400_000, [Validators.required, Validators.min(0.01)]),
       ltv: this.fb.control(80, [Validators.required, Validators.min(0), Validators.max(100)]),
@@ -221,16 +222,19 @@ export class FormService {
       {
         basicData: this.createBasicDataGroup(),
         overheadCosts: this.fb.group({
+          expanded: this.fb.control(true),
           enabled: this.fb.control(false),
           fields: this.createOverheadCostsGroup(),
         }),
         tranches: this.fb.group({
+          expanded: this.fb.control(false),
           enabled: this.fb.control(false),
           fields: this.fb.group({
             tranches: this.fb.array([this.createTrancheGroup(true)]),
           }),
         }),
         prepayments: this.fb.group({
+          expanded: this.fb.control(false),
           enabled: this.fb.control(false),
           fields: this.fb.group({
             prepaymentRules: this.fb.group({

@@ -72,6 +72,7 @@
         "ratePeriods"
       ],
       "properties": {
+        "expanded": { "type": "boolean" },
         "propertyValue": { "type": "number", "exclusiveMinimum": 0 },
         "loanAmount": { "type": "number", "exclusiveMinimum": 0 },
         "ltv": { "type": "number", "minimum": 0, "maximum": 100 },
@@ -226,6 +227,7 @@
       "type": "object",
       "required": ["enabled", "fields"],
       "properties": {
+        "expanded": { "type": "boolean" },
         "enabled": { "type": "boolean" },
         "fields": { "$ref": "#/$defs/OverheadCostsFields" }
       }
@@ -243,6 +245,7 @@
       "type": "object",
       "required": ["enabled", "fields"],
       "properties": {
+        "expanded": { "type": "boolean" },
         "enabled": { "type": "boolean" },
         "fields": {
           "type": "object",
@@ -292,6 +295,7 @@
       "type": "object",
       "required": ["enabled", "fields"],
       "properties": {
+        "expanded": { "type": "boolean" },
         "enabled": { "type": "boolean" },
         "fields": {
           "type": "object",

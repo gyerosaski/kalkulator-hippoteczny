@@ -55,6 +55,10 @@ export class OverheadCostsFormComponent {
     return this.formService.overheadCostsSection;
   }
 
+  get expandedControl() {
+    return this.section.controls.expanded;
+  }
+
   get sectionEnabledControl() {
     return this.section.controls.enabled;
   }
