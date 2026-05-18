@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
+  CommissionCalcMethod,
   InstallmentType,
   RatePeriod,
   RateType,
@@ -569,7 +570,11 @@ export class CalculatorService {
     const totalInterest = schedule.reduce((s, r) => s + r.interest, 0);
 
     const totalInsuranceCosts = schedule.reduce((s, r) => s + r.insuranceCost, 0);
-    const loanCommission = oc ? (inputs.loanAmount * (oc.commissionPct || 0)) / 100 : 0;
+    const loanCommission = oc
+      ? oc.commissionCalcMethod === CommissionCalcMethod.FIXED_AMOUNT
+        ? oc.commissionValue || 0
+        : (inputs.loanAmount * (oc.commissionValue || 0)) / 100
+      : 0;
     const appraisalFee = oc ? oc.appraisalFee || 0 : 0;
     const earlyRepaymentCommissions = schedule.reduce((s, r) => s + r.commission, 0);
 

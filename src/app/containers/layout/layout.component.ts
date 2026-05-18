@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { startWith } from 'rxjs';
 import {
+  CommissionCalcMethod,
   InsuranceCalcMethod,
   InsuranceFrequency,
   LifeInsuranceCalcMethod,
@@ -126,7 +127,9 @@ export class LayoutComponent {
 
       const overheadCosts: OverheadCostsInputs = overheadEnabled
         ? {
-            commissionPct: Number(overheadCostsRaw.commission?.commissionPct) || 0,
+            commissionValue: Number(overheadCostsRaw.commission?.commissionValue) || 0,
+            commissionCalcMethod:
+              overheadCostsRaw.commission?.commissionCalcMethod ?? CommissionCalcMethod.PERCENTAGE,
             appraisalFee: Number(overheadCostsRaw.appraisal?.appraisalFee) || 0,
             bridgeInsurance: {
               rateIncrease: Number(overheadCostsRaw.bridge?.bridgeRateIncrease) || 0,
@@ -171,7 +174,8 @@ export class LayoutComponent {
             },
           }
         : {
-            commissionPct: 0,
+            commissionValue: 0,
+            commissionCalcMethod: CommissionCalcMethod.PERCENTAGE,
             appraisalFee: 0,
             bridgeInsurance: { rateIncrease: 0, months: 0 },
             propertyInsurance: {

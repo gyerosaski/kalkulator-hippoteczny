@@ -15,26 +15,34 @@
       (openChange)="setSubsectionOpen('commission', $event)"
     >
       <div class="row row--2">
-        <ui-field label="Prowizja" num="1a" inputId="commission-pct">
+        <ui-field label="Prowizja" num="1a" inputId="commission-value">
           <ui-number-input
-            inputId="commission-pct"
-            [formControl]="commissionPctControl"
-            suffix="%"
+            inputId="commission-value"
+            [formControl]="commissionValueControl"
+            [suffix]="commissionSuffix"
             [decimals]="2"
           />
+          <ui-segmented
+            [compact]="true"
+            [formControl]="commissionCalcMethodControl"
+            [options]="commissionCalcMethodOptions"
+            [labels]="commissionCalcMethodOptions | commissionCalcMethodLabel"
+          />
         </ui-field>
-        <ui-field label="Przeliczenie" num="1b" inputId="commission-amount-display">
-          <div class="inp inp--disabled">
-            <input
-              id="commission-amount-display"
-              type="text"
-              class="mono"
-              [value]="commissionAmount() | formatAmount"
-              readonly
-            />
-            <span class="suffix">zł</span>
-          </div>
-        </ui-field>
+        @if (commissionCalcMethodControl.value === CommissionCalcMethod.PERCENTAGE) {
+          <ui-field label="Przeliczenie" num="1b" inputId="commission-amount-display">
+            <div class="inp inp--disabled">
+              <input
+                id="commission-amount-display"
+                type="text"
+                class="mono"
+                [value]="commissionAmount() | formatAmount"
+                readonly
+              />
+              <span class="suffix">zł</span>
+            </div>
+          </ui-field>
+        }
       </div>
     </ui-subsection>
 

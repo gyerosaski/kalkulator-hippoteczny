@@ -17,12 +17,18 @@ Pola znajdują się w grupie `OverheadCostsFormGroup` (`src/app/model/form.model
 
 ### 2.1. Karta `PROWIZJA ZA UDZIELENIE`
 
-| Pole            | Kontrolka             | Walidatory                                 | Domyślnie po `setDefaults`         | Jednostka |
-| --------------- | --------------------- | ------------------------------------------ | ---------------------------------- | --------- |
-| `commissionPct` | `ui-number-input`     | `Validators.min(0)`, `Validators.max(100)` | `0` (`0` w `setOverheadDefaults`)  | `%`       |
-| `Przeliczenie`  | pole tylko do odczytu | —                                          | `loanAmount × commissionPct / 100` | `zł`      |
+| Pole                   | Kontrolka             | Walidatory          | Domyślnie                            | Jednostka                     |
+| ---------------------- | --------------------- | ------------------- | ------------------------------------ | ----------------------------- |
+| `commissionValue`      | `ui-number-input`     | `Validators.min(0)` | `0`                                  | `%` lub `zł`                  |
+| `commissionCalcMethod` | `ui-segmented`        | —                   | `CommissionCalcMethod.PERCENTAGE`    | —                             |
+| `Przeliczenie`         | pole tylko do odczytu | —                   | `loanAmount × commissionValue / 100` | `zł` (tylko gdy `PERCENTAGE`) |
 
-Sygnał obliczany `commissionAmount = Math.round(loanAmount × commissionPct) / 100` w komponencie. Wartość w obliczeniach (`CalculatorService`): `loanCommission = round2(loanAmount × commissionPct / 100)` — wlicza się do `overheadCosts`.
+Użytkownik może wprowadzić prowizję jako procent kwoty kredytu (`CommissionCalcMethod.PERCENTAGE`) lub jako konkretną kwotę w złotych (`CommissionCalcMethod.FIXED_AMOUNT`). Przełącznik `%/zł` (`ui-segmented`) przy polu numerycznym kontroluje tryb.
+
+- W trybie `PERCENTAGE`: `commissionAmount = Math.round(loanAmount × commissionValue) / 100`. Pole „Przeliczenie" pokazuje obliczoną kwotę PLN. Walidacja: `commissionValue ≤ 100` (sprawdzana przez `crossFieldValidator`, klucz błędu `commissionPctOverMax`).
+- W trybie `FIXED_AMOUNT`: `loanCommission = commissionValue` bezpośrednio. Pole „Przeliczenie" jest ukryte. Brak górnego limitu wartości.
+
+Wartość w obliczeniach (`CalculatorService`): `loanCommission = commissionCalcMethod === FIXED_AMOUNT ? commissionValue : loanAmount × commissionValue / 100` — wlicza się do `overheadCosts`.
 
 ### 2.2. Karta `OPŁATA ZA WYCENĘ`
 
@@ -152,7 +158,7 @@ Wartość `totalAllPayments = Σ rate + overheadCosts`, gdzie `rate` w schemacie
 
 ## 5. Walidacje
 
-- Każde pole liczbowe ma `Validators.min(0)`. `commissionPct` dodatkowo `Validators.max(100)`. Brak innych walidatorów lokalnych.
+- Każde pole liczbowe ma `Validators.min(0)`. `commissionValue` w trybie `PERCENTAGE` jest dodatkowo ograniczone do 100 przez `crossFieldValidator` (klucz `commissionPctOverMax`). Brak innych walidatorów lokalnych.
 - Sekcja nie ma własnych walidatorów krzyżowych — błędy okresów ubezpieczeń (`from > to`) nie są zgłaszane przez `crossFieldValidator` w `FormService`. Skrajne przypadki są neutralizowane przez `isMonthInRange` (zwraca `false` dla błędnego zakresu, więc składka po prostu nie jest naliczana).
 
 ## 6. Uwagi implementacyjne

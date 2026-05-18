@@ -1,5 +1,6 @@
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import {
+  CommissionCalcMethod,
   InsuranceCalcMethod,
   InsuranceFrequency,
   InstallmentType,
@@ -61,7 +62,8 @@ export interface AdditionalCostFormGroup {
 
 export interface CommissionFormGroup {
   expanded: FormControl<boolean>;
-  commissionPct: FormControl<number>;
+  commissionValue: FormControl<number>;
+  commissionCalcMethod: FormControl<CommissionCalcMethod>;
 }
 
 export interface AppraisalFormGroup {

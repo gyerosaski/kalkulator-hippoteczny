@@ -73,6 +73,11 @@ export enum LifeInsuranceCalcMethod {
   FIXED_AMOUNT = 'FIXED_AMOUNT',
 }
 
+export enum CommissionCalcMethod {
+  PERCENTAGE = 'PERCENTAGE',
+  FIXED_AMOUNT = 'FIXED_AMOUNT',
+}
+
 export enum LoanPeriodUnit {
   YEARS = 'YEARS',
   MONTHS = 'MONTHS',
@@ -125,7 +130,8 @@ export interface PromotionalRate {
 }
 
 export interface OverheadCostsInputs {
-  commissionPct: number; // % prowizji za udzielenie
+  commissionValue: number; // wartość prowizji za udzielenie (% lub zł)
+  commissionCalcMethod: CommissionCalcMethod;
   appraisalFee: number; // zł opłata za wycenę
   bridgeInsurance?: BridgeInsurance;
   propertyInsurance?: PropertyInsurance;

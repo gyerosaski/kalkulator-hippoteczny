@@ -2,11 +2,17 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { InsuranceCalcMethod, InsuranceFrequency, LifeInsuranceCalcMethod } from '../../../model';
+import {
+  CommissionCalcMethod,
+  InsuranceCalcMethod,
+  InsuranceFrequency,
+  LifeInsuranceCalcMethod,
+} from '../../../model';
 import { FormService } from '../../../services/form/form';
 import { InsuranceFrequencyLabelPipe } from '../../../pipes/insurance-frequency-label/insurance-frequency-label.pipe';
 import { InsuranceCalcMethodLabelPipe } from '../../../pipes/insurance-calc-method-label/insurance-calc-method-label.pipe';
 import { LifeInsuranceCalcMethodLabelPipe } from '../../../pipes/life-insurance-calc-method-label/life-insurance-calc-method-label.pipe';
+import { CommissionCalcMethodLabelPipe } from '../../../pipes/commission-calc-method-label/commission-calc-method-label.pipe';
 import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
 import { SectionComponent } from '../../ui/section/section.component';
 import { ColorCodeArea } from '../../../model';
@@ -18,6 +24,7 @@ import { BtnAddComponent } from '../../ui/btn-add/btn-add.component';
 import { CardComponent } from '../../ui/card/card.component';
 import { SubsectionComponent } from '../../ui/subsection/subsection.component';
 import { DividerComponent } from '../../ui/divider/divider.component';
+import { SegmentedComponent } from '../../ui/segmented/segmented.component';
 
 @Component({
   selector: 'app-overhead-costs-form',
@@ -37,15 +44,19 @@ import { DividerComponent } from '../../ui/divider/divider.component';
     InsuranceFrequencyLabelPipe,
     InsuranceCalcMethodLabelPipe,
     LifeInsuranceCalcMethodLabelPipe,
+    CommissionCalcMethodLabelPipe,
+    SegmentedComponent,
   ],
   templateUrl: './overhead-costs-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OverheadCostsFormComponent {
   protected readonly colorCodeArea = ColorCodeArea;
+  protected readonly CommissionCalcMethod = CommissionCalcMethod;
 
   private formService = inject(FormService);
 
+  readonly commissionCalcMethodOptions = Object.values(CommissionCalcMethod);
   readonly insuranceFrequencyOptions = Object.values(InsuranceFrequency);
   readonly propertyInsFrequencyOptions = [InsuranceFrequency.YEARLY, InsuranceFrequency.MONTHLY];
   readonly propertyInsCalcOptions = Object.values(InsuranceCalcMethod);
@@ -77,8 +88,19 @@ export class OverheadCostsFormComponent {
   }
 
   // commission
-  get commissionPctControl() {
-    return this.form.controls.commission.controls.commissionPct;
+  get commissionValueControl() {
+    return this.form.controls.commission.controls.commissionValue;
+  }
+
+  get commissionCalcMethodControl() {
+    return this.form.controls.commission.controls.commissionCalcMethod;
+  }
+
+  get commissionSuffix(): string {
+    return this.form.controls.commission.controls.commissionCalcMethod.value ===
+      CommissionCalcMethod.FIXED_AMOUNT
+      ? 'zł'
+      : '%';
   }
 
   // appraisal
@@ -199,8 +221,8 @@ export class OverheadCostsFormComponent {
   readonly commissionAmount = computed(() => {
     const mainForm = this.formService.form;
     const loanAmount = mainForm?.get('loanAmount')?.value || 0;
-    const commPct = this.form.controls.commission.controls.commissionPct.value || 0;
-    return Math.round(loanAmount * commPct) / 100;
+    const commissionValue = this.form.controls.commission.controls.commissionValue.value || 0;
+    return Math.round(loanAmount * commissionValue) / 100;
   });
 
   get propInsSuffix(): string {

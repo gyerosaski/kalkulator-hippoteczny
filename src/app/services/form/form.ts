@@ -7,6 +7,7 @@ import {
   Validators,
 } from '@angular/forms';
 import {
+  CommissionCalcMethod,
   InstallmentType,
   InsuranceCalcMethod,
   InsuranceFrequency,
@@ -108,6 +109,17 @@ function crossFieldValidator(control: AbstractControl) {
 
     if ((Number(rataDocelowaRegula.targetRate) || 0) < 0) {
       errors['targetInstallmentInvalid'] = true;
+    }
+  }
+
+  const overheadCostsSection = group.controls.overheadCosts;
+  const overheadEnabled = overheadCostsSection.controls.enabled.value;
+  if (overheadEnabled) {
+    const commissionGroup = overheadCostsSection.controls.fields.controls.commission;
+    const calcMethod = commissionGroup.controls.commissionCalcMethod.value;
+    const commissionValue = commissionGroup.controls.commissionValue.value;
+    if (calcMethod === CommissionCalcMethod.PERCENTAGE && commissionValue > 100) {
+      errors['commissionPctOverMax'] = true;
     }
   }
 
@@ -266,7 +278,10 @@ export class FormService {
     return this.fb.group({
       commission: this.fb.group({
         expanded: this.fb.control(false),
-        commissionPct: this.fb.control(0, [Validators.min(0), Validators.max(100)]),
+        commissionValue: this.fb.control(0, [Validators.min(0)]),
+        commissionCalcMethod: this.fb.control<CommissionCalcMethod>(
+          CommissionCalcMethod.PERCENTAGE,
+        ),
       }),
       appraisal: this.fb.group({
         expanded: this.fb.control(false),

@@ -114,10 +114,11 @@
       "properties": {
         "commission": {
           "type": "object",
-          "required": ["expanded", "commissionPct"],
+          "required": ["expanded", "commissionValue", "commissionCalcMethod"],
           "properties": {
             "expanded": { "type": "boolean" },
-            "commissionPct": { "type": "number", "minimum": 0, "maximum": 100 }
+            "commissionValue": { "type": "number", "minimum": 0 },
+            "commissionCalcMethod": { "type": "string", "enum": ["PERCENTAGE", "FIXED_AMOUNT"] }
           }
         },
         "appraisal": {

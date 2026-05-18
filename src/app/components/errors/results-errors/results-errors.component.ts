@@ -156,6 +156,16 @@ export class ResultsErrorsComponent {
       });
     }
 
+    if (fe?.['commissionPctOverMax']) {
+      errs.push({
+        section: FormErrorSection.OVERHEAD_COSTS,
+        message: 'Prowizja za udzielenie (%) nie może przekraczać 100%.',
+        fieldLabel: 'Prowizja',
+        fieldId: 'commission-value',
+        fieldNum: '1a',
+      });
+    }
+
     return errs;
   }
 }
