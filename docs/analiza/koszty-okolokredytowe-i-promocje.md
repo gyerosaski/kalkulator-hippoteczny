@@ -28,7 +28,7 @@ Użytkownik może wprowadzić prowizję jako procent kwoty kredytu (`CommissionC
 - W trybie `PERCENTAGE`: `commissionAmount = Math.round(loanAmount × commissionValue) / 100`. Pole „Przeliczenie" pokazuje obliczoną kwotę PLN. Walidacja: `commissionValue ≤ 100` (sprawdzana przez `crossFieldValidator`, klucz błędu `commissionPctOverMax`).
 - W trybie `FIXED_AMOUNT`: `loanCommission = commissionValue` bezpośrednio. Pole „Przeliczenie" jest ukryte. Brak górnego limitu wartości.
 
-Wartość w obliczeniach (`CalculatorService`): `loanCommission = commissionCalcMethod === FIXED_AMOUNT ? commissionValue : loanAmount × commissionValue / 100` — wlicza się do `overheadCosts`.
+Wartość w obliczeniach (`CalculatorService`): `loanCommission = commissionCalcMethod === FIXED_AMOUNT ? commissionValue : loanAmount × commissionValue / 100` — dodawana do `insuranceCost` pierwszego wiersza harmonogramu, wlicza się do `overheadCosts` przez `Σ insuranceCost`.
 
 ### 2.2. Karta `OPŁATA ZA WYCENĘ`
 
@@ -36,7 +36,7 @@ Wartość w obliczeniach (`CalculatorService`): `loanCommission = commissionCalc
 | -------------- | ----------------- | ------------------- | -------------------------- | --------- |
 | `appraisalFee` | `ui-number-input` | `Validators.min(0)` | `400`                      | `zł`      |
 
-Kwota stała dodawana do `overheadCosts` raz w cyklu kalkulacji.
+Kwota stała dodawana do `insuranceCost` pierwszego wiersza harmonogramu, wlicza się do `overheadCosts` przez `Σ insuranceCost`.
 
 ### 2.3. Karta `UBEZPIECZENIE POMOSTOWE`
 
@@ -140,12 +140,12 @@ Globalne „Wstaw domyślne” w topbarze wywołuje `FormService.setOverheadDefa
 `CalculatorService.compute()` agreguje koszty w `overheadCosts`:
 
 ```
-overheadCosts = loanCommission                  // 2.1
-              + appraisalFee                    // 2.2
-              + Σ insuranceCost                 // 2.4 + 2.6 + 2.7 + 2.8 (per miesiąc)
+overheadCosts = Σ insuranceCost                 // 2.1 + 2.2 (wiersz 1) + 2.4 + 2.6 + 2.7 + 2.8 (per miesiąc)
               + Σ commission                    // prowizje za wcześniejszą spłatę (sekcja Nadpłaty)
               + Σ trancheDisbursementFees       // opłaty z transz dodatkowych
 ```
+
+`loanCommission` (2.1) i `appraisalFee` (2.2) trafiają do `insuranceCost` **pierwszego wiersza** harmonogramu, dzięki czemu są widoczne w kolumnie „Koszty" harmonogramu spłat.
 
 Pola `bridgeInsurance` (2.3), `lowEquityInsurance` (2.5) i `promotionalRate` (2.9) zmieniają **efektywną stopę miesiąca** i wpływają pośrednio przez `interest`, a nie przez `overheadCosts`.
 

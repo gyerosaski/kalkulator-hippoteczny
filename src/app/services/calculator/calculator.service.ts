@@ -406,6 +406,14 @@ export class CalculatorService {
     // Flaga: transza uruchomiona w tym miesiącu – przelicz ratę dopiero w kolejnym
     let needsRateRecalcAfterTranche = false;
 
+    const loanCommission = oc
+      ? oc.commissionCalcMethod === CommissionCalcMethod.FIXED_AMOUNT
+        ? oc.commissionValue || 0
+        : (inputs.loanAmount * (oc.commissionValue || 0)) / 100
+      : 0;
+    const appraisalFee = oc ? oc.appraisalFee || 0 : 0;
+    const upfrontCosts = loanCommission + appraisalFee;
+
     const maxMonthsLimit = Math.max(nTotal, 1) + 1_200;
     for (let idx = 1; idx <= maxMonthsLimit; idx++) {
       if (saldo <= 0) break;
@@ -523,7 +531,9 @@ export class CalculatorService {
           : 0;
 
       // Koszt ubezpieczeń i dodatkowych kosztów w tym miesiącu
-      const insuranceCost = oc ? this.calcInsuranceCostForMonth(date, saldo, inputs, oc, idx) : 0;
+      const insuranceCost =
+        (oc ? this.calcInsuranceCostForMonth(date, saldo, inputs, oc, idx) : 0) +
+        (idx === 1 ? upfrontCosts : 0);
 
       const totalRateForMonth = baseRate;
 
@@ -570,20 +580,9 @@ export class CalculatorService {
     const totalInterest = schedule.reduce((s, r) => s + r.interest, 0);
 
     const totalInsuranceCosts = schedule.reduce((s, r) => s + r.insuranceCost, 0);
-    const loanCommission = oc
-      ? oc.commissionCalcMethod === CommissionCalcMethod.FIXED_AMOUNT
-        ? oc.commissionValue || 0
-        : (inputs.loanAmount * (oc.commissionValue || 0)) / 100
-      : 0;
-    const appraisalFee = oc ? oc.appraisalFee || 0 : 0;
     const earlyRepaymentCommissions = schedule.reduce((s, r) => s + r.commission, 0);
 
-    const overheadCosts =
-      loanCommission +
-      appraisalFee +
-      totalInsuranceCosts +
-      earlyRepaymentCommissions +
-      trancheDisbursementFees;
+    const overheadCosts = totalInsuranceCosts + earlyRepaymentCommissions + trancheDisbursementFees;
     const prepayments = schedule.reduce((s, r) => s + r.prepayment, 0);
     const totalAllPayments = totalRate + overheadCosts + prepayments;
     const bankReturnRatioPct =
