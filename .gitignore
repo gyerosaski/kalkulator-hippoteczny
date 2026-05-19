@@ -45,3 +45,7 @@ Thumbs.db
 
 # Playwright
 .playwright-mcp
+
+# Tauri (artefakty Cargo, generowane schematy)
+/src-tauri/target
+/src-tauri/gen/schemas

@@ -13,13 +13,6 @@
     <button class="tab">Porównanie ofert</button>
   </nav>
   <div class="topbar-actions">
-    <input
-      type="file"
-      accept=".json"
-      #fileInputEl
-      (change)="onFileSelected($event)"
-      style="display: none"
-    />
     <button class="btn btn--ghost" type="button" (click)="setDefaults()">Wstaw domyślne</button>
     <button class="btn btn--ghost" type="button" (click)="loadCalculationFromFile()">
       Wczytaj kalkulację

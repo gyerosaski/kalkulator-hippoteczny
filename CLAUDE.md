@@ -16,6 +16,8 @@ npm run build      # Production build (dist/)
 npm run watch      # Dev build with watch mode
 npm test           # Run unit tests (Vitest)
 npm run prettier   # Format code
+npm run tauri:dev   # Uruchom Angular dev server + okno Tauri (desktop, HMR)
+npm run tauri:build # Zbuduj frontend i spakuj MSI/NSIS (src-tauri/target/release/bundle/)
 ```
 
 To run a single test file:
@@ -59,6 +61,17 @@ YearGroup       → aggregated view of ScheduleRow[] for one calendar year
 ```
 
 `ToggleableSectionFormGroup<T>` pattern: `{ included: FormControl<boolean>, fields: FormGroup<T> }` — used for optional sections (overhead costs, tranches, prepayments).
+
+### Tauri (desktop)
+
+Aplikacja jest pakowana jako desktopowa przez **Tauri V2**. Konfiguracja żyje w `src-tauri/`:
+
+- `src-tauri/tauri.conf.json` — okno, CSP, bundle targets (MSI + NSIS), identifier
+- `src-tauri/Cargo.toml` — Rust deps (`tauri`, `tauri-plugin-store/dialog/fs`)
+- `src-tauri/src/lib.rs` — rejestracja pluginów Tauri
+- `src-tauri/capabilities/default.json` — uprawnienia (`store`, `dialog`, `fs` ze scope na `$DOCUMENT/$DOWNLOAD/$DESKTOP/$HOME/**/*.json`)
+
+Persistencja kalkulacji idzie przez `CalculationsStoreService` (`src/app/services/calculations-store/`) — abstrakcja nad `@tauri-apps/plugin-store` z metodami `list/save/delete/exportToFile/importFromFile`. Plik store'a: `%APPDATA%/com.gyerosaski.kalkulator-hipoteczny/calculations.json`. Routing wymusza `withHashLocation()` (kompatybilność z `tauri://localhost`).
 
 ### Component layout
 
