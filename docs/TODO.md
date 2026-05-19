@@ -26,4 +26,4 @@
 - [x] jeśli transzę są włączone ich suma musi być równa kwocie kredytu
 - [x] umożliwić zaznaczenie wiersza miesięcznego w tabeli harmonogram spłat, po zaznaczeniu, donut "Struktura wszystkich płatności" powinien przekształcić się w "Struktura wszystkich płatności do <zaznaczony miesiąc i rok>", a donut "Struktura pierwszej raty" w "Struktura raty w miesiącu <zaznaczony miesiąc i rok>", ponowne kliknięcie w dany wiersz odznacza go i przywraca domyślne zachowanie donutów
 - Podsekcja "Prowizja za udzielenie" powinna się składać z inputa numerycznego i przełącznika "%/zł" tak, aby użytkownik mógł wprowadzić wartość procentową lub konkretną kwotę
-- Opłata za wycenę powinna być ujęta w harmonogramie spłat w kolumnie koszty w pierwszym miesiącu kredytu
+- [x] Opłata za wycenę powinna być ujęta w harmonogramie spłat w kolumnie koszty w pierwszym miesiącu kredytu
