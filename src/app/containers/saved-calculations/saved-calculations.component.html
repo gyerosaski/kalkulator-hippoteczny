@@ -1,0 +1,451 @@
+<div class="saved-view">
+  <!-- HERO -->
+  <header class="view-hero">
+    <div class="hero-text">
+      <div class="hero-tag">TWOJE KALKULACJE</div>
+      <h1 class="hero-title">Wracaj do swoich obliczeń, porównuj warianty, planuj decyzje.</h1>
+      <p class="hero-sub">
+        Każda zapisana kalkulacja przechowuje pełny zestaw parametrów — kwotę, okres,
+        oprocentowanie, koszty i nadpłaty. Wczytaj ją jednym kliknięciem, zmień nazwę albo usuń, gdy
+        przestanie być potrzebna.
+      </p>
+      <div class="stat-row">
+        <div class="stat-block">
+          <div class="stat-value mono">{{ stats().total }}</div>
+          <div class="stat-label">zapisanych</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-value mono">{{ stats().work }}</div>
+          <div class="stat-label">roboczych</div>
+        </div>
+        <div class="stat-block stat-block--wide">
+          @if (stats().lastUpdatedRelative) {
+            <div class="stat-value stat-value--sm">
+              {{ stats().lastUpdatedRelative | relativeTime }}
+            </div>
+          } @else {
+            <div class="stat-value stat-value--sm">—</div>
+          }
+          <div class="stat-label">ostatnia zmiana</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-actions">
+      <button class="btn btn--primary hero-btn" type="button" (click)="navigateToNewCalculation()">
+        <icon-plus />
+        Nowa kalkulacja
+      </button>
+      <button class="btn btn--ghost hero-btn" type="button" (click)="importFromFile()">
+        <icon-download />
+        Importuj
+      </button>
+      <button class="btn btn--ghost hero-btn" type="button" [disabled]="true">
+        <icon-compare />
+        Porównaj wybrane
+      </button>
+    </div>
+  </header>
+
+  <!-- TOOLBAR -->
+  <div class="filter-toolbar">
+    <div class="search-field">
+      <icon-search />
+      <input
+        type="text"
+        placeholder="Szukaj po nazwie…"
+        [value]="searchQuery()"
+        (input)="searchQuery.set($any($event.target).value)"
+      />
+      @if (searchQuery()) {
+        <button class="search-clear" (click)="searchQuery.set('')" aria-label="Wyczyść">×</button>
+      }
+    </div>
+
+    <div class="filter-tabs">
+      @for (option of filterOptions; track option.id) {
+        <button
+          class="filter-tab"
+          [class.is-on]="activeFilterTab() === option.id"
+          (click)="activeFilterTab.set(option.id)"
+        >
+          {{ option.label }}<span class="filter-count mono">{{ filterCount(option.id) }}</span>
+        </button>
+      }
+    </div>
+
+    <div class="sort-control">
+      <span class="muted small">Sortuj:</span>
+      <div class="sel sel--compact">
+        <select
+          [value]="activeSortOption()"
+          (change)="activeSortOption.set($any($event.target).value)"
+        >
+          @for (option of sortOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+        <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+          <path
+            d="M2 4 L6 8 L10 4"
+            stroke="currentColor"
+            stroke-width="1.5"
+            fill="none"
+            stroke-linecap="round"
+          />
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="data-table">
+    <div class="table-header-row">
+      <div class="cell cell--name">Nazwa</div>
+      <div class="cell cell--money">Kwota · LTV</div>
+      <div class="cell cell--period">Okres</div>
+      <div class="cell cell--rate">Oproc.</div>
+      <div class="cell cell--installment">Pierwsza rata</div>
+      <div class="cell cell--interest">Odsetki</div>
+      <div class="cell cell--chart">Przebieg salda</div>
+      <div class="cell cell--date">Zmodyfikowano</div>
+      <div class="cell cell--actions">Akcje</div>
+    </div>
+
+    @if (filteredCalculations().length === 0) {
+      <div class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 48 48" aria-hidden="true">
+          <rect
+            x="6"
+            y="10"
+            width="36"
+            height="32"
+            rx="3"
+            stroke="currentColor"
+            stroke-width="1.5"
+            fill="none"
+          />
+          <path
+            d="M6 18 L42 18 M14 6 L14 12 M34 6 L34 12"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+          <path
+            d="M16 28 L22 28 M16 34 L26 34"
+            stroke="currentColor"
+            stroke-width="1.3"
+            stroke-linecap="round"
+          />
+        </svg>
+        <div class="empty-title">Brak pasujących kalkulacji</div>
+        <div class="empty-sub">
+          Zmień filtry albo wyczyść pole szukania, aby zobaczyć wszystkie zapisane warianty.
+        </div>
+        @if (searchQuery() || activeFilterTab() !== SavedCalculationFilterTab.ALL) {
+          <button class="btn btn--ghost" (click)="clearFilters()">Wyczyść filtry</button>
+        }
+      </div>
+    } @else {
+      @for (calculation of filteredCalculations(); track calculation.name) {
+        <div
+          class="table-data-row"
+          [class.table-data-row--active]="isActiveCalculation(calculation)"
+        >
+          <div class="row-marker" aria-hidden="true"></div>
+
+          <!-- Nazwa -->
+          <div class="cell cell--name">
+            <div class="name-block">
+              <div class="name-row">
+                <span class="calc-name">{{ calculation.name }}</span>
+                @if (isActiveCalculation(calculation)) {
+                  <span class="badge badge--loaded">wczytana</span>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Kwota · LTV -->
+          <div class="cell cell--money">
+            <div class="money-amount mono">
+              <b>{{ formatWholeAmount(calculation.loanAmount) }}</b
+              ><span class="unit">zł</span>
+            </div>
+            <div class="money-sub">
+              <span class="muted">z {{ formatWholeAmount(calculation.propertyValue) }} zł</span>
+              <span class="ltv-badge" [class.ltv-badge--high]="ltvOf(calculation) > 80">
+                LTV {{ ltvOf(calculation).toFixed(0) }}&nbsp;%
+              </span>
+            </div>
+          </div>
+
+          <!-- Okres -->
+          <div class="cell cell--period">
+            <div class="period-value mono">{{ formatPeriod(calculation) }}</div>
+            <div class="period-sub muted">
+              <span
+                class="installment-pill"
+                [class.installment-pill--equal]="
+                  calculation.installmentType === InstallmentType.EQUAL
+                "
+                [class.installment-pill--decreasing]="
+                  calculation.installmentType === InstallmentType.DECREASING
+                "
+              >
+                {{
+                  calculation.installmentType === InstallmentType.EQUAL
+                    ? 'rata równa'
+                    : 'rata malejąca'
+                }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Oprocentowanie -->
+          <div class="cell cell--rate">
+            <div class="rate-value mono">
+              {{ formatPercent(calculation.nominalRate, 2) }}&nbsp;%
+            </div>
+            <div class="rate-sub muted">
+              @if (calculation.rateType === RateType.VARIABLE) {
+                WIBOR {{ formatPercent(calculation.wibor, 2) }} + marża
+                {{ formatPercent(calculation.margin, 2) }}
+              } @else {
+                stała
+              }
+            </div>
+          </div>
+
+          <!-- Pierwsza rata -->
+          <div class="cell cell--installment">
+            @if (calculation.firstInstallment > 0) {
+              <div class="installment-value mono">
+                <b>{{ formatDecimalAmount(calculation.firstInstallment) }}</b
+                ><span class="unit">zł</span>
+              </div>
+            } @else {
+              <div class="installment-value muted">—</div>
+            }
+            <div class="installment-sub muted">pierwsza rata</div>
+          </div>
+
+          <!-- Odsetki -->
+          <div class="cell cell--interest">
+            @if (calculation.totalInterest > 0) {
+              <div class="interest-value mono">
+                {{ formatWholeAmount(calculation.totalInterest) }}<span class="unit">zł</span>
+              </div>
+            } @else {
+              <div class="interest-value muted">—</div>
+            }
+            <div class="interest-sub muted">suma odsetek</div>
+          </div>
+
+          <!-- Wykres salda (sparkline) -->
+          <div class="cell cell--chart">
+            <svg class="spark-chart" viewBox="0 0 96 28" aria-hidden="true">
+              <path
+                [attr.d]="sparkFillPath(calculation.overpaymentsEnabled)"
+                fill="var(--c-cap-soft)"
+              />
+              <path
+                [attr.d]="sparkLinePath(calculation.overpaymentsEnabled)"
+                fill="none"
+                stroke="var(--c-cap)"
+                stroke-width="1.4"
+              />
+              @if (calculation.overpaymentsEnabled) {
+                <circle
+                  [attr.cx]="sparkLastX(calculation.overpaymentsEnabled)"
+                  [attr.cy]="sparkLastY(calculation.overpaymentsEnabled)"
+                  r="2"
+                  fill="var(--c-over)"
+                />
+              }
+            </svg>
+            @if (calculation.overpaymentsEnabled) {
+              <div class="chart-tag">nadpłaty</div>
+            }
+          </div>
+
+          <!-- Data modyfikacji -->
+          <div class="cell cell--date">
+            <div class="date-relative" [title]="formatExactDate(calculation.updatedAt)">
+              {{ calculation.updatedAt | relativeTime }}
+            </div>
+            <div class="date-exact muted mono">
+              {{ formatExactDate(calculation.updatedAt).slice(0, 10) }}
+            </div>
+          </div>
+
+          <!-- Akcje -->
+          <div class="cell cell--actions">
+            <button class="action-btn action-btn--load" (click)="loadCalculation(calculation)">
+              <icon-arrow-right />
+              Wczytaj
+            </button>
+            <div class="actions-menu-wrap">
+              <button
+                class="action-btn action-btn--ghost"
+                [class.is-on]="openMenuName() === calculation.name"
+                (click)="toggleMenu($event, calculation.name)"
+                aria-label="Więcej akcji"
+              >
+                <icon-dots />
+              </button>
+              @if (openMenuName() === calculation.name) {
+                <div class="actions-menu" role="menu" (click)="$event.stopPropagation()">
+                  <button class="menu-item" (click)="startRename(calculation)">
+                    <icon-edit />
+                    Zmień nazwę
+                  </button>
+                  <button class="menu-item" (click)="duplicateCalculation(calculation)">
+                    <icon-duplicate />
+                    Duplikuj
+                  </button>
+                  <button class="menu-item" [disabled]="true">
+                    <svg width="13" height="13" viewBox="0 0 13 13" aria-hidden="true">
+                      <path
+                        d="M3 5 L6.5 1.5 L10 5 M6.5 1.5 L6.5 9 M2 11 L11 11"
+                        stroke="currentColor"
+                        stroke-width="1.1"
+                        fill="none"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                    Eksportuj CSV
+                  </button>
+                  <div class="menu-separator"></div>
+                  <button class="menu-item menu-item--danger" (click)="startDelete(calculation)">
+                    <icon-trash />
+                    Usuń
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    }
+  </div>
+
+  <!-- FOOTER -->
+  <div class="view-footer">
+    <div class="muted small">
+      Wyświetlono <b class="mono">{{ filteredCalculations().length }}</b> z
+      <b class="mono">{{ calculations().length }}</b> kalkulacji · dane przechowywane lokalnie na
+      dysku
+    </div>
+    <button class="btn btn--ghost btn--mini" [disabled]="true">Eksportuj wszystkie do CSV</button>
+  </div>
+
+  <!-- MODAL: Zmień nazwę -->
+  @if (renameTarget(); as target) {
+    <div class="modal-overlay" (click)="renameTarget.set(null)">
+      <div class="modal-panel" (click)="$event.stopPropagation()">
+        <div class="modal-head">
+          <div>
+            <div class="modal-tag">akcja</div>
+            <h3>Zmień nazwę kalkulacji</h3>
+          </div>
+          <button class="modal-close" (click)="renameTarget.set(null)" aria-label="Zamknij">
+            ×
+          </button>
+        </div>
+        <div class="modal-body">
+          <label class="modal-label">Nazwa</label>
+          <div class="inp inp--focus">
+            <input
+              type="text"
+              [value]="renameValue()"
+              (input)="renameValue.set($any($event.target).value)"
+              (keydown.enter)="confirmRename()"
+              (keydown.escape)="renameTarget.set(null)"
+            />
+          </div>
+          <div class="modal-hint">
+            Nadaj kalkulacji nazwę, po której łatwo ją rozpoznasz — np. „Mieszkanie 65&nbsp;m²
+            Wrocław".
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn--ghost" (click)="renameTarget.set(null)">Anuluj</button>
+          <button
+            class="btn btn--primary"
+            [disabled]="!renameValue().trim() || renameValue().trim() === target.name"
+            (click)="confirmRename()"
+          >
+            Zapisz
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- MODAL: Usuń -->
+  @if (deleteTarget(); as target) {
+    <div class="modal-overlay" (click)="deleteTarget.set(null)">
+      <div class="modal-panel modal-panel--danger" (click)="$event.stopPropagation()">
+        <div class="modal-head">
+          <div>
+            <div class="modal-tag modal-tag--danger">usuwanie</div>
+            <h3>Usunąć kalkulację?</h3>
+          </div>
+          <button class="modal-close" (click)="deleteTarget.set(null)" aria-label="Zamknij">
+            ×
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-text">
+            Kalkulacja <b>„{{ target.name }}"</b> zostanie trwale usunięta. Tej operacji nie można
+            cofnąć.
+          </p>
+          <div class="modal-summary">
+            <div>
+              <span class="muted">Kwota kredytu</span>
+              <b class="mono">{{ formatWholeAmount(target.loanAmount) }} zł</b>
+            </div>
+            <div>
+              <span class="muted">Okres</span>
+              <b class="mono">{{ target.loanPeriodYears }} lat</b>
+            </div>
+            <div>
+              <span class="muted">Oprocentowanie</span>
+              <b class="mono">{{ formatPercent(target.nominalRate, 2) }} %</b>
+            </div>
+            <div>
+              <span class="muted">Utworzono</span>
+              <b class="mono">{{ formatExactDate(target.createdAt).slice(0, 10) }}</b>
+            </div>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn--ghost" (click)="deleteTarget.set(null)">Anuluj</button>
+          <button class="btn btn--danger" (click)="confirmDelete()">
+            <icon-trash />
+            Usuń kalkulację
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- TOAST -->
+  @if (toastMessage(); as message) {
+    <div class="toast-notification" role="status">
+      <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+        <circle cx="7" cy="7" r="5.5" stroke="var(--c-cap)" stroke-width="1.4" fill="none" />
+        <path
+          d="M4.5 7 L6.3 8.6 L9.5 5.3"
+          stroke="var(--c-cap)"
+          stroke-width="1.5"
+          fill="none"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+      <span>{{ message }}</span>
+    </div>
+  }
+</div>

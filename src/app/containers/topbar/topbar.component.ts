@@ -1,6 +1,22 @@
-import { ChangeDetectionStrategy, Component, inject, NgZone, viewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  NgZone,
+  viewChild,
+} from '@angular/core';
+import { Router } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 import { ask as askDialog, message as messageDialog } from '@tauri-apps/plugin-dialog';
 
+import { MortgageResults } from '../../model';
+import {
+  SavedCalculationMetadata,
+  SavedCalculationRecord,
+} from '../../model/saved-calculation.model';
 import { FormService } from '../../services/form/form';
 import { SchemaValidatorService } from '../../services/schema-validator/schema-validator.service';
 import { ThemeService } from '../../services/theme/theme.service';
@@ -25,13 +41,30 @@ import { IconMoonComponent } from '../../components/icons/icon-moon/icon-moon.co
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TopbarComponent {
-  private formService = inject(FormService);
-  private schemaValidator = inject(SchemaValidatorService);
-  protected themeService = inject(ThemeService);
-  private calculationsStore = inject(CalculationsStoreService);
-  private ngZone = inject(NgZone);
-  private saveDialog = viewChild.required(SaveCalculationDialogComponent);
-  private validationErrorDialog = viewChild.required(LoadValidationErrorDialogComponent);
+  private readonly formService = inject(FormService);
+  private readonly schemaValidator = inject(SchemaValidatorService);
+  protected readonly themeService = inject(ThemeService);
+  private readonly calculationsStore = inject(CalculationsStoreService);
+  private readonly ngZone = inject(NgZone);
+  private readonly router = inject(Router);
+  private readonly saveDialog = viewChild.required(SaveCalculationDialogComponent);
+  private readonly validationErrorDialog = viewChild.required(LoadValidationErrorDialogComponent);
+
+  readonly currentResults = input<MortgageResults | null>(null);
+
+  private readonly routerUrl = toSignal(this.router.events.pipe(map(() => this.router.url)), {
+    initialValue: this.router.url,
+  });
+
+  protected readonly isSavedTab = computed(() => this.routerUrl()?.startsWith('/saved') ?? false);
+
+  navigateToCalculator(): void {
+    this.router.navigate(['']);
+  }
+
+  navigateToSaved(): void {
+    this.router.navigate(['saved']);
+  }
 
   setDefaults() {
     this.formService.setDefaults();
@@ -61,7 +94,10 @@ export class TopbarComponent {
     const name = await this.saveDialog().open(defaultName);
     if (!name) return;
 
-    if (await this.calculationsStore.hasCalculation(name)) {
+    const existingRecords = await this.calculationsStore.listCalculations();
+    const existingRecord = existingRecords.find((record) => record.name === name);
+
+    if (existingRecord) {
       const overwrite = await askDialog(
         `Istnieje już kalkulacja o nazwie "${name}". Czy chcesz ją nadpisać?`,
         { title: 'Nadpisać kalkulację?', kind: 'warning' },
@@ -69,8 +105,30 @@ export class TopbarComponent {
       if (!overwrite) return;
     }
 
-    const data = this.formService.form.getRawValue();
-    const record = { name, createdAt: new Date().toISOString(), data };
+    const formData = this.formService.form.getRawValue();
+    const results = this.currentResults();
+    const now = new Date().toISOString();
+
+    const metadata: SavedCalculationMetadata | undefined = results
+      ? {
+          firstInstallment: results.firstInstallment?.rate ?? 0,
+          totalInterest: results.totals.totalInterest,
+          totalCosts: results.totals.overheadCosts,
+          overpaymentsEnabled: formData.prepayments.enabled,
+          trancheCount: formData.tranches.enabled
+            ? ((formData.tranches.fields.tranches as unknown[])?.length ?? 1)
+            : 1,
+        }
+      : undefined;
+
+    const record: SavedCalculationRecord = {
+      name,
+      createdAt: existingRecord?.createdAt ?? now,
+      updatedAt: now,
+      metadata,
+      data: formData,
+    };
+
     await this.calculationsStore.saveCalculation(record);
     await this.calculationsStore.exportToFile(record);
   }

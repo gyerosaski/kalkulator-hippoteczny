@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import {
   AbstractControl,
   FormArray,
@@ -133,6 +133,7 @@ export class FormService {
   private fb = inject(NonNullableFormBuilder);
 
   readonly form: FormGroup<MortgageFormGroup> = this.createForm();
+  readonly loadedCalculationName = signal<string | null>(null);
 
   constructor() {
     this.form.controls.basicData.controls.startDate.valueChanges.subscribe((newDate) => {
@@ -491,6 +492,12 @@ export class FormService {
     this.prepaymentRulesArray.clear();
     this.prepaymentRulesArray.push(this.createPrepaymentRuleGroup());
     this.form.reset();
+    this.loadedCalculationName.set(null);
+  }
+
+  loadFromSavedCalculation(data: unknown, name: string): void {
+    this.loadFromFile(data);
+    this.loadedCalculationName.set(name);
   }
 
   loadFromFile(savedData: any): void {

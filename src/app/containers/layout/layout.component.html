@@ -1,5 +1,5 @@
 <div class="app" [attr.data-theme]="themeService.darkMode() ? 'dark' : null">
-  <app-topbar />
+  <app-topbar [currentResults]="results()" />
 
   <div class="two-column-layout">
     <div class="column">

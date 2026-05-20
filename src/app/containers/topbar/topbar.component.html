@@ -8,18 +8,24 @@
     </div>
   </div>
   <nav class="tabs">
-    <button class="tab is-on">Kalkulator</button>
-    <button class="tab">Twoje kalkulacje</button>
-    <button class="tab">Porównanie ofert</button>
+    <button class="tab" [class.is-on]="!isSavedTab()" (click)="navigateToCalculator()">
+      Kalkulator
+    </button>
+    <button class="tab" [class.is-on]="isSavedTab()" (click)="navigateToSaved()">
+      Twoje kalkulacje
+    </button>
+    <button class="tab" [disabled]="true">Porównanie ofert</button>
   </nav>
   <div class="topbar-actions">
-    <button class="btn btn--ghost" type="button" (click)="setDefaults()">Wstaw domyślne</button>
-    <button class="btn btn--ghost" type="button" (click)="loadCalculationFromFile()">
-      Wczytaj kalkulację
-    </button>
-    <button class="btn btn--primary" type="button" (click)="saveCalculation()">
-      Zapisz kalkulację
-    </button>
+    @if (!isSavedTab()) {
+      <button class="btn btn--ghost" type="button" (click)="setDefaults()">Wstaw domyślne</button>
+      <button class="btn btn--ghost" type="button" (click)="loadCalculationFromFile()">
+        Wczytaj kalkulację
+      </button>
+      <button class="btn btn--primary" type="button" (click)="saveCalculation()">
+        Zapisz kalkulację
+      </button>
+    }
     <button
       class="ico-btn"
       type="button"
