@@ -19,6 +19,7 @@ import { IconMoonComponent } from '../../icons/icon-moon/icon-moon.component';
     IconMoonComponent,
   ],
   templateUrl: './topbar.component.html',
+  styleUrls: ['./topbar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TopbarComponent {
@@ -32,10 +33,10 @@ export class TopbarComponent {
   protected readonly isSavedTab = computed(() => this.routerUrl()?.startsWith('/saved') ?? false);
 
   navigateToCalculator(): void {
-    this.router.navigate(['']);
+    void this.router.navigate(['']);
   }
 
   navigateToSaved(): void {
-    this.router.navigate(['saved']);
+    void this.router.navigate(['saved']);
   }
 }

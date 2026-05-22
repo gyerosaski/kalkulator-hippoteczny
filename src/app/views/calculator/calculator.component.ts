@@ -17,7 +17,7 @@ import {
   ScheduleRow,
   Tranche,
   YearGroup,
-} from '../../model/mortgage.model';
+} from '../../model';
 import { CalculatorService } from '../../services/calculator/calculator.service';
 import { CalculatorStateService } from '../../services/calculator-state/calculator-state.service';
 import { FormService } from '../../services/form/form';

@@ -146,67 +146,6 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Topbar */
-.topbar {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 24px;
-  padding: 14px 28px;
-  background: var(--surface);
-  border-bottom: 1px solid var(--line);
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  backdrop-filter: blur(8px);
-}
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.brand-mark {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: self-end;
-  justify-content: center;
-}
-.brand-name {
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  font-size: 15px;
-}
-.tabs {
-  display: flex;
-  gap: 4px;
-  justify-self: center;
-  background: var(--surface-2);
-  border-radius: 999px;
-  padding: 4px;
-}
-.tab {
-  border: 0;
-  background: transparent;
-  padding: 8px 16px;
-  border-radius: 999px;
-  font: inherit;
-  color: var(--ink-2);
-  cursor: pointer;
-  font-weight: 500;
-}
-.tab.is-on {
-  background: var(--surface);
-  color: var(--ink);
-  box-shadow:
-    var(--shadow-sm),
-    0 1px 3px oklch(40% 0.02 250 / 0.06);
-}
-.topbar-actions {
-  display: flex;
-  gap: 8px;
-}
-
 /* Buttons */
 .btn {
   border: 0;
