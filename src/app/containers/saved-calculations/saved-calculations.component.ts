@@ -90,6 +90,7 @@ export class SavedCalculationsComponent implements OnInit {
   readonly activeSortOption = signal<SavedCalculationSortOption>(
     SavedCalculationSortOption.UPDATED,
   );
+
   readonly openMenuName = signal<string | null>(null);
   readonly renameTarget = signal<SavedCalculation | null>(null);
   readonly renameValue = signal('');

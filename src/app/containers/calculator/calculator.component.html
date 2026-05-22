@@ -1,0 +1,29 @@
+<div class="two-column-layout">
+  <div class="column">
+    <app-basic-data-form />
+    <app-tranches-form />
+    <app-overhead-costs-form />
+    <app-prepayments-form />
+  </div>
+
+  <div class="column">
+    @if (results(); as resultsValue) {
+      @if (yearlyGroups()?.length) {
+        <app-results-summary [results]="resultsValue" />
+        <app-results-charts [results]="resultsValue" />
+        <app-results-trend-chart
+          [yearlyGroups]="yearlyGroups()"
+          [loanAmount]="loanAmount"
+          [results]="resultsValue"
+          [overheadCostsEnabled]="overheadCostsEnabled"
+          [prepaymentsEnabled]="prepaymentsEnabled"
+        />
+        <app-results-schedule [yearlyGroups]="yearlyGroups()" [results]="resultsValue" />
+      } @else {
+        <app-results-errors />
+      }
+    } @else {
+      <app-results-errors />
+    }
+  </div>
+</div>
