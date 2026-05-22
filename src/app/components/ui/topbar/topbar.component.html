@@ -8,13 +8,23 @@
     </div>
   </div>
   <nav class="tabs">
-    <button class="tab" [class.is-on]="!isSavedTab()" (click)="navigateToCalculator()">
+    <button class="tab" [class.is-on]="isCalculatorTab()" (click)="navigateToCalculator()">
       Kalkulator
     </button>
-    <button class="tab" [class.is-on]="isSavedTab()" (click)="navigateToSaved()">
+    <button
+      class="tab"
+      [class.is-on]="isCalculatorManagerTab()"
+      (click)="navigateToCalculatorManager()"
+    >
       Twoje kalkulacje
     </button>
-    <button class="tab" [disabled]="true">Porównanie ofert</button>
+    <button
+      class="tab"
+      [class.is-on]="isCalculationsCompareTab()"
+      (click)="navigateToCalculationsCompare()"
+    >
+      Porównanie ofert
+    </button>
   </nav>
   <div class="topbar-actions">
     <button

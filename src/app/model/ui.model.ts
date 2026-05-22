@@ -80,3 +80,9 @@ export interface TrendTooltipModel {
   lineHeight: number;
   dividerGap: number;
 }
+
+export enum AppRoute {
+  CALCULATOR = 'calculator',
+  CALCULATOR_MANAGER = 'calculator-manager',
+  CALCULATIONS_COMPARE = 'calculations-compare',
+}

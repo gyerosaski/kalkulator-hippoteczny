@@ -8,6 +8,7 @@ import { LoadValidationErrorDialogComponent } from '../../../dialogs/load-valida
 import { IconCalculatorComponent } from '../../icons/icon-calculator/icon-calculator.component';
 import { IconSunComponent } from '../../icons/icon-sun/icon-sun.component';
 import { IconMoonComponent } from '../../icons/icon-moon/icon-moon.component';
+import { AppRoute } from '../../../model';
 
 @Component({
   selector: 'ui-topbar',
@@ -30,13 +31,27 @@ export class TopbarComponent {
     initialValue: this.router.url,
   });
 
-  protected readonly isSavedTab = computed(() => this.routerUrl()?.startsWith('/saved') ?? false);
+  private readonly currentRoute = computed(() => (this.routerUrl() ?? '').split('/')[1] ?? '');
+
+  protected readonly isCalculatorTab = computed(() => this.currentRoute() === AppRoute.CALCULATOR);
+
+  protected readonly isCalculatorManagerTab = computed(
+    () => this.currentRoute() === AppRoute.CALCULATOR_MANAGER,
+  );
+
+  protected readonly isCalculationsCompareTab = computed(
+    () => this.currentRoute() === AppRoute.CALCULATIONS_COMPARE,
+  );
 
   navigateToCalculator(): void {
-    void this.router.navigate(['']);
+    void this.router.navigate([AppRoute.CALCULATOR]);
   }
 
-  navigateToSaved(): void {
-    void this.router.navigate(['saved']);
+  navigateToCalculatorManager(): void {
+    void this.router.navigate([AppRoute.CALCULATOR_MANAGER]);
+  }
+
+  navigateToCalculationsCompare(): void {
+    void this.router.navigate([AppRoute.CALCULATIONS_COMPARE]);
   }
 }
