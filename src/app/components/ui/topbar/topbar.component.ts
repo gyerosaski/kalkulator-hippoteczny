@@ -14,20 +14,20 @@ import { ask as askDialog, message as messageDialog } from '@tauri-apps/plugin-d
 import {
   SavedCalculationMetadata,
   SavedCalculationRecord,
-} from '../../model/saved-calculation.model';
-import { FormService } from '../../services/form/form';
-import { SchemaValidatorService } from '../../services/schema-validator/schema-validator.service';
-import { ThemeService } from '../../services/theme/theme.service';
-import { CalculationsStoreService } from '../../services/calculations-store/calculations-store.service';
-import { CalculatorStateService } from '../../services/calculator-state/calculator-state.service';
-import { SaveCalculationDialogComponent } from '../../dialogs/save-calculation/save-calculation-dialog.component';
-import { LoadValidationErrorDialogComponent } from '../../dialogs/load-validation-error/load-validation-error-dialog.component';
-import { IconCalculatorComponent } from '../../components/icons/icon-calculator/icon-calculator.component';
-import { IconSunComponent } from '../../components/icons/icon-sun/icon-sun.component';
-import { IconMoonComponent } from '../../components/icons/icon-moon/icon-moon.component';
+} from '../../../model/saved-calculation.model';
+import { FormService } from '../../../services/form/form';
+import { SchemaValidatorService } from '../../../services/schema-validator/schema-validator.service';
+import { ThemeService } from '../../../services/theme/theme.service';
+import { CalculationsStoreService } from '../../../services/calculations-store/calculations-store.service';
+import { CalculatorStateService } from '../../../services/calculator-state/calculator-state.service';
+import { SaveCalculationDialogComponent } from '../../../dialogs/save-calculation/save-calculation-dialog.component';
+import { LoadValidationErrorDialogComponent } from '../../../dialogs/load-validation-error/load-validation-error-dialog.component';
+import { IconCalculatorComponent } from '../../icons/icon-calculator/icon-calculator.component';
+import { IconSunComponent } from '../../icons/icon-sun/icon-sun.component';
+import { IconMoonComponent } from '../../icons/icon-moon/icon-moon.component';
 
 @Component({
-  selector: 'app-topbar',
+  selector: 'ui-topbar',
   standalone: true,
   imports: [
     SaveCalculationDialogComponent,

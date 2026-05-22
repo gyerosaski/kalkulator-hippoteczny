@@ -43,11 +43,11 @@ const SORT_COMPARATORS: Record<SavedCalculationSortOption, SortComparator> = {
 };
 
 @Component({
-  selector: 'app-saved-calculations',
+  selector: 'app-calculations-manager',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './saved-calculations.component.html',
-  styleUrl: './saved-calculations.component.scss',
+  templateUrl: './calculations-manager.component.html',
+  styleUrl: './calculations-manager.component.scss',
   imports: [
     RelativeTimePipe,
     IconPlusComponent,
@@ -61,7 +61,7 @@ const SORT_COMPARATORS: Record<SavedCalculationSortOption, SortComparator> = {
     IconTrashComponent,
   ],
 })
-export class SavedCalculationsComponent implements OnInit {
+export class CalculationsManagerComponent implements OnInit {
   private readonly savedCalculationsStateService = inject(SavedCalculationsStateService);
   private readonly formService = inject(FormService);
   private readonly router = inject(Router);
