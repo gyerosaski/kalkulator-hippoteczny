@@ -1,22 +1,11 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  NgZone,
-  viewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
-import { ask as askDialog, message as messageDialog } from '@tauri-apps/plugin-dialog';
+import { ask as askDialog } from '@tauri-apps/plugin-dialog';
 
-import {
-  SavedCalculationMetadata,
-  SavedCalculationRecord,
-} from '../../../model/saved-calculation.model';
+import { SavedCalculationMetadata, SavedCalculationRecord } from '../../../model';
 import { FormService } from '../../../services/form/form';
-import { SchemaValidatorService } from '../../../services/schema-validator/schema-validator.service';
 import { ThemeService } from '../../../services/theme/theme.service';
 import { CalculationsStoreService } from '../../../services/calculations-store/calculations-store.service';
 import { CalculatorStateService } from '../../../services/calculator-state/calculator-state.service';
@@ -41,14 +30,11 @@ import { IconMoonComponent } from '../../icons/icon-moon/icon-moon.component';
 })
 export class TopbarComponent {
   private readonly formService = inject(FormService);
-  private readonly schemaValidator = inject(SchemaValidatorService);
   protected readonly themeService = inject(ThemeService);
   private readonly calculationsStore = inject(CalculationsStoreService);
   private readonly calculatorState = inject(CalculatorStateService);
-  private readonly ngZone = inject(NgZone);
   private readonly router = inject(Router);
   private readonly saveDialog = viewChild.required(SaveCalculationDialogComponent);
-  private readonly validationErrorDialog = viewChild.required(LoadValidationErrorDialogComponent);
 
   private readonly routerUrl = toSignal(this.router.events.pipe(map(() => this.router.url)), {
     initialValue: this.router.url,
@@ -62,29 +48,6 @@ export class TopbarComponent {
 
   navigateToSaved(): void {
     this.router.navigate(['saved']);
-  }
-
-  setDefaults() {
-    this.formService.setDefaults();
-  }
-
-  async loadCalculationFromFile() {
-    try {
-      const result = await this.calculationsStore.importFromFile();
-      if (!result) return;
-      const formData = result.record?.data ?? result.rawData;
-      const errors = this.schemaValidator.validate(formData);
-      if (errors.length > 0) {
-        this.ngZone.run(() => this.validationErrorDialog().open(errors));
-        return;
-      }
-      this.ngZone.run(() => this.formService.loadFromFile(formData));
-    } catch {
-      await messageDialog(
-        'Nie udało się wczytać pliku. Upewnij się, że to prawidłowy plik kalkulacji .json.',
-        { title: 'Błąd wczytywania', kind: 'error' },
-      );
-    }
   }
 
   async saveCalculation() {

@@ -18,10 +18,6 @@
   </nav>
   <div class="topbar-actions">
     @if (!isSavedTab()) {
-      <button class="btn btn--ghost" type="button" (click)="setDefaults()">Wstaw domyślne</button>
-      <button class="btn btn--ghost" type="button" (click)="loadCalculationFromFile()">
-        Wczytaj kalkulację
-      </button>
       <button class="btn btn--primary" type="button" (click)="saveCalculation()">
         Zapisz kalkulację
       </button>
