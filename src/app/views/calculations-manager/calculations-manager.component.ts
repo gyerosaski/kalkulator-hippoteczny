@@ -7,15 +7,25 @@ import {
   NgZone,
   OnInit,
   signal,
+  viewChild,
 } from '@angular/core';
 import { Router } from '@angular/router';
+import { ask as askDialog } from '@tauri-apps/plugin-dialog';
 
-import { InstallmentType, RateType } from '../../model';
+import {
+  InstallmentType,
+  RateType,
+  SavedCalculationMetadata,
+  SavedCalculationRecord,
+} from '../../model';
 import {
   SavedCalculation,
   SavedCalculationFilterTab,
   SavedCalculationSortOption,
-} from '../../model/saved-calculation.model';
+} from '../../model';
+import { CalculationsStoreService } from '../../services/calculations-store/calculations-store.service';
+import { CalculatorStateService } from '../../services/calculator-state/calculator-state.service';
+import { SaveCalculationDialogComponent } from '../../dialogs/save-calculation/save-calculation-dialog.component';
 import { FormService } from '../../services/form/form';
 import {
   SavedCalculationsStateService,
@@ -50,6 +60,7 @@ const SORT_COMPARATORS: Record<SavedCalculationSortOption, SortComparator> = {
   styleUrl: './calculations-manager.component.scss',
   imports: [
     RelativeTimePipe,
+    SaveCalculationDialogComponent,
     IconPlusComponent,
     IconDownloadComponent,
     IconCompareComponent,
@@ -63,9 +74,12 @@ const SORT_COMPARATORS: Record<SavedCalculationSortOption, SortComparator> = {
 })
 export class CalculationsManagerComponent implements OnInit {
   private readonly savedCalculationsStateService = inject(SavedCalculationsStateService);
+  private readonly calculationsStore = inject(CalculationsStoreService);
+  private readonly calculatorState = inject(CalculatorStateService);
   private readonly formService = inject(FormService);
   private readonly router = inject(Router);
   private readonly ngZone = inject(NgZone);
+  private readonly saveDialog = viewChild.required(SaveCalculationDialogComponent);
 
   protected readonly SavedCalculationFilterTab = SavedCalculationFilterTab;
   protected readonly SavedCalculationSortOption = SavedCalculationSortOption;
@@ -225,6 +239,51 @@ export class CalculationsManagerComponent implements OnInit {
   async importFromFile(): Promise<void> {
     await this.savedCalculationsStateService.importFromFile();
     this.showToast('Zaimportowano kalkulację');
+  }
+
+  async saveAsNewCalculation(): Promise<void> {
+    const defaultName = 'Kalkulacja ' + new Date().toLocaleDateString('pl-PL');
+    const name = await this.saveDialog().open(defaultName);
+    if (!name) return;
+
+    const existingRecords = await this.calculationsStore.listCalculations();
+    const existingRecord = existingRecords.find((record) => record.name === name);
+
+    if (existingRecord) {
+      const overwrite = await askDialog(
+        `Istnieje już kalkulacja o nazwie "${name}". Czy chcesz ją nadpisać?`,
+        { title: 'Nadpisać kalkulację?', kind: 'warning' },
+      );
+      if (!overwrite) return;
+    }
+
+    const formData = this.formService.form.getRawValue();
+    const results = this.calculatorState.results();
+    const now = new Date().toISOString();
+
+    const metadata: SavedCalculationMetadata | undefined = results
+      ? {
+          firstInstallment: results.firstInstallment?.rate ?? 0,
+          totalInterest: results.totals.totalInterest,
+          totalCosts: results.totals.overheadCosts,
+          overpaymentsEnabled: formData.prepayments.enabled,
+          trancheCount: formData.tranches.enabled
+            ? ((formData.tranches.fields.tranches as unknown[])?.length ?? 1)
+            : 1,
+        }
+      : undefined;
+
+    const record: SavedCalculationRecord = {
+      name,
+      createdAt: existingRecord?.createdAt ?? now,
+      updatedAt: now,
+      metadata,
+      data: formData,
+    };
+
+    await this.calculationsStore.saveCalculation(record);
+    await this.savedCalculationsStateService.refreshRecords();
+    this.showToast(`Zapisano nową kalkulację „${name}"`);
   }
 
   formatWholeAmount(value: number): string {

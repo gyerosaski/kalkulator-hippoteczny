@@ -35,6 +35,9 @@
         <icon-plus />
         Nowa kalkulacja
       </button>
+      <button class="btn btn--secondary hero-btn" type="button" (click)="saveAsNewCalculation()">
+        Zapisz jako nową kalkulację
+      </button>
       <button class="btn btn--ghost hero-btn" type="button" (click)="importFromFile()">
         <icon-download />
         Importuj
@@ -448,4 +451,6 @@
       <span>{{ message }}</span>
     </div>
   }
+
+  <app-save-calculation-dialog />
 </div>

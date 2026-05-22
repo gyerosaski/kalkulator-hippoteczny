@@ -17,11 +17,6 @@
     <button class="tab" [disabled]="true">Porównanie ofert</button>
   </nav>
   <div class="topbar-actions">
-    @if (!isSavedTab()) {
-      <button class="btn btn--primary" type="button" (click)="saveCalculation()">
-        Zapisz kalkulację
-      </button>
-    }
     <button
       class="ico-btn"
       type="button"
@@ -37,5 +32,4 @@
   </div>
 </header>
 
-<app-save-calculation-dialog />
 <app-load-validation-error-dialog />

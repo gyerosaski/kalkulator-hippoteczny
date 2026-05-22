@@ -111,7 +111,7 @@ export class SavedCalculationsStateService {
     await this.refreshRecords();
   }
 
-  private async refreshRecords(): Promise<void> {
+  public async refreshRecords(): Promise<void> {
     const records = await this.calculationsStore.listCalculations();
     this.recordsSignal.set(records);
   }
