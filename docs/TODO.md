@@ -27,6 +27,6 @@
 - [x] umożliwić zaznaczenie wiersza miesięcznego w tabeli harmonogram spłat, po zaznaczeniu, donut "Struktura wszystkich płatności" powinien przekształcić się w "Struktura wszystkich płatności do <zaznaczony miesiąc i rok>", a donut "Struktura pierwszej raty" w "Struktura raty w miesiącu <zaznaczony miesiąc i rok>", ponowne kliknięcie w dany wiersz odznacza go i przywraca domyślne zachowanie donutów
 - Podsekcja "Prowizja za udzielenie" powinna się składać z inputa numerycznego i przełącznika "%/zł" tak, aby użytkownik mógł wprowadzić wartość procentową lub konkretną kwotę
 - [x] Opłata za wycenę powinna być ujęta w harmonogramie spłat w kolumnie koszty w pierwszym miesiącu kredytu
-- zmień konfigurację tauri tak, żeby aplikacja domyślnie uruchamiała się w trybie pełnoekranowym
+- [x] zmień konfigurację tauri tak, żeby aplikacja domyślnie uruchamiała się w trybie pełnoekranowym
 - wynieś listę kalkulacji z komponentu src/app/views/calculations-manager do dedykowanego komponentu w przestrzeni src/app/components
 - nowe ikony użyte w komponencie src/app/views/calculations-manager przenieś do przestrzeni src/app/components/ui

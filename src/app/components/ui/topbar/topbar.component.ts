@@ -4,7 +4,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 
 import { ThemeService } from '../../../services/theme/theme.service';
-import { LoadValidationErrorDialogComponent } from '../../../dialogs/load-validation-error/load-validation-error-dialog.component';
 import { IconCalculatorComponent } from '../../icons/icon-calculator/icon-calculator.component';
 import { IconSunComponent } from '../../icons/icon-sun/icon-sun.component';
 import { IconMoonComponent } from '../../icons/icon-moon/icon-moon.component';
@@ -13,12 +12,7 @@ import { AppRoute } from '../../../model';
 @Component({
   selector: 'ui-topbar',
   standalone: true,
-  imports: [
-    LoadValidationErrorDialogComponent,
-    IconCalculatorComponent,
-    IconSunComponent,
-    IconMoonComponent,
-  ],
+  imports: [IconCalculatorComponent, IconSunComponent, IconMoonComponent],
   templateUrl: './topbar.component.html',
   styleUrls: ['./topbar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
