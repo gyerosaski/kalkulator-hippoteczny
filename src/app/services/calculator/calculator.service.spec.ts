@@ -1,6 +1,10 @@
 import {
   CalculatorService,
+  CommissionCalcMethod,
   InstallmentType,
+  InsuranceCalcMethod,
+  InsuranceFrequency,
+  LifeInsuranceCalcMethod,
   MortgageInputs,
   PrepaymentEffect,
   PrepaymentFrequency,
@@ -231,5 +235,101 @@ describe('MortgageCalcService (transze)', () => {
     expect(rowTranche).toBeTruthy();
     // Saldo po racie z miesiąca transzy powinno być wyższe o ~100 000 (kwota transzy)
     expect(rowTranche!.remaining).toBeGreaterThan(rowBefore!.remaining + 90_000);
+  });
+});
+
+describe('MortgageCalcService (ubezpieczenia % salda)', () => {
+  let service: CalculatorService;
+
+  beforeEach(() => {
+    service = new CalculatorService();
+  });
+
+  it('składka ubezpieczenia nieruchomości % salda powinna być obliczana od salda na początku miesiąca', () => {
+    // Kredyt 300 000 zł, ubezpieczenie nieruchomości 0.05% salda miesięcznie.
+    // W pierwszym miesiącu kapitałowym saldo na początku okresu = 300 000 zł,
+    // więc składka = 300 000 * 0.0005 = 150 zł (nie mniej po odliczeniu kapitału).
+    const inputs: MortgageInputs = {
+      propertyValue: 500_000,
+      loanAmount: 300_000,
+      ltv: 60,
+      loanPeriod: 20 * 12,
+      startDate: '2026-01',
+      capitalStartDate: '2026-02',
+      installmentType: InstallmentType.EQUAL,
+      ratePeriods: [
+        { from: '2026-01', rateType: RateType.FIXED, nominalRate: 8, wibor: 0, margin: 0 },
+      ],
+      prepaymentRules: [],
+      targetInstallmentRule: {
+        targetRate: 0,
+        from: '2026-01',
+        to: '2026-01',
+        effect: PrepaymentEffect.LOWER_INSTALLMENT,
+      },
+      overheadCosts: {
+        commissionCalcMethod: CommissionCalcMethod.FIXED_AMOUNT,
+        commissionValue: 0,
+        appraisalFee: 0,
+        propertyInsurance: {
+          calcMethod: InsuranceCalcMethod.PCT_BALANCE,
+          frequency: InsuranceFrequency.MONTHLY,
+          value: 0.05,
+          from: '2026-02',
+          to: '',
+        },
+      },
+    };
+
+    const result = service.compute(inputs);
+
+    // Pierwszy miesiąc kapitałowy: saldo na początku = 300 000 zł → składka = 150 zł
+    const firstCapitalRow = result.schedule.find((r) => r.date === '2026-02');
+    expect(firstCapitalRow).toBeTruthy();
+    expect(firstCapitalRow!.insuranceCost).toBeCloseTo(150, 2);
+  });
+
+  it('składka ubezpieczenia na życie % salda powinna być obliczana od salda na początku miesiąca', () => {
+    // Kredyt 300 000 zł, ubezpieczenie na życie 0.05% salda miesięcznie.
+    // W pierwszym miesiącu kapitałowym saldo na początku okresu = 300 000 zł,
+    // więc składka = 300 000 * 0.0005 = 150 zł (nie mniej po odliczeniu kapitału).
+    const inputs: MortgageInputs = {
+      propertyValue: 500_000,
+      loanAmount: 300_000,
+      ltv: 60,
+      loanPeriod: 20 * 12,
+      startDate: '2026-01',
+      capitalStartDate: '2026-02',
+      installmentType: InstallmentType.EQUAL,
+      ratePeriods: [
+        { from: '2026-01', rateType: RateType.FIXED, nominalRate: 8, wibor: 0, margin: 0 },
+      ],
+      prepaymentRules: [],
+      targetInstallmentRule: {
+        targetRate: 0,
+        from: '2026-01',
+        to: '2026-01',
+        effect: PrepaymentEffect.LOWER_INSTALLMENT,
+      },
+      overheadCosts: {
+        commissionCalcMethod: CommissionCalcMethod.FIXED_AMOUNT,
+        commissionValue: 0,
+        appraisalFee: 0,
+        lifeInsurance: {
+          calcMethod: LifeInsuranceCalcMethod.PCT_BALANCE,
+          frequency: InsuranceFrequency.MONTHLY,
+          value: 0.05,
+          from: '2026-02',
+          to: '',
+        },
+      },
+    };
+
+    const result = service.compute(inputs);
+
+    // Pierwszy miesiąc kapitałowy: saldo na początku = 300 000 zł → składka = 150 zł
+    const firstCapitalRow = result.schedule.find((r) => r.date === '2026-02');
+    expect(firstCapitalRow).toBeTruthy();
+    expect(firstCapitalRow!.insuranceCost).toBeCloseTo(150, 2);
   });
 });

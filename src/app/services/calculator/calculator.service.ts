@@ -27,6 +27,7 @@ import {
 } from '../../model/mortgage.model';
 
 export {
+  CommissionCalcMethod,
   InstallmentType,
   RateType,
   PrepaymentFrequency,
@@ -479,6 +480,7 @@ export class CalculatorService {
         baseRate = interest + capital;
       }
 
+      const balanceForInsuranceCalc = saldo;
       saldo = Math.max(0, saldo - capital);
 
       // Transza uruchamiana w tym miesiącu: dodaj do salda PO obliczeniu raty,
@@ -532,7 +534,7 @@ export class CalculatorService {
 
       // Koszt ubezpieczeń i dodatkowych kosztów w tym miesiącu
       const insuranceCost =
-        (oc ? this.calcInsuranceCostForMonth(date, saldo, inputs, oc, idx) : 0) +
+        (oc ? this.calcInsuranceCostForMonth(date, balanceForInsuranceCalc, inputs, oc, idx) : 0) +
         (idx === 1 ? upfrontCosts : 0);
 
       const totalRateForMonth = baseRate;
