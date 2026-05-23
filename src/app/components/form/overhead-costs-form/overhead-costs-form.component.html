@@ -15,22 +15,20 @@
       (openChange)="setSubsectionOpen('commission', $event)"
     >
       <div class="row row--3">
-        <ui-field label="Prowizja" num="1" inputId="commission-value">
-          <div class="inline">
-            <ui-number-input
-              inputId="commission-value"
-              [formControl]="commissionValueControl"
-              [suffix]="commissionSuffix"
-              [decimals]="2"
-            />
-            <ui-segmented
-              [compact]="true"
-              [formControl]="commissionCalcMethodControl"
-              [options]="commissionCalcMethodOptions"
-              [labels]="commissionCalcMethodOptions | commissionCalcMethodLabel"
-            />
-          </div>
-        </ui-field>
+        <div class="inline">
+          <ui-number-input
+            inputId="commission-value"
+            [formControl]="commissionValueControl"
+            [suffix]="commissionSuffix"
+            [decimals]="2"
+          />
+          <ui-segmented
+            [compact]="true"
+            [formControl]="commissionCalcMethodControl"
+            [options]="commissionCalcMethodOptions"
+            [labels]="commissionCalcMethodOptions | commissionCalcMethodLabel"
+          />
+        </div>
       </div>
     </ui-subsection>
 
@@ -43,14 +41,12 @@
       (openChange)="setSubsectionOpen('appraisal', $event)"
     >
       <div class="row row--3">
-        <ui-field label="Kwota" num="2a" inputId="appraisal-fee">
-          <ui-number-input
-            inputId="appraisal-fee"
-            [formControl]="appraisalFeeControl"
-            suffix="zł"
-            [decimals]="2"
-          />
-        </ui-field>
+        <ui-number-input
+          inputId="appraisal-fee"
+          [formControl]="appraisalFeeControl"
+          suffix="zł"
+          [decimals]="2"
+        />
       </div>
     </ui-subsection>
 
@@ -63,7 +59,7 @@
       (openChange)="setSubsectionOpen('bridge', $event)"
     >
       <div class="row row--3">
-        <ui-field label="Bank podwyższa oprocentowanie o" num="3a" inputId="bridge-rate-increase">
+        <ui-field label="Bank podwyższa oprocentowanie o" inputId="bridge-rate-increase">
           <ui-number-input
             inputId="bridge-rate-increase"
             [formControl]="bridgeRateIncreaseControl"
@@ -71,7 +67,7 @@
             [decimals]="2"
           />
         </ui-field>
-        <ui-field label="przez" num="3b" inputId="bridge-months">
+        <ui-field label="przez" inputId="bridge-months">
           <ui-number-input
             inputId="bridge-months"
             [formControl]="bridgeMonthsControl"
