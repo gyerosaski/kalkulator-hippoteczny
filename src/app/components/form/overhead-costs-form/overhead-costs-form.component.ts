@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { map, pairwise } from 'rxjs';
+import { distinctUntilChanged, map } from 'rxjs';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import {
   CommissionCalcMethod,
@@ -50,15 +50,14 @@ import { SegmentedComponent } from '../../ui/segmented/segmented.component';
 })
 export class OverheadCostsFormComponent {
   protected readonly colorCodeArea = ColorCodeArea;
-  protected readonly CommissionCalcMethod = CommissionCalcMethod;
 
   private formService = inject(FormService);
 
   constructor() {
     this.commissionCalcMethodControl.valueChanges
-      .pipe(pairwise(), takeUntilDestroyed())
-      .subscribe(([previousMethod, newMethod]) => {
-        this.convertCommissionValue(previousMethod, newMethod);
+      .pipe(distinctUntilChanged(), takeUntilDestroyed())
+      .subscribe(() => {
+        this.convertCommissionValue();
       });
   }
 
@@ -274,22 +273,19 @@ export class OverheadCostsFormComponent {
     this.formService.removeAdditionalCost(index);
   }
 
-  private convertCommissionValue(
-    previousMethod: CommissionCalcMethod,
-    newMethod: CommissionCalcMethod,
-  ): void {
-    const currentValue = this.commissionValueControl.value;
-    if (previousMethod === newMethod || currentValue === 0) return;
+  private convertCommissionValue(): void {
+    const commissionValue = this.commissionValueControl.value;
+    const commissionCalcMethod = this.commissionCalcMethodControl.value;
 
     const loanAmount = this.formService.form.controls.basicData.controls.loanAmount.value;
     let convertedValue: number;
 
     if (loanAmount <= 0) {
       convertedValue = 0;
-    } else if (newMethod === CommissionCalcMethod.FIXED_AMOUNT) {
-      convertedValue = Math.round(((loanAmount * currentValue) / 100) * 100) / 100;
+    } else if (commissionCalcMethod === CommissionCalcMethod.FIXED_AMOUNT) {
+      convertedValue = Math.round(((loanAmount * commissionValue) / 100) * 100) / 100;
     } else {
-      convertedValue = Math.round((currentValue / loanAmount) * 100 * 10000) / 10000;
+      convertedValue = Math.round((commissionValue / loanAmount) * 100 * 10000) / 10000;
     }
 
     this.commissionValueControl.setValue(convertedValue);

@@ -33,11 +33,12 @@
 - [x] usuń kolumnę przebieg salda
 - [x] usuń filtr "Robocze"
 - customowy dropdown zgodny z design systemem
-- nowy badge "Zmodyfikowana"
+- [x] nowy badge "Zmodyfikowana"
 - Eksportuj wszystkie do .json
 - [x] ucięte menu harmburger
-- przy zmianie CommissionCalcMethod w forumlarzu aplikacja powinna przeliczać aktualną wartość CommissionFormGroup.commissionValue na nową jednostkę
+- [x] przy zmianie CommissionCalcMethod w forumlarzu aplikacja powinna przeliczać aktualną wartość CommissionFormGroup.commissionValue na nową jednostkę
 - po uzupełnieniu podsekcji "ubezpieczenie pomostowe" w harmonogramie spłat dla miesięcy, w których bank podwyższa oprocentowanie rata kapitałowa wynosi 0zł co jest błędem
 - przy wyliczaniu ubezpieczenia nieruchomości płatnego co miesiąc jako % salda kredytu, kwota składki jest zaniżona o kilka zł, zbadaj możliwe przyczyny takiego stanu rzeczy, podobnie jest w przypadku ubezpieczenia na życie liczonego jako % salda kredytu
 - Ubezpieczenie niskiego wkładu powinno przestawać obowiązywać gdy LTV spadnie poniżej 80%
 - dotyczy podsekcji "Ubezpieczenie na życie", "Ubezpieczenie od utraty pracy" i "Dodatkowe koszty" w przypadku, gdy składka/koszt płacony jest jednorazowo nie prezentować pól od/do tylko jeden moth picker z miesiącem płatności składki/kosztu, jeśli ubezpieczenie/koszt płacone jesty cyklicznie (co rok/co miesiąc), prezentować 2 month pickery od/do
+- dla pustego stanu listy kalkulacji nie wyświetlaj nagłówków tabeli tj. "Nazwa Kwota · LTV Okres Oproc. Pierwsza rata Odsetki Zmodyfikowano Akcje"
