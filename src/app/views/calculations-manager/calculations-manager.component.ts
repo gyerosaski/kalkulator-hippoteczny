@@ -12,12 +12,7 @@ import {
 import { Router } from '@angular/router';
 import { ask as askDialog } from '@tauri-apps/plugin-dialog';
 
-import {
-  InstallmentType,
-  RateType,
-  SavedCalculationMetadata,
-  SavedCalculationRecord,
-} from '../../model';
+import { SavedCalculationMetadata, SavedCalculationRecord } from '../../model';
 import {
   SavedCalculation,
   SavedCalculationFilterTab,
@@ -32,14 +27,11 @@ import {
   toSavedCalculation,
 } from '../../services/saved-calculations-state/saved-calculations-state.service';
 import { RelativeTimePipe } from '../../pipes/relative-time/relative-time.pipe';
+import { CalculationsListComponent } from '../../components/calculations/calculations-list/calculations-list.component';
 import { IconPlusComponent } from '../../components/icons/icon-plus/icon-plus.component';
 import { IconDownloadComponent } from '../../components/icons/icon-download/icon-download.component';
 import { IconCompareComponent } from '../../components/icons/icon-compare/icon-compare.component';
 import { IconSearchComponent } from '../../components/icons/icon-search/icon-search.component';
-import { IconArrowRightComponent } from '../../components/icons/icon-arrow-right/icon-arrow-right.component';
-import { IconDotsComponent } from '../../components/icons/icon-dots/icon-dots.component';
-import { IconEditComponent } from '../../components/icons/icon-edit/icon-edit.component';
-import { IconDuplicateComponent } from '../../components/icons/icon-duplicate/icon-duplicate.component';
 import { IconTrashComponent } from '../../components/icons/icon-trash/icon-trash.component';
 
 type SortComparator = (a: SavedCalculation, b: SavedCalculation) => number;
@@ -60,15 +52,12 @@ const SORT_COMPARATORS: Record<SavedCalculationSortOption, SortComparator> = {
   styleUrl: './calculations-manager.component.scss',
   imports: [
     RelativeTimePipe,
+    CalculationsListComponent,
     SaveCalculationDialogComponent,
     IconPlusComponent,
     IconDownloadComponent,
     IconCompareComponent,
     IconSearchComponent,
-    IconArrowRightComponent,
-    IconDotsComponent,
-    IconEditComponent,
-    IconDuplicateComponent,
     IconTrashComponent,
   ],
 })
@@ -80,11 +69,6 @@ export class CalculationsManagerComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly ngZone = inject(NgZone);
   private readonly saveDialog = viewChild.required(SaveCalculationDialogComponent);
-
-  protected readonly SavedCalculationFilterTab = SavedCalculationFilterTab;
-  protected readonly SavedCalculationSortOption = SavedCalculationSortOption;
-  protected readonly InstallmentType = InstallmentType;
-  protected readonly RateType = RateType;
 
   protected readonly filterOptions: { id: SavedCalculationFilterTab; label: string }[] = [
     { id: SavedCalculationFilterTab.ALL, label: 'Wszystkie' },
@@ -105,7 +89,6 @@ export class CalculationsManagerComponent implements OnInit {
     SavedCalculationSortOption.UPDATED,
   );
 
-  readonly openMenuName = signal<string | null>(null);
   readonly renameTarget = signal<SavedCalculation | null>(null);
   readonly renameValue = signal('');
   readonly deleteTarget = signal<SavedCalculation | null>(null);
@@ -138,6 +121,12 @@ export class CalculationsManagerComponent implements OnInit {
     return [...items].sort(SORT_COMPARATORS[this.activeSortOption()]);
   });
 
+  readonly hasActiveFilter = computed(
+    () => !!this.searchQuery() || this.activeFilterTab() !== SavedCalculationFilterTab.ALL,
+  );
+
+  readonly activeCalculationName = computed(() => this.formService.loadedCalculationName());
+
   filterCount(tab: SavedCalculationFilterTab): number {
     const items = this.calculations();
     if (tab === SavedCalculationFilterTab.ALL) return items.length;
@@ -154,16 +143,6 @@ export class CalculationsManagerComponent implements OnInit {
       this.renameTarget.set(null);
     } else if (this.deleteTarget()) {
       this.deleteTarget.set(null);
-    } else {
-      this.openMenuName.set(null);
-    }
-  }
-
-  @HostListener('document:mousedown', ['$event'])
-  onDocumentClick(event: MouseEvent): void {
-    const target = event.target as HTMLElement | null;
-    if (!target?.closest?.('.actions-menu-wrap')) {
-      this.openMenuName.set(null);
     }
   }
 
@@ -182,7 +161,6 @@ export class CalculationsManagerComponent implements OnInit {
   startRename(calculation: SavedCalculation): void {
     this.renameValue.set(calculation.name);
     this.renameTarget.set(calculation);
-    this.openMenuName.set(null);
   }
 
   async confirmRename(): Promise<void> {
@@ -199,7 +177,6 @@ export class CalculationsManagerComponent implements OnInit {
 
   startDelete(calculation: SavedCalculation): void {
     this.deleteTarget.set(calculation);
-    this.openMenuName.set(null);
   }
 
   async confirmDelete(): Promise<void> {
@@ -215,15 +192,9 @@ export class CalculationsManagerComponent implements OnInit {
 
   async duplicateCalculation(calculation: SavedCalculation): Promise<void> {
     const copyName = await this.savedCalculationsStateService.duplicate(calculation.name);
-    this.openMenuName.set(null);
     if (copyName) {
       this.showToast(`Utworzono kopię „${copyName}"`);
     }
-  }
-
-  toggleMenu(event: MouseEvent, name: string): void {
-    event.stopPropagation();
-    this.openMenuName.set(this.openMenuName() === name ? null : name);
   }
 
   clearFilters(): void {
@@ -290,13 +261,6 @@ export class CalculationsManagerComponent implements OnInit {
     return new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 0 }).format(value);
   }
 
-  formatDecimalAmount(value: number): string {
-    return new Intl.NumberFormat('pl-PL', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(value);
-  }
-
   formatPercent(value: number, decimals = 2): string {
     return new Intl.NumberFormat('pl-PL', {
       minimumFractionDigits: decimals,
@@ -304,63 +268,9 @@ export class CalculationsManagerComponent implements OnInit {
     }).format(value);
   }
 
-  formatPeriod(calculation: SavedCalculation): string {
-    if (calculation.loanPeriodExtraMonths === 0) {
-      return `${calculation.loanPeriodYears} lat`;
-    }
-    return `${calculation.loanPeriodYears} l. ${calculation.loanPeriodExtraMonths} m-cy`;
-  }
-
-  ltvOf(calculation: SavedCalculation): number {
-    return calculation.propertyValue
-      ? (calculation.loanAmount / calculation.propertyValue) * 100
-      : 0;
-  }
-
   formatExactDate(date: Date): string {
-    const pad = (n: number) => String(n).padStart(2, '0');
+    const pad = (value: number) => String(value).padStart(2, '0');
     return `${pad(date.getDate())}.${pad(date.getMonth() + 1)}.${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
-  }
-
-  isActiveCalculation(calculation: SavedCalculation): boolean {
-    return this.formService.loadedCalculationName() === calculation.name;
-  }
-
-  private buildSparkPoints(overpaymentsEnabled: boolean): [number, number][] {
-    const pointCount = 40;
-    const points: [number, number][] = [];
-    for (let index = 0; index < pointCount; index++) {
-      const progress = index / (pointCount - 1);
-      const normalizedY = overpaymentsEnabled
-        ? Math.pow(1 - progress, 1.6) * 0.95 + 0.04
-        : (1 - Math.pow(progress, 0.55)) * 0.95 + 0.04;
-      points.push([progress * 92 + 2, 26 - normalizedY * 22]);
-    }
-    return points;
-  }
-
-  sparkLinePath(overpaymentsEnabled: boolean): string {
-    const points = this.buildSparkPoints(overpaymentsEnabled);
-    return points
-      .map((point, index) =>
-        index === 0 ? `M${point[0]} ${point[1]}` : `L${point[0]} ${point[1]}`,
-      )
-      .join(' ');
-  }
-
-  sparkFillPath(overpaymentsEnabled: boolean): string {
-    const linePath = this.sparkLinePath(overpaymentsEnabled);
-    return `${linePath} L94 28 L2 28 Z`;
-  }
-
-  sparkLastX(overpaymentsEnabled: boolean): number {
-    const points = this.buildSparkPoints(overpaymentsEnabled);
-    return points[points.length - 1][0];
-  }
-
-  sparkLastY(overpaymentsEnabled: boolean): number {
-    const points = this.buildSparkPoints(overpaymentsEnabled);
-    return points[points.length - 1][1];
   }
 
   private showToast(message: string): void {
