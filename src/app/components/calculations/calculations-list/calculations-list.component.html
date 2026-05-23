@@ -59,6 +59,9 @@
               <span class="calc-name">{{ calculation.name }}</span>
               @if (calculation.name === activeCalculationName()) {
                 <span class="badge badge--loaded">wczytana</span>
+                @if (isLoadedCalculationModified()) {
+                  <span class="badge badge--modified">zmodyfikowana</span>
+                }
               }
             </div>
           </div>

@@ -87,6 +87,7 @@
   <app-calculations-list
     [calculations]="filteredCalculations()"
     [activeCalculationName]="activeCalculationName()"
+    [isLoadedCalculationModified]="isLoadedCalculationModified()"
     [hasActiveFilter]="hasActiveFilter()"
     (load)="loadCalculation($event)"
     (rename)="startRename($event)"

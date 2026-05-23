@@ -33,6 +33,7 @@ import { IconTrashComponent } from '../../icons/icon-trash/icon-trash.component'
 export class CalculationsListComponent {
   readonly calculations = input.required<SavedCalculation[]>();
   readonly activeCalculationName = input.required<string | null>();
+  readonly isLoadedCalculationModified = input<boolean>(false);
   readonly hasActiveFilter = input.required<boolean>();
 
   readonly load = output<SavedCalculation>();

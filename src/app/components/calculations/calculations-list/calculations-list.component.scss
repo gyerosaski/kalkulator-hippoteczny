@@ -110,6 +110,11 @@
   color: var(--c-cap);
 }
 
+.badge--modified {
+  background: var(--c-int-soft);
+  color: var(--c-int);
+}
+
 .money-amount {
   font-size: 13px;
   display: flex;

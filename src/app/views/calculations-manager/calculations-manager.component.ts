@@ -113,6 +113,9 @@ export class CalculationsManagerComponent implements OnInit {
   readonly hasActiveFilter = computed(() => !!this.searchQuery());
 
   readonly activeCalculationName = computed(() => this.formService.loadedCalculationName());
+  readonly isLoadedCalculationModified = computed(() =>
+    this.formService.isLoadedCalculationModified(),
+  );
 
   async ngOnInit(): Promise<void> {
     await this.savedCalculationsStateService.loadAll();
@@ -213,6 +216,9 @@ export class CalculationsManagerComponent implements OnInit {
 
     await this.calculationsStore.saveCalculation(record);
     await this.savedCalculationsStateService.refreshRecords();
+    if (name === this.formService.loadedCalculationName()) {
+      this.formService.refreshLoadedCalculationSnapshot();
+    }
     this.showToast(`Zapisano nową kalkulację „${name}"`);
   }
 

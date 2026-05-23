@@ -35,4 +35,5 @@
 - customowy dropdown zgodny z design systemem
 - nowy badge "Zmodyfikowana"
 - Eksportuj wszystkie do .json
-- ucięte menu harmburger
+- [x] ucięte menu harmburger
+- przy zmianie CommissionCalcMethod w forumlarzu aplikacja powinna przeliczać aktualną wartość CommissionFormGroup.commissionValue na nową jednostkę

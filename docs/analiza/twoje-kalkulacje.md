@@ -50,20 +50,29 @@ Czas względny wyznaczany na podstawie pola `updatedAt` — szczegóły w sekcji
 
 ### 4. Tabela kalkulacji — kolumny
 
-| #   | Kolumna         | Zawartość                                                                                                              | Format wyświetlania                                             |
-| --- | --------------- | ---------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| 1   | `Nazwa`         | Nazwa kalkulacji; badge `wczytana` gdy rekord aktualnie załadowany                                                     | tekst                                                           |
-| 2   | `Kwota · LTV`   | Kwota kredytu + wartość nieruchomości w podwierszu + wskaźnik LTV%; LTV wyróżnione (czerwone) gdy `> 80%`              | PLN bez miejsc dziesiętnych; LTV `X %`                          |
-| 3   | `Okres`         | Liczba lat i miesięcy kredytu + typ raty w podwierszu                                                                  | `X lat` lub `X l. Y m-cy`; badge `rata równa` / `rata malejąca` |
-| 4   | `Oproc.`        | Łączna stopa procentowa; w podwierszu `WIBOR X,XX + marża X,XX` dla stopy zmiennej lub `stała`                         | 2 miejsca dziesiętne, `%`                                       |
-| 5   | `Pierwsza rata` | Pierwsza rata miesięczna                                                                                               | PLN, 2 miejsca dziesiętne                                       |
-| 6   | `Odsetki`       | Suma odsetek przez cały okres kredytowania                                                                             | PLN bez miejsc dziesiętnych                                     |
-| 7   | `Zmodyfikowano` | Czas względny (`updatedAt`); po najechaniu kursorem — pełna data i godzina jako tooltip; w podwierszu data bez godziny | `DD.MM.RRRR`                                                    |
-| 8   | `Akcje`         | Przycisk `Wczytaj` + przycisk menu `⋯`                                                                                 | —                                                               |
+| #   | Kolumna         | Zawartość                                                                                                                                               | Format wyświetlania                                             |
+| --- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| 1   | `Nazwa`         | Nazwa kalkulacji; badge `wczytana` gdy rekord aktualnie załadowany; badge `zmodyfikowana` gdy bieżący stan formularza różni się od wczytanego snapshotu | tekst                                                           |
+| 2   | `Kwota · LTV`   | Kwota kredytu + wartość nieruchomości w podwierszu + wskaźnik LTV%; LTV wyróżnione (czerwone) gdy `> 80%`                                               | PLN bez miejsc dziesiętnych; LTV `X %`                          |
+| 3   | `Okres`         | Liczba lat i miesięcy kredytu + typ raty w podwierszu                                                                                                   | `X lat` lub `X l. Y m-cy`; badge `rata równa` / `rata malejąca` |
+| 4   | `Oproc.`        | Łączna stopa procentowa; w podwierszu `WIBOR X,XX + marża X,XX` dla stopy zmiennej lub `stała`                                                          | 2 miejsca dziesiętne, `%`                                       |
+| 5   | `Pierwsza rata` | Pierwsza rata miesięczna                                                                                                                                | PLN, 2 miejsca dziesiętne                                       |
+| 6   | `Odsetki`       | Suma odsetek przez cały okres kredytowania                                                                                                              | PLN bez miejsc dziesiętnych                                     |
+| 7   | `Zmodyfikowano` | Czas względny (`updatedAt`); po najechaniu kursorem — pełna data i godzina jako tooltip; w podwierszu data bez godziny                                  | `DD.MM.RRRR`                                                    |
+| 8   | `Akcje`         | Przycisk `Wczytaj` + przycisk menu `⋯`                                                                                                                  | —                                                               |
 
 #### 4.1 Wyróżnienie aktywnego wiersza
 
-Wiersz odpowiadający aktualnie wczytanej kalkulacji otrzymuje klasę `sc-row--active` (lewy kolorowy pasek) i badge `wczytana` w kolumnie Nazwa.
+Wiersz odpowiadający aktualnie wczytanej kalkulacji otrzymuje klasę `table-data-row--active` (lewy kolorowy pasek) i badge `wczytana` w kolumnie Nazwa. Jeśli formularz został zmodyfikowany po wczytaniu, obok badge `wczytana` pojawia się dodatkowo badge `zmodyfikowana`.
+
+#### 4.3 Mechanizm wykrywania modyfikacji
+
+Po wczytaniu kalkulacji (`loadFromSavedCalculation`) serwis `FormService` zapamiętuje snapshot stanu formularza jako `JSON.stringify(form.getRawValue())`. Każda zmiana formularza (RxJS `form.valueChanges`) aktualizuje bieżący snapshot via `toSignal`. Sygnał `isLoadedCalculationModified` to `computed()` porównujący bieżący snapshot z zapamiętanym:
+
+- `false` gdy brak wczytanej kalkulacji (snapshot `=== null`) lub snapshot identyczny z bieżącym stanem.
+- `true` gdy snapshoty się różnią — dowolna zmiana parametrów formularza po wczytaniu.
+
+Snapshot jest resetowany do `null` przy `setDefaults()` (nowa kalkulacja) i odświeżany do bieżącego stanu po zapisaniu kalkulacji pod tą samą nazwą co aktualnie wczytana.
 
 #### 4.2 Czas względny
 

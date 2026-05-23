@@ -1,4 +1,6 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, Signal, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map, startWith } from 'rxjs';
 import {
   AbstractControl,
   FormArray,
@@ -134,10 +136,25 @@ export class FormService {
 
   readonly form: FormGroup<MortgageFormGroup> = this.createForm();
   readonly loadedCalculationName = signal<string | null>(null);
+  private readonly loadedCalculationSnapshot = signal<string | null>(null);
+  readonly isLoadedCalculationModified: Signal<boolean>;
 
   constructor() {
     this.form.controls.basicData.controls.startDate.valueChanges.subscribe((newDate) => {
       this.tranchesArray.at(0)?.controls.date.setValue(newDate, { emitEvent: false });
+    });
+
+    const currentFormSnapshot = toSignal(
+      this.form.valueChanges.pipe(
+        startWith(null),
+        map(() => JSON.stringify(this.form.getRawValue())),
+      ),
+      { requireSync: true },
+    );
+
+    this.isLoadedCalculationModified = computed(() => {
+      const snapshot = this.loadedCalculationSnapshot();
+      return snapshot !== null && currentFormSnapshot() !== snapshot;
     });
   }
 
@@ -493,11 +510,17 @@ export class FormService {
     this.prepaymentRulesArray.push(this.createPrepaymentRuleGroup());
     this.form.reset();
     this.loadedCalculationName.set(null);
+    this.loadedCalculationSnapshot.set(null);
   }
 
   loadFromSavedCalculation(data: unknown, name: string): void {
     this.loadFromFile(data);
     this.loadedCalculationName.set(name);
+    this.loadedCalculationSnapshot.set(JSON.stringify(this.form.getRawValue()));
+  }
+
+  refreshLoadedCalculationSnapshot(): void {
+    this.loadedCalculationSnapshot.set(JSON.stringify(this.form.getRawValue()));
   }
 
   loadFromFile(savedData: any): void {

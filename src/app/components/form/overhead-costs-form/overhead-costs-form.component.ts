@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -13,7 +13,6 @@ import { InsuranceFrequencyLabelPipe } from '../../../pipes/insurance-frequency-
 import { InsuranceCalcMethodLabelPipe } from '../../../pipes/insurance-calc-method-label/insurance-calc-method-label.pipe';
 import { LifeInsuranceCalcMethodLabelPipe } from '../../../pipes/life-insurance-calc-method-label/life-insurance-calc-method-label.pipe';
 import { CommissionCalcMethodLabelPipe } from '../../../pipes/commission-calc-method-label/commission-calc-method-label.pipe';
-import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
 import { SectionComponent } from '../../ui/section/section.component';
 import { ColorCodeArea } from '../../../model';
 import { FieldComponent } from '../../ui/field/field.component';
@@ -31,7 +30,6 @@ import { SegmentedComponent } from '../../ui/segmented/segmented.component';
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    FormatAmountPipe,
     SectionComponent,
     FieldComponent,
     NumberInputComponent,
@@ -217,13 +215,6 @@ export class OverheadCostsFormComponent {
   setSubsectionOpen(key: string, open: boolean): void {
     (this.form.get(`${key}.expanded`) as unknown as FormControl<boolean>)?.setValue(open);
   }
-
-  readonly commissionAmount = computed(() => {
-    const mainForm = this.formService.form;
-    const loanAmount = mainForm?.get('loanAmount')?.value || 0;
-    const commissionValue = this.form.controls.commission.controls.commissionValue.value || 0;
-    return Math.round(loanAmount * commissionValue) / 100;
-  });
 
   get propInsSuffix(): string {
     return this.form.controls.propertyInsurance.controls.propInsCalcMethod.value ===
