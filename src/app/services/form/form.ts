@@ -86,6 +86,17 @@ function crossFieldValidator(control: AbstractControl) {
     if (capStart < start) errors['capitalBeforeStart'] = true;
   }
 
+  if (tranchesEnabled && tranchesArray && tranchesArray.length > 1 && capStart) {
+    let lastTrancheDate = '';
+    for (let i = 0; i < tranchesArray.length; i++) {
+      const trancheDate = tranchesArray.at(i).getRawValue().date;
+      if (trancheDate && trancheDate > lastTrancheDate) lastTrancheDate = trancheDate;
+    }
+    if (lastTrancheDate && capStart <= lastTrancheDate) {
+      errors['capitalBeforeLastTranche'] = { lastTrancheDate };
+    }
+  }
+
   if (prepaymentsEnabled) {
     for (const rule of prepaymentRules) {
       if (

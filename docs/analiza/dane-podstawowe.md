@@ -63,7 +63,7 @@ Wszystkie pola walutowe i procentowe korzystają z generycznego komponentu `ui-n
 
 - Typ: `ui-month-picker`, format `YYYY-MM`. Pole jest zawsze edytowalne (nie ma trybu „odblokowania” przyciskiem).
 - Domyślna wartość startowa: `nextMonthStr()` — miesiąc po dacie uruchomienia.
-- Walidatory: `Validators.required`. Walidator krzyżowy `capitalBeforeStart` zgłasza błąd, gdy `capitalStartDate < startDate`.
+- Walidatory: `Validators.required`. Walidator krzyżowy `capitalBeforeStart` zgłasza błąd, gdy `capitalStartDate < startDate`. Walidator krzyżowy `capitalBeforeLastTranche` zgłasza błąd, gdy sekcja transz jest włączona, zdefiniowano więcej niż jedną transzę i `capitalStartDate <= max(daty wszystkich transz)` — spłata kapitału musi zacząć się ściśle po uruchomieniu ostatniej transzy.
 - Zależności: ustalenie daty późniejszej niż `startDate + 1` skutkuje karencją (w okresie karencji harmonogram zawiera wyłącznie odsetki, `capital = 0`).
 
 ### 2.7. 7. Typ rat (`installmentType`)
@@ -140,16 +140,17 @@ Wartości totali są obliczane w `CalculatorService.compute()`:
 
 Walidator zarejestrowany na `FormGroup<MortgageFormGroup>` zwraca błędy globalne wyświetlane w `ResultsErrorsComponent`:
 
-| Klucz błędu                         | Warunek wyzwolenia                                                                                                    |
-| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `loanGtProperty`                    | `loanAmount > propertyValue`                                                                                          |
-| `totalMonthsInvalid`                | `Math.trunc(loanPeriod) <= 0`                                                                                         |
-| `capitalBeforeStart`                | `capitalStartDate < startDate`                                                                                        |
-| `transzeSumMismatch`                | sekcja transz włączona i `Σ transze.amount ≠ loanAmount` (z tolerancją 0,01); w obiekcie błędu `expected/actual/diff` |
-| `prepaymentDateRangeInvalid`        | reguła nadpłaty (nie `jednorazowo`) z `to < from`                                                                     |
-| `prepaymentAmountInvalid`           | `amount < 0` w którejkolwiek regule nadpłaty                                                                          |
-| `targetInstallmentDateRangeInvalid` | reguła docelowej raty z `to < from`                                                                                   |
-| `targetInstallmentInvalid`          | `targetRate < 0`                                                                                                      |
+| Klucz błędu                         | Warunek wyzwolenia                                                                                                        |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `loanGtProperty`                    | `loanAmount > propertyValue`                                                                                              |
+| `totalMonthsInvalid`                | `Math.trunc(loanPeriod) <= 0`                                                                                             |
+| `capitalBeforeStart`                | `capitalStartDate < startDate`                                                                                            |
+| `capitalBeforeLastTranche`          | transze włączone, liczba transz > 1 i `capitalStartDate <= max(daty transz)`; obiekt błędu zawiera pole `lastTrancheDate` |
+| `transzeSumMismatch`                | sekcja transz włączona i `Σ transze.amount ≠ loanAmount` (z tolerancją 0,01); w obiekcie błędu `expected/actual/diff`     |
+| `prepaymentDateRangeInvalid`        | reguła nadpłaty (nie `jednorazowo`) z `to < from`                                                                         |
+| `prepaymentAmountInvalid`           | `amount < 0` w którejkolwiek regule nadpłaty                                                                              |
+| `targetInstallmentDateRangeInvalid` | reguła docelowej raty z `to < from`                                                                                       |
+| `targetInstallmentInvalid`          | `targetRate < 0`                                                                                                          |
 
 Gdy formularz jest niepoprawny (`form.valid === false`), `LayoutComponent.recalculate()` ustawia `results` i `yearlyGroups` na `null` — panel wyników, donuty i tabela znikają, a `ResultsErrorsComponent` wypisuje listę błędów.
 

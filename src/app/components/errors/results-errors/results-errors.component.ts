@@ -87,6 +87,15 @@ export class ResultsErrorsComponent {
         fieldId: 'capitalStartDate',
       });
     }
+    const capitalBeforeLastTranche = fe?.['capitalBeforeLastTranche'];
+    if (capitalBeforeLastTranche) {
+      errs.push({
+        section: FormErrorSection.BASIC_DATA,
+        message: `Początek spłat kapitału musi przypadać po dacie uruchomienia ostatniej transzy (ostatnia transza: ${capitalBeforeLastTranche['lastTrancheDate'] as string}).`,
+        fieldLabel: 'Data początku spłaty kapitału',
+        fieldId: 'capitalStartDate',
+      });
+    }
 
     const mismatch = fe?.['trancheSumMismatch'];
     if (mismatch) {

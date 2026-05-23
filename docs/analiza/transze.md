@@ -49,6 +49,11 @@
 4. Reguła rekalkulacji:
    - każda zmiana pól sekcji `Transze` powoduje przeliczenie sekcji wynikowej (podsumowania, wykresów, harmonogramu).
 
+5. Reguła kolejności spłaty kapitału:
+   - gdy aktywnych jest więcej niż jedna transza, pole `Początek spłat kapitału` (`capitalStartDate` z sekcji `Dane podstawowe`) musi wskazywać miesiąc ściśle późniejszy niż data ostatniej (najpóźniejszej) transzy,
+   - walidator krzyżowy `capitalBeforeLastTranche` (na głównym `FormGroup`) zgłasza błąd, gdy `capitalStartDate <= max(daty transz)`,
+   - komunikat błędu wyświetlany jest w `ResultsErrorsComponent` w sekcji `Dane podstawowe`.
+
 ## 4. Zaobserwowane scenariusze referencyjne
 
 ### 4.1. Stan bazowy (1 transza, bez opłat)
