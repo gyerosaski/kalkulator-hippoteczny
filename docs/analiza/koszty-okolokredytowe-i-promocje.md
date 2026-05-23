@@ -28,6 +28,15 @@ Użytkownik może wprowadzić prowizję jako procent kwoty kredytu (`CommissionC
 - W trybie `PERCENTAGE`: `commissionAmount = Math.round(loanAmount × commissionValue) / 100`. Pole „Przeliczenie" pokazuje obliczoną kwotę PLN. Walidacja: `commissionValue ≤ 100` (sprawdzana przez `crossFieldValidator`, klucz błędu `commissionPctOverMax`).
 - W trybie `FIXED_AMOUNT`: `loanCommission = commissionValue` bezpośrednio. Pole „Przeliczenie" jest ukryte. Brak górnego limitu wartości.
 
+**Automatyczna konwersja przy zmianie trybu:** przy każdej zmianie `commissionCalcMethod` komponent przelicza `commissionValue` na ekwiwalent w nowej jednostce:
+
+| Kierunek                    | Formuła                                                                         |
+| --------------------------- | ------------------------------------------------------------------------------- |
+| `PERCENTAGE → FIXED_AMOUNT` | `Math.round(loanAmount × commissionValue / 100 × 100) / 100` (PLN, 2 miejsca)   |
+| `FIXED_AMOUNT → PERCENTAGE` | `Math.round(commissionValue / loanAmount × 100 × 10000) / 10000` (%, 4 miejsca) |
+
+Jeśli `loanAmount ≤ 0` lub `commissionValue === 0`, wynik konwersji wynosi `0`. Konwersja nie wpływa na wartość prowizji płaconej przez kredytobiorcę — zmienia jedynie jednostkę reprezentacji w formularzu.
+
 Wartość w obliczeniach (`CalculatorService`): `loanCommission = commissionCalcMethod === FIXED_AMOUNT ? commissionValue : loanAmount × commissionValue / 100` — dodawana do `insuranceCost` pierwszego wiersza harmonogramu, wlicza się do `overheadCosts` przez `Σ insuranceCost`.
 
 ### 2.2. Karta `OPŁATA ZA WYCENĘ`
@@ -165,5 +174,5 @@ Wartość `totalAllPayments = Σ rate + overheadCosts`, gdzie `rate` w schemacie
 
 - Wszystkie pola dat operują na ciągu `YYYY-MM`. Konwersja w UI realizowana jest przez `ui-month-picker` i pipe `formatMonth`.
 - Suffixy i precyzja pól ubezpieczeń są dynamicznie przełączane przez gettery w komponencie (`propInsSuffix`, `lifeInsSuffix`, `jobLossInsSuffix`, `getAdditionalCostSuffix(index)`), reagując na `calcMethod`.
-- `commissionAmount` jest zaimplementowane jako Angularowy `computed()` reagujący na zmiany `loanAmount` i `commissionPct`; w bieżącej implementacji `computed()` odczytuje `mainForm.get('loanAmount')` (pobranie po nazwie kontrolki w `FormGroup<MortgageFormGroup>`). Ze względu na strukturę kontrolek (`basicData.loanAmount`) wartość jest tu efektywnie wyliczana pośrednio — sprawdzenie wartości w trybie debug może zwracać `0` przy startowym renderze, dopóki nie pojawi się pierwsza zmiana formularza. (Drobna nieścisłość zauważona w aktualnym kodzie — nie blokuje wyników, ponieważ silnik korzysta z surowych wartości formularza.)
+- Konwersja `commissionValue` przy zmianie `commissionCalcMethod` jest realizowana przez konstruktor `OverheadCostsFormComponent`: subskrypcja `commissionCalcMethodControl.valueChanges.pipe(pairwise(), takeUntilDestroyed())` wykrywa zmianę trybu i wywołuje prywatną metodę `convertCommissionValue(previousMethod, newMethod)`. Dostęp do `loanAmount` odbywa się przez `formService.form.controls.basicData.controls.loanAmount.value`.
 - Komponent korzysta z `ChangeDetectionStrategy.OnPush` i sygnałów (`toSignal` na `valueChanges`).

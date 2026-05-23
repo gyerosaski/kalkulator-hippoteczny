@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { map, pairwise } from 'rxjs';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import {
   CommissionCalcMethod,
@@ -53,6 +53,14 @@ export class OverheadCostsFormComponent {
   protected readonly CommissionCalcMethod = CommissionCalcMethod;
 
   private formService = inject(FormService);
+
+  constructor() {
+    this.commissionCalcMethodControl.valueChanges
+      .pipe(pairwise(), takeUntilDestroyed())
+      .subscribe(([previousMethod, newMethod]) => {
+        this.convertCommissionValue(previousMethod, newMethod);
+      });
+  }
 
   readonly commissionCalcMethodOptions = Object.values(CommissionCalcMethod);
   readonly insuranceFrequencyOptions = Object.values(InsuranceFrequency);
@@ -264,5 +272,26 @@ export class OverheadCostsFormComponent {
 
   removeAdditionalCost(index: number) {
     this.formService.removeAdditionalCost(index);
+  }
+
+  private convertCommissionValue(
+    previousMethod: CommissionCalcMethod,
+    newMethod: CommissionCalcMethod,
+  ): void {
+    const currentValue = this.commissionValueControl.value;
+    if (previousMethod === newMethod || currentValue === 0) return;
+
+    const loanAmount = this.formService.form.controls.basicData.controls.loanAmount.value;
+    let convertedValue: number;
+
+    if (loanAmount <= 0) {
+      convertedValue = 0;
+    } else if (newMethod === CommissionCalcMethod.FIXED_AMOUNT) {
+      convertedValue = Math.round(((loanAmount * currentValue) / 100) * 100) / 100;
+    } else {
+      convertedValue = Math.round((currentValue / loanAmount) * 100 * 10000) / 10000;
+    }
+
+    this.commissionValueControl.setValue(convertedValue);
   }
 }
