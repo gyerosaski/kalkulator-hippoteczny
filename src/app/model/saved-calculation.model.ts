@@ -37,11 +37,6 @@ export interface SavedCalculation {
   updatedAt: Date;
 }
 
-export enum SavedCalculationFilterTab {
-  ALL = 'ALL',
-  WORK = 'WORK',
-}
-
 export enum SavedCalculationSortOption {
   UPDATED = 'UPDATED',
   CREATED = 'CREATED',

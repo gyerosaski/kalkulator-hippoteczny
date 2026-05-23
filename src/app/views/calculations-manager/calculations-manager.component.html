@@ -14,10 +14,6 @@
           <div class="stat-value mono">{{ stats().total }}</div>
           <div class="stat-label">zapisanych</div>
         </div>
-        <div class="stat-block">
-          <div class="stat-value mono">{{ stats().work }}</div>
-          <div class="stat-label">roboczych</div>
-        </div>
         <div class="stat-block stat-block--wide">
           @if (stats().lastUpdatedRelative) {
             <div class="stat-value stat-value--sm">
@@ -61,18 +57,6 @@
       />
       @if (searchQuery()) {
         <button class="search-clear" (click)="searchQuery.set('')" aria-label="Wyczyść">×</button>
-      }
-    </div>
-
-    <div class="filter-tabs">
-      @for (option of filterOptions; track option.id) {
-        <button
-          class="filter-tab"
-          [class.is-on]="activeFilterTab() === option.id"
-          (click)="activeFilterTab.set(option.id)"
-        >
-          {{ option.label }}<span class="filter-count mono">{{ filterCount(option.id) }}</span>
-        </button>
       }
     </div>
 

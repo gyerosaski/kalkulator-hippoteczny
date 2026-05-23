@@ -31,7 +31,7 @@
 - wynieś listę kalkulacji z komponentu src/app/views/calculations-manager do dedykowanego komponentu w przestrzeni src/app/components
 - nowe ikony użyte w komponencie src/app/views/calculations-manager przenieś do przestrzeni src/app/components/ui
 - [x] usuń kolumnę przebieg salda
-- usuń filtr "Robocze"
+- [x] usuń filtr "Robocze"
 - customowy dropdown zgodny z design systemem
 - nowy badge "Zmodyfikowana"
 - Eksportuj wszystkie do .json

@@ -12,11 +12,7 @@ import { Router } from '@angular/router';
 import { ask as askDialog } from '@tauri-apps/plugin-dialog';
 
 import { SavedCalculationMetadata, SavedCalculationRecord } from '../../model';
-import {
-  SavedCalculation,
-  SavedCalculationFilterTab,
-  SavedCalculationSortOption,
-} from '../../model';
+import { SavedCalculation, SavedCalculationSortOption } from '../../model';
 import { CalculationsStoreService } from '../../services/calculations-store/calculations-store.service';
 import { CalculatorStateService } from '../../services/calculator-state/calculator-state.service';
 import { SaveCalculationDialogComponent } from '../../dialogs/save-calculation/save-calculation-dialog.component';
@@ -73,11 +69,6 @@ export class CalculationsManagerComponent implements OnInit {
   private readonly renameDialog = viewChild.required(RenameCalculationDialogComponent);
   private readonly deleteDialog = viewChild.required(DeleteCalculationDialogComponent);
 
-  protected readonly filterOptions: { id: SavedCalculationFilterTab; label: string }[] = [
-    { id: SavedCalculationFilterTab.ALL, label: 'Wszystkie' },
-    { id: SavedCalculationFilterTab.WORK, label: 'Robocze' },
-  ];
-
   protected readonly sortOptions: { value: SavedCalculationSortOption; label: string }[] = [
     { value: SavedCalculationSortOption.UPDATED, label: 'ostatnio zmodyfikowane' },
     { value: SavedCalculationSortOption.CREATED, label: 'data utworzenia' },
@@ -87,7 +78,6 @@ export class CalculationsManagerComponent implements OnInit {
   ];
 
   readonly searchQuery = signal('');
-  readonly activeFilterTab = signal<SavedCalculationFilterTab>(SavedCalculationFilterTab.ALL);
   readonly activeSortOption = signal<SavedCalculationSortOption>(
     SavedCalculationSortOption.UPDATED,
   );
@@ -107,7 +97,6 @@ export class CalculationsManagerComponent implements OnInit {
     );
     return {
       total: items.length,
-      work: items.length,
       lastUpdatedRelative: items.length ? lastUpdated : null,
     };
   });
@@ -121,17 +110,9 @@ export class CalculationsManagerComponent implements OnInit {
     return [...items].sort(SORT_COMPARATORS[this.activeSortOption()]);
   });
 
-  readonly hasActiveFilter = computed(
-    () => !!this.searchQuery() || this.activeFilterTab() !== SavedCalculationFilterTab.ALL,
-  );
+  readonly hasActiveFilter = computed(() => !!this.searchQuery());
 
   readonly activeCalculationName = computed(() => this.formService.loadedCalculationName());
-
-  filterCount(tab: SavedCalculationFilterTab): number {
-    const items = this.calculations();
-    if (tab === SavedCalculationFilterTab.ALL) return items.length;
-    return 0;
-  }
 
   async ngOnInit(): Promise<void> {
     await this.savedCalculationsStateService.loadAll();
@@ -178,7 +159,6 @@ export class CalculationsManagerComponent implements OnInit {
 
   clearFilters(): void {
     this.searchQuery.set('');
-    this.activeFilterTab.set(SavedCalculationFilterTab.ALL);
   }
 
   async navigateToNewCalculation(): Promise<void> {
