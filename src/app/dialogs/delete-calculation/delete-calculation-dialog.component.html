@@ -1,0 +1,42 @@
+<dialog #dialogEl class="dialog--danger" (close)="onClose()">
+  @if (target(); as calculation) {
+    <div class="dialog-head">
+      <div>
+        <div class="dialog-tag dialog-tag--danger">usuwanie</div>
+        <h2 class="dialog-title">Usunąć kalkulację?</h2>
+      </div>
+      <button class="dialog-close" type="button" (click)="cancel()" aria-label="Zamknij">×</button>
+    </div>
+    <div class="dialog-body">
+      <p class="dialog-text">
+        Kalkulacja <b>„{{ calculation.name }}"</b> zostanie trwale usunięta. Tej operacji nie można
+        cofnąć.
+      </p>
+      <div class="dialog-summary">
+        <div>
+          <span class="muted">Kwota kredytu</span>
+          <b class="mono">{{ formatWholeAmount(calculation.loanAmount) }} zł</b>
+        </div>
+        <div>
+          <span class="muted">Okres</span>
+          <b class="mono">{{ calculation.loanPeriodYears }} lat</b>
+        </div>
+        <div>
+          <span class="muted">Oprocentowanie</span>
+          <b class="mono">{{ formatPercent(calculation.nominalRate, 2) }} %</b>
+        </div>
+        <div>
+          <span class="muted">Utworzono</span>
+          <b class="mono">{{ formatDate(calculation.createdAt) }}</b>
+        </div>
+      </div>
+    </div>
+    <div class="dialog-actions">
+      <button class="btn btn--ghost" type="button" (click)="cancel()">Anuluj</button>
+      <button class="btn btn--danger" type="button" (click)="confirm()">
+        <icon-trash />
+        Usuń kalkulację
+      </button>
+    </div>
+  }
+</dialog>

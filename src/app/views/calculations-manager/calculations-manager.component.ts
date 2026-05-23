@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  HostListener,
   inject,
   NgZone,
   OnInit,
@@ -21,6 +20,8 @@ import {
 import { CalculationsStoreService } from '../../services/calculations-store/calculations-store.service';
 import { CalculatorStateService } from '../../services/calculator-state/calculator-state.service';
 import { SaveCalculationDialogComponent } from '../../dialogs/save-calculation/save-calculation-dialog.component';
+import { RenameCalculationDialogComponent } from '../../dialogs/rename-calculation/rename-calculation-dialog.component';
+import { DeleteCalculationDialogComponent } from '../../dialogs/delete-calculation/delete-calculation-dialog.component';
 import { FormService } from '../../services/form/form';
 import {
   SavedCalculationsStateService,
@@ -32,7 +33,6 @@ import { IconPlusComponent } from '../../components/icons/icon-plus/icon-plus.co
 import { IconDownloadComponent } from '../../components/icons/icon-download/icon-download.component';
 import { IconCompareComponent } from '../../components/icons/icon-compare/icon-compare.component';
 import { IconSearchComponent } from '../../components/icons/icon-search/icon-search.component';
-import { IconTrashComponent } from '../../components/icons/icon-trash/icon-trash.component';
 
 type SortComparator = (a: SavedCalculation, b: SavedCalculation) => number;
 
@@ -54,11 +54,12 @@ const SORT_COMPARATORS: Record<SavedCalculationSortOption, SortComparator> = {
     RelativeTimePipe,
     CalculationsListComponent,
     SaveCalculationDialogComponent,
+    RenameCalculationDialogComponent,
+    DeleteCalculationDialogComponent,
     IconPlusComponent,
     IconDownloadComponent,
     IconCompareComponent,
     IconSearchComponent,
-    IconTrashComponent,
   ],
 })
 export class CalculationsManagerComponent implements OnInit {
@@ -69,6 +70,8 @@ export class CalculationsManagerComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly ngZone = inject(NgZone);
   private readonly saveDialog = viewChild.required(SaveCalculationDialogComponent);
+  private readonly renameDialog = viewChild.required(RenameCalculationDialogComponent);
+  private readonly deleteDialog = viewChild.required(DeleteCalculationDialogComponent);
 
   protected readonly filterOptions: { id: SavedCalculationFilterTab; label: string }[] = [
     { id: SavedCalculationFilterTab.ALL, label: 'Wszystkie' },
@@ -89,9 +92,6 @@ export class CalculationsManagerComponent implements OnInit {
     SavedCalculationSortOption.UPDATED,
   );
 
-  readonly renameTarget = signal<SavedCalculation | null>(null);
-  readonly renameValue = signal('');
-  readonly deleteTarget = signal<SavedCalculation | null>(null);
   readonly toastMessage = signal<string | null>(null);
   private toastTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
@@ -137,15 +137,6 @@ export class CalculationsManagerComponent implements OnInit {
     await this.savedCalculationsStateService.loadAll();
   }
 
-  @HostListener('document:keydown.escape')
-  onEscape(): void {
-    if (this.renameTarget()) {
-      this.renameTarget.set(null);
-    } else if (this.deleteTarget()) {
-      this.deleteTarget.set(null);
-    }
-  }
-
   async loadCalculation(calculation: SavedCalculation): Promise<void> {
     const record = this.savedCalculationsStateService
       .records()
@@ -158,36 +149,24 @@ export class CalculationsManagerComponent implements OnInit {
     this.showToast(`Wczytano „${calculation.name}" do kalkulatora`);
   }
 
-  startRename(calculation: SavedCalculation): void {
-    this.renameValue.set(calculation.name);
-    this.renameTarget.set(calculation);
-  }
-
-  async confirmRename(): Promise<void> {
-    const target = this.renameTarget();
-    const newName = this.renameValue().trim();
-    if (!target || !newName || newName === target.name) return;
-    await this.savedCalculationsStateService.rename(target.name, newName);
-    if (this.formService.loadedCalculationName() === target.name) {
+  async startRename(calculation: SavedCalculation): Promise<void> {
+    const newName = await this.renameDialog().open(calculation.name);
+    if (!newName || newName === calculation.name) return;
+    await this.savedCalculationsStateService.rename(calculation.name, newName);
+    if (this.formService.loadedCalculationName() === calculation.name) {
       this.formService.loadedCalculationName.set(newName);
     }
     this.showToast(`Zmieniono nazwę na „${newName}"`);
-    this.renameTarget.set(null);
   }
 
-  startDelete(calculation: SavedCalculation): void {
-    this.deleteTarget.set(calculation);
-  }
-
-  async confirmDelete(): Promise<void> {
-    const target = this.deleteTarget();
-    if (!target) return;
-    await this.savedCalculationsStateService.remove(target.name);
-    if (this.formService.loadedCalculationName() === target.name) {
+  async startDelete(calculation: SavedCalculation): Promise<void> {
+    const confirmed = await this.deleteDialog().open(calculation);
+    if (!confirmed) return;
+    await this.savedCalculationsStateService.remove(calculation.name);
+    if (this.formService.loadedCalculationName() === calculation.name) {
       this.formService.loadedCalculationName.set(null);
     }
-    this.showToast(`Usunięto kalkulację „${target.name}"`);
-    this.deleteTarget.set(null);
+    this.showToast(`Usunięto kalkulację „${calculation.name}"`);
   }
 
   async duplicateCalculation(calculation: SavedCalculation): Promise<void> {
@@ -255,22 +234,6 @@ export class CalculationsManagerComponent implements OnInit {
     await this.calculationsStore.saveCalculation(record);
     await this.savedCalculationsStateService.refreshRecords();
     this.showToast(`Zapisano nową kalkulację „${name}"`);
-  }
-
-  formatWholeAmount(value: number): string {
-    return new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 0 }).format(value);
-  }
-
-  formatPercent(value: number, decimals = 2): string {
-    return new Intl.NumberFormat('pl-PL', {
-      minimumFractionDigits: decimals,
-      maximumFractionDigits: decimals,
-    }).format(value);
-  }
-
-  formatExactDate(date: Date): string {
-    const pad = (value: number) => String(value).padStart(2, '0');
-    return `${pad(date.getDate())}.${pad(date.getMonth() + 1)}.${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
   }
 
   private showToast(message: string): void {
