@@ -1,0 +1,92 @@
+:host {
+  display: block;
+}
+
+.sel {
+  position: relative;
+}
+
+.sel button {
+  width: 100%;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px 0 12px;
+  gap: 6px;
+  background: var(--surface-2);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.sel button:hover {
+  background: var(--line);
+}
+
+.sel--focus button,
+.sel--open button,
+.sel button:focus-visible {
+  background: var(--surface);
+  border-color: var(--accent-deep);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--accent) 30%, transparent);
+  outline: none;
+}
+
+.sel-value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sel-icon {
+  color: var(--muted);
+  flex-shrink: 0;
+  transition: transform 0.15s;
+}
+
+.sel-icon--open {
+  transform: rotate(180deg);
+}
+
+.sel-panel {
+  position: fixed;
+  z-index: 9999;
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  border-radius: 10px;
+  box-shadow: var(--shadow-lg);
+  overflow: auto;
+  max-height: 240px;
+  padding: 4px;
+}
+
+.sel-opt {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.sel-opt:hover,
+.sel-opt.is-active {
+  background: var(--surface-2);
+}
+
+.sel-opt.is-selected {
+  color: var(--accent-deep);
+  font-weight: 500;
+}

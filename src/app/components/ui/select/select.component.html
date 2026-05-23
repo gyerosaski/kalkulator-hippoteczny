@@ -1,14 +1,43 @@
-<div class="sel">
-  <select
+<div class="sel" [class.sel--open]="isOpen()" [class.sel--focus]="focused()">
+  <button
+    type="button"
+    role="combobox"
     [attr.id]="inputId() || null"
+    [attr.aria-expanded]="isOpen()"
+    aria-haspopup="listbox"
+    [attr.aria-controls]="panelId"
     [disabled]="disabled()"
-    [value]="_value()"
-    (change)="onNativeChange($any($event.target).value)"
+    (click)="toggle()"
+    (keydown)="onKeydown($event)"
+    (focus)="focused.set(true)"
     (blur)="onBlur()"
+    #triggerEl
   >
-    @for (o of options(); track o; let i = $index) {
-      <option [value]="o">{{ labels()[i] || o }}</option>
-    }
-  </select>
-  <icon-chevron-down />
+    <span class="sel-value">{{ _displayLabel() }}</span>
+    <icon-chevron-down class="sel-icon" [class.sel-icon--open]="isOpen()" />
+  </button>
+
+  @if (isOpen()) {
+    <div
+      class="sel-panel"
+      role="listbox"
+      [attr.id]="panelId"
+      [style]="_panelStyle()"
+      (mousedown)="$event.preventDefault()"
+    >
+      @for (option of options(); track option; let i = $index) {
+        <div
+          class="sel-opt"
+          role="option"
+          [attr.aria-selected]="option === value()"
+          [class.is-selected]="option === value()"
+          [class.is-active]="i === activeIndex()"
+          (click)="select(option)"
+          (mouseenter)="activeIndex.set(i)"
+        >
+          {{ labels()[i] || option }}
+        </div>
+      }
+    </div>
+  }
 </div>

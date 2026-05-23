@@ -204,6 +204,36 @@
   margin-left: auto;
 }
 
+/* Inline native select used in sort control */
+.sel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--surface-2);
+  border-radius: 10px;
+  padding: 0 12px;
+  height: 38px;
+}
+
+.sel select {
+  flex: 1;
+  appearance: none;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font: inherit;
+  color: var(--ink);
+  cursor: pointer;
+  padding-right: 20px;
+}
+
+.sel svg {
+  position: absolute;
+  right: 12px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
 /* ─── FOOTER ────────────────────────────────────────── */
 
 .view-footer {
