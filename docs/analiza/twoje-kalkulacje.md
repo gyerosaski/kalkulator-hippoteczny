@@ -52,17 +52,16 @@ Czas względny wyznaczany na podstawie pola `updatedAt` — szczegóły w sekcji
 
 ### 4. Tabela kalkulacji — kolumny
 
-| #   | Kolumna          | Zawartość                                                                                                                                | Format wyświetlania                                             |
-| --- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| 1   | `Nazwa`          | Nazwa kalkulacji; opcjonalny badge `robocza`; badge `wczytana` gdy rekord aktualnie załadowany; opcjonalna notatka (`note`) w podwierszu | tekst                                                           |
-| 2   | `Kwota · LTV`    | Kwota kredytu + wartość nieruchomości w podwierszu + wskaźnik LTV%; LTV wyróżnione (czerwone) gdy `> 80%`                                | PLN bez miejsc dziesiętnych; LTV `X %`                          |
-| 3   | `Okres`          | Liczba lat i miesięcy kredytu + typ raty w podwierszu                                                                                    | `X lat` lub `X l. Y m-cy`; badge `rata równa` / `rata malejąca` |
-| 4   | `Oproc.`         | Łączna stopa procentowa; w podwierszu `WIBOR X,XX + marża X,XX` dla stopy zmiennej lub `stała`                                           | 2 miejsca dziesiętne, `%`                                       |
-| 5   | `Pierwsza rata`  | Pierwsza rata miesięczna                                                                                                                 | PLN, 2 miejsca dziesiętne                                       |
-| 6   | `Odsetki`        | Suma odsetek przez cały okres kredytowania                                                                                               | PLN bez miejsc dziesiętnych                                     |
-| 7   | `Przebieg salda` | Mini-wykres SVG (sparkline) przedstawiający krzywą salda; gdy aktywne nadpłaty — oznaczenie `nadpłaty`                                   | SVG 96×28 px                                                    |
-| 8   | `Zmodyfikowano`  | Czas względny (`updatedAt`); po najechaniu kursorem — pełna data i godzina jako tooltip; w podwierszu data bez godziny                   | `DD.MM.RRRR`                                                    |
-| 9   | `Akcje`          | Przycisk `Wczytaj` + przycisk menu `⋯`                                                                                                   | —                                                               |
+| #   | Kolumna         | Zawartość                                                                                                                                | Format wyświetlania                                             |
+| --- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| 1   | `Nazwa`         | Nazwa kalkulacji; opcjonalny badge `robocza`; badge `wczytana` gdy rekord aktualnie załadowany; opcjonalna notatka (`note`) w podwierszu | tekst                                                           |
+| 2   | `Kwota · LTV`   | Kwota kredytu + wartość nieruchomości w podwierszu + wskaźnik LTV%; LTV wyróżnione (czerwone) gdy `> 80%`                                | PLN bez miejsc dziesiętnych; LTV `X %`                          |
+| 3   | `Okres`         | Liczba lat i miesięcy kredytu + typ raty w podwierszu                                                                                    | `X lat` lub `X l. Y m-cy`; badge `rata równa` / `rata malejąca` |
+| 4   | `Oproc.`        | Łączna stopa procentowa; w podwierszu `WIBOR X,XX + marża X,XX` dla stopy zmiennej lub `stała`                                           | 2 miejsca dziesiętne, `%`                                       |
+| 5   | `Pierwsza rata` | Pierwsza rata miesięczna                                                                                                                 | PLN, 2 miejsca dziesiętne                                       |
+| 6   | `Odsetki`       | Suma odsetek przez cały okres kredytowania                                                                                               | PLN bez miejsc dziesiętnych                                     |
+| 7   | `Zmodyfikowano` | Czas względny (`updatedAt`); po najechaniu kursorem — pełna data i godzina jako tooltip; w podwierszu data bez godziny                   | `DD.MM.RRRR`                                                    |
+| 8   | `Akcje`         | Przycisk `Wczytaj` + przycisk menu `⋯`                                                                                                   | —                                                               |
 
 #### 4.1 Wyróżnienie aktywnego wiersza
 

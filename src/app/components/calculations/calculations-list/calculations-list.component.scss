@@ -22,7 +22,7 @@
 .table-header-row,
 .table-data-row {
   display: grid;
-  grid-template-columns: 2fr 1.4fr 1fr 1fr 1fr 1fr 90px 1fr 110px;
+  grid-template-columns: 2fr 1.4fr 1fr 1fr 1fr 1fr 1fr 110px;
   align-items: center;
   gap: 0;
 }
@@ -184,19 +184,6 @@
 .installment-sub,
 .interest-sub {
   font-size: 11px;
-  margin-top: 2px;
-}
-
-.spark-chart {
-  display: block;
-  width: 96px;
-  height: 28px;
-}
-
-.chart-tag {
-  font-size: 10px;
-  color: var(--c-over);
-  font-weight: 500;
   margin-top: 2px;
 }
 

@@ -99,41 +99,4 @@ export class CalculationsListComponent {
     const pad = (value: number) => String(value).padStart(2, '0');
     return `${pad(date.getDate())}.${pad(date.getMonth() + 1)}.${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
   }
-
-  sparkLinePath(overpaymentsEnabled: boolean): string {
-    const points = this.buildSparkPoints(overpaymentsEnabled);
-    return points
-      .map((point, index) =>
-        index === 0 ? `M${point[0]} ${point[1]}` : `L${point[0]} ${point[1]}`,
-      )
-      .join(' ');
-  }
-
-  sparkFillPath(overpaymentsEnabled: boolean): string {
-    const linePath = this.sparkLinePath(overpaymentsEnabled);
-    return `${linePath} L94 28 L2 28 Z`;
-  }
-
-  sparkLastX(overpaymentsEnabled: boolean): number {
-    const points = this.buildSparkPoints(overpaymentsEnabled);
-    return points[points.length - 1][0];
-  }
-
-  sparkLastY(overpaymentsEnabled: boolean): number {
-    const points = this.buildSparkPoints(overpaymentsEnabled);
-    return points[points.length - 1][1];
-  }
-
-  private buildSparkPoints(overpaymentsEnabled: boolean): [number, number][] {
-    const pointCount = 40;
-    const points: [number, number][] = [];
-    for (let index = 0; index < pointCount; index++) {
-      const progress = index / (pointCount - 1);
-      const normalizedY = overpaymentsEnabled
-        ? Math.pow(1 - progress, 1.6) * 0.95 + 0.04
-        : (1 - Math.pow(progress, 0.55)) * 0.95 + 0.04;
-      points.push([progress * 92 + 2, 26 - normalizedY * 22]);
-    }
-    return points;
-  }
 }

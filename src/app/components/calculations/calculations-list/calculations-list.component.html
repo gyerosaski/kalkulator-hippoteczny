@@ -6,7 +6,6 @@
     <div class="cell cell--rate">Oproc.</div>
     <div class="cell cell--installment">Pierwsza rata</div>
     <div class="cell cell--interest">Odsetki</div>
-    <div class="cell cell--chart">Przebieg salda</div>
     <div class="cell cell--date">Zmodyfikowano</div>
     <div class="cell cell--actions">Akcje</div>
   </div>
@@ -137,33 +136,6 @@
             <div class="interest-value muted">—</div>
           }
           <div class="interest-sub muted">suma odsetek</div>
-        </div>
-
-        <!-- Wykres salda (sparkline) -->
-        <div class="cell cell--chart">
-          <svg class="spark-chart" viewBox="0 0 96 28" aria-hidden="true">
-            <path
-              [attr.d]="sparkFillPath(calculation.overpaymentsEnabled)"
-              fill="var(--c-cap-soft)"
-            />
-            <path
-              [attr.d]="sparkLinePath(calculation.overpaymentsEnabled)"
-              fill="none"
-              stroke="var(--c-cap)"
-              stroke-width="1.4"
-            />
-            @if (calculation.overpaymentsEnabled) {
-              <circle
-                [attr.cx]="sparkLastX(calculation.overpaymentsEnabled)"
-                [attr.cy]="sparkLastY(calculation.overpaymentsEnabled)"
-                r="2"
-                fill="var(--c-over)"
-              />
-            }
-          </svg>
-          @if (calculation.overpaymentsEnabled) {
-            <div class="chart-tag">nadpłaty</div>
-          }
         </div>
 
         <!-- Data modyfikacji -->
