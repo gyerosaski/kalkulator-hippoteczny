@@ -28,7 +28,7 @@
 - Podsekcja "Prowizja za udzielenie" powinna się składać z inputa numerycznego i przełącznika "%/zł" tak, aby użytkownik mógł wprowadzić wartość procentową lub konkretną kwotę
 - [x] Opłata za wycenę powinna być ujęta w harmonogramie spłat w kolumnie koszty w pierwszym miesiącu kredytu
 - [x] zmień konfigurację tauri tak, żeby aplikacja domyślnie uruchamiała się w trybie pełnoekranowym
-- wynieś listę kalkulacji z komponentu src/app/views/calculations-manager do dedykowanego komponentu w przestrzeni src/app/components
+- [x] wynieś listę kalkulacji z komponentu src/app/views/calculations-manager do dedykowanego komponentu w przestrzeni src/app/components
 - nowe ikony użyte w komponencie src/app/views/calculations-manager przenieś do przestrzeni src/app/components/ui
 - [x] usuń kolumnę przebieg salda
 - [x] usuń filtr "Robocze"

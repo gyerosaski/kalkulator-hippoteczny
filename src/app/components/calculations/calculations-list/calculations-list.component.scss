@@ -22,7 +22,7 @@
 .table-header-row,
 .table-data-row {
   display: grid;
-  grid-template-columns: 2fr 1.4fr 1fr 1fr 1fr 1fr 1fr 110px;
+  grid-template-columns: 2fr 1.4fr 1fr 1fr 1fr 1fr 1fr 150px;
   align-items: center;
   gap: 0;
 }
@@ -180,9 +180,7 @@
   font-weight: 500;
 }
 
-.rate-sub,
-.installment-sub,
-.interest-sub {
+.rate-sub {
   font-size: 11px;
   margin-top: 2px;
 }
@@ -244,10 +242,8 @@
 }
 
 .actions-menu {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 4px);
-  z-index: 100;
+  position: fixed;
+  z-index: 1000;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--r);
