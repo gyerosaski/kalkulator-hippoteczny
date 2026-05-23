@@ -1,14 +1,16 @@
 <div class="data-table">
-  <div class="table-header-row">
-    <div class="cell cell--name">Nazwa</div>
-    <div class="cell cell--money">Kwota · LTV</div>
-    <div class="cell cell--period">Okres</div>
-    <div class="cell cell--rate">Oproc.</div>
-    <div class="cell cell--installment">Pierwsza rata</div>
-    <div class="cell cell--interest">Odsetki</div>
-    <div class="cell cell--date">Zmodyfikowano</div>
-    <div class="cell cell--actions">Akcje</div>
-  </div>
+  @if (calculations().length > 0) {
+    <div class="table-header-row">
+      <div class="cell cell--name">Nazwa</div>
+      <div class="cell cell--money">Kwota · LTV</div>
+      <div class="cell cell--period">Okres</div>
+      <div class="cell cell--rate">Oproc.</div>
+      <div class="cell cell--installment">Pierwsza rata</div>
+      <div class="cell cell--interest">Odsetki</div>
+      <div class="cell cell--date">Zmodyfikowano</div>
+      <div class="cell cell--actions">Akcje</div>
+    </div>
+  }
 
   @if (calculations().length === 0) {
     <div class="empty-state">

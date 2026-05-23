@@ -29,6 +29,8 @@ import { IconPlusComponent } from '../../components/icons/icon-plus/icon-plus.co
 import { IconDownloadComponent } from '../../components/icons/icon-download/icon-download.component';
 import { IconCompareComponent } from '../../components/icons/icon-compare/icon-compare.component';
 import { IconSearchComponent } from '../../components/icons/icon-search/icon-search.component';
+import { IconChevronDownComponent } from '../../components/icons/icon-chevron-down/icon-chevron-down.component';
+import { IconCheckCircleComponent } from '../../components/icons/icon-check-circle/icon-check-circle.component';
 
 type SortComparator = (a: SavedCalculation, b: SavedCalculation) => number;
 
@@ -56,6 +58,8 @@ const SORT_COMPARATORS: Record<SavedCalculationSortOption, SortComparator> = {
     IconDownloadComponent,
     IconCompareComponent,
     IconSearchComponent,
+    IconChevronDownComponent,
+    IconCheckCircleComponent,
   ],
 })
 export class CalculationsManagerComponent implements OnInit {
@@ -172,6 +176,18 @@ export class CalculationsManagerComponent implements OnInit {
   async importFromFile(): Promise<void> {
     await this.savedCalculationsStateService.importFromFile();
     this.showToast('Zaimportowano kalkulację');
+  }
+
+  async exportAllToFile(): Promise<void> {
+    const records = this.savedCalculationsStateService.records();
+    if (!records.length) {
+      this.showToast('Brak kalkulacji do eksportu');
+      return;
+    }
+    const savedPath = await this.calculationsStore.exportAllToFile(records);
+    if (savedPath) {
+      this.showToast(`Wyeksportowano ${records.length} kalkulacji`);
+    }
   }
 
   async saveAsNewCalculation(): Promise<void> {

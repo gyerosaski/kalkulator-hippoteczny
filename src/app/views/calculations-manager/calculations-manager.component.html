@@ -71,15 +71,7 @@
             <option [value]="option.value">{{ option.label }}</option>
           }
         </select>
-        <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
-          <path
-            d="M2 4 L6 8 L10 4"
-            stroke="currentColor"
-            stroke-width="1.5"
-            fill="none"
-            stroke-linecap="round"
-          />
-        </svg>
+        <icon-chevron-down />
       </div>
     </div>
   </div>
@@ -103,23 +95,20 @@
       <b class="mono">{{ calculations().length }}</b> kalkulacji · dane przechowywane lokalnie na
       dysku
     </div>
-    <button class="btn btn--ghost btn--mini" [disabled]="true">Eksportuj wszystkie do CSV</button>
+    <button
+      class="btn btn--ghost btn--mini"
+      [disabled]="calculations().length === 0"
+      (click)="exportAllToFile()"
+    >
+      <icon-download />
+      Eksportuj wszystkie do JSON
+    </button>
   </div>
 
   <!-- TOAST -->
   @if (toastMessage(); as message) {
     <div class="toast-notification" role="status">
-      <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
-        <circle cx="7" cy="7" r="5.5" stroke="var(--c-cap)" stroke-width="1.4" fill="none" />
-        <path
-          d="M4.5 7 L6.3 8.6 L9.5 5.3"
-          stroke="var(--c-cap)"
-          stroke-width="1.5"
-          fill="none"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-      </svg>
+      <icon-check-circle />
       <span>{{ message }}</span>
     </div>
   }

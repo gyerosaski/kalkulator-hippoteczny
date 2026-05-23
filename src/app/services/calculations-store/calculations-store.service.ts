@@ -56,6 +56,24 @@ export class CalculationsStoreService {
     return targetPath;
   }
 
+  async exportAllToFile(records: SavedCalculationRecord[]): Promise<string | null> {
+    const dateString = new Date().toISOString().slice(0, 10);
+    const defaultPath = `kalkulacje-${dateString}.json`;
+    const targetPath = await saveDialog({
+      defaultPath,
+      filters: CalculationsStoreService.FILE_FILTERS,
+      title: 'Eksportuj wszystkie kalkulacje do pliku',
+    });
+    if (!targetPath) return null;
+    const exportPayload = {
+      exportedAt: new Date().toISOString(),
+      count: records.length,
+      calculations: records,
+    };
+    await writeTextFile(targetPath, JSON.stringify(exportPayload, null, 2));
+    return targetPath;
+  }
+
   async importFromFile(): Promise<{
     record: SavedCalculationRecord | null;
     rawData: unknown;

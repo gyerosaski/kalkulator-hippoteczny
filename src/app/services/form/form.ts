@@ -353,6 +353,7 @@ export class FormService {
         ),
         jobLossInsValue: this.fb.control(0, [Validators.min(0)]),
         jobLossInsFrom: this.fb.control(nextMonthStr()),
+        jobLossInsTo: this.fb.control(endOfLoanDate()),
       }),
       additionalCosts: this.fb.group({
         expanded: this.fb.control(false),
@@ -412,6 +413,7 @@ export class FormService {
       calcMethod: this.fb.control<LifeInsuranceCalcMethod>(LifeInsuranceCalcMethod.FIXED_AMOUNT),
       value: this.fb.control(0, [Validators.min(0)]),
       from: this.fb.control(nextMonthStr()),
+      to: this.fb.control(endOfLoanDate()),
     });
   }
 

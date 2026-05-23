@@ -89,13 +89,14 @@
     },
     "AdditionalCost": {
       "type": "object",
-      "required": ["name", "frequency", "calcMethod", "value", "from"],
+      "required": ["name", "frequency", "calcMethod", "value", "from", "to"],
       "properties": {
         "name": { "type": "string" },
         "frequency": { "$ref": "#/$defs/InsuranceFrequency" },
         "calcMethod": { "$ref": "#/$defs/LifeInsuranceCalcMethod" },
         "value": { "type": "number", "minimum": 0 },
-        "from": { "$ref": "#/$defs/YyyyMm" }
+        "from": { "$ref": "#/$defs/YyyyMm" },
+        "to": { "$ref": "#/$defs/YyyyMm" }
       }
     },
     "OverheadCostsFields": {
@@ -191,14 +192,16 @@
             "jobLossInsFrequency",
             "jobLossInsCalcMethod",
             "jobLossInsValue",
-            "jobLossInsFrom"
+            "jobLossInsFrom",
+            "jobLossInsTo"
           ],
           "properties": {
             "expanded": { "type": "boolean" },
             "jobLossInsFrequency": { "$ref": "#/$defs/InsuranceFrequency" },
             "jobLossInsCalcMethod": { "$ref": "#/$defs/LifeInsuranceCalcMethod" },
             "jobLossInsValue": { "type": "number", "minimum": 0 },
-            "jobLossInsFrom": { "$ref": "#/$defs/YyyyMm" }
+            "jobLossInsFrom": { "$ref": "#/$defs/YyyyMm" },
+            "jobLossInsTo": { "$ref": "#/$defs/YyyyMm" }
           }
         },
         "additionalCosts": {

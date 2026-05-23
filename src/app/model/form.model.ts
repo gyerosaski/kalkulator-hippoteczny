@@ -58,6 +58,7 @@ export interface AdditionalCostFormGroup {
   calcMethod: FormControl<LifeInsuranceCalcMethod>;
   value: FormControl<number>;
   from: FormControl<string>;
+  to: FormControl<string>;
 }
 
 export interface CommissionFormGroup {
@@ -106,6 +107,7 @@ export interface JobLossInsuranceFormGroup {
   jobLossInsCalcMethod: FormControl<LifeInsuranceCalcMethod>;
   jobLossInsValue: FormControl<number>;
   jobLossInsFrom: FormControl<string>;
+  jobLossInsTo: FormControl<string>;
 }
 
 export interface AdditionalCostsSectionFormGroup {

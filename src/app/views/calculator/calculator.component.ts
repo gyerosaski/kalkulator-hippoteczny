@@ -155,6 +155,7 @@ export class CalculatorComponent {
               calcMethod: overheadCostsRaw.jobLossInsurance?.jobLossInsCalcMethod,
               value: Number(overheadCostsRaw.jobLossInsurance?.jobLossInsValue) || 0,
               from: overheadCostsRaw.jobLossInsurance?.jobLossInsFrom,
+              to: overheadCostsRaw.jobLossInsurance?.jobLossInsTo,
             },
             additionalCosts: ((overheadCostsRaw.additionalCosts?.items ?? []) as any[]).map(
               (ac: any) => ({
@@ -163,6 +164,7 @@ export class CalculatorComponent {
                 calcMethod: ac.calcMethod,
                 value: Number(ac.value) || 0,
                 from: ac.from,
+                to: ac.to,
               }),
             ),
             promotionalRate: {
@@ -196,6 +198,7 @@ export class CalculatorComponent {
               calcMethod: LifeInsuranceCalcMethod.PCT_LOAN_AMOUNT,
               value: 0,
               from: nextMonthStr(),
+              to: nextMonthStr(),
             },
             additionalCosts: [],
             promotionalRate: {

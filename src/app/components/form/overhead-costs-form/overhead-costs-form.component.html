@@ -20,7 +20,7 @@
             inputId="commission-value"
             [formControl]="commissionValueControl"
             [suffix]="commissionSuffix"
-            [decimals]="2"
+            [decimals]="commissionDecimals"
           />
           <ui-segmented
             [compact]="true"
@@ -297,11 +297,23 @@
                 />
               </ui-field>
             </div>
-            <div class="row row--2">
-              <ui-field label="Okres ponoszenia kosztu (Od)" num="8e" [inputId]="costFromId">
-                <ui-month-picker [inputId]="costFromId" [formControl]="cost.controls.from" />
-              </ui-field>
-            </div>
+            @if (additionalCostFrequencies()[$index] === InsuranceFrequency.ONE_TIME) {
+              <div class="row row--2">
+                <ui-field label="Miesiąc płatności" num="8e" [inputId]="costFromId">
+                  <ui-month-picker [inputId]="costFromId" [formControl]="cost.controls.from" />
+                </ui-field>
+              </div>
+            } @else {
+              @let costToId = 'additional-cost-' + $index + '-to';
+              <div class="row row--2">
+                <ui-field label="Od" num="8e" [inputId]="costFromId">
+                  <ui-month-picker [inputId]="costFromId" [formControl]="cost.controls.from" />
+                </ui-field>
+                <ui-field label="do" num="8f" [inputId]="costToId">
+                  <ui-month-picker [inputId]="costToId" [formControl]="cost.controls.to" />
+                </ui-field>
+              </div>
+            }
           </ui-card>
         }
       </div>

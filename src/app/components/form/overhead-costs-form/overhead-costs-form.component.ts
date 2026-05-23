@@ -50,6 +50,7 @@ import { SegmentedComponent } from '../../ui/segmented/segmented.component';
 })
 export class OverheadCostsFormComponent {
   protected readonly colorCodeArea = ColorCodeArea;
+  protected readonly InsuranceFrequency = InsuranceFrequency;
 
   private formService = inject(FormService);
 
@@ -66,6 +67,31 @@ export class OverheadCostsFormComponent {
   readonly propertyInsFrequencyOptions = [InsuranceFrequency.YEARLY, InsuranceFrequency.MONTHLY];
   readonly propertyInsCalcOptions = Object.values(InsuranceCalcMethod);
   readonly lifeInsCalcOptions = Object.values(LifeInsuranceCalcMethod);
+
+  readonly lifeInsFrequency = toSignal(
+    this.form.controls.lifeInsurance.controls.lifeInsFrequency.valueChanges,
+    { initialValue: this.form.controls.lifeInsurance.controls.lifeInsFrequency.value },
+  );
+
+  readonly jobLossInsFrequency = toSignal(
+    this.form.controls.jobLossInsurance.controls.jobLossInsFrequency.valueChanges,
+    { initialValue: this.form.controls.jobLossInsurance.controls.jobLossInsFrequency.value },
+  );
+
+  readonly additionalCostFrequencies = toSignal(
+    this.form.controls.additionalCosts.controls.items.valueChanges.pipe(
+      map(() =>
+        this.form.controls.additionalCosts.controls.items.controls.map(
+          (control) => control.controls.frequency.value,
+        ),
+      ),
+    ),
+    {
+      initialValue: this.form.controls.additionalCosts.controls.items.controls.map(
+        (control) => control.controls.frequency.value,
+      ),
+    },
+  );
 
   get section() {
     return this.formService.overheadCostsSection;
@@ -106,6 +132,13 @@ export class OverheadCostsFormComponent {
       CommissionCalcMethod.FIXED_AMOUNT
       ? 'zł'
       : '%';
+  }
+
+  get commissionDecimals(): number {
+    return this.form.controls.commission.controls.commissionCalcMethod.value ===
+      CommissionCalcMethod.FIXED_AMOUNT
+      ? 2
+      : 4;
   }
 
   // appraisal
@@ -184,6 +217,10 @@ export class OverheadCostsFormComponent {
 
   get jobLossInsFromControl() {
     return this.form.controls.jobLossInsurance.controls.jobLossInsFrom;
+  }
+
+  get jobLossInsToControl() {
+    return this.form.controls.jobLossInsurance.controls.jobLossInsTo;
   }
 
   // promoRate

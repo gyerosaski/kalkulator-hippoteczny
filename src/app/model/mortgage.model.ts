@@ -113,6 +113,7 @@ export interface JobLossInsurance {
   calcMethod: LifeInsuranceCalcMethod;
   value: number;
   from: string;
+  to?: string;
 }
 
 export interface AdditionalCost {
@@ -121,6 +122,7 @@ export interface AdditionalCost {
   calcMethod: LifeInsuranceCalcMethod;
   value: number;
   from: string;
+  to?: string;
 }
 
 export interface PromotionalRate {
