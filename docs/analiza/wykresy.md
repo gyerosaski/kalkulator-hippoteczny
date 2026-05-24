@@ -90,10 +90,10 @@ Wykres prezentowany **wyłącznie** wtedy, gdy w symulacji kredytu występuje co
 
 1. **Więcej niż jeden okres oprocentowania** — użytkownik dodał ≥ 1 dodatkowy `RatePeriod` w „Daty podstawowe → Oprocentowanie”.
 2. **Ubezpieczenie pomostowe** — niezerowa stawka `bridgeRate` przez `bridgeMonths > 0` pierwszych miesięcy spłaty.
-3. **Ubezpieczenie niskiego wkładu** — niezerowa stawka `lowDownRate` obowiązująca, dopóki saldo / wartość nieruchomości > 80%.
+3. **Ubezpieczenie niskiego wkładu** — niezerowa stawka `lowDownRate` obowiązująca dopóki saldo / wartość nieruchomości > 80 %.
 4. **Promocja oprocentowania** — niezerowa stawka `promoRate` obniżająca oprocentowanie pomiędzy `promoFrom` a `promoTo`.
 
-Jeśli **żadna** z tych okoliczności nie zachodzi, karta wykresu nie jest renderowana. W sposób analogiczny prezentowana jest kolumna "Oprocentowanie" w harmonogramie spłaty
+Jeśli **żadna** z tych okoliczności nie zachodzi, karta wykresu nie jest renderowana. Decyzja podejmowana po stronie serwisu obliczeń jako flaga `hasRateChange` zwracana w `ScheduleResult`.
 
 #### 5.4.1. Typ wykresu
 
@@ -105,23 +105,52 @@ Jeśli **żadna** z tych okoliczności nie zachodzi, karta wykresu nie jest rend
 
 - Skala czasowa (miesiące spłaty, ale etykiety pokazują **lata kalendarzowe** jak na wykresie trendu §5.3).
 - Etykiety obrócone o 90° (taka sama konwencja jak `TrendChart`).
-- Pierwszy tick = data pierwszej raty z harmonogramu, ostatni = data ostatniej raty z harmonogramu.
+- Pierwszy tick = `startDate`, ostatni = data ostatniej raty z harmonogramu.
 
 #### 5.4.3. Oś Y — oprocentowanie
 
-- Format etykiet: `0,00 %`, `2,50 %`, `5,00 %`, `7,50 %`, `10,00 %` — krok adaptacyjny (0,5 / 1 / 2% zależnie od rozpiętości).
-- Zakres: `[0; ceil(maxRate × 1,1)]` z marginesem ~10% nad maksimum, w dół zawsze do 0%.
-- Etykieta osi (rotacja 90°): „Oprocentowanie”.
+- Format etykiet: `0,00 %`, `2,50 %`, `5,00 %`, `7,50 %`, `10,00 %` — krok adaptacyjny (0,5 / 1 / 2 % zależnie od rozpiętości).
+- Zakres: `[0; ceil(maxRate × 1,1)]` z marginesem ~10 % nad maksimum, w dół zawsze do 0 %.
+- Etykieta osi (rotacja 90°): „Nominalne oprocentowanie roczne”.
 
-#### 5.4.4. Tooltip
+#### 5.4.4. Serie i adnotacje
+
+- **Linia główna** „Efektywne oprocentowanie” — `var(--ink)`, `stroke-width: 2 px`, step-after, koniec linii zaznaczony krótką poziomą kreską ze strzałką w prawo (kontynuacja do końca okresu).
+- W węzłach (każda zmiana stopy) — wypełnione koło `r = 4 px` w kolorze `var(--ink)` z obwódką `var(--surface)`.
+- Etykieta każdej zmiany — krótki badge nad węzłem: np. `7,50 %` (mono, 11 px), z linią-łącznikiem do węzła. Przy gęstym układzie etykiet kolizyjne badge'y są łączone w jeden „zlepek”.
+- **Wstęgi tła** wskazujące źródło zmiany (jedna nad drugą, w lewym górnym pasku „torów”, każda w innym kolorze, z napisem):
+  - `bridge` — `var(--c-int-mid)` z opacity 0,35; etykieta „ubezpieczenie pomostowe +1,20 %”;
+  - `lowDown` — `var(--c-cost-mid)` opacity 0,35; etykieta „niski wkład +0,40 %”;
+  - `promo` — `var(--c-cap-mid)` opacity 0,35; etykieta „promocja –1,00 %”;
+  - `period-N` — `var(--accent)` opacity 0,2; etykieta „okres N (WIBOR + marża)”.
+- Tory rysowane są tylko dla aktywnych okoliczności (jeśli np. nie ma `lowDown` — torsja `lowDown` nie istnieje).
+
+#### 5.4.5. Tooltip
 
 Najechanie na obszar wykresu pokazuje pop-over z:
 
 - Nagłówkiem: data miesiąca (np. `lip 2028`).
-- `Oprocentowanie` = efektywna stopa nominalna w tym miesiącu.
+- Wierszami rozkładu efektywnej stopy: `WIBOR + marża` / `stała`, `+ pomostowe`, `+ niski wkład`, `− promocja`.
+- Sumą: `Razem` = efektywna stopa nominalna w tym miesiącu.
 
-#### 5.4.5. Wymagania techniczne
+#### 5.4.6. Legenda
 
-- Implementacja docelowa: natywny SVG step-path.
+- Pod tytułem karty, w jednej linii: kropka linii + „Efektywne oprocentowanie”, kafle wstęg (kolor + krótki podpis).
+- W trybie statycznym makiety legenda jest opisowa; w docelowej wersji klik chowa torsję.
+
+#### 5.4.7. Dane wejściowe
+
+`ScheduleResult` musi udostępniać:
+
+- `rows[].rate` — efektywne oprocentowanie w danym miesiącu (po wszystkich modyfikatorach), `%`.
+- `rows[].rateBase` — stopa nominalna z aktywnego okresu (`WIBOR + marża` lub stała).
+- `rateChanges: { fromMonth: number; date: Date; rate: number; cause: 'period' | 'bridge-on' | 'bridge-off' | 'lowdown-on' | 'lowdown-off' | 'promo-on' | 'promo-off' }[]`
+- `rateBands: { kind: 'bridge'|'lowDown'|'promo'|'period'; fromMonth: number; toMonth: number; delta: number; label: string }[]` — wstęgi torów.
+- `hasRateChange: boolean` — flaga włączająca renderowanie karty wykresu i kolumny „Oprocentowanie” w tabeli (§ harmonogram-spłaty.md).
+
+#### 5.4.8. Wymagania techniczne
+
+- Implementacja docelowa: **Chart.js** (`type: 'line'` z `stepped: 'after'`) lub natywny SVG step-path.
+- Wysokość karty: ~240 px (desktop) / 200 px (cozy) / 280 px (roomy).
 - Karta wstawiana **bezpośrednio nad** „Tabela harmonogramu”, pod kartą trendu §5.3.
 - Motyw: kolory `--c-int`, `--c-int-mid`, `--c-cost-mid`, `--c-cap-mid`, `--accent`, `--ink` — działa w trybie jasnym i ciemnym.

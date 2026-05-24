@@ -87,7 +87,7 @@
       (openChange)="setSubsectionOpen('propertyInsurance', $event)"
     >
       <div class="row row--3">
-        <ui-field label="Jak często opłacana jest składka?" num="4a" inputId="prop-ins-frequency">
+        <ui-field label="Jak często opłacana jest składka?" inputId="prop-ins-frequency">
           <ui-select
             inputId="prop-ins-frequency"
             [formControl]="propInsFrequencyControl"
@@ -95,7 +95,7 @@
             [labels]="propertyInsFrequencyOptions | insuranceFrequencyLabel"
           />
         </ui-field>
-        <ui-field label="Jak wyliczana jest składka?" num="4b" inputId="prop-ins-calc-method">
+        <ui-field label="Jak wyliczana jest składka?" inputId="prop-ins-calc-method">
           <ui-select
             inputId="prop-ins-calc-method"
             [formControl]="propInsCalcMethodControl"
@@ -103,7 +103,7 @@
             [labels]="propertyInsCalcOptions | insuranceCalcMethodLabel"
           />
         </ui-field>
-        <ui-field label="Wartość składki" num="4c" inputId="prop-ins-value">
+        <ui-field label="Wartość składki" inputId="prop-ins-value">
           <ui-number-input
             inputId="prop-ins-value"
             [formControl]="propInsValueControl"
@@ -113,10 +113,10 @@
         </ui-field>
       </div>
       <div class="row row--2">
-        <ui-field label="Od" num="4d" inputId="prop-ins-from">
+        <ui-field label="Od" inputId="prop-ins-from">
           <ui-month-picker inputId="prop-ins-from" [formControl]="propInsFromControl" />
         </ui-field>
-        <ui-field label="do" num="4e" inputId="prop-ins-to">
+        <ui-field label="Do" inputId="prop-ins-to">
           <ui-month-picker inputId="prop-ins-to" [formControl]="propInsToControl" />
         </ui-field>
       </div>
@@ -155,7 +155,7 @@
       (openChange)="setSubsectionOpen('lifeInsurance', $event)"
     >
       <div class="row row--3">
-        <ui-field label="Jak często opłacana jest składka?" num="6a" inputId="life-ins-frequency">
+        <ui-field label="Jak często opłacana jest składka?" inputId="life-ins-frequency">
           <ui-select
             inputId="life-ins-frequency"
             [formControl]="lifeInsFrequencyControl"
@@ -163,7 +163,7 @@
             [labels]="insuranceFrequencyOptions | insuranceFrequencyLabel"
           />
         </ui-field>
-        <ui-field label="Jak wyliczana jest składka?" num="6b" inputId="life-ins-calc-method">
+        <ui-field label="Jak wyliczana jest składka?" inputId="life-ins-calc-method">
           <ui-select
             inputId="life-ins-calc-method"
             [formControl]="lifeInsCalcMethodControl"
@@ -171,7 +171,7 @@
             [labels]="lifeInsCalcOptions | lifeInsuranceCalcMethodLabel"
           />
         </ui-field>
-        <ui-field label="Wartość składki" num="6c" inputId="life-ins-value">
+        <ui-field label="Wartość składki" inputId="life-ins-value">
           <ui-number-input
             inputId="life-ins-value"
             [formControl]="lifeInsValueControl"
@@ -181,10 +181,10 @@
         </ui-field>
       </div>
       <div class="row row--2">
-        <ui-field label="Od" num="6d" inputId="life-ins-from">
+        <ui-field label="Od" inputId="life-ins-from">
           <ui-month-picker inputId="life-ins-from" [formControl]="lifeInsFromControl" />
         </ui-field>
-        <ui-field label="do" num="6e" inputId="life-ins-to">
+        <ui-field label="Do" inputId="life-ins-to">
           <ui-month-picker inputId="life-ins-to" [formControl]="lifeInsToControl" />
         </ui-field>
       </div>
@@ -199,11 +199,7 @@
       (openChange)="setSubsectionOpen('jobLossInsurance', $event)"
     >
       <div class="row row--3">
-        <ui-field
-          label="Jak często opłacana jest składka?"
-          num="7a"
-          inputId="job-loss-ins-frequency"
-        >
+        <ui-field label="Jak często opłacana jest składka?" inputId="job-loss-ins-frequency">
           <ui-select
             inputId="job-loss-ins-frequency"
             [formControl]="jobLossInsFrequencyControl"
@@ -211,7 +207,7 @@
             [labels]="insuranceFrequencyOptions | insuranceFrequencyLabel"
           />
         </ui-field>
-        <ui-field label="Jak wyliczana jest składka?" num="7b" inputId="job-loss-ins-calc-method">
+        <ui-field label="Jak wyliczana jest składka?" inputId="job-loss-ins-calc-method">
           <ui-select
             inputId="job-loss-ins-calc-method"
             [formControl]="jobLossInsCalcMethodControl"
@@ -219,7 +215,7 @@
             [labels]="lifeInsCalcOptions | lifeInsuranceCalcMethodLabel"
           />
         </ui-field>
-        <ui-field label="Wartość składki" num="7c" inputId="job-loss-ins-value">
+        <ui-field label="Wartość składki" inputId="job-loss-ins-value">
           <ui-number-input
             inputId="job-loss-ins-value"
             [formControl]="jobLossInsValueControl"
@@ -229,8 +225,11 @@
         </ui-field>
       </div>
       <div class="row row--2">
-        <ui-field label="Od" num="7d" inputId="job-loss-ins-from">
+        <ui-field label="Od" inputId="job-loss-ins-from">
           <ui-month-picker inputId="job-loss-ins-from" [formControl]="jobLossInsFromControl" />
+        </ui-field>
+        <ui-field label="Od" inputId="job-loss-ins-to">
+          <ui-month-picker inputId="job-loss-ins-to" [formControl]="jobLossInsToControl" />
         </ui-field>
       </div>
     </ui-subsection>
@@ -256,7 +255,7 @@
             (remove)="removeAdditionalCost($index)"
           >
             <div class="row row--2">
-              <ui-field label="Nazwa kosztu" num="8a" [inputId]="costNameId">
+              <ui-field label="Nazwa kosztu" [inputId]="costNameId">
                 <div class="inp">
                   <input
                     [id]="costNameId"
@@ -268,11 +267,7 @@
               </ui-field>
             </div>
             <div class="row row--3">
-              <ui-field
-                label="Jak często pobierana jest opłata?"
-                num="8b"
-                [inputId]="costFrequencyId"
-              >
+              <ui-field label="Jak często pobierana jest opłata?" [inputId]="costFrequencyId">
                 <ui-select
                   [inputId]="costFrequencyId"
                   [formControl]="cost.controls.frequency"
@@ -280,7 +275,7 @@
                   [labels]="insuranceFrequencyOptions | insuranceFrequencyLabel"
                 />
               </ui-field>
-              <ui-field label="Jak wyliczana jest opłata?" num="8c" [inputId]="costCalcMethodId">
+              <ui-field label="Jak wyliczana jest opłata?" [inputId]="costCalcMethodId">
                 <ui-select
                   [inputId]="costCalcMethodId"
                   [formControl]="cost.controls.calcMethod"
@@ -288,7 +283,7 @@
                   [labels]="lifeInsCalcOptions | lifeInsuranceCalcMethodLabel"
                 />
               </ui-field>
-              <ui-field label="Kwota" num="8d" [inputId]="costValueId">
+              <ui-field label="Kwota" [inputId]="costValueId">
                 <ui-number-input
                   [inputId]="costValueId"
                   [formControl]="cost.controls.value"
@@ -299,17 +294,17 @@
             </div>
             @if (additionalCostFrequencies()[$index] === InsuranceFrequency.ONE_TIME) {
               <div class="row row--2">
-                <ui-field label="Miesiąc płatności" num="8e" [inputId]="costFromId">
+                <ui-field label="Miesiąc płatności" [inputId]="costFromId">
                   <ui-month-picker [inputId]="costFromId" [formControl]="cost.controls.from" />
                 </ui-field>
               </div>
             } @else {
               @let costToId = 'additional-cost-' + $index + '-to';
               <div class="row row--2">
-                <ui-field label="Od" num="8e" [inputId]="costFromId">
+                <ui-field label="Od" [inputId]="costFromId">
                   <ui-month-picker [inputId]="costFromId" [formControl]="cost.controls.from" />
                 </ui-field>
-                <ui-field label="do" num="8f" [inputId]="costToId">
+                <ui-field label="Do" [inputId]="costToId">
                   <ui-month-picker [inputId]="costToId" [formControl]="cost.controls.to" />
                 </ui-field>
               </div>
@@ -340,7 +335,7 @@
         <ui-field label="Od" num="9b" inputId="promo-from">
           <ui-month-picker inputId="promo-from" [formControl]="promoFromControl" />
         </ui-field>
-        <ui-field label="do" num="9c" inputId="promo-to">
+        <ui-field label="Do" num="9c" inputId="promo-to">
           <ui-month-picker inputId="promo-to" [formControl]="promoToControl" />
         </ui-field>
       </div>
