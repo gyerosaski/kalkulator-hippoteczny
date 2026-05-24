@@ -21,6 +21,9 @@
       <div class="col-head">
         <ui-color-code-marker [variant]="ColorCodeMarkerVariant.INTEREST" />Odsetki
       </div>
+      @if (isRateColumnEnabled()) {
+        <div>Oprocentowanie</div>
+      }
       @if (isPrepaymentEnabled) {
         <div class="col-head">
           <ui-color-code-marker [variant]="ColorCodeMarkerVariant.PREPAYMENT" />Nadpłaty
@@ -50,6 +53,17 @@
         <div class="mono">{{ year.sumRate | formatAmount }}</div>
         <div class="mono c-cap">{{ year.sumCapital | formatAmount }}</div>
         <div class="mono c-int">{{ year.sumInterest | formatAmount }}</div>
+        @if (isRateColumnEnabled()) {
+          <div class="mono">
+            @if (year.firstInterestRate === year.lastInterestRate) {
+              {{ year.firstInterestRate | formatRate }}
+            } @else {
+              {{ year.firstInterestRate | formatRate }}<icon-arrow-right />{{
+                year.lastInterestRate | formatRate
+              }}
+            }
+          </div>
+        }
         @if (isPrepaymentEnabled) {
           <div class="mono c-over">{{ year.sumPrepayment | formatAmount }}</div>
         }
@@ -73,6 +87,16 @@
             <div class="mono">{{ row.rate | formatAmount }}</div>
             <div class="mono c-cap">{{ row.capital | formatAmount }}</div>
             <div class="mono c-int">{{ row.interest | formatAmount }}</div>
+            @if (isRateColumnEnabled()) {
+              @let prevRate = $index > 0 ? year.rows[$index - 1].interestRate : row.interestRate;
+              <div
+                class="mono"
+                [class.rate-lower]="row.interestRate < prevRate"
+                [class.rate-higher]="row.interestRate > prevRate"
+              >
+                {{ row.interestRate | formatRate }}
+              </div>
+            }
             @if (isPrepaymentEnabled) {
               <div class="mono c-over">{{ row.prepayment | formatAmount }}</div>
             }

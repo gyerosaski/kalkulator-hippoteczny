@@ -278,6 +278,8 @@ function groupByYear(rows: ScheduleRow[]): YearGroup[] {
       sumCommission: 0,
       sumInsuranceCost: 0,
       lastRemaining: 0,
+      firstInterestRate: 0,
+      lastInterestRate: 0,
       rows: [],
     };
     group.sumRate += row.rate;
@@ -287,6 +289,10 @@ function groupByYear(rows: ScheduleRow[]): YearGroup[] {
     group.sumCommission += row.commission;
     group.sumInsuranceCost += row.insuranceCost;
     group.lastRemaining = row.remaining;
+    if (group.rows.length === 0) {
+      group.firstInterestRate = row.interestRate;
+    }
+    group.lastInterestRate = row.interestRate;
     group.rows.push(row);
     out.set(year, group);
   }

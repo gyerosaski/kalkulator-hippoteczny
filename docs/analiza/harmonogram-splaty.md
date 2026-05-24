@@ -26,17 +26,16 @@
 
 ## 1.1. Kolumna „Oprocentowanie” (warunkowa)
 
-Kolumna pojawia się **wyłącznie** wtedy, gdy w symulacji występuje zmiana oprocentowania w czasie (`ScheduleResult.hasRateChange === true`). Warunki uruchamiające — zgodne z § 5.4 `wykresy.md`:
+Kolumna pojawia się **wyłącznie** wtedy, gdy w symulacji występuje zmiana oprocentowania w czasie. Warunki uruchamiające:
 
-- istnieje więcej niż jeden okres oprocentowania (`ratePeriods.length ≥ 1`),
-- niezerowe **ubezpieczenie pomostowe** (`bridgeRate > 0 ∧ bridgeMonths > 0`),
-- niezerowe **ubezpieczenie niskiego wkładu** (`lowDownRate > 0`),
-- niezerowa **promocja oprocentowania** (`promoRate > 0`).
+- istnieje więcej niż jeden okres oprocentowania i różnią się one od siebie,
+- niezerowe **ubezpieczenie pomostowe**,
+- niezerowe **ubezpieczenie niskiego wkładu**,
+- niezerowa **promocja oprocentowania**.
 
-Renderowanie:
+Prezentacja:
 
-- **Warstwa miesięczna** — wartość `rows[m].rate` w formacie `0,00 %`. Komórka komunikuje skok wizualnie: jeżeli `rows[m].rate ≠ rows[m-1].rate`, komórkę otacza cienka kropka koloru `--c-int` (znacznik zmiany), a w `title` umieszczany jest powód (np. „koniec ubezpieczenia pomostowego”, „okres 2 — WIBOR + marża”).
-- **Warstwa roczna** — jeżeli wszystkie miesiące roku mają tę samą stopę, wyświetla się pojedyncza wartość (`7,90 %`). Jeśli w roku występuje zmiana — wyświetla się zakres ze strzałką (`9,10 % → 7,90 %`, kierunek zgodny z czasem).
+- **Warstwa roczna** — jeżeli wszystkie miesiące roku mają tę samą stopę, wyświetla się pojedyncza wartość (`7,90 %`). Jeśli w roku występuje zmiana — wyświetla się zakres ze strzałką (`9,10 % → 7,90 %`, kierunek zgodny z czasem, pierwsza wartość to oprocentowanie w pierwszym miesiącu okresu rocznego, a druga w ostatnim).
+- **Warstwa miesięczna** — wartość miesięczna w formacie `0,00 %`. Komórka komunikuje skok wizualnie: jeżeli oprocentowanie jest niższe niż w poprzednim miesiącu, wartość ma kolor zielony, jeśli jest wyższe to czerwony.
+
 - Kolejność kolumny: bezpośrednio po „Odsetki” (intuicyjne sąsiedztwo — przy oglądaniu kwoty odsetek widoczna jest stopa, z której powstała).
-
-Kolumna **nie jest** renderowana, gdy `hasRateChange === false` — w tym przypadku tabela zachowuje 7-kolumnowy układ taki, jak dotychczas.

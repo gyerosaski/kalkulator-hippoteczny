@@ -25,3 +25,10 @@ ui-card {
   justify-content: flex-end;
   gap: 6px;
 }
+
+.rate-lower {
+  color: var(--c-cap);
+}
+.rate-higher {
+  color: var(--c-int);
+}

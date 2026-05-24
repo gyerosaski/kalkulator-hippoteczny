@@ -3,9 +3,11 @@ import { YearGroup, ScheduleRow, MortgageResults } from '../../../model';
 import { SelectedMonthService } from '../../../services/selected-month/selected-month.service';
 import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
 import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
+import { FormatRatePipe } from '../../../pipes/format-rate/format-rate.pipe';
 import { FormService } from '../../../services/form/form';
 import { IconChevronRightComponent } from '../../icons/icon-chevron-right/icon-chevron-right.component';
 import { IconChevronDownComponent } from '../../icons/icon-chevron-down/icon-chevron-down.component';
+import { IconArrowRightComponent } from '../../icons/icon-arrow-right/icon-arrow-right.component';
 import { ColorCodeArea } from '../../../model';
 import { ColorCodeMarkerComponent } from '../../ui/color-code-marker/color-code-marker.component';
 import { CardComponent } from '../../ui/card/card.component';
@@ -27,8 +29,10 @@ const TITLE_MONTH_FORMATTER = new Intl.DateTimeFormat('pl-PL', {
   imports: [
     FormatMonthPipe,
     FormatAmountPipe,
+    FormatRatePipe,
     IconChevronRightComponent,
     IconChevronDownComponent,
+    IconArrowRightComponent,
     ColorCodeMarkerComponent,
     CardComponent,
   ],
@@ -67,8 +71,11 @@ export class ResultsScheduleComponent {
     return this.formService.isOverheadCostsEnabled;
   }
 
+  readonly isRateColumnEnabled = computed(() => this.results().hasRateChanges);
+
   get gridColumns(): string {
     const cols = ['1.4fr', '1fr', '1fr', '1fr'];
+    if (this.isRateColumnEnabled()) cols.push('1fr');
     if (this.isPrepaymentEnabled) cols.push('1fr');
     if (this.isOverheadCostsEnabled) cols.push('1fr');
     cols.push('1.2fr');

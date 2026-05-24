@@ -552,6 +552,7 @@ export class CalculatorService {
         rate: totalRateForMonth,
         capital,
         interest,
+        interestRate: monthEffRate,
         prepayment,
         commission,
         remaining: saldo,
@@ -583,6 +584,9 @@ export class CalculatorService {
       }
     }
 
+    const hasRateChanges =
+      schedule.length > 1 && schedule.some((row) => row.interestRate !== schedule[0].interestRate);
+
     // Sumy i wskaźniki
     const totalRate = schedule.reduce((s, r) => s + r.rate, 0);
     const totalCapital = schedule.reduce((s, r) => s + r.capital, 0);
@@ -611,6 +615,7 @@ export class CalculatorService {
       totalMonths: schedule.length,
       amortizationMonths: Math.max(0, schedule.length - Math.min(graceMonths, schedule.length)),
       firstInstallment: first,
+      hasRateChanges,
       totals: {
         totalRate,
         totalCapital,

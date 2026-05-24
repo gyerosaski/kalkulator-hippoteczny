@@ -166,6 +166,7 @@ export interface ScheduleRow {
   rate: number; // Rata
   capital: number; // Kapitał
   interest: number; // Odsetki
+  interestRate: number; // Efektywna stopa roczna w % dla tego miesiąca, np. 7.90
   prepayment: number; // Nadpłata
   commission: number; // Prowizja za wcześniejszą spłatę
   remaining: number; // Pozostało do spłaty po racie
@@ -177,6 +178,7 @@ export interface MortgageResults {
   totalMonths: number; // n łącznie (lata*12+miesiące)
   amortizationMonths: number; // n po karencji
   firstInstallment: { rate: number; capital: number; interest: number } | null;
+  hasRateChanges: boolean; // true jeśli jakakolwiek stopa różni się od pierwszego wiersza
   totals: {
     totalRate: number;
     totalCapital: number;
@@ -198,6 +200,8 @@ export interface YearGroup {
   sumCommission: number;
   sumInsuranceCost: number;
   lastRemaining: number;
+  firstInterestRate: number; // interestRate pierwszego wiersza roku
+  lastInterestRate: number; // interestRate ostatniego wiersza roku
   rows: ScheduleRow[];
 }
 
