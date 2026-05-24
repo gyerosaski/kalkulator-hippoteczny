@@ -8,6 +8,8 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { ask as askDialog } from '@tauri-apps/plugin-dialog';
 
@@ -25,11 +27,11 @@ import {
 } from '../../services/saved-calculations-state/saved-calculations-state.service';
 import { RelativeTimePipe } from '../../pipes/relative-time/relative-time.pipe';
 import { CalculationsListComponent } from '../../components/calculations/calculations-list/calculations-list.component';
+import { SelectComponent } from '../../components/ui/select/select.component';
 import { IconPlusComponent } from '../../components/icons/icon-plus/icon-plus.component';
 import { IconDownloadComponent } from '../../components/icons/icon-download/icon-download.component';
 import { IconCompareComponent } from '../../components/icons/icon-compare/icon-compare.component';
 import { IconSearchComponent } from '../../components/icons/icon-search/icon-search.component';
-import { IconChevronDownComponent } from '../../components/icons/icon-chevron-down/icon-chevron-down.component';
 import { IconCheckCircleComponent } from '../../components/icons/icon-check-circle/icon-check-circle.component';
 
 type SortComparator = (a: SavedCalculation, b: SavedCalculation) => number;
@@ -49,8 +51,10 @@ const SORT_COMPARATORS: Record<SavedCalculationSortOption, SortComparator> = {
   templateUrl: './calculations-manager.component.html',
   styleUrl: './calculations-manager.component.scss',
   imports: [
+    ReactiveFormsModule,
     RelativeTimePipe,
     CalculationsListComponent,
+    SelectComponent,
     SaveCalculationDialogComponent,
     RenameCalculationDialogComponent,
     DeleteCalculationDialogComponent,
@@ -58,7 +62,6 @@ const SORT_COMPARATORS: Record<SavedCalculationSortOption, SortComparator> = {
     IconDownloadComponent,
     IconCompareComponent,
     IconSearchComponent,
-    IconChevronDownComponent,
     IconCheckCircleComponent,
   ],
 })
@@ -73,7 +76,7 @@ export class CalculationsManagerComponent implements OnInit {
   private readonly renameDialog = viewChild.required(RenameCalculationDialogComponent);
   private readonly deleteDialog = viewChild.required(DeleteCalculationDialogComponent);
 
-  protected readonly sortOptions: { value: SavedCalculationSortOption; label: string }[] = [
+  private readonly sortOptions: { value: SavedCalculationSortOption; label: string }[] = [
     { value: SavedCalculationSortOption.UPDATED, label: 'ostatnio zmodyfikowane' },
     { value: SavedCalculationSortOption.CREATED, label: 'data utworzenia' },
     { value: SavedCalculationSortOption.NAME, label: 'nazwa (A–Z)' },
@@ -81,10 +84,18 @@ export class CalculationsManagerComponent implements OnInit {
     { value: SavedCalculationSortOption.FIRST_INSTALLMENT, label: 'wysokość raty' },
   ];
 
+  protected readonly sortOptionValues = this.sortOptions.map((option) => option.value);
+  protected readonly sortOptionLabels = this.sortOptions.map((option) => option.label);
+
   readonly searchQuery = signal('');
-  readonly activeSortOption = signal<SavedCalculationSortOption>(
+  readonly activeSortControl = new FormControl<SavedCalculationSortOption>(
     SavedCalculationSortOption.UPDATED,
+    { nonNullable: true },
   );
+
+  private readonly activeSortValue = toSignal(this.activeSortControl.valueChanges, {
+    initialValue: SavedCalculationSortOption.UPDATED,
+  });
 
   readonly toastMessage = signal<string | null>(null);
   private toastTimeoutId: ReturnType<typeof setTimeout> | null = null;
@@ -111,7 +122,7 @@ export class CalculationsManagerComponent implements OnInit {
     if (query) {
       items = items.filter((item) => item.name.toLowerCase().includes(query));
     }
-    return [...items].sort(SORT_COMPARATORS[this.activeSortOption()]);
+    return [...items].sort(SORT_COMPARATORS[this.activeSortValue()]);
   });
 
   readonly hasActiveFilter = computed(() => !!this.searchQuery());

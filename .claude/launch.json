@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "kalkulator",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["start", "--", "--port", "4202"],
+      "port": 4202
+    }
+  ]
+}

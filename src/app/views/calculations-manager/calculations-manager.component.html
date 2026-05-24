@@ -62,17 +62,11 @@
 
     <div class="sort-control">
       <span class="muted small">Sortuj:</span>
-      <div class="sel sel--compact">
-        <select
-          [value]="activeSortOption()"
-          (change)="activeSortOption.set($any($event.target).value)"
-        >
-          @for (option of sortOptions; track option.value) {
-            <option [value]="option.value">{{ option.label }}</option>
-          }
-        </select>
-        <icon-chevron-down />
-      </div>
+      <ui-select
+        [formControl]="activeSortControl"
+        [options]="sortOptionValues"
+        [labels]="sortOptionLabels"
+      />
     </div>
   </div>
 
