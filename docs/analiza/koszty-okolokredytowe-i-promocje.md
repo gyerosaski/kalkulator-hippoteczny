@@ -78,7 +78,15 @@ Wyliczanie (`calcInsuranceCostForMonth`):
 | ----------------------- | ----------------- | ------------------- | --------- | --------- |
 | `lowEquityRateIncrease` | `ui-number-input` | `Validators.min(0)` | `0`       | `%`       |
 
-Mechanizm: w `getEffectiveRateForMonth` stopa jest powiększana o `lowEquityRateIncrease` przez cały okres kredytu (nie ma daty granicznej). Wpływa pośrednio na odsetki, nie na `overheadCosts`.
+Mechanizm: w `getEffectiveRateForMonth` stopa jest powiększana o `lowEquityRateIncrease` tylko wtedy, gdy bieżące LTV przekracza 80%. LTV jest obliczane w każdym miesiącu jako:
+
+```
+currentLtv = (currentBalance / propertyValue) × 100
+```
+
+Podwyżka obowiązuje, gdy `currentLtv > 80` — automatycznie przestaje być stosowana w miesiącu, w którym saldo kredytu spadnie wystarczająco, by LTV osiągnęło lub przekroczyło próg 80% od góry (tj. `currentBalance / propertyValue ≤ 0,80`). Nie ma konfigurowalnej daty granicznej — warunek jest sprawdzany co miesiąc. Wpływa pośrednio na odsetki, nie na `overheadCosts`.
+
+Przykład: kredyt 420 000 zł przy wartości nieruchomości 500 000 zł → LTV = 84% → podwyżka aktywna. Po nadpłatach redukujących saldo do 399 000 zł → LTV = 79,8% ≤ 80% → podwyżka wyłącza się automatycznie.
 
 ### 2.6. Karta `UBEZPIECZENIE NA ŻYCIE`
 

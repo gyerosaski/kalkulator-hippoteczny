@@ -333,3 +333,144 @@ describe('MortgageCalcService (ubezpieczenia % salda)', () => {
     expect(firstCapitalRow!.insuranceCost).toBeCloseTo(150, 2);
   });
 });
+
+describe('MortgageCalcService (ubezpieczenie niskiego wkładu)', () => {
+  let service: CalculatorService;
+
+  beforeEach(() => {
+    service = new CalculatorService();
+  });
+
+  function buildLowEquityInsuranceOverheadCosts(): OverheadCostsInputs {
+    return {
+      commissionValue: 0,
+      commissionCalcMethod: CommissionCalcMethod.PERCENTAGE,
+      appraisalFee: 0,
+      lowEquityInsurance: { rateIncrease: 2 },
+    };
+  }
+
+  function buildLowEquityInputs(loanAmount: number, propertyValue: number): MortgageInputs {
+    return {
+      propertyValue,
+      loanAmount,
+      ltv: propertyValue > 0 ? (loanAmount / propertyValue) * 100 : 0,
+      loanPeriod: 20 * 12,
+      startDate: '2026-01',
+      capitalStartDate: '2026-02',
+      installmentType: InstallmentType.EQUAL,
+      ratePeriods: [
+        {
+          from: '2026-01',
+          rateType: RateType.FIXED,
+          nominalRate: 6,
+          wibor: 0,
+          margin: 0,
+        },
+      ],
+      prepaymentRules: [],
+      targetInstallmentRule: {
+        targetRate: 0,
+        from: '2026-01',
+        to: '2026-01',
+        effect: PrepaymentEffect.LOWER_INSTALLMENT,
+      },
+      overheadCosts: buildLowEquityInsuranceOverheadCosts(),
+    };
+  }
+
+  it('podwyżka oprocentowania aktywna gdy LTV > 80%', () => {
+    // LTV = 450_000 / 500_000 = 90% > 80%
+    const inputsWithLei = buildLowEquityInputs(450_000, 500_000);
+    const inputsWithoutLei = { ...inputsWithLei, overheadCosts: undefined };
+
+    const resultWithLei = service.compute(inputsWithLei);
+    const resultWithoutLei = service.compute(inputsWithoutLei);
+
+    const rowWithLei = resultWithLei.schedule[0];
+    const rowWithoutLei = resultWithoutLei.schedule[0];
+
+    expect(rowWithLei).toBeTruthy();
+    expect(rowWithoutLei).toBeTruthy();
+    // Przy LTV 90% ubezpieczenie niskiego wkładu powinno podwyższać odsetki
+    expect(rowWithLei.interest).toBeGreaterThan(rowWithoutLei.interest);
+  });
+
+  it('podwyżka oprocentowania nieaktywna gdy LTV <= 80%', () => {
+    // LTV = 300_000 / 500_000 = 60% <= 80%
+    const inputsWithLei = buildLowEquityInputs(300_000, 500_000);
+    const inputsWithoutLei = { ...inputsWithLei, overheadCosts: undefined };
+
+    const resultWithLei = service.compute(inputsWithLei);
+    const resultWithoutLei = service.compute(inputsWithoutLei);
+
+    const rowWithLei = resultWithLei.schedule[0];
+    const rowWithoutLei = resultWithoutLei.schedule[0];
+
+    expect(rowWithLei).toBeTruthy();
+    expect(rowWithoutLei).toBeTruthy();
+    // Przy LTV 60% ubezpieczenie niskiego wkładu nie powinno podwyższać odsetek
+    expect(rowWithLei.interest).toBeCloseTo(rowWithoutLei.interest, 2);
+  });
+
+  it('po nadpłacie redukującej LTV poniżej 80%, podwyżka przestaje obowiązywać', () => {
+    // Kredyt 420_000 przy wartości nieruchomości 500_000 → LTV = 84% > 80%
+    // Jednorazowa nadpłata 30_000 w 2026-03 obniża saldo poniżej 400_000 → LTV < 80%
+    const inputs: MortgageInputs = {
+      propertyValue: 500_000,
+      loanAmount: 420_000,
+      ltv: 84,
+      loanPeriod: 20 * 12,
+      startDate: '2026-01',
+      capitalStartDate: '2026-02',
+      installmentType: InstallmentType.EQUAL,
+      ratePeriods: [
+        {
+          from: '2026-01',
+          rateType: RateType.FIXED,
+          nominalRate: 6,
+          wibor: 0,
+          margin: 0,
+        },
+      ],
+      prepaymentRules: [
+        {
+          frequency: PrepaymentFrequency.ONE_TIME,
+          from: '2026-03',
+          to: '2026-03',
+          amount: 30_000,
+          effect: PrepaymentEffect.SHORTEN_PERIOD,
+        },
+      ],
+      targetInstallmentRule: {
+        targetRate: 0,
+        from: '2026-01',
+        to: '2026-01',
+        effect: PrepaymentEffect.LOWER_INSTALLMENT,
+      },
+      overheadCosts: buildLowEquityInsuranceOverheadCosts(),
+    };
+
+    const result = service.compute(inputs);
+
+    // Po nadpłacie 30_000 saldo spada poniżej 400_000 → LTV < 80%
+    const rowAfterPrepayment = result.schedule.find((row) => row.date === '2026-04');
+    const rowBeforePrepayment = result.schedule.find((row) => row.date === '2026-02');
+
+    expect(rowBeforePrepayment).toBeTruthy();
+    expect(rowAfterPrepayment).toBeTruthy();
+
+    // Saldo w 2026-03 (po nadpłacie) powinno być poniżej progu 80% LTV (400_000)
+    const balanceAfterPrepaymentMonth = result.schedule.find(
+      (row) => row.date === '2026-03',
+    )!.remaining;
+    expect(balanceAfterPrepaymentMonth).toBeLessThan(400_000);
+
+    // Efektywna stopa odsetkowa (odsetki / saldo) powinna być niższa po spadku LTV poniżej 80%
+    const balanceBeforePrepayment = rowBeforePrepayment!.remaining + rowBeforePrepayment!.capital;
+    const balanceForApril = rowAfterPrepayment!.remaining + rowAfterPrepayment!.capital;
+    const effectiveRateBeforePrepayment = rowBeforePrepayment!.interest / balanceBeforePrepayment;
+    const effectiveRateAfterPrepayment = rowAfterPrepayment!.interest / balanceForApril;
+    expect(effectiveRateAfterPrepayment).toBeLessThan(effectiveRateBeforePrepayment);
+  });
+});

@@ -296,6 +296,8 @@ export class CalculatorService {
     baseRate: number,
     date: string,
     startDate: string,
+    currentBalance: number,
+    propertyValue: number,
     oc?: OverheadCostsInputs,
   ): number {
     let rate = baseRate;
@@ -310,10 +312,13 @@ export class CalculatorService {
       }
     }
 
-    // 5. Ubezpieczenie niskiego wkładu – podwyższenie oprocentowania (bezterminowe)
+    // 5. Ubezpieczenie niskiego wkładu – podwyższenie oprocentowania gdy LTV > 80%
     const lei = oc.lowEquityInsurance;
     if (lei && lei.rateIncrease > 0) {
-      rate += lei.rateIncrease;
+      const currentLtv = propertyValue > 0 ? (currentBalance / propertyValue) * 100 : 100;
+      if (currentLtv > 80) {
+        rate += lei.rateIncrease;
+      }
     }
 
     // 9. Promocyjna wysokość oprocentowania – obniżenie
@@ -453,6 +458,8 @@ export class CalculatorService {
         baseEffectiveRate,
         date,
         inputs.startDate,
+        saldo,
+        inputs.propertyValue,
         oc,
       );
       const iMonth = this.monthlyRate(monthEffRate);

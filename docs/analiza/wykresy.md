@@ -83,3 +83,45 @@ Najechanie kursorem na rok pokazuje pop-over z:
 - Tooltip (5.3.6) renderowany w obrębie tego samego SVG (grupa `<g>` z prostokątem tła i wierszami tekstu), aktywowany niewidoczną „strefą złapania kursora” (`<rect>`) na całą wysokość kolumny rocznej. Pozycja tooltipu przełącza się na lewą stronę kolumny, gdy jest ona w prawej połowie wykresu.
 - Motyw: dziedziczy zmienne CSS palety i kolorów semantycznych (`--c-int`, `--c-cost`, `--c-cap`, `--c-over`) oraz neutralnych (`--ink`, `--grid`, `--line-2`, `--surface`, `--muted`) — działa w trybie jasnym i ciemnym.
 - Tytuł korzysta z `Intl.DateTimeFormat('pl-PL', { month: 'long', year: 'numeric' })`, więc nazwy miesięcy są pełne (np. „czerwiec 2026 - maj 2046”).
+
+### 5.4. „Zmiana oprocentowania w czasie” (wykres warunkowy)
+
+Wykres prezentowany **wyłącznie** wtedy, gdy w symulacji kredytu występuje co najmniej jedna z poniższych okoliczności wywołujących zmianę efektywnego oprocentowania w trakcie spłaty:
+
+1. **Więcej niż jeden okres oprocentowania** — użytkownik dodał ≥ 1 dodatkowy `RatePeriod` w „Daty podstawowe → Oprocentowanie”.
+2. **Ubezpieczenie pomostowe** — niezerowa stawka `bridgeRate` przez `bridgeMonths > 0` pierwszych miesięcy spłaty.
+3. **Ubezpieczenie niskiego wkładu** — niezerowa stawka `lowDownRate` obowiązująca, dopóki saldo / wartość nieruchomości > 80%.
+4. **Promocja oprocentowania** — niezerowa stawka `promoRate` obniżająca oprocentowanie pomiędzy `promoFrom` a `promoTo`.
+
+Jeśli **żadna** z tych okoliczności nie zachodzi, karta wykresu nie jest renderowana. W sposób analogiczny prezentowana jest kolumna "Oprocentowanie" w harmonogramie spłaty
+
+#### 5.4.1. Typ wykresu
+
+- **Step-line** (linia schodkowa, `step-after`) — oprocentowanie pomiędzy zmianami jest stałe, zmiany rysowane są jako pionowe „skoki”. Najwierniej oddaje zachowanie stopy nominalnej w bankowości — stopa nie interpoluje się liniowo, tylko obowiązuje od konkretnego miesiąca.
+- Jedna oś X (czas), jedna oś Y (oprocentowanie w %).
+- Pod linią cienka, półprzezroczysta „pod-poświata” (`fill: var(--c-int) / 12 %`) w kolorze grupy odsetkowej — wykres należy do grupy semantycznej „odsetki” w hierarchii kolorów.
+
+#### 5.4.2. Oś X — czas
+
+- Skala czasowa (miesiące spłaty, ale etykiety pokazują **lata kalendarzowe** jak na wykresie trendu §5.3).
+- Etykiety obrócone o 90° (taka sama konwencja jak `TrendChart`).
+- Pierwszy tick = data pierwszej raty z harmonogramu, ostatni = data ostatniej raty z harmonogramu.
+
+#### 5.4.3. Oś Y — oprocentowanie
+
+- Format etykiet: `0,00 %`, `2,50 %`, `5,00 %`, `7,50 %`, `10,00 %` — krok adaptacyjny (0,5 / 1 / 2% zależnie od rozpiętości).
+- Zakres: `[0; ceil(maxRate × 1,1)]` z marginesem ~10% nad maksimum, w dół zawsze do 0%.
+- Etykieta osi (rotacja 90°): „Oprocentowanie”.
+
+#### 5.4.4. Tooltip
+
+Najechanie na obszar wykresu pokazuje pop-over z:
+
+- Nagłówkiem: data miesiąca (np. `lip 2028`).
+- `Oprocentowanie` = efektywna stopa nominalna w tym miesiącu.
+
+#### 5.4.5. Wymagania techniczne
+
+- Implementacja docelowa: natywny SVG step-path.
+- Karta wstawiana **bezpośrednio nad** „Tabela harmonogramu”, pod kartą trendu §5.3.
+- Motyw: kolory `--c-int`, `--c-int-mid`, `--c-cost-mid`, `--c-cap-mid`, `--accent`, `--ink` — działa w trybie jasnym i ciemnym.
