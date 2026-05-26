@@ -4,7 +4,7 @@
 
 - Aplikacja: `Kalkulator kredytu hipotecznego` (Tauri V2, Angular 21).
 - Analizowany widok: `Twoje kalkulacje`.
-- Cel widoku: przeglądanie, wyszukiwanie, sortowanie i zarządzanie (wczytanie, zmiana nazwy, duplikacja, eksport, usunięcie) zapisanymi kalkulacjami hipotecznymi przechowywanymi lokalnie na dysku.
+- Cel widoku: przeglądanie, wyszukiwanie, sortowanie i zarządzanie (wczytanie, zapisanie zmian, zmiana nazwy, duplikacja, eksport, usunięcie) zapisanymi kalkulacjami hipotecznymi przechowywanymi lokalnie na dysku.
 
 ---
 
@@ -110,12 +110,15 @@ Wyświetlany gdy po zastosowaniu aktywnych filtrów i wyszukiwania nie pozostaje
 
 #### 6.2 Menu `⋯` (więcej akcji)
 
-| Pozycja menu    | Działanie                                                                             |
-| --------------- | ------------------------------------------------------------------------------------- |
-| `Zmień nazwę`   | Otwiera modal zmiany nazwy (sekcja 7.1)                                               |
-| `Duplikuj`      | Tworzy kopię kalkulacji z nową nazwą (z sufiksem); toast: `Utworzono kopię „{nazwa}"` |
-| `Eksportuj CSV` | Placeholder — nie wdrożone w bieżącej wersji designu                                  |
-| `Usuń`          | Otwiera modal potwierdzenia usunięcia (sekcja 7.2)                                    |
+| Pozycja menu    | Działanie                                                                                                                                                   |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Zapisz zmiany` | Nadpisuje bieżący rekord aktualnym stanem formularza; widoczna tylko gdy kalkulacja jest wczytana **i** zmodyfikowana; toast: `Zapisano zmiany w „{nazwa}"` |
+| `Zmień nazwę`   | Otwiera modal zmiany nazwy (sekcja 7.1)                                                                                                                     |
+| `Duplikuj`      | Tworzy kopię kalkulacji z nową nazwą (z sufiksem); toast: `Utworzono kopię „{nazwa}"`                                                                       |
+| `Eksportuj CSV` | Placeholder — nie wdrożone w bieżącej wersji designu                                                                                                        |
+| `Usuń`          | Otwiera modal potwierdzenia usunięcia (sekcja 7.2)                                                                                                          |
+
+Przy zapisaniu zmian: zachowywane jest oryginalne pole `createdAt`, aktualizowane `updatedAt` i `metadata` (dane z bieżącego wyniku kalkulatora). Po zapisie sygnał `isLoadedCalculationModified` wraca do `false` (odświeżony snapshot).
 
 #### 6.3 Zachowanie menu ⋯
 
@@ -157,7 +160,7 @@ Wyświetlany gdy po zastosowaniu aktywnych filtrów i wyszukiwania nie pozostaje
 
 ### 8. Toast (powiadomienie)
 
-- Wyświetlany po zakończeniu każdej akcji: wczytanie, zmiana nazwy, duplikacja, usunięcie.
+- Wyświetlany po zakończeniu każdej akcji: wczytanie, zapisanie zmian, zmiana nazwy, duplikacja, usunięcie.
 - Automatycznie znika po **3,2 s**.
 - Każde nowe powiadomienie anuluje aktywny timeout i natychmiast zastępuje poprzedni tekst.
 

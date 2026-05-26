@@ -13,6 +13,7 @@ import { IconArrowRightComponent } from '../../icons/icon-arrow-right/icon-arrow
 import { IconDotsComponent } from '../../icons/icon-dots/icon-dots.component';
 import { IconDuplicateComponent } from '../../icons/icon-duplicate/icon-duplicate.component';
 import { IconEditComponent } from '../../icons/icon-edit/icon-edit.component';
+import { IconSaveComponent } from '../../icons/icon-save/icon-save.component';
 import { IconTrashComponent } from '../../icons/icon-trash/icon-trash.component';
 
 @Component({
@@ -27,6 +28,7 @@ import { IconTrashComponent } from '../../icons/icon-trash/icon-trash.component'
     IconDotsComponent,
     IconEditComponent,
     IconDuplicateComponent,
+    IconSaveComponent,
     IconTrashComponent,
   ],
 })
@@ -37,6 +39,7 @@ export class CalculationsListComponent {
   readonly hasActiveFilter = input.required<boolean>();
 
   readonly load = output<SavedCalculation>();
+  readonly saveChanges = output<SavedCalculation>();
   readonly rename = output<SavedCalculation>();
   readonly delete = output<SavedCalculation>();
   readonly duplicate = output<SavedCalculation>();

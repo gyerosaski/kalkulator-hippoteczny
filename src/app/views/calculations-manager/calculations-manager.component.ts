@@ -201,6 +201,41 @@ export class CalculationsManagerComponent implements OnInit {
     }
   }
 
+  async saveCurrentCalculation(calculation: SavedCalculation): Promise<void> {
+    const existingRecord = this.savedCalculationsStateService
+      .records()
+      .find((record) => record.name === calculation.name);
+    if (!existingRecord) return;
+
+    const formData = this.formService.form.getRawValue();
+    const results = this.calculatorState.results();
+    const now = new Date().toISOString();
+
+    const metadata: SavedCalculationMetadata | undefined = results
+      ? {
+          firstInstallment: results.firstInstallment?.rate ?? 0,
+          totalInterest: results.totals.totalInterest,
+          totalCosts: results.totals.overheadCosts,
+          overpaymentsEnabled: formData.prepayments.enabled,
+          trancheCount: formData.tranches.enabled
+            ? ((formData.tranches.fields.tranches as unknown[])?.length ?? 1)
+            : 1,
+        }
+      : undefined;
+
+    const updatedRecord: SavedCalculationRecord = {
+      ...existingRecord,
+      updatedAt: now,
+      metadata,
+      data: formData,
+    };
+
+    await this.calculationsStore.saveCalculation(updatedRecord);
+    await this.savedCalculationsStateService.refreshRecords();
+    this.formService.refreshLoadedCalculationSnapshot();
+    this.showToast(`Zapisano zmiany w „${calculation.name}"`);
+  }
+
   async saveAsNewCalculation(): Promise<void> {
     const defaultName = 'Kalkulacja ' + new Date().toLocaleDateString('pl-PL');
     const name = await this.saveDialog().open(defaultName);

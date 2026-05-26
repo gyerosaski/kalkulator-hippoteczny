@@ -168,6 +168,18 @@
             </button>
             @if (openMenuName() === calculation.name) {
               <div class="actions-menu" role="menu" (click)="$event.stopPropagation()">
+                @if (
+                  calculation.name === activeCalculationName() && isLoadedCalculationModified()
+                ) {
+                  <button
+                    class="menu-item"
+                    (click)="saveChanges.emit(calculation); openMenuName.set(null)"
+                  >
+                    <icon-save />
+                    Zapisz zmiany
+                  </button>
+                  <div class="menu-separator"></div>
+                }
                 <button class="menu-item" (click)="rename.emit(calculation)">
                   <icon-edit />
                   Zmień nazwę
