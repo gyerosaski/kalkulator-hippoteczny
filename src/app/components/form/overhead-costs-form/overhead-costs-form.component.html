@@ -171,7 +171,7 @@
             [labels]="lifeInsCalcOptions | lifeInsuranceCalcMethodLabel"
           />
         </ui-field>
-        <ui-field label="Wartość składki" inputId="life-ins-value">
+        <ui-field [label]="lifeInsValueLabel" inputId="life-ins-value">
           <ui-number-input
             inputId="life-ins-value"
             [formControl]="lifeInsValueControl"
@@ -180,14 +180,22 @@
           />
         </ui-field>
       </div>
-      <div class="row row--2">
-        <ui-field label="Od" inputId="life-ins-from">
-          <ui-month-picker inputId="life-ins-from" [formControl]="lifeInsFromControl" />
-        </ui-field>
-        <ui-field label="Do" inputId="life-ins-to">
-          <ui-month-picker inputId="life-ins-to" [formControl]="lifeInsToControl" />
-        </ui-field>
-      </div>
+      @if (lifeInsFrequency() === InsuranceFrequency.ONE_TIME) {
+        <div class="row row--2">
+          <ui-field label="Miesiąc płatności" inputId="life-ins-from">
+            <ui-month-picker inputId="life-ins-from" [formControl]="lifeInsFromControl" />
+          </ui-field>
+        </div>
+      } @else {
+        <div class="row row--2">
+          <ui-field label="Od" inputId="life-ins-from">
+            <ui-month-picker inputId="life-ins-from" [formControl]="lifeInsFromControl" />
+          </ui-field>
+          <ui-field label="Do" inputId="life-ins-to">
+            <ui-month-picker inputId="life-ins-to" [formControl]="lifeInsToControl" />
+          </ui-field>
+        </div>
+      }
     </ui-subsection>
 
     <ui-divider />
@@ -215,7 +223,7 @@
             [labels]="lifeInsCalcOptions | lifeInsuranceCalcMethodLabel"
           />
         </ui-field>
-        <ui-field label="Wartość składki" inputId="job-loss-ins-value">
+        <ui-field [label]="jobLossInsValueLabel" inputId="job-loss-ins-value">
           <ui-number-input
             inputId="job-loss-ins-value"
             [formControl]="jobLossInsValueControl"
@@ -224,14 +232,22 @@
           />
         </ui-field>
       </div>
-      <div class="row row--2">
-        <ui-field label="Od" inputId="job-loss-ins-from">
-          <ui-month-picker inputId="job-loss-ins-from" [formControl]="jobLossInsFromControl" />
-        </ui-field>
-        <ui-field label="Od" inputId="job-loss-ins-to">
-          <ui-month-picker inputId="job-loss-ins-to" [formControl]="jobLossInsToControl" />
-        </ui-field>
-      </div>
+      @if (jobLossInsFrequency() === InsuranceFrequency.ONE_TIME) {
+        <div class="row row--2">
+          <ui-field label="Miesiąc płatności" inputId="job-loss-ins-from">
+            <ui-month-picker inputId="job-loss-ins-from" [formControl]="jobLossInsFromControl" />
+          </ui-field>
+        </div>
+      } @else {
+        <div class="row row--2">
+          <ui-field label="Od" inputId="job-loss-ins-from">
+            <ui-month-picker inputId="job-loss-ins-from" [formControl]="jobLossInsFromControl" />
+          </ui-field>
+          <ui-field label="Do" inputId="job-loss-ins-to">
+            <ui-month-picker inputId="job-loss-ins-to" [formControl]="jobLossInsToControl" />
+          </ui-field>
+        </div>
+      }
     </ui-subsection>
 
     <ui-divider />
@@ -283,7 +299,7 @@
                   [labels]="lifeInsCalcOptions | lifeInsuranceCalcMethodLabel"
                 />
               </ui-field>
-              <ui-field label="Kwota" [inputId]="costValueId">
+              <ui-field [label]="getAdditionalCostValueLabel($index)" [inputId]="costValueId">
                 <ui-number-input
                   [inputId]="costValueId"
                   [formControl]="cost.controls.value"

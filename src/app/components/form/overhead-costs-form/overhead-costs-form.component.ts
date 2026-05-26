@@ -295,6 +295,39 @@ export class OverheadCostsFormComponent {
       : '%';
   }
 
+  get lifeInsValueLabel(): string {
+    switch (this.form.controls.lifeInsurance.controls.lifeInsCalcMethod.value) {
+      case LifeInsuranceCalcMethod.PCT_LOAN_AMOUNT:
+        return '% kwoty kredytu';
+      case LifeInsuranceCalcMethod.PCT_BALANCE:
+        return '% salda kredytu';
+      case LifeInsuranceCalcMethod.FIXED_AMOUNT:
+        return 'Kwota';
+    }
+  }
+
+  get jobLossInsValueLabel(): string {
+    switch (this.form.controls.jobLossInsurance.controls.jobLossInsCalcMethod.value) {
+      case LifeInsuranceCalcMethod.PCT_LOAN_AMOUNT:
+        return '% kwoty kredytu';
+      case LifeInsuranceCalcMethod.PCT_BALANCE:
+        return '% salda kredytu';
+      case LifeInsuranceCalcMethod.FIXED_AMOUNT:
+        return 'Kwota';
+    }
+  }
+
+  getAdditionalCostValueLabel(index: number): string {
+    switch (this.additionalCostsArray.at(index).controls.calcMethod.value) {
+      case LifeInsuranceCalcMethod.PCT_LOAN_AMOUNT:
+        return '% kwoty kredytu';
+      case LifeInsuranceCalcMethod.PCT_BALANCE:
+        return '% salda kredytu';
+      case LifeInsuranceCalcMethod.FIXED_AMOUNT:
+        return 'Kwota';
+    }
+  }
+
   getAdditionalCostSuffix(index: number): string {
     return this.additionalCostsArray.at(index).controls.calcMethod.value ===
       LifeInsuranceCalcMethod.FIXED_AMOUNT
