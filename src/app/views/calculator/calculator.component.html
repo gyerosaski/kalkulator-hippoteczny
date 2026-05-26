@@ -18,6 +18,9 @@
           [overheadCostsEnabled]="overheadCostsEnabled"
           [prepaymentsEnabled]="prepaymentsEnabled"
         />
+        @if (resultsValue.hasRateChanges) {
+          <app-results-rate-chart [results]="resultsValue" />
+        }
         <app-results-schedule [yearlyGroups]="yearlyGroups()" [results]="resultsValue" />
       } @else {
         <app-results-errors />

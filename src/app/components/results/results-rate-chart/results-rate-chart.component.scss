@@ -1,0 +1,84 @@
+:host {
+  display: block;
+}
+
+.rate-chart-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.rate-chart-grid {
+  stroke: var(--grid);
+  stroke-dasharray: 2 4;
+}
+
+.rate-chart-baseline {
+  stroke: var(--line-2);
+}
+
+.rate-chart-axis-label {
+  font-size: 14px;
+  fill: var(--muted);
+  font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  font-feature-settings: 'tnum';
+  font-variant-numeric: tabular-nums;
+}
+
+.rate-chart-axis-title {
+  font-size: 14px;
+  fill: var(--ink-2);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.rate-chart-area {
+  fill: var(--c-int-soft);
+  stroke: none;
+}
+
+.rate-chart-line {
+  pointer-events: none;
+}
+
+.rate-chart-hover-target {
+  fill: transparent;
+  cursor: pointer;
+}
+
+.rate-chart-hover-target:hover {
+  fill: color-mix(in oklch, var(--accent) 18%, transparent);
+}
+
+.rate-chart-tooltip-bg {
+  fill: var(--surface);
+  stroke: var(--line-2);
+  stroke-width: 1;
+  filter: drop-shadow(0 4px 12px oklch(40% 0.02 250 / 0.18));
+}
+
+.rate-chart-tooltip-header {
+  font-size: 15px;
+  font-weight: 600;
+  fill: var(--ink);
+}
+
+.rate-chart-tooltip-row-label {
+  font-size: 13px;
+  fill: var(--ink-2);
+}
+
+.rate-chart-tooltip-row-value {
+  font-size: 13px;
+  fill: var(--ink);
+  font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  font-feature-settings: 'tnum';
+  font-variant-numeric: tabular-nums;
+}
+
+.rate-chart-empty {
+  padding: 32px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}

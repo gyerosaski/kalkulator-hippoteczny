@@ -1,0 +1,136 @@
+<ui-card>
+  <div class="card-head">
+    <h3>Zmiana oprocentowania w czasie</h3>
+  </div>
+
+  @if (geometry(); as geometry) {
+    <svg
+      class="rate-chart-svg"
+      [attr.viewBox]="'0 0 ' + geometry.width + ' ' + geometry.height"
+      preserveAspectRatio="xMidYMid meet"
+      (mouseleave)="setHoveredIndex(null)"
+    >
+      @for (tick of geometry.yTicks; track tick.value) {
+        <line
+          class="rate-chart-grid"
+          [attr.x1]="geometry.paddingLeft"
+          [attr.x2]="geometry.paddingLeft + geometry.innerWidth"
+          [attr.y1]="tick.position"
+          [attr.y2]="tick.position"
+        />
+        <text
+          class="rate-chart-axis-label"
+          [attr.x]="geometry.paddingLeft - 10"
+          [attr.y]="tick.position + 4"
+          text-anchor="end"
+        >
+          {{ tick.label }}
+        </text>
+      }
+
+      <text
+        class="rate-chart-axis-title"
+        [attr.x]="geometry.paddingLeft - 96"
+        [attr.y]="geometry.paddingTop + geometry.innerHeight / 2"
+        [attr.transform]="
+          'rotate(-90 ' +
+          (geometry.paddingLeft - 96) +
+          ' ' +
+          (geometry.paddingTop + geometry.innerHeight / 2) +
+          ')'
+        "
+        text-anchor="middle"
+      >
+        Nominalne oprocentowanie roczne
+      </text>
+
+      @for (tick of geometry.xTicks; track tick.value) {
+        <text
+          class="rate-chart-axis-label"
+          [attr.x]="tick.position"
+          [attr.y]="geometry.paddingTop + geometry.innerHeight + 12"
+          [attr.transform]="
+            'rotate(-90 ' +
+            tick.position +
+            ' ' +
+            (geometry.paddingTop + geometry.innerHeight + 12) +
+            ')'
+          "
+          text-anchor="end"
+        >
+          {{ tick.label }}
+        </text>
+      }
+
+      <line
+        class="rate-chart-baseline"
+        [attr.x1]="geometry.paddingLeft"
+        [attr.x2]="geometry.paddingLeft + geometry.innerWidth"
+        [attr.y1]="geometry.paddingTop + geometry.innerHeight"
+        [attr.y2]="geometry.paddingTop + geometry.innerHeight"
+      />
+
+      <path class="rate-chart-area" [attr.d]="geometry.areaPath" />
+
+      <path
+        class="rate-chart-line"
+        [attr.d]="geometry.stepPath"
+        fill="none"
+        stroke="var(--c-int)"
+        stroke-width="2"
+        stroke-linejoin="round"
+        stroke-linecap="round"
+      />
+
+      @for (point of geometry.points; track $index) {
+        <rect
+          class="rate-chart-hover-target"
+          [attr.x]="point.x - geometry.columnWidth / 2"
+          [attr.y]="geometry.paddingTop"
+          [attr.width]="geometry.columnWidth"
+          [attr.height]="geometry.innerHeight"
+          (mouseenter)="setHoveredIndex($index)"
+        />
+      }
+
+      @let tooltipModel = tooltip();
+      @if (tooltipModel) {
+        <g class="rate-chart-tooltip" pointer-events="none">
+          <rect
+            class="rate-chart-tooltip-bg"
+            [attr.x]="tooltipModel.tooltipX"
+            [attr.y]="tooltipModel.tooltipY"
+            [attr.width]="tooltipModel.tooltipWidth"
+            [attr.height]="tooltipModel.tooltipHeight"
+            rx="8"
+            ry="8"
+          />
+          <text
+            class="rate-chart-tooltip-header"
+            [attr.x]="tooltipModel.tooltipX + tooltipModel.paddingX"
+            [attr.y]="tooltipModel.tooltipY + tooltipModel.paddingY + 12"
+          >
+            {{ tooltipModel.dateLabel }}
+          </text>
+          <text
+            class="rate-chart-tooltip-row-label"
+            [attr.x]="tooltipModel.tooltipX + tooltipModel.paddingX"
+            [attr.y]="tooltipModel.tooltipY + tooltipModel.paddingY + 12 + 22"
+          >
+            Oprocentowanie
+          </text>
+          <text
+            class="rate-chart-tooltip-row-value"
+            [attr.x]="tooltipModel.tooltipX + tooltipModel.tooltipWidth - tooltipModel.paddingX"
+            [attr.y]="tooltipModel.tooltipY + tooltipModel.paddingY + 12 + 22"
+            text-anchor="end"
+          >
+            {{ tooltipModel.rateLabel }}
+          </text>
+        </g>
+      }
+    </svg>
+  } @else {
+    <div class="rate-chart-empty">Brak danych do wyświetlenia.</div>
+  }
+</ui-card>

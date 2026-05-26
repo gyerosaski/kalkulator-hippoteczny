@@ -29,6 +29,7 @@ import { PrepaymentsFormComponent } from '../../components/form/prepayments-form
 import { ResultsSummaryComponent } from '../../components/results/results-summary/results-summary.component';
 import { ResultsChartsComponent } from '../../components/results/results-charts/results-charts.component';
 import { ResultsTrendChartComponent } from '../../components/results/results-trend-chart/results-trend-chart.component';
+import { ResultsRateChartComponent } from '../../components/results/results-rate-chart/results-rate-chart.component';
 import { ResultsScheduleComponent } from '../../components/results/results-schedule/results-schedule.component';
 import { ResultsErrorsComponent } from '../../components/errors/results-errors/results-errors.component';
 import { nextMonthStr } from '../../helpers/date.helper';
@@ -45,6 +46,7 @@ import { nextMonthStr } from '../../helpers/date.helper';
     ResultsSummaryComponent,
     ResultsChartsComponent,
     ResultsTrendChartComponent,
+    ResultsRateChartComponent,
     ResultsScheduleComponent,
     ResultsErrorsComponent,
   ],

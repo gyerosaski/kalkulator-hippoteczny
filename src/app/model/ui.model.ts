@@ -86,3 +86,44 @@ export enum AppRoute {
   CALCULATOR_MANAGER = 'calculator-manager',
   CALCULATIONS_COMPARE = 'calculations-compare',
 }
+
+export interface RateChartPoint {
+  readonly x: number;
+  readonly y: number;
+  readonly interestRate: number;
+  readonly date: string;
+}
+
+export interface RateChartAxisTick {
+  readonly value: number;
+  readonly position: number;
+  readonly label: string;
+}
+
+export interface RateChartGeometry {
+  readonly width: number;
+  readonly height: number;
+  readonly paddingLeft: number;
+  readonly paddingRight: number;
+  readonly paddingTop: number;
+  readonly paddingBottom: number;
+  readonly innerWidth: number;
+  readonly innerHeight: number;
+  readonly stepPath: string;
+  readonly areaPath: string;
+  readonly points: RateChartPoint[];
+  readonly yTicks: RateChartAxisTick[];
+  readonly xTicks: RateChartAxisTick[];
+  readonly columnWidth: number;
+}
+
+export interface RateChartTooltipModel {
+  readonly tooltipX: number;
+  readonly tooltipY: number;
+  readonly tooltipWidth: number;
+  readonly tooltipHeight: number;
+  readonly paddingX: number;
+  readonly paddingY: number;
+  readonly rateLabel: string;
+  readonly dateLabel: string;
+}
