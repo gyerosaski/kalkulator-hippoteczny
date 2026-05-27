@@ -22,10 +22,10 @@ interface StackSegmentDescriptor {
 }
 
 const STACK_SEGMENT_DESCRIPTORS: readonly StackSegmentDescriptor[] = [
-  { fieldKey: 'sumInterest', label: 'Odsetki', color: 'var(--c-int)' },
-  { fieldKey: 'sumInsuranceCost', label: 'Koszty okołokredytowe', color: 'var(--c-cost)' },
-  { fieldKey: 'sumCapital', label: 'Kapitał', color: 'var(--c-cap)' },
   { fieldKey: 'sumPrepayment', label: 'Nadpłaty', color: 'var(--c-over)' },
+  { fieldKey: 'sumCapital', label: 'Kapitał', color: 'var(--c-cap)' },
+  { fieldKey: 'sumInsuranceCost', label: 'Koszty okołokredytowe', color: 'var(--c-cost)' },
+  { fieldKey: 'sumInterest', label: 'Odsetki', color: 'var(--c-int)' },
 ];
 
 const STACK_TICK_STEP = 5_000;
