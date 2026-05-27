@@ -95,6 +95,17 @@ export class PrepaymentsFormComponent {
   );
 
   setSubsectionOpen(key: string, open: boolean): void {
+    if (open) {
+      for (const subsectionKey of Object.keys(this.getExpandedStates())) {
+        if (subsectionKey !== key) {
+          (
+            this.prepaymentsGroup.get(
+              `${subsectionKey}.expanded`,
+            ) as unknown as FormControl<boolean>
+          )?.setValue(false, { emitEvent: false });
+        }
+      }
+    }
     (this.prepaymentsGroup.get(`${key}.expanded`) as unknown as FormControl<boolean>)?.setValue(
       open,
     );
