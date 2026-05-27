@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { load, type Store } from '@tauri-apps/plugin-store';
 import { open as openDialog, save as saveDialog } from '@tauri-apps/plugin-dialog';
 import { readTextFile, writeTextFile } from '@tauri-apps/plugin-fs';
+import { appDataDir, join } from '@tauri-apps/api/path';
 
 import { SavedCalculationRecord } from '../../model';
 
@@ -91,6 +92,11 @@ export class CalculationsStoreService {
       return { record: parsed, rawData: parsed.data };
     }
     return { record: null, rawData: parsed };
+  }
+
+  async getStorePath(): Promise<string> {
+    const dataDirectory = await appDataDir();
+    return await join(dataDirectory, CalculationsStoreService.STORE_FILE_NAME);
   }
 
   private async getStore(): Promise<Store> {

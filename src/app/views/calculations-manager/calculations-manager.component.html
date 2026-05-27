@@ -1,20 +1,15 @@
 <div class="saved-view">
-  <!-- HERO -->
   <header class="view-hero">
     <button class="btn btn--primary" type="button" (click)="navigateToNewCalculation()">
       <icon-plus />
       Nowa kalkulacja
     </button>
     <button class="btn btn--secondary" type="button" (click)="saveAsNewCalculation()">
-      Zapisz jako nową kalkulację
+      Zapisz jako
     </button>
     <button class="btn btn--ghost" type="button" (click)="importFromFile()">
       <icon-download />
       Importuj
-    </button>
-    <button class="btn btn--ghost" type="button" [disabled]="true">
-      <icon-compare />
-      Porównaj wybrane
     </button>
   </header>
 
@@ -60,8 +55,10 @@
   <div class="view-footer">
     <div class="muted small">
       Wyświetlono <b class="mono">{{ filteredCalculations().length }}</b> z
-      <b class="mono">{{ calculations().length }}</b> kalkulacji · dane przechowywane lokalnie na
-      dysku
+      <b class="mono">{{ calculations().length }}</b> kalkulacji · dane przechowywane lokalnie
+      @if (storePathResource.value(); as path) {
+        · <span class="mono path-label" [title]="path">{{ path }}</span>
+      }
     </div>
     <button
       class="btn btn--ghost btn--mini"

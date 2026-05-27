@@ -5,6 +5,7 @@ import {
   inject,
   NgZone,
   OnInit,
+  resource,
   signal,
   viewChild,
 } from '@angular/core';
@@ -93,6 +94,10 @@ export class CalculationsManagerComponent implements OnInit {
 
   private readonly activeSortValue = toSignal(this.activeSortControl.valueChanges, {
     initialValue: SavedCalculationSortOption.UPDATED,
+  });
+
+  protected readonly storePathResource = resource({
+    loader: () => this.calculationsStore.getStorePath(),
   });
 
   readonly toastMessage = signal<string | null>(null);
