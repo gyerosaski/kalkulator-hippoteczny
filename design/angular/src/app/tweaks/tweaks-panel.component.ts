@@ -193,5 +193,6 @@ export class TweaksPanelComponent {
   tabs: { value: ActiveTab; label: string }[] = [
     { value: 'kalkulator', label: 'Kalkulator' },
     { value: 'kalkulacje', label: 'Twoje kalkulacje' },
+    { value: 'porownanie', label: 'Porównanie ofert' },
   ];
 }

@@ -9,10 +9,12 @@ import { KpiStripComponent } from './results/kpi-strip.component';
 import { PaymentStructureComponent } from './results/payment-structure.component';
 import { FirstInstallmentComponent } from './results/first-installment.component';
 import { TrendChartComponent } from './results/trend-chart.component';
+import { RateChartComponent } from './results/rate-chart.component';
 import { ScheduleTableComponent } from './results/schedule-table.component';
 import { TweaksPanelComponent } from './tweaks/tweaks-panel.component';
 import { ErrorsPanelComponent } from './results/errors-panel.component';
 import { SavedCalculationsComponent } from './saved/saved-calculations.component';
+import { ComparisonComponent } from './comparison/comparison.component';
 import { FormError } from './models';
 
 @Component({
@@ -28,10 +30,12 @@ import { FormError } from './models';
     PaymentStructureComponent,
     FirstInstallmentComponent,
     TrendChartComponent,
+    RateChartComponent,
     ScheduleTableComponent,
     TweaksPanelComponent,
     ErrorsPanelComponent,
     SavedCalculationsComponent,
+    ComparisonComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -76,7 +80,13 @@ import { FormError } from './models';
           >
             Twoje kalkulacje
           </button>
-          <button class="tab">Porównanie ofert</button>
+          <button
+            class="tab"
+            [class.is-on]="calc.tweaks().activeTab === 'porownanie'"
+            (click)="calc.saveTweaks({ activeTab: 'porownanie' })"
+          >
+            Porównanie ofert
+          </button>
           <button class="tab">Słownik</button>
         </nav>
         <div class="topbar-actions">
@@ -87,7 +97,9 @@ import { FormError } from './models';
       </header>
 
       <main class="grid">
-        @if (calc.tweaks().activeTab === 'kalkulacje') {
+        @if (calc.tweaks().activeTab === 'porownanie') {
+          <app-comparison />
+        } @else if (calc.tweaks().activeTab === 'kalkulacje') {
           <app-saved-calculations />
         } @else {
           <div class="col col--form">
@@ -106,6 +118,9 @@ import { FormError } from './models';
                 <app-first-installment />
               </div>
               <app-trend-chart />
+              @if (calc.schedule().hasRateChange) {
+                <app-rate-chart />
+              }
               <app-schedule-table />
             }
           </div>

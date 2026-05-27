@@ -7,8 +7,10 @@ import {
   computed,
   HostListener,
   effect,
+  inject,
 } from '@angular/core';
 import { MonthLabelPipe } from '../pipes/month-label.pipe';
+import { CalcService } from '../calc.service';
 
 const MONTH_NAMES_SHORT = [
   'sty',
@@ -86,6 +88,23 @@ const MONTH_NAMES_LONG = [
             </div>
             <button class="sc-modal-close" (click)="close()" aria-label="Zamknij">×</button>
           </header>
+
+          @if (hints().length > 0) {
+            <div class="mp-hints" role="group" aria-label="Skoki do kluczowych dat">
+              @for (h of hints(); track h.id) {
+                <button
+                  type="button"
+                  class="mp-hint"
+                  [class.is-active]="isStagedHint(h.date)"
+                  [attr.title]="'Przejdź do: ' + (h.date | monthLabel)"
+                  (click)="jumpToHint(h.date)"
+                >
+                  <span class="mp-hint-lab">{{ h.label }}</span>
+                  <span class="mp-hint-val mono">{{ h.date | monthLabel }}</span>
+                </button>
+              }
+            </div>
+          }
 
           <div class="mp-preview">
             <div class="mp-preview-col">
@@ -196,6 +215,9 @@ export class MonthPickerComponent {
   valueChange = output<Date>();
   disabled = input<boolean>(false);
 
+  private calc = inject(CalcService);
+  hints = this.calc.pickerHints;
+
   monthsShort = MONTH_NAMES_SHORT;
 
   readonly todayYear = new Date().getFullYear();
@@ -244,6 +266,16 @@ export class MonthPickerComponent {
     this.decadeStart.set(Math.floor(this.todayYear / 10) * 10);
     this.stagedYear.set(this.todayYear);
     this.stagedMonth.set(this.todayMonth);
+  }
+
+  jumpToHint(d: Date) {
+    this.decadeStart.set(Math.floor(d.getFullYear() / 10) * 10);
+    this.stagedYear.set(d.getFullYear());
+    this.stagedMonth.set(d.getMonth());
+  }
+
+  isStagedHint(d: Date): boolean {
+    return this.stagedYear() === d.getFullYear() && this.stagedMonth() === d.getMonth();
   }
 
   pickMonth(m: number) {

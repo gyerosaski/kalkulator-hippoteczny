@@ -13,6 +13,12 @@ import {
   ExtraCost,
   FormError,
   SavedCalculation,
+  Offer,
+  Comparison,
+  ComparisonTrendMode,
+  RateChange,
+  RateBand,
+  RateChangeCause,
 } from './models';
 
 export function addMonths(d: Date, n: number): Date {
@@ -77,6 +83,18 @@ export class CalcService {
   }
   startDate = signal<Date>(new Date(2026, 3, 1));
   firstRepaymentDate = signal<Date>(new Date(2026, 4, 1));
+
+  /** Hinty (skoki) dla MonthPicker — pokazują kluczowe daty symulacji. */
+  pickerHints = computed<{ id: string; label: string; date: Date }[]>(() => {
+    const rows = this.schedule().rows;
+    const last = rows.length > 0 ? rows[rows.length - 1].date : null;
+    const out: { id: string; label: string; date: Date }[] = [
+      { id: 'start', label: 'Data uruchomienia', date: this.startDate() },
+      { id: 'firstRep', label: 'Początek spłat kapitału', date: this.firstRepaymentDate() },
+    ];
+    if (last) out.push({ id: 'last', label: 'Ostatni miesiąc kredytu', date: last });
+    return out;
+  });
 
   // koszty — sekcje 1–3
   commissionPct = signal(1.5);
@@ -450,6 +468,72 @@ export class CalcService {
     this.saveTweaks({ activeTab: 'kalkulator' });
   }
 
+  // ====================== PORÓWNANIE OFERT ======================
+  /* Stan widoku — domyślnie A=c1, B=c2 (pierwsze dwie zapisane). */
+  comparison = signal<Comparison>({
+    offerAId: 'c1',
+    offerBId: 'c2',
+    trendMode: 'overlay',
+    showZeroSegments: false,
+    diffOnly: false,
+  });
+  setComparison(patch: Partial<Comparison>) {
+    this.comparison.update((c) => ({ ...c, ...patch }));
+  }
+  swapComparison() {
+    this.comparison.update((c) => ({ ...c, offerAId: c.offerBId, offerBId: c.offerAId }));
+  }
+
+  /** Pełna lista ofert (każda zapisana kalkulacja zrekonstruowana do Offer). */
+  availableOffers = computed<Offer[]>(() =>
+    this.savedCalculations().map((c) => this.buildOffer(c)),
+  );
+
+  /** Aktualnie wybrana oferta A (lewa kolumna). */
+  offerA = computed<Offer | null>(() => {
+    const id = this.comparison().offerAId;
+    return id ? (this.availableOffers().find((o) => o.id === id) ?? null) : null;
+  });
+  /** Aktualnie wybrana oferta B (prawa kolumna). */
+  offerB = computed<Offer | null>(() => {
+    const id = this.comparison().offerBId;
+    return id ? (this.availableOffers().find((o) => o.id === id) ?? null) : null;
+  });
+
+  /** Buduje Offer z SavedCalculation — uruchamia generator harmonogramu. */
+  private buildOffer(c: SavedCalculation): Offer {
+    const startDate = new Date(2026, 3, 1);
+    const result = this.compute({
+      propertyValue: c.propertyValue,
+      loanAmount: c.loanAmount,
+      years: c.years,
+      months: c.months,
+      rateType: c.rateType,
+      rate: c.rate,
+      wibor: c.wibor,
+      margin: c.margin,
+      installmentType: c.installmentType,
+      startDate,
+      costs: {
+        commissionPct: c.id === 'c1' ? 1.5 : c.id === 'c2' ? 0.0 : 1.0,
+        valuationFee: c.id === 'c1' ? 400 : c.id === 'c2' ? 600 : 400,
+        bridgeRate: c.tranches > 1 ? 1.2 : 0,
+        bridgeMonths: c.tranches > 1 ? 8 : 0,
+        insurancePct: 0.0008,
+      },
+      overpayments: {
+        frequency: 'co miesiąc',
+        amount: c.overpaymentsEnabled ? 1000 : 0,
+        effect: 'skrócenie okresu',
+      },
+      tranches: [],
+      ratePeriods: [],
+      lowDown: { rate: 0 },
+      promo: { rate: 0, from: startDate, to: startDate },
+    });
+    return { id: c.id, name: c.name, savedAt: c.updatedAt, source: c, startDate, result };
+  }
+
   // pochodne
   ltv = computed(() => {
     const pv = this.propertyValue();
@@ -477,6 +561,12 @@ export class CalcService {
             insurancePct: this.insurancePct(),
           }
         : { commissionPct: 0, valuationFee: 0, bridgeRate: 0, bridgeMonths: 0, insurancePct: 0 },
+      lowDown: { rate: this.costsEnabled() ? this.lowDownRate() : 0 },
+      promo: {
+        rate: this.costsEnabled() ? this.promoRate() : 0,
+        from: this.promoFrom(),
+        to: this.promoTo(),
+      },
       overpayments: {
         frequency: this.overFreq(),
         amount: this.overpaymentsEnabled() ? this.overAmount() : 0,
@@ -654,7 +744,7 @@ export class CalcService {
   }
 
   // ====================== logika finansowa ======================
-  private compute(input: CalcInput): ScheduleResult {
+  compute(input: CalcInput): ScheduleResult {
     const {
       propertyValue,
       loanAmount,
@@ -669,6 +759,8 @@ export class CalcService {
       costs,
       overpayments,
       ratePeriods,
+      lowDown,
+      promo,
     } = input;
 
     const n = years * 12 + months;
@@ -682,27 +774,44 @@ export class CalcService {
       totalOverpayments: 0,
       commission: 0,
       valuationFee: 0,
+      hasRateChange: false,
+      rateChanges: [],
+      rateBands: [],
     };
     if (n <= 0 || loanAmount <= 0) return empty;
 
     const baseNominal = rateType === 'zmienna' ? wibor + margin : rate;
     const periods = (ratePeriods || []).slice().sort((a, b) => a.fromMonth - b.fromMonth);
-    const rateAt = (m: number) => {
+    const rateAt = (m: number): { rate: number; periodIdx: number } => {
       let r = baseNominal;
-      for (const p of periods) {
+      let pIdx = 0;
+      for (let k = 0; k < periods.length; k++) {
+        const p = periods[k];
         if (m >= p.fromMonth) {
           r = p.rateType === 'zmienna' ? p.wibor + p.margin : p.rate;
+          pIdx = k + 1;
         }
       }
-      return r;
+      return { rate: r, periodIdx: pIdx };
     };
+
     const i = baseNominal / 100 / 12;
     let balance = loanAmount;
-    let installmentEqual = i === 0 ? balance / n : (balance * i) / (1 - Math.pow(1 + i, -n));
+    const installmentEqual = i === 0 ? balance / n : (balance * i) / (1 - Math.pow(1 + i, -n));
 
     const insuranceMonthly = ((costs.insurancePct / 100) * propertyValue) / 12;
     const commission = (costs.commissionPct / 100) * loanAmount;
     const valuationFee = costs.valuationFee || 0;
+
+    const bridgeMonths = costs.bridgeMonths || 0;
+    const bridgeRate = costs.bridgeRate || 0;
+    const lowDownRate = lowDown?.rate ?? 0;
+    const promoRate = promo?.rate ?? 0;
+    const monthDiff = (a: Date, b: Date) =>
+      (a.getFullYear() - b.getFullYear()) * 12 + (a.getMonth() - b.getMonth());
+    const promoFromIdx = promo?.from ? Math.max(0, monthDiff(promo.from, startDate)) : -1;
+    const promoToIdx = promo?.to ? monthDiff(promo.to, startDate) : -1;
+    const lowDownThreshold = 0.8 * propertyValue;
 
     const rows: ScheduleRow[] = [];
     let totalInterest = 0;
@@ -710,7 +819,13 @@ export class CalcService {
 
     for (let m = 0; m < n; m++) {
       const date = addMonths(startDate, m);
-      const effRate = (rateAt(m) + (m < costs.bridgeMonths ? costs.bridgeRate : 0)) / 100 / 12;
+      const base = rateAt(m);
+      const bridgeUp = m < bridgeMonths ? bridgeRate : 0;
+      const lowDownUp = lowDownRate > 0 && balance > lowDownThreshold ? lowDownRate : 0;
+      const promoDown =
+        promoRate > 0 && promoFromIdx >= 0 && m >= promoFromIdx && m <= promoToIdx ? promoRate : 0;
+      const rateNominal = base.rate + bridgeUp + lowDownUp - promoDown;
+      const effRate = rateNominal / 100 / 12;
       const interest = balance * effRate;
       let principal: number, rata: number;
       if (installmentType === 'równe') {
@@ -746,8 +861,13 @@ export class CalcService {
         interest,
         overpayment,
         balance,
-        monthlyCost:
-          insuranceMonthly + (m < costs.bridgeMonths ? balance * (costs.bridgeRate / 100 / 12) : 0),
+        monthlyCost: insuranceMonthly + (m < bridgeMonths ? balance * (bridgeRate / 100 / 12) : 0),
+        rate: rateNominal,
+        rateBase: base.rate,
+        ratePeriodIdx: base.periodIdx,
+        bridgeUp,
+        lowDownUp,
+        promoDown,
       });
 
       if (balance === 0) break;
@@ -766,6 +886,10 @@ export class CalcService {
           monthlyCost: 0,
           balance: 0,
           rows: [],
+          rateMin: r.rate,
+          rateMax: r.rate,
+          rateStart: r.rate,
+          rateEnd: r.rate,
         });
       const a = byYear.get(y)!;
       a.rata += r.rata;
@@ -774,12 +898,107 @@ export class CalcService {
       a.overpayment += r.overpayment;
       a.monthlyCost += r.monthlyCost;
       a.balance = r.balance;
+      a.rateMin = Math.min(a.rateMin, r.rate);
+      a.rateMax = Math.max(a.rateMax, r.rate);
+      a.rateEnd = r.rate;
       a.rows.push(r);
     });
 
     const yearly = Array.from(byYear.values());
     const totalCosts = commission + valuationFee + rows.reduce((s, r) => s + r.monthlyCost, 0);
     const totalPayments = loanAmount + totalInterest + totalCosts;
+
+    // === Detekcja zmian + pasma ===
+    const rateChanges: RateChange[] = [];
+    for (let k = 0; k < rows.length; k++) {
+      const r = rows[k];
+      const prev = k > 0 ? rows[k - 1] : null;
+      if (!prev || Math.abs(r.rate - prev.rate) > 0.001) {
+        let cause: RateChangeCause = 'period';
+        if (prev) {
+          if (prev.bridgeUp > 0 && r.bridgeUp === 0) cause = 'bridge-off';
+          else if (prev.bridgeUp === 0 && r.bridgeUp > 0) cause = 'bridge-on';
+          else if (prev.lowDownUp > 0 && r.lowDownUp === 0) cause = 'lowdown-off';
+          else if (prev.lowDownUp === 0 && r.lowDownUp > 0) cause = 'lowdown-on';
+          else if (prev.promoDown > 0 && r.promoDown === 0) cause = 'promo-off';
+          else if (prev.promoDown === 0 && r.promoDown > 0) cause = 'promo-on';
+          else if (prev.ratePeriodIdx !== r.ratePeriodIdx) cause = 'period';
+        } else {
+          if (r.bridgeUp > 0) cause = 'bridge-on';
+          else if (r.lowDownUp > 0) cause = 'lowdown-on';
+          else if (r.promoDown > 0) cause = 'promo-on';
+          else cause = 'start';
+        }
+        rateChanges.push({ fromMonth: r.idx, date: r.date, rate: r.rate, cause });
+      }
+    }
+
+    const rateBands: RateBand[] = [];
+    const pctFmt = (v: number) =>
+      new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(
+        v,
+      );
+    if (bridgeMonths > 0 && bridgeRate > 0) {
+      rateBands.push({
+        kind: 'bridge',
+        fromMonth: 1,
+        toMonth: Math.min(bridgeMonths, rows.length),
+        delta: +bridgeRate,
+        label: `ubezp. pomostowe +${pctFmt(bridgeRate)}%`,
+      });
+    }
+    if (lowDownRate > 0) {
+      let from: number | null = null,
+        to: number | null = null;
+      for (const r of rows) {
+        if (r.lowDownUp > 0) {
+          if (from == null) from = r.idx;
+          to = r.idx;
+        }
+      }
+      if (from != null && to != null)
+        rateBands.push({
+          kind: 'lowDown',
+          fromMonth: from,
+          toMonth: to,
+          delta: +lowDownRate,
+          label: `niski wkład +${pctFmt(lowDownRate)}%`,
+        });
+    }
+    if (promoRate > 0 && promoFromIdx >= 0 && promoToIdx >= promoFromIdx) {
+      rateBands.push({
+        kind: 'promo',
+        fromMonth: promoFromIdx + 1,
+        toMonth: Math.min(promoToIdx + 1, rows.length),
+        delta: -promoRate,
+        label: `promocja –${pctFmt(promoRate)}%`,
+      });
+    }
+    if (periods.length >= 1) {
+      let curIdx = rows.length ? rows[0].ratePeriodIdx : 0;
+      let curStart = 1;
+      for (let k = 1; k <= rows.length; k++) {
+        const idx = k < rows.length ? rows[k].ratePeriodIdx : -1;
+        if (idx !== curIdx) {
+          rateBands.push({
+            kind: 'period',
+            fromMonth: curStart,
+            toMonth: k,
+            delta: 0,
+            label: `okres ${curIdx + 1}`,
+            periodIdx: curIdx,
+          });
+          curIdx = idx;
+          curStart = k + 1;
+        }
+      }
+    }
+
+    const hasRateChange =
+      periods.length >= 1 ||
+      (bridgeMonths > 0 && bridgeRate > 0) ||
+      lowDownRate > 0 ||
+      (promoRate > 0 && promoFromIdx >= 0 && promoToIdx >= promoFromIdx);
 
     return {
       rows,
@@ -791,6 +1010,9 @@ export class CalcService {
       totalOverpayments,
       commission,
       valuationFee,
+      hasRateChange,
+      rateChanges,
+      rateBands,
     };
   }
 }

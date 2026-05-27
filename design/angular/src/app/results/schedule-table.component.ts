@@ -20,17 +20,21 @@ import { MonthLabelPipe } from '../pipes/month-label.pipe';
           }
         </div>
       </div>
-      <div class="tbl">
+      <div class="tbl" [class.tbl--with-rate]="hasRateChange()">
         <div class="tbl-head">
           <div>Okres</div>
           <div>Rata</div>
           <div><span class="col-dot col-dot--cap"></span>Kapitał</div>
           <div><span class="col-dot col-dot--int"></span>Odsetki</div>
+          @if (hasRateChange()) {
+            <div>Oprocentowanie</div>
+          }
           <div><span class="col-dot col-dot--over"></span>Nadpłaty</div>
           <div><span class="col-dot col-dot--cost"></span>Koszty</div>
           <div>Pozostało</div>
         </div>
-        @for (y of visibleYears(); track y.year) {
+        @for (y of visibleYears(); track y.year; let yi = $index) {
+          @let yearChanges = y.rateMax - y.rateMin > 0.001;
           <button
             class="tbl-row tbl-row--year"
             [class.is-open]="expandedYear() === y.year"
@@ -42,6 +46,17 @@ import { MonthLabelPipe } from '../pipes/month-label.pipe';
               {{ y.principal | pln }}
             </div>
             <div class="mono num--int" [class.num--zero]="!y.interest">{{ y.interest | pln }}</div>
+            @if (hasRateChange()) {
+              <div class="mono num--rate" [class.num--rate-range]="yearChanges">
+                @if (yearChanges) {
+                  <span class="rate-from">{{ ratePct(y.rateStart) }}%</span>
+                  <span class="rate-arrow">→</span>
+                  <span class="rate-to">{{ ratePct(y.rateEnd) }}%</span>
+                } @else {
+                  {{ ratePct(y.rateEnd) }}%
+                }
+              </div>
+            }
             <div class="mono num--over" [class.num--zero]="!y.overpayment">
               {{ y.overpayment | pln }}
             </div>
@@ -53,7 +68,10 @@ import { MonthLabelPipe } from '../pipes/month-label.pipe';
             </div>
           </button>
           @if (expandedYear() === y.year) {
-            @for (r of y.rows; track r.idx) {
+            @for (r of y.rows; track r.idx; let ri = $index) {
+              @let prevRate =
+                ri > 0 ? y.rows[ri - 1].rate : yi > 0 ? visibleYears()[yi - 1].rateEnd : null;
+              @let rateJump = prevRate !== null && Math.abs(r.rate - prevRate) > 0.001;
               <button
                 type="button"
                 class="tbl-row tbl-row--month"
@@ -69,6 +87,15 @@ import { MonthLabelPipe } from '../pipes/month-label.pipe';
                 <div class="mono num--int" [class.num--zero]="!r.interest">
                   {{ r.interest | pln }}
                 </div>
+                @if (hasRateChange()) {
+                  <div
+                    class="mono num--rate"
+                    [class.num--rate-jump]="rateJump"
+                    [attr.title]="rateJump ? 'zmiana oprocentowania w tym miesiącu' : null"
+                  >
+                    {{ ratePct(r.rate) }}%
+                  </div>
+                }
                 <div class="mono num--over" [class.num--zero]="!r.overpayment">
                   {{ r.overpayment | pln }}
                 </div>
@@ -89,9 +116,11 @@ import { MonthLabelPipe } from '../pipes/month-label.pipe';
 })
 export class ScheduleTableComponent {
   calc = inject(CalcService);
+  Math = Math;
   expandedYear = signal<number | null>(null);
   visibleYears = computed(() => this.calc.schedule().yearly.slice(0, 8));
   totalYears = computed(() => this.calc.schedule().yearly.length);
+  hasRateChange = computed(() => this.calc.schedule().hasRateChange);
   selectedIdx = this.calc.selectedMonthIdx;
   selectedRow = this.calc.selectedRow;
 
@@ -103,5 +132,11 @@ export class ScheduleTableComponent {
   }
   clearSelection() {
     this.calc.clearSelectedMonth();
+  }
+  ratePct(v: number): string {
+    return new Intl.NumberFormat('pl-PL', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(v);
   }
 }

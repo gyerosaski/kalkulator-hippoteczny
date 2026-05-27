@@ -53,6 +53,15 @@ export interface ScheduleRow {
   overpayment: number;
   balance: number;
   monthlyCost: number;
+  /** Efektywna nominalna stopa oprocentowania (%) z uwzględnieniem pomostowego, niskiego wkładu i promocji. */
+  rate: number;
+  /** Stopa nominalna aktywnego okresu (bez modyfikatorów). */
+  rateBase: number;
+  /** Indeks okresu oprocentowania (0 = okres bazowy, 1, 2, …). */
+  ratePeriodIdx: number;
+  bridgeUp: number;
+  lowDownUp: number;
+  promoDown: number;
 }
 
 export interface YearAggregate {
@@ -64,6 +73,38 @@ export interface YearAggregate {
   monthlyCost: number;
   balance: number;
   rows: ScheduleRow[];
+  rateMin: number;
+  rateMax: number;
+  rateStart: number;
+  rateEnd: number;
+}
+
+export type RateChangeCause =
+  | 'start'
+  | 'period'
+  | 'bridge-on'
+  | 'bridge-off'
+  | 'lowdown-on'
+  | 'lowdown-off'
+  | 'promo-on'
+  | 'promo-off';
+
+export interface RateChange {
+  fromMonth: number;
+  date: Date;
+  rate: number;
+  cause: RateChangeCause;
+}
+
+export type RateBandKind = 'bridge' | 'lowDown' | 'promo' | 'period';
+
+export interface RateBand {
+  kind: RateBandKind;
+  fromMonth: number;
+  toMonth: number;
+  delta: number;
+  label: string;
+  periodIdx?: number;
 }
 
 export interface ScheduleResult {
@@ -76,6 +117,10 @@ export interface ScheduleResult {
   totalOverpayments: number;
   commission: number;
   valuationFee: number;
+  /** Czy w trakcie symulacji zmienia się oprocentowanie (=> renderuj wykres i kolumnę). */
+  hasRateChange: boolean;
+  rateChanges: RateChange[];
+  rateBands: RateBand[];
 }
 
 export interface RatePeriod {
@@ -102,13 +147,17 @@ export interface CalcInput {
   overpayments: Overpayments;
   tranches: Tranche[];
   ratePeriods?: RatePeriod[];
+  /** Ubezpieczenie niskiego wkładu — procentowy uplift dopóki saldo > 80 % wartości. */
+  lowDown?: { rate: number };
+  /** Promocja oprocentowania — obniżka pomiędzy datami `from` a `to`. */
+  promo?: { rate: number; from: Date; to: Date };
 }
 
 export type Palette = 'sage' | 'peach' | 'lavender' | 'mist';
 export type Density = 'cozy' | 'comfy' | 'roomy';
 export type FontPair = 'inter' | 'fraunces' | 'system';
 export type ViewState = 'auto' | 'results' | 'errors';
-export type ActiveTab = 'kalkulator' | 'kalkulacje';
+export type ActiveTab = 'kalkulator' | 'kalkulacje' | 'porownanie';
 
 export interface Tweaks {
   palette: Palette;
@@ -155,3 +204,24 @@ export interface SavedCalculation {
 
 export type SavedCalcSort = 'updated' | 'created' | 'name' | 'loan' | 'rata';
 export type SavedCalcFilter = 'all' | 'fav' | 'work';
+
+/* ============ PORÓWNANIE OFERT ============ */
+/* Oferta = SavedCalculation + pełny wynik harmonogramu (ScheduleResult) */
+export interface Offer {
+  id: string;
+  name: string;
+  savedAt: Date;
+  source: SavedCalculation; // pełna kopia danych wejściowych
+  startDate: Date;
+  result: ScheduleResult; // wynik = generateSchedule(input)
+}
+
+export type ComparisonTrendMode = 'overlay' | 'side-by-side';
+
+export interface Comparison {
+  offerAId: string | null;
+  offerBId: string | null;
+  trendMode: ComparisonTrendMode;
+  showZeroSegments: boolean;
+  diffOnly: boolean;
+}
