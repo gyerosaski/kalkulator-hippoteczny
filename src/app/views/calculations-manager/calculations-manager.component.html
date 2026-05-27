@@ -1,48 +1,21 @@
 <div class="saved-view">
   <!-- HERO -->
   <header class="view-hero">
-    <div class="hero-text">
-      <div class="hero-tag">TWOJE KALKULACJE</div>
-      <h1 class="hero-title">Wracaj do swoich obliczeń, porównuj warianty, planuj decyzje.</h1>
-      <p class="hero-sub">
-        Każda zapisana kalkulacja przechowuje pełny zestaw parametrów — kwotę, okres,
-        oprocentowanie, koszty i nadpłaty. Wczytaj ją jednym kliknięciem, zmień nazwę albo usuń, gdy
-        przestanie być potrzebna.
-      </p>
-      <div class="stat-row">
-        <div class="stat-block">
-          <div class="stat-value mono">{{ stats().total }}</div>
-          <div class="stat-label">zapisanych</div>
-        </div>
-        <div class="stat-block stat-block--wide">
-          @if (stats().lastUpdatedRelative) {
-            <div class="stat-value stat-value--sm">
-              {{ stats().lastUpdatedRelative | relativeTime }}
-            </div>
-          } @else {
-            <div class="stat-value stat-value--sm">—</div>
-          }
-          <div class="stat-label">ostatnia zmiana</div>
-        </div>
-      </div>
-    </div>
-    <div class="hero-actions">
-      <button class="btn btn--primary hero-btn" type="button" (click)="navigateToNewCalculation()">
-        <icon-plus />
-        Nowa kalkulacja
-      </button>
-      <button class="btn btn--secondary hero-btn" type="button" (click)="saveAsNewCalculation()">
-        Zapisz jako nową kalkulację
-      </button>
-      <button class="btn btn--ghost hero-btn" type="button" (click)="importFromFile()">
-        <icon-download />
-        Importuj
-      </button>
-      <button class="btn btn--ghost hero-btn" type="button" [disabled]="true">
-        <icon-compare />
-        Porównaj wybrane
-      </button>
-    </div>
+    <button class="btn btn--primary" type="button" (click)="navigateToNewCalculation()">
+      <icon-plus />
+      Nowa kalkulacja
+    </button>
+    <button class="btn btn--secondary" type="button" (click)="saveAsNewCalculation()">
+      Zapisz jako nową kalkulację
+    </button>
+    <button class="btn btn--ghost" type="button" (click)="importFromFile()">
+      <icon-download />
+      Importuj
+    </button>
+    <button class="btn btn--ghost" type="button" [disabled]="true">
+      <icon-compare />
+      Porównaj wybrane
+    </button>
   </header>
 
   <!-- TOOLBAR -->

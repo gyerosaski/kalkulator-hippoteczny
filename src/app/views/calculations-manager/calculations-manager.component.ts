@@ -25,7 +25,6 @@ import {
   SavedCalculationsStateService,
   toSavedCalculation,
 } from '../../services/saved-calculations-state/saved-calculations-state.service';
-import { RelativeTimePipe } from '../../pipes/relative-time/relative-time.pipe';
 import { CalculationsListComponent } from '../../components/calculations/calculations-list/calculations-list.component';
 import { SelectComponent } from '../../components/ui/select/select.component';
 import { IconPlusComponent } from '../../components/icons/icon-plus/icon-plus.component';
@@ -52,7 +51,6 @@ const SORT_COMPARATORS: Record<SavedCalculationSortOption, SortComparator> = {
   styleUrl: './calculations-manager.component.scss',
   imports: [
     ReactiveFormsModule,
-    RelativeTimePipe,
     CalculationsListComponent,
     SelectComponent,
     SaveCalculationDialogComponent,
@@ -103,18 +101,6 @@ export class CalculationsManagerComponent implements OnInit {
   readonly calculations = computed(() =>
     this.savedCalculationsStateService.records().map(toSavedCalculation),
   );
-
-  readonly stats = computed(() => {
-    const items = this.calculations();
-    const lastUpdated = items.reduce(
-      (max, item) => (item.updatedAt > max ? item.updatedAt : max),
-      new Date(0),
-    );
-    return {
-      total: items.length,
-      lastUpdatedRelative: items.length ? lastUpdated : null,
-    };
-  });
 
   readonly filteredCalculations = computed(() => {
     let items = this.calculations();
