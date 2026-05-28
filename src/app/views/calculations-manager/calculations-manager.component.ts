@@ -14,8 +14,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { ask as askDialog } from '@tauri-apps/plugin-dialog';
 
-import { SavedCalculationMetadata, SavedCalculationRecord } from '../../model';
-import { SavedCalculation, SavedCalculationSortOption, ToastVariant } from '../../model';
+import { AppRoute, SavedCalculationMetadata, SavedCalculationRecord } from '../../model';
+import { SavedCalculation, SavedCalculationSortOption } from '../../model';
 import { CalculationsStoreService } from '../../services/calculations-store/calculations-store.service';
 import { CalculatorStateService } from '../../services/calculator-state/calculator-state.service';
 import { SaveCalculationDialogComponent } from '../../dialogs/save-calculation/save-calculation-dialog.component';
@@ -132,8 +132,8 @@ export class CalculationsManagerComponent implements OnInit {
     this.ngZone.run(() => {
       this.formService.loadFromSavedCalculation(record.data, calculation.name);
     });
-    await this.router.navigate(['']);
-    this.toastService.show(`Wczytano „${calculation.name}" do kalkulatora`);
+    await this.router.navigate([AppRoute.CALCULATOR]);
+    this.toastService.show(`Wczytano kalkulację „${calculation.name}"`);
   }
 
   async startRename(calculation: SavedCalculation): Promise<void> {

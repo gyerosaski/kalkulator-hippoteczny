@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import {
+  afterRenderEffect,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  signal,
+  viewChildren,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
@@ -36,6 +45,38 @@ export class TopbarComponent {
   protected readonly isCalculationsCompareTab = computed(
     () => this.currentRoute() === AppRoute.CALCULATIONS_COMPARE,
   );
+
+  private readonly tabButtonElements = viewChildren<ElementRef<HTMLButtonElement>>('tabBtn');
+
+  private readonly activeTabIndex = computed(() => {
+    if (this.isCalculatorTab()) return 0;
+    if (this.isCalculatorManagerTab()) return 1;
+    if (this.isCalculationsCompareTab()) return 2;
+    return 0;
+  });
+
+  protected readonly indicatorStyle = signal<{ left: string; width: string }>({
+    left: '0px',
+    width: '0px',
+  });
+
+  protected readonly isIndicatorVisible = signal(false);
+
+  constructor() {
+    afterRenderEffect(() => {
+      const buttons = this.tabButtonElements();
+      const activeIndex = this.activeTabIndex();
+      const activeButton = buttons[activeIndex]?.nativeElement;
+      if (!activeButton) return;
+      const parentRect = activeButton.parentElement!.getBoundingClientRect();
+      const buttonRect = activeButton.getBoundingClientRect();
+      this.indicatorStyle.set({
+        left: `${buttonRect.left - parentRect.left}px`,
+        width: `${buttonRect.width}px`,
+      });
+      this.isIndicatorVisible.set(true);
+    });
+  }
 
   navigateToCalculator(): void {
     void this.router.navigate([AppRoute.CALCULATOR]);

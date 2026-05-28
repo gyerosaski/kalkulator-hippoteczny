@@ -8,11 +8,18 @@
     </div>
   </div>
   <nav class="tabs">
-    <button class="tab" [class.is-on]="isCalculatorTab()" (click)="navigateToCalculator()">
+    <span
+      class="tab-indicator"
+      [class.is-visible]="isIndicatorVisible()"
+      [style.left]="indicatorStyle().left"
+      [style.width]="indicatorStyle().width"
+    ></span>
+    <button class="tab" #tabBtn [class.is-on]="isCalculatorTab()" (click)="navigateToCalculator()">
       Kalkulator
     </button>
     <button
       class="tab"
+      #tabBtn
       [class.is-on]="isCalculatorManagerTab()"
       (click)="navigateToCalculatorManager()"
     >
@@ -20,6 +27,7 @@
     </button>
     <button
       class="tab"
+      #tabBtn
       [class.is-on]="isCalculationsCompareTab()"
       (click)="navigateToCalculationsCompare()"
     >
