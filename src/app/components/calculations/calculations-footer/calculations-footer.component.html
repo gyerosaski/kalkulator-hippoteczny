@@ -1,0 +1,17 @@
+<div class="view-footer">
+  <div class="muted small">
+    Wyświetlono <b class="mono">{{ filteredCount() }}</b> z
+    <b class="mono">{{ totalCount() }}</b> kalkulacji · Twoje dane przechowywane są lokalnie
+    @if (storePath(); as path) {
+      · <span class="mono path-label" [title]="path">{{ path }}</span>
+    }
+  </div>
+  <button
+    class="btn btn--ghost btn--mini"
+    [disabled]="totalCount() === 0"
+    (click)="exportToFile.emit()"
+  >
+    <icon-download />
+    Eksportuj wszystkie do JSON
+  </button>
+</div>

@@ -30,9 +30,9 @@ import { CalculationsListComponent } from '../../components/calculations/calcula
 import { SelectComponent } from '../../components/ui/select/select.component';
 import { IconPlusComponent } from '../../components/icons/icon-plus/icon-plus.component';
 import { IconDownloadComponent } from '../../components/icons/icon-download/icon-download.component';
-import { IconCompareComponent } from '../../components/icons/icon-compare/icon-compare.component';
 import { IconSearchComponent } from '../../components/icons/icon-search/icon-search.component';
 import { IconCheckCircleComponent } from '../../components/icons/icon-check-circle/icon-check-circle.component';
+import { CalculationsFooterComponent } from '../../components/calculations/calculations-footer/calculations-footer.component';
 
 type SortComparator = (a: SavedCalculation, b: SavedCalculation) => number;
 
@@ -59,9 +59,9 @@ const SORT_COMPARATORS: Record<SavedCalculationSortOption, SortComparator> = {
     DeleteCalculationDialogComponent,
     IconPlusComponent,
     IconDownloadComponent,
-    IconCompareComponent,
     IconSearchComponent,
     IconCheckCircleComponent,
+    CalculationsFooterComponent,
   ],
 })
 export class CalculationsManagerComponent implements OnInit {
