@@ -14,30 +14,7 @@
 
   @if (calculations().length === 0) {
     <div class="empty-state">
-      <svg width="48" height="48" viewBox="0 0 48 48" aria-hidden="true">
-        <rect
-          x="6"
-          y="10"
-          width="36"
-          height="32"
-          rx="3"
-          stroke="currentColor"
-          stroke-width="1.5"
-          fill="none"
-        />
-        <path
-          d="M6 18 L42 18 M14 6 L14 12 M34 6 L34 12"
-          stroke="currentColor"
-          stroke-width="1.5"
-          stroke-linecap="round"
-        />
-        <path
-          d="M16 28 L22 28 M16 34 L26 34"
-          stroke="currentColor"
-          stroke-width="1.3"
-          stroke-linecap="round"
-        />
-      </svg>
+      <icon-calendar-list />
       <div class="empty-title">Brak pasujących kalkulacji</div>
       <div class="empty-sub">
         Zmień filtry albo wyczyść pole szukania, aby zobaczyć wszystkie zapisane warianty.
@@ -72,11 +49,11 @@
         <!-- Kwota · LTV -->
         <div class="cell cell--money">
           <div class="money-amount mono">
-            <b>{{ formatWholeAmount(calculation.loanAmount) }}</b
+            <b>{{ calculation.loanAmount | formatWholeAmount }}</b
             ><span class="unit">zł</span>
           </div>
           <div class="money-sub">
-            <span class="muted">z {{ formatWholeAmount(calculation.propertyValue) }} zł</span>
+            <span class="muted">z {{ calculation.propertyValue | formatWholeAmount }} zł</span>
             <span class="ltv-badge" [class.ltv-badge--high]="ltvOf(calculation) > 80">
               LTV {{ ltvOf(calculation).toFixed(0) }}&nbsp;%
             </span>
@@ -85,7 +62,9 @@
 
         <!-- Okres -->
         <div class="cell cell--period">
-          <div class="period-value mono">{{ formatPeriod(calculation) }}</div>
+          <div class="period-value mono">
+            {{ calculation.loanPeriodYears | formatLoanPeriod: calculation.loanPeriodExtraMonths }}
+          </div>
           <div class="period-sub muted">
             <span
               class="installment-pill"
@@ -107,11 +86,11 @@
 
         <!-- Oprocentowanie -->
         <div class="cell cell--rate">
-          <div class="rate-value mono">{{ formatPercent(calculation.nominalRate, 2) }}&nbsp;%</div>
+          <div class="rate-value mono">{{ calculation.nominalRate | formatRate }}</div>
           <div class="rate-sub muted">
             @if (calculation.rateType === RateType.VARIABLE) {
-              WIBOR {{ formatPercent(calculation.wibor, 2) }} + marża
-              {{ formatPercent(calculation.margin, 2) }}
+              WIBOR {{ calculation.wibor | formatRate }} + marża
+              {{ calculation.margin | formatRate }}
             } @else {
               stała
             }
@@ -122,7 +101,7 @@
         <div class="cell cell--installment">
           @if (calculation.firstInstallment > 0) {
             <div class="installment-value mono">
-              <b>{{ formatDecimalAmount(calculation.firstInstallment) }}</b
+              <b>{{ calculation.firstInstallment | formatAmount }}</b
               ><span class="unit">zł</span>
             </div>
           } @else {
@@ -134,7 +113,7 @@
         <div class="cell cell--interest">
           @if (calculation.totalInterest > 0) {
             <div class="interest-value mono">
-              {{ formatWholeAmount(calculation.totalInterest) }}<span class="unit">zł</span>
+              {{ calculation.totalInterest | formatWholeAmount }}<span class="unit">zł</span>
             </div>
           } @else {
             <div class="interest-value muted">—</div>
@@ -143,11 +122,11 @@
 
         <!-- Data modyfikacji -->
         <div class="cell cell--date">
-          <div class="date-relative" [title]="formatExactDate(calculation.updatedAt)">
+          <div class="date-relative" [title]="calculation.updatedAt | formatExactDate">
             {{ calculation.updatedAt | relativeTime }}
           </div>
           <div class="date-exact muted mono">
-            {{ formatExactDate(calculation.updatedAt).slice(0, 10) }}
+            {{ calculation.updatedAt | formatExactDate | slice: 0 : 10 }}
           </div>
         </div>
 
@@ -189,16 +168,7 @@
                   Duplikuj
                 </button>
                 <button class="menu-item" [disabled]="true">
-                  <svg width="13" height="13" viewBox="0 0 13 13" aria-hidden="true">
-                    <path
-                      d="M3 5 L6.5 1.5 L10 5 M6.5 1.5 L6.5 9 M2 11 L11 11"
-                      stroke="currentColor"
-                      stroke-width="1.1"
-                      fill="none"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
+                  <icon-export />
                   Eksportuj CSV
                 </button>
                 <div class="menu-separator"></div>
