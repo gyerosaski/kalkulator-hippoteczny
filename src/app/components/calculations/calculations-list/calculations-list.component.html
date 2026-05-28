@@ -37,9 +37,9 @@
             <div class="name-row">
               <span class="calc-name">{{ calculation.name }}</span>
               @if (calculation.name === activeCalculationName()) {
-                <span class="badge badge--loaded">wczytana</span>
+                <ui-badge label="wczytana" [variant]="BadgeVariant.GREEN" />
                 @if (isLoadedCalculationModified()) {
-                  <span class="badge badge--modified">zmodyfikowana</span>
+                  <ui-badge label="zmodyfikowana" [variant]="BadgeVariant.RED" />
                 }
               }
             </div>

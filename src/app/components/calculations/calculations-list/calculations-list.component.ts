@@ -8,7 +8,8 @@ import {
 } from '@angular/core';
 import { SlicePipe } from '@angular/common';
 
-import { InstallmentType, RateType, SavedCalculation } from '../../../model';
+import { BadgeVariant, InstallmentType, RateType, SavedCalculation } from '../../../model';
+import { BadgeComponent } from '../../ui/badge/badge.component';
 import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
 import { FormatExactDatePipe } from '../../../pipes/format-exact-date/format-exact-date.pipe';
 import { FormatLoanPeriodPipe } from '../../../pipes/format-loan-period/format-loan-period.pipe';
@@ -46,6 +47,7 @@ import { IconTrashComponent } from '../../icons/icon-trash/icon-trash.component'
     IconExportComponent,
     IconSaveComponent,
     IconTrashComponent,
+    BadgeComponent,
   ],
 })
 export class CalculationsListComponent {
@@ -63,6 +65,7 @@ export class CalculationsListComponent {
 
   protected readonly InstallmentType = InstallmentType;
   protected readonly RateType = RateType;
+  protected readonly BadgeVariant = BadgeVariant;
 
   readonly openMenuName = signal<string | null>(null);
 

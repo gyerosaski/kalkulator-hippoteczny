@@ -1,0 +1,21 @@
+@if (toastService.toast(); as toast) {
+  <div
+    class="toast-notification"
+    role="status"
+    [class.toast-notification--error]="toast.variant === ToastVariant.ERROR"
+    [class.toast-notification--info]="toast.variant === ToastVariant.INFO"
+  >
+    @switch (toast.variant) {
+      @case (ToastVariant.ERROR) {
+        <icon-warning-sm />
+      }
+      @case (ToastVariant.INFO) {
+        <icon-info />
+      }
+      @default {
+        <icon-check-circle />
+      }
+    }
+    <span>{{ toast.message }}</span>
+  </div>
+}

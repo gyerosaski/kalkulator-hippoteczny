@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
 import { ask as askDialog } from '@tauri-apps/plugin-dialog';
 
 import { SavedCalculationMetadata, SavedCalculationRecord } from '../../model';
-import { SavedCalculation, SavedCalculationSortOption } from '../../model';
+import { SavedCalculation, SavedCalculationSortOption, ToastVariant } from '../../model';
 import { CalculationsStoreService } from '../../services/calculations-store/calculations-store.service';
 import { CalculatorStateService } from '../../services/calculator-state/calculator-state.service';
 import { SaveCalculationDialogComponent } from '../../dialogs/save-calculation/save-calculation-dialog.component';
@@ -31,8 +31,8 @@ import { SelectComponent } from '../../components/ui/select/select.component';
 import { IconPlusComponent } from '../../components/icons/icon-plus/icon-plus.component';
 import { IconDownloadComponent } from '../../components/icons/icon-download/icon-download.component';
 import { IconSearchComponent } from '../../components/icons/icon-search/icon-search.component';
-import { IconCheckCircleComponent } from '../../components/icons/icon-check-circle/icon-check-circle.component';
 import { CalculationsFooterComponent } from '../../components/calculations/calculations-footer/calculations-footer.component';
+import { ToastService } from '../../services/toast/toast.service';
 
 type SortComparator = (a: SavedCalculation, b: SavedCalculation) => number;
 
@@ -60,7 +60,6 @@ const SORT_COMPARATORS: Record<SavedCalculationSortOption, SortComparator> = {
     IconPlusComponent,
     IconDownloadComponent,
     IconSearchComponent,
-    IconCheckCircleComponent,
     CalculationsFooterComponent,
   ],
 })
@@ -71,6 +70,7 @@ export class CalculationsManagerComponent implements OnInit {
   private readonly formService = inject(FormService);
   private readonly router = inject(Router);
   private readonly ngZone = inject(NgZone);
+  private readonly toastService = inject(ToastService);
   private readonly saveDialog = viewChild.required(SaveCalculationDialogComponent);
   private readonly renameDialog = viewChild.required(RenameCalculationDialogComponent);
   private readonly deleteDialog = viewChild.required(DeleteCalculationDialogComponent);
@@ -99,9 +99,6 @@ export class CalculationsManagerComponent implements OnInit {
   protected readonly storePathResource = resource({
     loader: () => this.calculationsStore.getStorePath(),
   });
-
-  readonly toastMessage = signal<string | null>(null);
-  private toastTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
   readonly calculations = computed(() =>
     this.savedCalculationsStateService.records().map(toSavedCalculation),
@@ -136,7 +133,7 @@ export class CalculationsManagerComponent implements OnInit {
       this.formService.loadFromSavedCalculation(record.data, calculation.name);
     });
     await this.router.navigate(['']);
-    this.showToast(`Wczytano „${calculation.name}" do kalkulatora`);
+    this.toastService.show(`Wczytano „${calculation.name}" do kalkulatora`);
   }
 
   async startRename(calculation: SavedCalculation): Promise<void> {
@@ -146,7 +143,7 @@ export class CalculationsManagerComponent implements OnInit {
     if (this.formService.loadedCalculationName() === calculation.name) {
       this.formService.loadedCalculationName.set(newName);
     }
-    this.showToast(`Zmieniono nazwę na „${newName}"`);
+    this.toastService.show(`Zmieniono nazwę na „${newName}"`);
   }
 
   async startDelete(calculation: SavedCalculation): Promise<void> {
@@ -156,13 +153,13 @@ export class CalculationsManagerComponent implements OnInit {
     if (this.formService.loadedCalculationName() === calculation.name) {
       this.formService.loadedCalculationName.set(null);
     }
-    this.showToast(`Usunięto kalkulację „${calculation.name}"`);
+    this.toastService.show(`Usunięto kalkulację „${calculation.name}"`);
   }
 
   async duplicateCalculation(calculation: SavedCalculation): Promise<void> {
     const copyName = await this.savedCalculationsStateService.duplicate(calculation.name);
     if (copyName) {
-      this.showToast(`Utworzono kopię „${copyName}"`);
+      this.toastService.show(`Utworzono kopię „${copyName}"`);
     }
   }
 
@@ -177,18 +174,14 @@ export class CalculationsManagerComponent implements OnInit {
 
   async importFromFile(): Promise<void> {
     await this.savedCalculationsStateService.importFromFile();
-    this.showToast('Zaimportowano kalkulację');
+    this.toastService.show('Zaimportowano kalkulację');
   }
 
   async exportAllToFile(): Promise<void> {
     const records = this.savedCalculationsStateService.records();
-    if (!records.length) {
-      this.showToast('Brak kalkulacji do eksportu');
-      return;
-    }
     const savedPath = await this.calculationsStore.exportAllToFile(records);
     if (savedPath) {
-      this.showToast(`Wyeksportowano ${records.length} kalkulacji`);
+      this.toastService.show(`Wyeksportowano ${records.length} kalkulacji`);
     }
   }
 
@@ -224,7 +217,7 @@ export class CalculationsManagerComponent implements OnInit {
     await this.calculationsStore.saveCalculation(updatedRecord);
     await this.savedCalculationsStateService.refreshRecords();
     this.formService.refreshLoadedCalculationSnapshot();
-    this.showToast(`Zapisano zmiany w „${calculation.name}"`);
+    this.toastService.show(`Zapisano zmiany w „${calculation.name}"`);
   }
 
   async saveAsNewCalculation(): Promise<void> {
@@ -272,12 +265,6 @@ export class CalculationsManagerComponent implements OnInit {
     if (name === this.formService.loadedCalculationName()) {
       this.formService.refreshLoadedCalculationSnapshot();
     }
-    this.showToast(`Zapisano nową kalkulację „${name}"`);
-  }
-
-  private showToast(message: string): void {
-    this.toastMessage.set(message);
-    if (this.toastTimeoutId !== null) clearTimeout(this.toastTimeoutId);
-    this.toastTimeoutId = setTimeout(() => this.toastMessage.set(null), 3200);
+    this.toastService.show(`Zapisano nową kalkulację „${name}"`);
   }
 }

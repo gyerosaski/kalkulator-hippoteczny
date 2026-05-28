@@ -1,5 +1,11 @@
 import { ColorCodeArea } from './mortgage.model';
 
+export enum BadgeVariant {
+  GREEN = 'GREEN',
+  RED = 'RED',
+  NEUTRAL = 'NEUTRAL',
+}
+
 export interface DonutSlice {
   label: string;
   value: number;
@@ -85,6 +91,17 @@ export enum AppRoute {
   CALCULATOR = 'calculator',
   CALCULATOR_MANAGER = 'calculator-manager',
   CALCULATIONS_COMPARE = 'calculations-compare',
+}
+
+export enum ToastVariant {
+  SUCCESS = 'SUCCESS',
+  ERROR = 'ERROR',
+  INFO = 'INFO',
+}
+
+export interface Toast {
+  message: string;
+  variant: ToastVariant;
 }
 
 export interface RateChartPoint {

@@ -61,14 +61,6 @@
     />
   }
 
-  <!-- TOAST -->
-  @if (toastMessage(); as message) {
-    <div class="toast-notification" role="status">
-      <icon-check-circle />
-      <span>{{ message }}</span>
-    </div>
-  }
-
   <app-save-calculation-dialog />
   <app-rename-calculation-dialog />
   <app-delete-calculation-dialog />

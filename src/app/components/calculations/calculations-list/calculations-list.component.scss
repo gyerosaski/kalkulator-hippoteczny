@@ -97,28 +97,6 @@
   text-overflow: ellipsis;
 }
 
-.badge {
-  display: inline-flex;
-  align-items: center;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  padding: 2px 7px;
-  border-radius: 999px;
-  flex: 0 0 auto;
-}
-
-.badge--loaded {
-  background: var(--accent-deep);
-  color: var(--surface);
-}
-
-.badge--modified {
-  background: var(--c-int);
-  color: var(--surface);
-}
-
 .money-amount {
   font-size: 13px;
   display: flex;
