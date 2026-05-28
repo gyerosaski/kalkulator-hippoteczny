@@ -52,23 +52,26 @@
   />
 
   <!-- FOOTER -->
-  <div class="view-footer">
-    <div class="muted small">
-      Wyświetlono <b class="mono">{{ filteredCalculations().length }}</b> z
-      <b class="mono">{{ calculations().length }}</b> kalkulacji · dane przechowywane lokalnie
-      @if (storePathResource.value(); as path) {
-        · <span class="mono path-label" [title]="path">{{ path }}</span>
-      }
+  @if (filteredCalculations().length) {
+    <div class="view-footer">
+      <div class="muted small">
+        Wyświetlono <b class="mono">{{ filteredCalculations().length }}</b> z
+        <b class="mono">{{ calculations().length }}</b> kalkulacji · Twoje dane przechowywane są
+        lokalnie
+        @if (storePathResource.value(); as path) {
+          · <span class="mono path-label" [title]="path">{{ path }}</span>
+        }
+      </div>
+      <button
+        class="btn btn--ghost btn--mini"
+        [disabled]="calculations().length === 0"
+        (click)="exportAllToFile()"
+      >
+        <icon-download />
+        Eksportuj wszystkie do JSON
+      </button>
     </div>
-    <button
-      class="btn btn--ghost btn--mini"
-      [disabled]="calculations().length === 0"
-      (click)="exportAllToFile()"
-    >
-      <icon-download />
-      Eksportuj wszystkie do JSON
-    </button>
-  </div>
+  }
 
   <!-- TOAST -->
   @if (toastMessage(); as message) {

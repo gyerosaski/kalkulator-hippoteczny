@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Kalkulator Hipoteczny",
   "version": "0.1.0",
-  "identifier": "com.gyerosaski.kalkulator-hipoteczny",
+  "identifier": "Kalkulator Hipoteczny",
   "build": {
     "frontendDist": "../dist/kalkulator-hipoteczny/browser",
     "devUrl": "http://localhost:4200",

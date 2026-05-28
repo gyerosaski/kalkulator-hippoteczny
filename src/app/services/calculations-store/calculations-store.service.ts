@@ -96,6 +96,7 @@ export class CalculationsStoreService {
 
   async getStorePath(): Promise<string> {
     const dataDirectory = await appDataDir();
+    return await appDataDir();
     return await join(dataDirectory, CalculationsStoreService.STORE_FILE_NAME);
   }
 
