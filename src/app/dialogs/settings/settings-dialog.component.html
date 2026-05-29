@@ -1,0 +1,23 @@
+<dialog #dialogEl (close)="onClose()">
+  <div class="dialog-head">
+    <div>
+      <div class="dialog-tag">ustawienia</div>
+      <h2 class="dialog-title">Ustawienia</h2>
+    </div>
+    <button class="dialog-close" type="button" (click)="cancel()" aria-label="Zamknij">×</button>
+  </div>
+  <div class="dialog-body">
+    <div class="setting-row">
+      <label class="setting-label" for="settings-theme">Motyw</label>
+      <ui-select
+        inputId="settings-theme"
+        [options]="themeOptions"
+        [labels]="themeOptions | themeLabel"
+        [formControl]="themeControl"
+      />
+    </div>
+    <div class="dialog-actions">
+      <button class="btn btn--primary" type="button" (click)="cancel()">Gotowe</button>
+    </div>
+  </div>
+</dialog>

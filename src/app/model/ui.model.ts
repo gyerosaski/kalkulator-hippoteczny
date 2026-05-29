@@ -99,6 +99,11 @@ export enum ToastVariant {
   INFO = 'INFO',
 }
 
+export enum Theme {
+  LIGHT = 'LIGHT',
+  DARK = 'DARK',
+}
+
 export interface Toast {
   message: string;
   variant: ToastVariant;

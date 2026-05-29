@@ -6,29 +6,29 @@ import {
   ElementRef,
   inject,
   signal,
+  viewChild,
   viewChildren,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 
-import { ThemeService } from '../../../services/theme/theme.service';
 import { IconCalculatorComponent } from '../../icons/icon-calculator/icon-calculator.component';
-import { IconSunComponent } from '../../icons/icon-sun/icon-sun.component';
-import { IconMoonComponent } from '../../icons/icon-moon/icon-moon.component';
+import { IconSettingsComponent } from '../../icons/icon-settings/icon-settings.component';
+import { SettingsDialogComponent } from '../../../dialogs/settings/settings-dialog.component';
 import { AppRoute } from '../../../model';
 
 @Component({
   selector: 'ui-topbar',
   standalone: true,
-  imports: [IconCalculatorComponent, IconSunComponent, IconMoonComponent],
+  imports: [IconCalculatorComponent, IconSettingsComponent, SettingsDialogComponent],
   templateUrl: './topbar.component.html',
   styleUrls: ['./topbar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TopbarComponent {
-  protected readonly themeService = inject(ThemeService);
   private readonly router = inject(Router);
+  protected readonly settingsDialog = viewChild.required(SettingsDialogComponent);
 
   private readonly routerUrl = toSignal(this.router.events.pipe(map(() => this.router.url)), {
     initialValue: this.router.url,

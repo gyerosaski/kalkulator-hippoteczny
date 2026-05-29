@@ -35,17 +35,10 @@
     </button>
   </nav>
   <div class="topbar-actions">
-    <button
-      class="ico-btn"
-      type="button"
-      (click)="themeService.toggle()"
-      [title]="themeService.darkMode() ? 'Tryb jasny' : 'Tryb ciemny'"
-    >
-      @if (themeService.darkMode()) {
-        <icon-sun />
-      } @else {
-        <icon-moon />
-      }
+    <button class="ico-btn" type="button" (click)="settingsDialog().open()" title="Ustawienia">
+      <icon-settings />
     </button>
   </div>
 </header>
+
+<app-settings-dialog />
