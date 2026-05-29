@@ -102,6 +102,7 @@ export enum ToastVariant {
 export enum Theme {
   LIGHT = 'LIGHT',
   DARK = 'DARK',
+  OCHRA = 'OCHRA',
 }
 
 export interface Toast {

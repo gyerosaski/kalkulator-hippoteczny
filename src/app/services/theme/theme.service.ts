@@ -9,12 +9,15 @@ export class ThemeService {
 
   readonly theme = signal<Theme>(this.loadPreference());
 
-  readonly darkMode = computed(() => this.theme() === Theme.DARK);
+  readonly dataTheme = computed<string | null>(() => {
+    const theme = this.theme();
+    return theme === Theme.LIGHT ? null : theme.toLowerCase();
+  });
 
   constructor() {
     effect(() => {
       if (isPlatformBrowser(this.platformId)) {
-        localStorage.setItem('theme', this.theme() === Theme.DARK ? 'dark' : 'light');
+        localStorage.setItem('theme', this.theme());
       }
     });
   }
@@ -26,7 +29,12 @@ export class ThemeService {
   private loadPreference(): Theme {
     if (typeof localStorage !== 'undefined') {
       const stored = localStorage.getItem('theme');
-      if (stored) return stored === 'dark' ? Theme.DARK : Theme.LIGHT;
+      if (stored) {
+        if ((Object.values(Theme) as string[]).includes(stored)) return stored as Theme;
+        // Kompatybilność wsteczna ze starymi wartościami 'dark'/'light'.
+        if (stored === 'dark') return Theme.DARK;
+        if (stored === 'light') return Theme.LIGHT;
+      }
     }
     if (typeof window !== 'undefined') {
       return window.matchMedia('(prefers-color-scheme: dark)').matches ? Theme.DARK : Theme.LIGHT;

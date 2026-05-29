@@ -1,4 +1,4 @@
-<div class="app" [attr.data-theme]="themeService.darkMode() ? 'dark' : null">
+<div class="app" [attr.data-theme]="themeService.dataTheme()">
   <ui-topbar />
   <router-outlet />
   <ui-toast />

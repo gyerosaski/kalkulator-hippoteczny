@@ -140,6 +140,77 @@ body {
   }
 }
 
+/* === MOTYW „OCHRA" =====================================================
+   Ciepły, ziemisty wariant motywu ciemnego (ugier / oliwka / terakota).
+   Akcent wiodący: pomarańcz ugru; kolory semantyczne przemapowane na
+   barwy z palety terminala (kapitał→oliwka, odsetki→ceglany,
+   nadpłaty→morski, koszty→bursztyn). Wzorowane na designie
+   (design/angular/src/styles.scss, blok data-skin='ochre').
+*/
+.app[data-theme='ochra'] {
+  --bg: #1c1714;
+  --surface: #241d17;
+  --surface-2: #2f251c;
+  --surface-stripe: #211a14;
+  --ink: #e6cfa8;
+  --ink-2: #cbb084;
+  --muted: #9b8665;
+  --line: #3a2d22;
+  --line-2: #4a3a2e;
+  --grid: #332820;
+  --track: #2c2218;
+
+  /* cienie jak w motywie ciemnym */
+  --shadow-sm: 0 1px 0 oklch(5% 0.005 250 / 0.6);
+  --shadow: 0 1px 2px oklch(5% 0.005 250 / 0.2), 0 4px 16px oklch(5% 0.005 250 / 0.2);
+  --shadow-lg: 0 2px 4px oklch(5% 0.005 250 / 0.25), 0 12px 32px oklch(5% 0.005 250 / 0.3);
+
+  /* palety akcentu — ciepłe odcienie z terminala */
+  --accent-sage: #aab656;
+  --accent-sage-deep: #c4ba6e;
+  --accent-peach: #e07a3c;
+  --accent-peach-deep: #ef8b4e;
+  --accent-lav: #d48472;
+  --accent-lav-deep: #e09a88;
+  --accent-mist: #82a4a8;
+  --accent-mist-deep: #98bbbf;
+
+  /* kolory semantyczne (żywe + ciemne „soft") */
+  --c-cap: #aab656;
+  --c-cap-mid: #8a9a47;
+  --c-cap-soft: #2c3019;
+
+  --c-int: #e6552e;
+  --c-int-mid: #c2412a;
+  --c-int-soft: #3a221a;
+
+  --c-over: #82a4a8;
+  --c-over-mid: #6a8a8e;
+  --c-over-soft: #223032;
+
+  --c-cost: #f0b95a;
+  --c-cost-mid: #d99a3a;
+  --c-cost-soft: #382b18;
+
+  color-scheme: dark;
+
+  .btn--primary {
+    color: #1c1714;
+  }
+  .btn--primary:hover {
+    background: var(--ink);
+  }
+}
+
+/* ciepłe nadpisania powierzchni wpisanych na sztywno w trybie ciemnym
+   (analogicznie do bloku data-theme='dark') */
+.app[data-theme='ochra'] .tbl-row--month:hover {
+  background: color-mix(in oklch, var(--accent) 18%, #211a14);
+}
+.app[data-theme='ochra'] .tbl-row--month.is-selected {
+  background: color-mix(in oklch, var(--accent) 30%, #211a14);
+}
+
 .mono {
   font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
   font-feature-settings: 'tnum';

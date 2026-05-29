@@ -21,13 +21,14 @@ Kliknięcie ikony otwiera modalne okno dialogowe **„Ustawienia"** (`SettingsDi
 - Kontrolka: generyczny komponent `ui-select` (lista rozwijana), gotowy na rozszerzenie o kolejne wartości motywu w przyszłości.
 - Wartości (enum `Theme`, plik `src/app/model/ui.model.ts`):
   - `Theme.LIGHT` — etykieta „jasny",
-  - `Theme.DARK` — etykieta „ciemny".
+  - `Theme.DARK` — etykieta „ciemny",
+  - `Theme.OCHRA` — etykieta „ochra" (ciepły, ziemisty wariant motywu ciemnego — ugier/oliwka/terakota).
 - Etykiety polskie pochodzą wyłącznie z dedykowanego pipe `ThemeLabelPipe` (`src/app/pipes/theme-label/`); nie są zapisane na stałe w komponencie ani serwisie.
 - Stan zarządzany jest przez `ThemeService` (`src/app/services/theme/theme.service.ts`):
   - źródłem prawdy jest sygnał `theme = signal<Theme>(...)`,
-  - `darkMode = computed(() => theme() === Theme.DARK)` jest używany w `app.html` do ustawienia atrybutu `[attr.data-theme]="darkMode() ? 'dark' : null"` na kontenerze `.app` (selektory `.app[data-theme='dark']` w `src/styles.scss`),
+  - `dataTheme = computed<string | null>(...)` zwraca wartość atrybutu `data-theme`: `null` dla motywu jasnego oraz `'dark'` / `'ochra'` (małe litery wartości enuma) dla pozostałych; jest używany w `app.html` jako `[attr.data-theme]="themeService.dataTheme()"` na kontenerze `.app` (selektory `.app[data-theme='dark']` i `.app[data-theme='ochra']` w `src/styles.scss`),
   - `setTheme(theme: Theme)` ustawia bieżący motyw.
-- Utrwalanie: `effect` w `ThemeService` zapisuje wybór w `localStorage` pod kluczem `theme` jako `'dark'` lub `'light'`. Przy starcie aplikacji `loadPreference()` odczytuje tę wartość; w razie jej braku korzysta z preferencji systemowej (`prefers-color-scheme`), a w środowisku bez `window`/`localStorage` przyjmuje motyw jasny.
+- Utrwalanie: `effect` w `ThemeService` zapisuje wybór w `localStorage` pod kluczem `theme` jako wartość enuma `Theme` (np. `'OCHRA'`). Przy starcie aplikacji `loadPreference()` odczytuje tę wartość (z kompatybilnością wsteczną dla starych zapisów `'dark'`/`'light'`); w razie jej braku korzysta z preferencji systemowej (`prefers-color-scheme`), a w środowisku bez `window`/`localStorage` przyjmuje motyw jasny.
 
 ---
 

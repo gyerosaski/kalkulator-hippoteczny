@@ -4,6 +4,7 @@ import { Theme } from '../../model';
 const LABELS: Record<Theme, string> = {
   [Theme.LIGHT]: 'jasny',
   [Theme.DARK]: 'ciemny',
+  [Theme.OCHRA]: 'ochra',
 };
 
 @Pipe({ name: 'themeLabel', standalone: true })
