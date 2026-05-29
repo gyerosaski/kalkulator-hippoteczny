@@ -43,6 +43,8 @@ import { FormError } from './models';
       class="app"
       [attr.data-palette]="calc.tweaks().palette"
       [attr.data-density]="calc.tweaks().density"
+      [attr.data-theme]="calc.baseTheme()"
+      [attr.data-skin]="calc.themeSkin()"
       [attr.data-font]="calc.tweaks().fontPair"
     >
       <header class="topbar">

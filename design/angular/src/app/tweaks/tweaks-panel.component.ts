@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { CalcService } from '../calc.service';
-import { Palette, Density, FontPair, ViewState, ActiveTab } from '../models';
+import { Palette, Density, FontPair, ViewState, ActiveTab, Theme } from '../models';
 
 @Component({
   selector: 'app-tweaks-panel',
@@ -15,6 +15,19 @@ import { Palette, Density, FontPair, ViewState, ActiveTab } from '../models';
           <button class="tw-close" (click)="open.set(false)">✕</button>
         </div>
         <div class="tw-body">
+          <div class="tw-section">
+            <div class="tw-label">Motyw</div>
+            <div class="tw-radio">
+              @for (m of themes; track m.value) {
+                <button
+                  [class.is-on]="calc.tweaks().theme === m.value"
+                  (click)="calc.saveTweaks({ theme: m.value })"
+                >
+                  {{ m.label }}
+                </button>
+              }
+            </div>
+          </div>
           <div class="tw-section">
             <div class="tw-label">Paleta</div>
             <div class="tw-radio">
@@ -168,6 +181,13 @@ import { Palette, Density, FontPair, ViewState, ActiveTab } from '../models';
 export class TweaksPanelComponent {
   calc = inject(CalcService);
   open = signal(false);
+
+  themes: { value: Theme; label: string }[] = [
+    { value: 'light', label: 'Jasny' },
+    { value: 'dark', label: 'Ciemny' },
+    { value: 'ochre', label: 'Ugier' },
+    { value: 'auto', label: 'Auto' },
+  ];
 
   palettes: { value: Palette; label: string }[] = [
     { value: 'sage', label: 'Szałwia' },

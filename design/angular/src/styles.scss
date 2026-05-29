@@ -108,6 +108,184 @@ body {
   font-family: ui-sans-serif, system-ui, sans-serif;
 }
 
+/* ============================================================
+   MOTYW CIEMNY — pełen zestaw tokenów
+   ============================================================ */
+.app[data-theme='dark'] {
+  --bg: oklch(15% 0.008 250);
+  --surface: oklch(19% 0.01 250);
+  --surface-2: oklch(23% 0.012 250);
+  --ink: oklch(96% 0.008 95);
+  --ink-2: oklch(78% 0.012 95);
+  --muted: oklch(60% 0.014 95);
+  --line: oklch(28% 0.012 250);
+  --line-2: oklch(34% 0.014 250);
+  --grid: oklch(27% 0.012 250);
+  --track: oklch(26% 0.012 250);
+
+  --accent-sage: oklch(75% 0.09 150);
+  --accent-sage-deep: oklch(82% 0.12 155);
+  --accent-peach: oklch(76% 0.1 50);
+  --accent-peach-deep: oklch(82% 0.14 45);
+  --accent-lav: oklch(75% 0.09 290);
+  --accent-lav-deep: oklch(82% 0.12 285);
+  --accent-mist: oklch(75% 0.07 230);
+  --accent-mist-deep: oklch(82% 0.11 235);
+
+  --c-cap: oklch(76% 0.15 150);
+  --c-cap-mid: oklch(60% 0.12 150);
+  --c-cap-soft: oklch(28% 0.05 150);
+
+  --c-int: oklch(74% 0.16 28);
+  --c-int-mid: oklch(60% 0.14 28);
+  --c-int-soft: oklch(28% 0.06 28);
+
+  --c-over: oklch(74% 0.13 250);
+  --c-over-mid: oklch(60% 0.11 250);
+  --c-over-soft: oklch(28% 0.06 250);
+
+  --c-cost: oklch(80% 0.14 82);
+  --c-cost-mid: oklch(66% 0.13 85);
+  --c-cost-soft: oklch(28% 0.06 85);
+
+  --shadow-sm: 0 1px 0 oklch(8% 0.005 250 / 0.6);
+  --shadow: 0 1px 2px oklch(0% 0 0 / 0.4), 0 4px 16px oklch(0% 0 0 / 0.35);
+  --shadow-lg: 0 2px 4px oklch(0% 0 0 / 0.5), 0 12px 32px oklch(0% 0 0 / 0.45);
+
+  color-scheme: dark;
+}
+
+/* Punktowe poprawki na sztywno wpisane kolory ----------------- */
+.app[data-theme='dark'] .btn--primary {
+  background: var(--ink);
+  color: oklch(15% 0.008 250);
+}
+.app[data-theme='dark'] .btn--primary:hover {
+  background: oklch(86% 0.012 95);
+}
+.app[data-theme='dark'] .switch-thumb {
+  background: oklch(96% 0.008 95);
+  box-shadow: 0 1px 2px oklch(0% 0 0 / 0.5);
+}
+.app[data-theme='dark'] .ico-btn--danger:hover {
+  background: oklch(30% 0.05 30);
+}
+.app[data-theme='dark'] .tab.is-on {
+  box-shadow:
+    var(--shadow-sm),
+    0 0 0 1px var(--line);
+}
+.app[data-theme='dark'] .kpi:first-child {
+  background: linear-gradient(
+    135deg,
+    color-mix(in oklch, var(--accent-deep) 22%, var(--surface)),
+    var(--surface)
+  );
+}
+.app[data-theme='dark'] .topbar {
+  backdrop-filter: blur(8px);
+  background: color-mix(in oklch, var(--surface) 85%, transparent);
+}
+.app[data-theme='dark'] .errors-view {
+  --err-deep: var(--accent-peach-deep);
+  --err-mid: var(--accent-peach);
+  --err-tint: color-mix(in oklch, var(--accent-peach) 16%, var(--surface));
+  --err-soft: color-mix(in oklch, var(--accent-peach) 10%, var(--surface));
+  --err-ghost-line: var(--line-2);
+}
+.app[data-theme='dark'] .donut circle:first-child {
+  stroke: oklch(24% 0.012 250);
+}
+.app[data-theme='dark'] .rate-period--extra {
+  background: color-mix(in oklch, var(--accent) 12%, var(--surface));
+  border-color: color-mix(in oklch, var(--accent) 25%, var(--line));
+}
+.app[data-theme='dark'] .tbl-row--year.is-open {
+  background: color-mix(in oklch, var(--accent) 18%, var(--surface));
+}
+.app[data-theme='dark'] .inp.inp--focus {
+  background: var(--surface);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--accent) 45%, transparent);
+}
+
+/* ============================================================
+   SKIN: UGIER (Ochre) — ciepły wariant motywu ciemnego
+   ============================================================
+   Renderowany jako data-theme="dark" + data-skin="ochre", więc
+   dziedziczy całą strukturę i poprawki trybu ciemnego, a tutaj
+   tylko nadpisuje tokeny kolorów na ciepłą, ugrową paletę
+   (inspirację stanowi terminalowy motyw „Ochre" z Omarchy).
+     • tło: bardzo ciemny, ciepły brąz (zamiast chłodnego grafitu)
+     • atrament: kremowy len + przygaszony tan na drugim planie
+     • akcent wiodący: pomarańcz ugru; pozostałe palety w cieplejszych
+       odcieniach (oliwka / terakota / morze)
+     • kolory semantyczne przemapowane na barwy z palety terminala,
+       zachowując role (kapitał→oliwka, odsetki→ceglany, nadpłaty→morski,
+       koszty→bursztyn)
+   ============================================================ */
+.app[data-skin='ochre'] {
+  --bg: #1c1714;
+  --surface: #241d17;
+  --surface-2: #2f251c;
+  --ink: #e6cfa8;
+  --ink-2: #cbb084;
+  --muted: #9b8665;
+  --line: #3a2d22;
+  --line-2: #4a3a2e;
+  --grid: #332820;
+  --track: #2c2218;
+
+  /* Palety akcentu — ciepłe odcienie z terminala */
+  --accent-sage: #aab656;
+  --accent-sage-deep: #c4ba6e;
+  --accent-peach: #e07a3c;
+  --accent-peach-deep: #ef8b4e;
+  --accent-lav: #d48472;
+  --accent-lav-deep: #e09a88;
+  --accent-mist: #82a4a8;
+  --accent-mist-deep: #98bbbf;
+
+  /* Kolory semantyczne (jaśniejsze „żywe" + ciemne „soft") */
+  --c-cap: #aab656;
+  --c-cap-mid: #8a9a47;
+  --c-cap-soft: #2c3019;
+
+  --c-int: #e6552e;
+  --c-int-mid: #c2412a;
+  --c-int-soft: #3a221a;
+
+  --c-over: #82a4a8;
+  --c-over-mid: #6a8a8e;
+  --c-over-soft: #223032;
+
+  --c-cost: #f0b95a;
+  --c-cost-mid: #d99a3a;
+  --c-cost-soft: #382b18;
+
+  color-scheme: dark;
+}
+
+/* Ciepłe nadpisanie miejsc, gdzie tryb ciemny ma wpisane chłodne
+   powierzchnie na sztywno (grafit h≈250) ----------------------- */
+.app[data-skin='ochre'] .tbl-row--month {
+  background: #211a14;
+}
+.app[data-skin='ochre'] .tbl-row--month:hover {
+  background: color-mix(in oklch, var(--accent) 18%, #211a14);
+}
+.app[data-skin='ochre'] .tbl-row--month.is-selected {
+  background: color-mix(in oklch, var(--accent) 30%, #211a14);
+}
+.app[data-skin='ochre'] .donut circle:first-child {
+  stroke: #2f251c;
+}
+.app[data-skin='ochre'] .btn--primary {
+  color: #1c1714;
+}
+.app[data-skin='ochre'] .btn--primary:hover {
+  background: var(--ink);
+}
+
 .mono {
   font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
   font-feature-settings: 'tnum';
@@ -3896,40 +4074,425 @@ body {
 }
 
 /* ============================================================
-   EMPTY STATE
+   EMPTY STATE — wskaźnik kroków + inline picker + podgląd
    ============================================================ */
 .cmp-empty {
   display: flex;
   flex-direction: column;
+  gap: 18px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 28px 32px 32px;
+  text-align: left;
+  color: var(--ink);
+}
+
+/* --- Wskaźnik kroków --------------------------------------- */
+.cmp-empty-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: auto 1fr auto 1fr auto;
+  align-items: center;
+  gap: 0 4px;
+}
+.cmp-empty-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 4px;
+}
+.cmp-empty-step-num {
+  flex: 0 0 26px;
+  width: 26px;
+  height: 26px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 1.5px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+.cmp-empty-step-lab {
+  font-size: 12.5px;
+  color: var(--muted);
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+}
+.cmp-empty-step.is-current .cmp-empty-step-num {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--surface);
+  box-shadow: 0 0 0 4px color-mix(in oklch, var(--accent) 18%, transparent);
+}
+.cmp-empty-step.is-current .cmp-empty-step-lab {
+  color: var(--ink);
+  font-weight: 600;
+}
+.cmp-empty-step.is-done .cmp-empty-step-num {
+  background: var(--c-cap);
+  border-color: var(--c-cap);
+  color: var(--surface);
+}
+.cmp-empty-step.is-done .cmp-empty-step-lab {
+  color: var(--ink-2);
+}
+.cmp-empty-step--a.is-current .cmp-empty-step-num {
+  background: var(--offer-a);
+  border-color: var(--offer-a);
+  box-shadow: 0 0 0 4px color-mix(in oklch, var(--offer-a) 18%, transparent);
+}
+.cmp-empty-step--b.is-current .cmp-empty-step-num {
+  background: var(--offer-b);
+  border-color: var(--offer-b);
+  box-shadow: 0 0 0 4px color-mix(in oklch, var(--offer-b) 18%, transparent);
+}
+.cmp-empty-step-conn {
+  list-style: none;
+  height: 1.5px;
+  background: var(--line);
+  border-radius: 1px;
+  margin: 0 8px;
+}
+.cmp-empty-step-conn.is-active {
+  background: var(--c-cap);
+}
+
+/* --- Hero kroku -------------------------------------------- */
+.cmp-empty-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px 0 2px;
+}
+.cmp-empty-hero-step {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--accent-deep);
+}
+.cmp-empty-hero-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  color: var(--ink);
+  display: flex;
   align-items: center;
   gap: 12px;
-  padding: 60px 24px 68px;
-  text-align: center;
+  text-wrap: pretty;
+  flex-wrap: wrap;
+}
+.cmp-empty-hero-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border: 1.5px solid currentColor;
+  border-radius: 999px;
+  background: color-mix(in oklch, currentColor 8%, var(--surface));
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.cmp-empty-hero-pill b {
+  font-weight: 700;
+}
+.cmp-empty-hero-sub {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink-2);
+  max-width: 64ch;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* --- Lista kart (inline picker) ---------------------------- */
+.cmp-empty-list-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-top: 4px;
+}
+.cmp-empty-list-lab {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.cmp-empty-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 10px;
+}
+.cmp-empty-card {
+  position: relative;
+  appearance: none;
+  text-align: left;
   background: var(--surface);
-  border: 1px dashed var(--line-2);
-  border-radius: var(--r-xl);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 14px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s,
+    transform 0.06s,
+    box-shadow 0.15s;
+}
+.cmp-empty-card:hover {
+  border-color: currentColor;
+  box-shadow: 0 1px 0 0 color-mix(in oklch, currentColor 18%, transparent);
+}
+.cmp-empty-card:active {
+  transform: translateY(1px);
+}
+.cmp-empty-card--a {
+  color: var(--offer-a);
+}
+.cmp-empty-card--b {
+  color: var(--offer-b);
+}
+.cmp-empty-card--a:hover {
+  background: var(--offer-a-soft);
+}
+.cmp-empty-card--b:hover {
+  background: var(--offer-b-soft);
+}
+.cmp-empty-card-pin {
+  position: absolute;
+  top: 0;
+  right: 12px;
+  transform: translateY(-50%);
+  width: 22px;
+  height: 22px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--surface);
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+}
+.cmp-empty-card-pin--a {
+  background: var(--offer-a);
+}
+.cmp-empty-card-pin--b {
+  background: var(--offer-b);
+}
+.app[data-theme='dark'] .cmp-empty-card-pin {
+  color: oklch(15% 0.008 250);
+}
+.cmp-empty-card-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  padding-right: 30px;
+  text-wrap: balance;
+}
+.cmp-empty-card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 10px;
+  font-size: 12px;
+  color: var(--ink);
+}
+.cmp-empty-card-grid .muted.xs {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 1px;
+}
+.cmp-empty-card-rt {
+  text-transform: lowercase;
+  color: var(--ink-2);
+  font-size: 11.5px;
+}
+.cmp-empty-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 6px;
+  border-top: 1px dashed var(--line);
+}
+.cmp-empty-card-rata {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.cmp-empty-card-rata .xs {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--muted);
 }
-.cmp-empty svg {
+.cmp-empty-card-rata .mono {
+  font-size: 14px;
+  color: var(--ink);
+}
+.cmp-empty-card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: color-mix(in oklch, currentColor 12%, var(--surface));
+  transition: background 0.15s;
+}
+.cmp-empty-card:hover .cmp-empty-card-cta {
+  background: currentColor;
+  color: var(--surface);
+}
+.app[data-theme='dark'] .cmp-empty-card:hover .cmp-empty-card-cta {
+  color: oklch(15% 0.008 250);
+}
+
+/* --- „lub" separator + modal-btn --------------------------- */
+.cmp-empty-or {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 2px 0;
+}
+.cmp-empty-or-line {
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+.cmp-empty-or-lab {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.cmp-empty-modal-btn {
+  align-self: center;
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--ink-2);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s,
+    color 0.15s;
+}
+.cmp-empty-modal-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent-deep);
+  background: color-mix(in oklch, var(--accent) 6%, var(--surface));
+}
+
+/* --- Brak zapisanych kalkulacji ---------------------------- */
+.cmp-empty-nosaved {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  border: 1px dashed var(--line);
+  border-radius: var(--r);
+  background: var(--surface-2);
+  text-align: center;
+}
+.cmp-empty-nosaved svg {
   color: var(--line-2);
 }
 .cmp-empty-title {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--ink);
   letter-spacing: -0.01em;
 }
 .cmp-empty-sub {
   font-size: 13px;
-  max-width: 56ch;
   color: var(--ink-2);
-  text-wrap: pretty;
+  max-width: 60ch;
   line-height: 1.55;
+  text-wrap: pretty;
 }
 .cmp-empty-actions {
   display: flex;
   gap: 10px;
-  margin-top: 8px;
+  margin-top: 4px;
+}
+
+/* --- Podgląd: co pojawi się po wybraniu -------------------- */
+.cmp-empty-preview {
+  margin-top: 6px;
+  padding: 14px 16px 16px;
+  border: 1px dashed var(--line);
+  border-radius: var(--r);
+  background: color-mix(in oklch, var(--surface-2) 60%, transparent);
+}
+.cmp-empty-preview-head {
+  margin-bottom: 10px;
+}
+.cmp-empty-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 8px;
+}
+.cmp-empty-preview-card {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  opacity: 0.6;
+}
+.cmp-empty-preview-num {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--accent-deep);
+  font-weight: 600;
+}
+.cmp-empty-preview-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.005em;
+}
+.cmp-empty-preview-hint {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.cmp-empty .muted.xs,
+.cmp-empty .xs {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 /* Density --------------------------------------------------- */

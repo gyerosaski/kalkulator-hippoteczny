@@ -122,71 +122,270 @@ interface DiffRow {
         </div>
       </header>
 
-      <!-- EMPTY STATE -->
+      <!-- EMPTY STATE — wskaźnik kroków + inline picker + podgląd -->
       @if (!calc.offerA() || !calc.offerB()) {
-        <div class="cmp-empty">
-          <svg width="80" height="80" viewBox="0 0 80 80" aria-hidden="true">
-            <rect
-              x="6"
-              y="14"
-              width="30"
-              height="52"
-              rx="4"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.4"
-            />
-            <rect
-              x="44"
-              y="14"
-              width="30"
-              height="52"
-              rx="4"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.4"
-            />
-            <path
-              d="M12 24 L28 24 M12 32 L24 32 M12 40 L28 40 M12 48 L20 48"
-              stroke="currentColor"
-              stroke-width="1.2"
-              stroke-linecap="round"
-            />
-            <path
-              d="M50 24 L66 24 M50 32 L62 32 M50 40 L66 40 M50 48 L58 48"
-              stroke="currentColor"
-              stroke-width="1.2"
-              stroke-linecap="round"
-            />
-            <path
-              d="M38 38 L42 40 L38 42"
-              stroke="currentColor"
-              stroke-width="1.2"
-              fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-          <div class="cmp-empty-title">Wybierz dwie oferty do porównania</div>
-          <div class="cmp-empty-sub">
-            Każda strona przyjmuje jedną zapisaną kalkulację z zakładki <b>Twoje kalkulacje</b>.
-            Liczby (rata, odsetki, koszty), wykresy i różnice pojawią się tutaj, gdy oba sloty będą
-            wypełnione.
-          </div>
-          <div class="cmp-empty-actions">
-            @if (!calc.offerA()) {
-              <button class="btn btn--primary" (click)="openPicker('A')">+ Wybierz ofertę A</button>
-            }
-            @if (!calc.offerB()) {
-              <button
-                class="btn"
-                [class.btn--primary]="calc.offerA()"
-                [class.btn--ghost]="!calc.offerA()"
-                (click)="openPicker('B')"
+        @let step = !calc.offerA() ? 1 : !calc.offerB() ? 2 : 3;
+        @let targetSlot = step === 1 ? 'A' : 'B';
+        @let excludeId = step === 1 ? calc.comparison().offerBId : calc.comparison().offerAId;
+        @let visible = calc.availableOffers().filter((o) => o.id !== excludeId);
+        @let hasEnough = calc.availableOffers().length >= 2;
+        <div class="cmp-empty cmp-empty--v2">
+          <!-- Wskaźnik kroków -->
+          <ol class="cmp-empty-steps" aria-label="Postęp porównania">
+            <li
+              class="cmp-empty-step cmp-empty-step--a"
+              [class.is-current]="step === 1"
+              [class.is-done]="step > 1"
+            >
+              <span class="cmp-empty-step-num">
+                @if (step > 1) {
+                  <svg width="10" height="10" viewBox="0 0 10 10">
+                    <path
+                      d="M2 5 L4.5 7.5 L8.5 2.5"
+                      stroke="currentColor"
+                      stroke-width="1.6"
+                      fill="none"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                } @else {
+                  1
+                }
+              </span>
+              <span class="cmp-empty-step-lab">Wybierz ofertę A</span>
+            </li>
+            <li class="cmp-empty-step-conn" [class.is-active]="step >= 2" aria-hidden="true"></li>
+            <li
+              class="cmp-empty-step cmp-empty-step--b"
+              [class.is-current]="step === 2"
+              [class.is-done]="step > 2"
+            >
+              <span class="cmp-empty-step-num">
+                @if (step > 2) {
+                  <svg width="10" height="10" viewBox="0 0 10 10">
+                    <path
+                      d="M2 5 L4.5 7.5 L8.5 2.5"
+                      stroke="currentColor"
+                      stroke-width="1.6"
+                      fill="none"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                } @else {
+                  2
+                }
+              </span>
+              <span class="cmp-empty-step-lab">Wybierz ofertę B</span>
+            </li>
+            <li class="cmp-empty-step-conn" [class.is-active]="step >= 3" aria-hidden="true"></li>
+            <li class="cmp-empty-step" [class.is-current]="step >= 3">
+              <span class="cmp-empty-step-num">3</span>
+              <span class="cmp-empty-step-lab">Zobacz różnice</span>
+            </li>
+          </ol>
+
+          <!-- Hero kroku -->
+          <div class="cmp-empty-hero">
+            <div class="cmp-empty-hero-step muted small">KROK {{ step }} Z 2</div>
+            <h2 class="cmp-empty-hero-title">
+              {{ step === 1 ? 'Wybierz pierwszą ofertę' : 'Wybierz drugą ofertę' }}
+              <span
+                class="cmp-empty-hero-pill"
+                [ngClass]="'cmp-empty-hero-pill--' + lower(targetSlot)"
+                [style.borderColor]="step === 1 ? 'var(--offer-a)' : 'var(--offer-b)'"
+                [style.color]="step === 1 ? 'var(--offer-a)' : 'var(--offer-b)'"
               >
-                + Wybierz ofertę B
-              </button>
-            }
+                slot <b>{{ targetSlot }}</b>
+              </span>
+            </h2>
+            <p class="cmp-empty-hero-sub">
+              @if (step === 1) {
+                Kliknij jedną z zapisanych kalkulacji poniżej. Stanie się <b>bazą</b> porównania
+                (lewa kolumna).
+              } @else {
+                Zostało wybrać kalkulację porównywaną (prawa kolumna). Wszystkie różnice (Δ) liczymy
+                jako <span class="mono">B − A</span>.
+              }
+            </p>
+          </div>
+
+          <!-- Inline picker (siatka kart) -->
+          @if (hasEnough && visible.length > 0) {
+            <div class="cmp-empty-list-head">
+              <span class="cmp-empty-list-lab">Twoje zapisane kalkulacje</span>
+              <span class="muted small">{{ visible.length }} dostępnych</span>
+            </div>
+            <div class="cmp-empty-list">
+              @for (o of visible; track o.id) {
+                <button
+                  class="cmp-empty-card"
+                  [ngClass]="'cmp-empty-card--' + lower(targetSlot)"
+                  (click)="pickInline(targetSlot, o.id)"
+                >
+                  <span
+                    class="cmp-empty-card-pin"
+                    [ngClass]="'cmp-empty-card-pin--' + lower(targetSlot)"
+                    >{{ targetSlot }}</span
+                  >
+                  <div class="cmp-empty-card-name">{{ o.name }}</div>
+                  <div class="cmp-empty-card-grid">
+                    <div>
+                      <div class="muted xs">kwota</div>
+                      <div class="mono">{{ fmt0(o.source.loanAmount) }} zł</div>
+                    </div>
+                    <div>
+                      <div class="muted xs">okres</div>
+                      <div class="mono">{{ periodTxt(o.source.years, o.source.months) }}</div>
+                    </div>
+                    <div>
+                      <div class="muted xs">oproc.</div>
+                      <div class="mono">{{ fmtPct(o.source.rate, 2) }}%</div>
+                    </div>
+                    <div>
+                      <div class="muted xs">rodzaj</div>
+                      <div class="cmp-empty-card-rt">{{ o.source.rateType }}</div>
+                    </div>
+                  </div>
+                  <div class="cmp-empty-card-foot">
+                    <div class="cmp-empty-card-rata">
+                      <span class="muted xs">pierwsza rata</span>
+                      <span class="mono"
+                        ><b>{{ fmt0(o.result.firstInstallment) }}</b> zł</span
+                      >
+                    </div>
+                    <span class="cmp-empty-card-cta">
+                      Przypisz do {{ targetSlot }}
+                      <svg width="11" height="11" viewBox="0 0 12 12">
+                        <path
+                          d="M2 6 L10 6 M7 3 L10 6 L7 9"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                          fill="none"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                    </span>
+                  </div>
+                </button>
+              }
+            </div>
+            <div class="cmp-empty-or">
+              <span class="cmp-empty-or-line"></span>
+              <span class="cmp-empty-or-lab">lub</span>
+              <span class="cmp-empty-or-line"></span>
+            </div>
+            <button class="cmp-empty-modal-btn" (click)="openPicker(targetSlot)">
+              <svg width="13" height="13" viewBox="0 0 14 14">
+                <circle cx="6" cy="6" r="4" stroke="currentColor" stroke-width="1.4" fill="none" />
+                <path
+                  d="M9.5 9.5 L12.5 12.5"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  stroke-linecap="round"
+                />
+              </svg>
+              Otwórz pełną listę w oknie
+            </button>
+          }
+
+          <!-- Brak wystarczającej liczby kalkulacji -->
+          @if (!hasEnough) {
+            <div class="cmp-empty-nosaved">
+              <svg width="60" height="60" viewBox="0 0 60 60" aria-hidden="true">
+                <rect
+                  x="10"
+                  y="14"
+                  width="40"
+                  height="32"
+                  rx="3"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                />
+                <path
+                  d="M16 22 L36 22 M16 28 L30 28 M16 34 L40 34 M16 40 L24 40"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                />
+                <circle
+                  cx="48"
+                  cy="42"
+                  r="6"
+                  fill="var(--surface)"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                />
+                <path
+                  d="M48 39.5 L48 44.5 M45.5 42 L50.5 42"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <div class="cmp-empty-title">
+                {{
+                  calc.availableOffers().length > 0
+                    ? 'Masz tylko jedną zapisaną kalkulację'
+                    : 'Brak zapisanych kalkulacji'
+                }}
+              </div>
+              <div class="cmp-empty-sub">
+                Aby porównać dwie oferty, potrzebujesz <b>co najmniej dwóch</b> zapisanych
+                wariantów. Przejdź do zakładki <b>Kalkulator</b>, wprowadź parametry i kliknij
+                <i>Zapisz kalkulację</i>.
+              </div>
+              <div class="cmp-empty-actions">
+                <button class="btn btn--primary">+ Stwórz nową kalkulację</button>
+                @if (calc.availableOffers().length > 0) {
+                  <button class="btn btn--ghost" (click)="openPicker(targetSlot)">
+                    Pokaż zapisane ({{ calc.availableOffers().length }})
+                  </button>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Podgląd: co się pojawi po wypełnieniu -->
+          <div class="cmp-empty-preview" aria-hidden="true">
+            <div class="cmp-empty-preview-head">
+              <span class="muted xs">PO WYBRANIU OBU OFERT ZOBACZYSZ</span>
+            </div>
+            <div class="cmp-empty-preview-grid">
+              <div class="cmp-empty-preview-card">
+                <span class="cmp-empty-preview-num mono">3.3</span>
+                <span class="cmp-empty-preview-title">Parametry wejściowe</span>
+                <span class="cmp-empty-preview-hint">Co użytkownik zmienił między A i B</span>
+              </div>
+              <div class="cmp-empty-preview-card">
+                <span class="cmp-empty-preview-num mono">3.4</span>
+                <span class="cmp-empty-preview-title">Kluczowe wskaźniki</span>
+                <span class="cmp-empty-preview-hint">Rata · suma · odsetki · koszty</span>
+              </div>
+              <div class="cmp-empty-preview-card">
+                <span class="cmp-empty-preview-num mono">3.5</span>
+                <span class="cmp-empty-preview-title">Struktura płatności</span>
+                <span class="cmp-empty-preview-hint">Para donutów z legendą i Δ</span>
+              </div>
+              <div class="cmp-empty-preview-card">
+                <span class="cmp-empty-preview-num mono">3.6</span>
+                <span class="cmp-empty-preview-title">Pierwsza rata</span>
+                <span class="cmp-empty-preview-hint">Kapitał vs odsetki na starcie</span>
+              </div>
+              <div class="cmp-empty-preview-card">
+                <span class="cmp-empty-preview-num mono">3.7</span>
+                <span class="cmp-empty-preview-title">Trend salda</span>
+                <span class="cmp-empty-preview-hint">A vs B na wspólnej osi</span>
+              </div>
+              <div class="cmp-empty-preview-card">
+                <span class="cmp-empty-preview-num mono">3.8</span>
+                <span class="cmp-empty-preview-title">Tabela różnic</span>
+                <span class="cmp-empty-preview-hint">Co konkretnie kosztuje więcej</span>
+              </div>
+            </div>
           </div>
         </div>
       } @else {
@@ -855,6 +1054,11 @@ export class ComparisonComponent {
   }
   closePicker() {
     this.pickerSlot.set(null);
+  }
+  /** Przypisanie oferty do slotu bez otwierania modala (klik kafelka w empty state). */
+  pickInline(slot: 'A' | 'B', offerId: string) {
+    if (slot === 'A') this.calc.setComparison({ offerAId: offerId });
+    else this.calc.setComparison({ offerBId: offerId });
   }
   isBlocked(o: Offer, slot: 'A' | 'B') {
     const c = this.calc.comparison();

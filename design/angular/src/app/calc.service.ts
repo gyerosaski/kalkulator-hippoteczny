@@ -245,6 +245,31 @@ export class CalcService {
   // tweaks
   tweaks = signal<Tweaks>(this.loadTweaks());
 
+  /** Preferencja systemowa (ciemny) — używana, gdy motyw = 'auto'. */
+  private systemDark = signal<boolean>(
+    typeof matchMedia !== 'undefined' && matchMedia('(prefers-color-scheme: dark)').matches,
+  );
+  constructor() {
+    if (typeof matchMedia !== 'undefined') {
+      const mq = matchMedia('(prefers-color-scheme: dark)');
+      const onChange = (e: MediaQueryListEvent) => this.systemDark.set(e.matches);
+      mq.addEventListener ? mq.addEventListener('change', onChange) : mq.addListener(onChange);
+    }
+  }
+
+  /** Motyw po rozwinięciu 'auto'. */
+  resolvedTheme = computed(() => {
+    const t = this.tweaks().theme;
+    return t === 'auto' ? (this.systemDark() ? 'dark' : 'light') : t;
+  });
+  /**
+   * Motyw bazowy stosowany jako data-theme. „Ugier" (ochre) to ciepły wariant
+   * motywu ciemnego — renderowany jako data-theme="dark" + data-skin="ochre".
+   */
+  baseTheme = computed(() => (this.resolvedTheme() === 'ochre' ? 'dark' : this.resolvedTheme()));
+  /** Nakładka koloru (skin) — 'ochre' lub null. */
+  themeSkin = computed<string | null>(() => (this.resolvedTheme() === 'ochre' ? 'ochre' : null));
+
   // ====================== TWOJE KALKULACJE ======================
   savedCalculations = signal<SavedCalculation[]>([
     {
@@ -726,6 +751,7 @@ export class CalcService {
       fontPair: 'inter',
       viewState: 'errors',
       activeTab: 'kalkulator',
+      theme: 'light',
     };
     try {
       const raw = localStorage.getItem('khip:tweaks');

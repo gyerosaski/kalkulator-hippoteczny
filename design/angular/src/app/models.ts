@@ -158,6 +158,8 @@ export type Density = 'cozy' | 'comfy' | 'roomy';
 export type FontPair = 'inter' | 'fraunces' | 'system';
 export type ViewState = 'auto' | 'results' | 'errors';
 export type ActiveTab = 'kalkulator' | 'kalkulacje' | 'porownanie';
+/** Motyw: jasny, ciemny, ugier (ciepły wariant ciemnego) lub auto (wg systemu). */
+export type Theme = 'light' | 'dark' | 'ochre' | 'auto';
 
 export interface Tweaks {
   palette: Palette;
@@ -165,6 +167,7 @@ export interface Tweaks {
   fontPair: FontPair;
   viewState: ViewState;
   activeTab: ActiveTab;
+  theme: Theme;
 }
 
 export interface FormError {
