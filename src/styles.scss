@@ -83,19 +83,6 @@ body {
   min-height: 100vh;
 }
 
-.app[data-palette='peach'] {
-  --accent: var(--accent-peach);
-  --accent-deep: var(--accent-peach-deep);
-}
-.app[data-palette='lavender'] {
-  --accent: var(--accent-lav);
-  --accent-deep: var(--accent-lav-deep);
-}
-.app[data-palette='mist'] {
-  --accent: var(--accent-mist);
-  --accent-deep: var(--accent-mist-deep);
-}
-
 .app[data-density='cozy'] {
   --pad: 12px;
   --gap: 10px;

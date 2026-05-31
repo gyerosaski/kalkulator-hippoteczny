@@ -5,7 +5,7 @@
     <div class="card-head">
       <div>
         <h3>
-          Struktura wszystkich płatności
+          Struktura płatności
           @if (row) {
             <span class="card-head-suffix"> do {{ row.date | formatMonth }}</span>
           }
@@ -15,7 +15,7 @@
             narastająco od początku do wybranego miesiąca ·
             <button class="link-btn" (click)="clearSelection()">pokaż cały okres</button>
           } @else {
-            cały okres kredytowania
+            w pełnym okresie kredytowania
           }
         </div>
       </div>
