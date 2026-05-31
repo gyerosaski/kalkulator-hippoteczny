@@ -1,8 +1,6 @@
 # Specyfikacja techniczna widoku „Porównanie ofert”
 
-Aplikacja: Kalkulator kredytu hipotecznego 2.0
 Zakres: Specyfikacja zakładki `Porównanie ofert` — co i w jaki sposób zestawiamy pomiędzy zapisanymi kalkulacjami; opis interakcji, danych źródłowych oraz **ponownego wykorzystania wykresów z widoku „Kalkulator”** (`Donut` × 2 + `TrendChart`).
-Data opracowania: 2026-05-23
 
 ---
 
@@ -83,18 +81,19 @@ Liczba kolumn ofertowych jest stała: **dwie**. Widok pokazuje pusty stan z CTA 
 
 ## 4. Elementy interaktywne
 
-### 4.1. Pasek wyboru ofert (`OffersPicker`)
+### 4.1. Pasek wyboru ofert
 
 - Typ: **dwa sloty** — `Oferta A` (lewy) i `Oferta B` (prawy), każdy jako chip z nazwą wybranej kalkulacji lub placeholder `+ Wybierz ofertę`.
 - Działanie:
-  - kliknięcie slotu otwiera popover z listą wszystkich zapisanych kalkulacji (`Twoje kalkulacje`) — **single‑select** (jedna pozycja zostaje wybrana, popover zamyka się),
-  - lista popovera ukrywa pozycję, która jest już wybrana w przeciwnym slocie (nie można porównać oferty samej ze sobą),
-  - wpis `Bieżąca kalkulacja (robocza)` widoczny tylko jeśli na zakładce `Kalkulator` istnieje aktywna kalkulacja nieprzypisana do żadnego zapisu — pozwala porównać świeże ustawienia z zapisanym wariantem,
-  - wyczyszczenie slotu: `×` na chipie (slot wraca do stanu pustego),
+  - kliknięcie slotu otwiera okno dialog z listą wszystkich zapisanych kalkulacji (z zakładki `Twoje kalkulacje`) — **single‑select** (jedna pozycja zostaje wybrana, popover zamyka się),
+  - lista ukrywa pozycję:
+    - która jest już wybrana w przeciwnym slocie (nie można porównać oferty samej ze sobą),
+    - która posiada błędy walidacji (nie ma pewności, czy będziemy w stanie wyliczyć wszystkie porównywane wartości)
+  - wpis `Bieżąca kalkulacja` wczytujący bieżącą kalkulację i reagujący odświeżeniem porównania na każdą zmianę parametrów kalkulacji w zakładce `Kalkulator`
+  - wyczyszczenie slotu: ikona kosza na chipie (slot wraca do stanu pustego),
   - przycisk `↔` między slotami zamienia `A ↔ B` (patrz 4.2 `Zamień strony`).
 - Walidacje:
   - wymagane wypełnienie **obu** slotów, aby pokazać sekcje 3.3 – 3.8,
-  - oferta z błędem walidacji wejść (`Σ transz ≠ kwota`, `LTV ∉ [0,100]` itp.) jest oznaczona ikoną ⚠ — sekcje liczbowe (3.4, 3.7, 3.8) są ukryte, widoczna pozostaje tylko 3.3 (parametry wejściowe) z banerem „Oferta A/B zawiera błędy — popraw w kalkulatorze”.
 
 ### 4.2. Akcje globalne
 
@@ -410,38 +409,9 @@ Wartości formatowane przez `fmtPLN` z `pl-PL`, dwa miejsca po przecinku.
 
 ---
 
-## 17. Uwagi implementacyjne (Angular)
-
-- Stan widoku w usłudze `OfferComparisonService`:
-  ```
-  offerAId:        Signal<string | null>
-  offerBId:        Signal<string | null>
-  trendMode:       Signal<'overlay'|'side-by-side'>
-  showZeroSegments: Signal<boolean>
-  diffOnly:        Signal<boolean>          // toggle „Tylko różnice” w 3.3
-  ```
-- Źródło danych ofert: `SavedCalculationsService.list$` + `CalcService.compute()` per `input` zapisany w localStorage.
-- Kolory ofert: dwa odcienie przygotowane w `:root` (`--offer-a`, `--offer-b`), kontrastujące ze sobą i z paletą segmentów (`--c-cap/int/cost/over`), spójne w trybie jasnym i ciemnym.
-- Komponenty wielokrotnego użytku:
-  - `<app-donut>` — komponent równoważny `Donut` z makiety,
-  - `<app-trend-chart>` — komponent z propsami z § 11.2 (Chart.js datasety: linie z `tension: 0`, punkty `r: 4`).
-- Brak nowych zapisów do persistence — widok jest read‑only względem ofert.
-- Routing: `/porownanie?a=<id>&b=<id>&mode=overlay`.
-- Akcja `↔ Zamień strony`: prosta zamiana sygnałów `offerAId ↔ offerBId`; pozostałe selektory (`compareSelector$`) reagują automatycznie.
-
----
-
-## 18. Zależności od innych zakładek
+## 17. Zależności od innych zakładek
 
 - `Twoje kalkulacje` — źródło prawdy dla listy ofert (`Offer.id`, `Offer.name`, `Offer.savedAt`).
 - `Kalkulator` — źródło wykresów (`Donut`, `TrendChart`, `TrendChartHeader`), źródło bieżącej oferty roboczej (`isDraft: true`), oraz cel akcji „Otwórz w kalkulatorze”.
-- `Słownik` — link kontekstowy z nagłówków wierszy w 3.3 / 3.8 (np. `LTV`, `WIBOR`, `Marża`, `Ubezpieczenie pomostowe`, `Prowizja za wcześniejszą spłatę`) — kliknięcie nazwy pozycji otwiera definicję w `Słowniku` w modalu.
 
 ---
-
-## 19. Co celowo POMINIĘTO w widoku
-
-- Porównywanie 3+ ofert jednocześnie — świadome ograniczenie projektowe (patrz § 1). Porównanie par jest najczęstszym realnym scenariuszem decyzyjnym, a układ dwukolumnowy + jedna delta dają najwyższą czytelność. Użytkownik, który chce zestawić więcej wariantów, robi to serią par (A‑B, A‑C, B‑C).
-- Edycja danych wejściowych ofert (zawsze przez `Kalkulator`).
-- Liczenie RRSO (`APR`) — nie występuje w obecnym modelu obliczeniowym `CalcService`; jeśli zostanie dodane w przyszłości, należy dodać je do `result` i jako wiersz w 3.4 oraz 3.8 (już zarezerwowane miejsce w specyfikacji wierszy 3.8 — sekcja „SUMA”).
-- Wielowariantowe analizy „co‑jeśli” (np. WIBOR ±1pp) — wykraczają poza zakres tej zakładki; rekomendowane jako kolejny widok lub jako sekcja w `Kalkulator`.
