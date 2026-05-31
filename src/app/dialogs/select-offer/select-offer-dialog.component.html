@@ -1,0 +1,62 @@
+<dialog #dialogEl (close)="onClose()">
+  @if (context(); as ctx) {
+    <div class="dialog-head">
+      <div>
+        <div class="dialog-tag">Slot {{ ctx.slot }}</div>
+        <h2 class="dialog-title">Wybierz ofertę</h2>
+      </div>
+      <button class="dialog-close" type="button" (click)="cancel()" aria-label="Zamknij">×</button>
+    </div>
+
+    <div class="dialog-body">
+      @if (selectableOffers().length > 0) {
+        <ul class="offer-list">
+          @for (offer of selectableOffers(); track offer.id) {
+            <li>
+              <button
+                type="button"
+                class="offer-row"
+                [class.offer-row--draft]="offer.kind === ComparableOfferKind.DRAFT"
+                (click)="selectOffer(offer.id)"
+              >
+                <div class="offer-row-main">
+                  <div class="offer-row-name">
+                    <span>{{ offer.name }}</span>
+                    @if (offer.kind === ComparableOfferKind.DRAFT) {
+                      <ui-badge label="bieżąca" [variant]="BadgeVariant.GREEN" />
+                    }
+                  </div>
+                  <div class="offer-row-meta mono muted small">
+                    {{ offer.loanAmount | formatWholeAmount }} zł ·
+                    {{ offer.loanPeriodYears | formatLoanPeriod: offer.loanPeriodExtraMonths }} ·
+                    {{ offer.nominalRate | formatRate }} ·
+                    {{ offer.installmentType | installmentTypeLabel }} ·
+                    {{ offer.rateType | rateTypeLabel }}
+                  </div>
+                </div>
+                <div class="offer-row-installment mono">
+                  @if (offer.firstInstallment > 0) {
+                    <b>{{ offer.firstInstallment | formatAmount }} zł</b>
+                  } @else {
+                    <b>—</b>
+                  }
+                  <div class="muted small">pierwsza rata</div>
+                </div>
+              </button>
+            </li>
+          }
+        </ul>
+      } @else {
+        <div class="offer-empty muted small">Brak ofert do wyboru w tym slocie.</div>
+      }
+
+      @if (hiddenWithErrorsCount() > 0) {
+        <div class="dialog-hint">
+          Ukryto {{ hiddenWithErrorsCount() }}
+          {{ hiddenWithErrorsCount() === 1 ? 'kalkulację z błędami' : 'kalkulacji z błędami' }}
+          walidacji — popraw je w kalkulatorze, aby były dostępne do porównania.
+        </div>
+      }
+    </div>
+  }
+</dialog>

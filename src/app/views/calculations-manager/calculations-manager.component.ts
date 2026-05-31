@@ -204,6 +204,7 @@ export class CalculationsManagerComponent implements OnInit {
           trancheCount: formData.tranches.enabled
             ? ((formData.tranches.fields.tranches as unknown[])?.length ?? 1)
             : 1,
+          hasErrors: this.formService.form.invalid,
         }
       : undefined;
 
@@ -249,6 +250,7 @@ export class CalculationsManagerComponent implements OnInit {
           trancheCount: formData.tranches.enabled
             ? ((formData.tranches.fields.tranches as unknown[])?.length ?? 1)
             : 1,
+          hasErrors: this.formService.form.invalid,
         }
       : undefined;
 

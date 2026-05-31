@@ -6,6 +6,7 @@ export interface SavedCalculationMetadata {
   totalCosts: number;
   overpaymentsEnabled: boolean;
   trancheCount: number;
+  hasErrors: boolean;
 }
 
 export interface SavedCalculationRecord {
@@ -33,6 +34,7 @@ export interface SavedCalculation {
   totalCosts: number;
   overpaymentsEnabled: boolean;
   trancheCount: number;
+  hasErrors: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

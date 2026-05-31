@@ -1,7 +1,7 @@
 import { inject, Injectable, signal } from '@angular/core';
 
-import { InstallmentType, RateType } from '../../model/mortgage.model';
-import { SavedCalculation, SavedCalculationRecord } from '../../model/saved-calculation.model';
+import { InstallmentType, RateType } from '../../model';
+import { SavedCalculation, SavedCalculationRecord } from '../../model';
 import { CalculationsStoreService } from '../calculations-store/calculations-store.service';
 
 export function toSavedCalculation(record: SavedCalculationRecord): SavedCalculation {
@@ -37,6 +37,7 @@ export function toSavedCalculation(record: SavedCalculationRecord): SavedCalcula
     totalCosts: record.metadata?.totalCosts ?? 0,
     overpaymentsEnabled: record.metadata?.overpaymentsEnabled ?? false,
     trancheCount: record.metadata?.trancheCount ?? 1,
+    hasErrors: record.metadata?.hasErrors ?? false,
     createdAt,
     updatedAt,
   };

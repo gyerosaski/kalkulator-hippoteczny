@@ -146,6 +146,15 @@ export class FormService {
   private fb = inject(NonNullableFormBuilder);
 
   readonly form: FormGroup<MortgageFormGroup> = this.createForm();
+  /** Bieżąca, w pełni rozpakowana wartość formularza jako sygnał — dla konsumentów reaktywnych. */
+  readonly formValue = toSignal(
+    this.form.valueChanges.pipe(
+      startWith(null),
+      map(() => this.form.getRawValue()),
+    ),
+    { requireSync: true },
+  );
+
   readonly loadedCalculationName = signal<string | null>(null);
   private readonly loadedCalculationSnapshot = signal<string | null>(null);
   readonly isLoadedCalculationModified: Signal<boolean>;

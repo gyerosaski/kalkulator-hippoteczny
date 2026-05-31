@@ -15,44 +15,8 @@ dialog {
   }
 }
 
-.dialog-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: 20px 20px 0;
-  gap: 12px;
-}
-
-.dialog-tag {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
 .dialog-tag--danger {
   color: var(--c-int);
-}
-
-.dialog-title {
-  margin: 4px 0 0;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--ink);
-}
-
-.dialog-close {
-  border: none;
-  background: none;
-  color: var(--muted);
-  font-size: 20px;
-  cursor: pointer;
-  padding: 0 4px;
-  line-height: 1;
-  &:hover {
-    color: var(--ink);
-  }
 }
 
 .dialog-body {

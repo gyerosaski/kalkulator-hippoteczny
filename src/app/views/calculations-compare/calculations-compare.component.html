@@ -1,1 +1,218 @@
-<p>Porównaj kalkulacje</p>
+<div class="compare-view">
+  <header class="compare-hero">
+    <div class="compare-hero-tag">PORÓWNANIE OFERT</div>
+    <h1 class="compare-hero-title">
+      Zestaw dwie kalkulacje obok siebie — zobacz różnicę w ratach i kosztach.
+    </h1>
+    <p class="compare-hero-sub">
+      Oferta <b>A</b> jest bazą, oferta <b>B</b> jest porównywana. Różnice (<icon-delta
+        class="inline-delta"
+      />) liczymy jako <span class="mono">B − A</span>
+    </p>
+  </header>
+
+  <div class="compare-slots">
+    <ng-container
+      *ngTemplateOutlet="
+        slotTpl;
+        context: { slot: ComparisonSlot.A, offer: comparisonState.offerA() }
+      "
+    ></ng-container>
+
+    <button
+      class="compare-swap"
+      type="button"
+      (click)="swap()"
+      [disabled]="!comparisonState.bothSelected()"
+      title="Zamień strony (A ↔ B)"
+      aria-label="Zamień strony"
+    >
+      <icon-swap />
+    </button>
+
+    <ng-container
+      *ngTemplateOutlet="
+        slotTpl;
+        context: { slot: ComparisonSlot.B, offer: comparisonState.offerB() }
+      "
+    ></ng-container>
+  </div>
+
+  @if (!comparisonState.bothSelected()) {
+    <div class="compare-empty">
+      <ol class="steps" aria-label="Postęp porównania">
+        <li
+          class="step"
+          [class.is-current]="currentStep() === 1"
+          [class.is-done]="currentStep() > 1"
+        >
+          <span class="step-num">
+            @if (currentStep() > 1) {
+              <icon-check-circle />
+            } @else {
+              1
+            }
+          </span>
+          <span class="step-label">Wybierz ofertę A</span>
+        </li>
+        <li class="step-conn" [class.is-active]="currentStep() >= 2" aria-hidden="true"></li>
+        <li
+          class="step"
+          [class.is-current]="currentStep() === 2"
+          [class.is-done]="currentStep() > 2"
+        >
+          <span class="step-num">
+            @if (currentStep() > 2) {
+              <icon-check-circle />
+            } @else {
+              2
+            }
+          </span>
+          <span class="step-label">Wybierz ofertę B</span>
+        </li>
+        <li class="step-conn" [class.is-active]="currentStep() >= 3" aria-hidden="true"></li>
+        <li class="step" [class.is-current]="currentStep() >= 3">
+          <span class="step-num">3</span>
+          <span class="step-label">Zobacz różnice</span>
+        </li>
+      </ol>
+
+      <div class="empty-hero">
+        <div class="muted small">KROK {{ currentStep() }} Z 2</div>
+        <h2 class="empty-hero-title">
+          {{ currentStep() === 1 ? 'Wybierz pierwszą ofertę' : 'Wybierz drugą ofertę' }}
+        </h2>
+        <p class="empty-hero-sub muted">
+          @if (currentStep() === 1) {
+            Otwórz listę zapisanych kalkulacji i wskaż <b>bazę</b> porównania (lewa kolumna).
+          } @else {
+            Wskaż kalkulację porównywaną (prawa kolumna). Różnice (<icon-delta
+              class="inline-delta"
+            />) liczymy jako <span class="mono">B − A</span>.
+          }
+        </p>
+        @if (hasEnoughOffers()) {
+          <button class="btn btn--primary" type="button" (click)="openPicker(targetSlot())">
+            Wybierz ofertę {{ targetSlot() }}
+          </button>
+        }
+      </div>
+
+      @if (!hasEnoughOffers()) {
+        <div class="empty-nosaved">
+          <icon-compare />
+          <div class="empty-title">Za mało kalkulacji do porównania</div>
+          <div class="empty-sub muted">
+            Aby porównać dwie oferty, potrzebujesz co najmniej <b>dwóch</b> wariantów. Przejdź do
+            zakładki <b>Kalkulator</b>, wprowadź parametry i zapisz kalkulację.
+          </div>
+          <button class="btn btn--primary" type="button" (click)="navigateToCalculator()">
+            <icon-plus />
+            Stwórz nową kalkulację
+          </button>
+        </div>
+      }
+
+      <div class="empty-preview" aria-hidden="true">
+        <div class="muted xs empty-preview-head">PO WYBRANIU OBU OFERT ZOBACZYSZ</div>
+        <div class="empty-preview-grid">
+          <div class="empty-preview-card">
+            <span class="empty-preview-num mono">3.3</span>
+            <span class="empty-preview-title">Parametry wejściowe</span>
+            <span class="empty-preview-hint muted">Co zmienia się między A i B</span>
+          </div>
+          <div class="empty-preview-card">
+            <span class="empty-preview-num mono">3.4</span>
+            <span class="empty-preview-title">Kluczowe wskaźniki</span>
+            <span class="empty-preview-hint muted">Rata · suma · odsetki · koszty</span>
+          </div>
+          <div class="empty-preview-card">
+            <span class="empty-preview-num mono">3.5</span>
+            <span class="empty-preview-title">Struktura płatności</span>
+            <span class="empty-preview-hint muted">Para donutów z deltą</span>
+          </div>
+          <div class="empty-preview-card">
+            <span class="empty-preview-num mono">3.6</span>
+            <span class="empty-preview-title">Pierwsza rata</span>
+            <span class="empty-preview-hint muted">Kapitał vs odsetki na starcie</span>
+          </div>
+          <div class="empty-preview-card">
+            <span class="empty-preview-num mono">3.7</span>
+            <span class="empty-preview-title">Trend salda</span>
+            <span class="empty-preview-hint muted">A vs B na wspólnej osi</span>
+          </div>
+          <div class="empty-preview-card">
+            <span class="empty-preview-num mono">3.8</span>
+            <span class="empty-preview-title">Tabela różnic</span>
+            <span class="empty-preview-hint muted">Co konkretnie kosztuje więcej</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <section class="compare-placeholder">
+      <div class="compare-placeholder-tag">SEKCJE 3.3–3.8</div>
+      <h2 class="compare-placeholder-title">Szczegóły porównania w przygotowaniu</h2>
+      <p class="muted">
+        Obie oferty są wybrane. Tabele parametrów, wskaźniki, donuty i wykres trendu pojawią się w
+        kolejnym etapie prac.
+      </p>
+    </section>
+  }
+
+  <app-select-offer-dialog />
+
+  <ng-template #slotTpl let-slot="slot" let-offer="offer">
+    @if (offer) {
+      <div
+        class="slot slot--filled"
+        [class.slot--a]="slot === ComparisonSlot.A"
+        [class.slot--b]="slot === ComparisonSlot.B"
+      >
+        <span
+          class="slot-badge"
+          [class.slot-badge--a]="slot === ComparisonSlot.A"
+          [class.slot-badge--b]="slot === ComparisonSlot.B"
+          >{{ slot }}</span
+        >
+        <button class="slot-body" type="button" (click)="openPicker(slot)" title="Zmień ofertę">
+          <div class="slot-name">
+            {{ offer.name }}
+            @if (offer.kind === ComparableOfferKind.DRAFT) {
+              <ui-badge label="bieżąca" [variant]="BadgeVariant.GREEN" />
+            }
+          </div>
+          <div class="slot-meta mono muted small">
+            <span>{{ offer.loanAmount | formatWholeAmount }} zł</span>
+            <span class="dot-sep">·</span>
+            <span>{{ offer.loanPeriodYears | formatLoanPeriod: offer.loanPeriodExtraMonths }}</span>
+            <span class="dot-sep">·</span>
+            <span>{{ offer.nominalRate | formatRate }}</span>
+            <span class="dot-sep">·</span>
+            <span>rata {{ offer.firstInstallment | formatAmount }} zł</span>
+          </div>
+        </button>
+        <ui-btn-remove (remove)="clearSlot(slot)" />
+      </div>
+    } @else {
+      <button
+        class="slot slot--empty"
+        [class.slot--a]="slot === ComparisonSlot.A"
+        [class.slot--b]="slot === ComparisonSlot.B"
+        type="button"
+        (click)="openPicker(slot)"
+      >
+        <span
+          class="slot-badge"
+          [class.slot-badge--a]="slot === ComparisonSlot.A"
+          [class.slot-badge--b]="slot === ComparisonSlot.B"
+          >{{ slot }}</span
+        >
+        <span class="slot-placeholder">
+          <icon-plus />
+          Wybierz ofertę
+        </span>
+      </button>
+    }
+  </ng-template>
+</div>

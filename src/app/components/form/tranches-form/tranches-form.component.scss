@@ -1,0 +1,9 @@
+.row-ctrl {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+
+  > .row {
+    flex: 1;
+  }
+}

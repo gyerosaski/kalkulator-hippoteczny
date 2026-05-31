@@ -65,6 +65,10 @@ body {
   --c-cost-mid: oklch(82% 0.12 85);
   --c-cost-soft: oklch(95% 0.06 85);
 
+  /* Kolory identyfikujące oferty A/B w widoku „Porównanie ofert” (niezależne od palety). */
+  --offer-a: oklch(56% 0.13 230);
+  --offer-b: oklch(56% 0.16 320);
+
   --r-sm: 8px;
   --r: 12px;
   --r-lg: 18px;
@@ -376,15 +380,6 @@ body {
 }
 .row--4 {
   grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-.row-ctrl {
-  display: flex;
-  align-items: flex-end;
-  gap: 12px;
-
-  > .row {
-    flex: 1;
-  }
 }
 
 .tranche-num {
@@ -890,4 +885,50 @@ ui-cards-group + ui-card {
 /* Tweaks panel positioning */
 .tw-panel {
   z-index: 1000;
+}
+
+/* Współdzielona „chrome" okien dialog (nagłówek, tag, tytuł, przycisk zamknięcia).
+   Pudełko `dialog{}`, `.dialog-body` i `.dialog-actions` pozostają lokalne w komponentach,
+   bo różnią się między dialogami (szerokość, padding). */
+.dialog-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 20px 20px 0;
+  gap: 12px;
+}
+
+.dialog-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.dialog-title {
+  margin: 4px 0 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.dialog-close {
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+
+  &:hover {
+    color: var(--ink);
+  }
+}
+
+.dialog-hint {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
 }
