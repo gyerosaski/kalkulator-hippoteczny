@@ -1,6 +1,5 @@
 import { ApplicationConfig, LOCALE_ID, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter, withHashLocation } from '@angular/router';
-import { provideAnimations } from '@angular/platform-browser/animations';
 
 import { routes } from './app.routes';
 import { DecimalPipe } from '@angular/common';
@@ -11,7 +10,6 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes, withHashLocation()),
-    provideAnimations(),
     DecimalPipe,
     FormatAmountPipe,
     FormatRatePipe,

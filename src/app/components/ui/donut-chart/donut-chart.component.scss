@@ -1,0 +1,44 @@
+.donut-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 18px;
+  align-items: center;
+}
+
+.legend {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.legend li {
+  display: grid;
+  grid-template-columns: 14px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  font-size: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.legend li.is-active {
+  transform: translateX(2px);
+}
+
+.legend li.is-active .leg-lab,
+.legend li.is-active .leg-val {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.leg-lab {
+  color: var(--ink-2);
+}
+
+.leg-val {
+  color: var(--ink);
+  font-size: 12px;
+}

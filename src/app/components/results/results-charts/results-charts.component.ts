@@ -2,22 +2,14 @@ import { Component, input, ChangeDetectionStrategy, inject, computed } from '@an
 import { MortgageResults, ScheduleRow, ColorCodeArea, ChartSlice } from '../../../model';
 import { SelectedMonthService } from '../../../services/selected-month/selected-month.service';
 import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
-import { DonutComponent } from '../../ui/donut/donut.component';
-import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
+import { DonutChartComponent } from '../../ui/donut-chart/donut-chart.component';
 import { FormService } from '../../../services/form/form';
-import { ColorCodeMarkerComponent } from '../../ui/color-code-marker/color-code-marker.component';
 import { CardComponent } from '../../ui/card/card.component';
 
 @Component({
   selector: 'app-results-charts',
   standalone: true,
-  imports: [
-    DonutComponent,
-    FormatAmountPipe,
-    FormatMonthPipe,
-    ColorCodeMarkerComponent,
-    CardComponent,
-  ],
+  imports: [DonutChartComponent, FormatMonthPipe, CardComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './results-charts.component.html',
 })

@@ -1,5 +1,4 @@
-import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
-import { trigger, transition, style, animate } from '@angular/animations';
+import { Component, ChangeDetectionStrategy, input, output, computed } from '@angular/core';
 import { DonutSlice } from '../../../model';
 
 @Component({
@@ -8,14 +7,6 @@ import { DonutSlice } from '../../../model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './donut.component.html',
   styleUrl: './donut.component.scss',
-  animations: [
-    trigger('valueChange', [
-      transition('* => *', [
-        style({ opacity: 0, transform: 'scale(0.85)' }),
-        animate('280ms cubic-bezier(0.4, 0, 0.2, 1)', style({ opacity: 1, transform: 'scale(1)' })),
-      ]),
-    ]),
-  ],
 })
 export class DonutComponent {
   data = input.required<DonutSlice[]>();
@@ -23,8 +14,14 @@ export class DonutComponent {
   thickness = input<number>(26);
   centerLabel = input<string>('');
   centerValue = input<string>('');
+  activeLabel = input<string | null>(null);
 
-  r = computed(() => (this.size() - this.thickness()) / 2);
+  sliceHover = output<string | null>();
+
+  /** Ile px grubości dodajemy aktywnemu wycinkowi przy najechaniu. */
+  readonly activeStrokeBoost = 6;
+
+  r = computed(() => (this.size() - this.thickness() - this.activeStrokeBoost) / 2);
   c = computed(() => this.size() / 2);
   circ = computed(() => 2 * Math.PI * this.r());
 

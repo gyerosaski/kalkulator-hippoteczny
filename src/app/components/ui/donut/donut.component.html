@@ -11,20 +11,27 @@
     @for (s of slices(); track s.slice.label) {
       <circle
         class="donut-slice"
+        [class.donut-slice--active]="s.slice.label === activeLabel()"
         [attr.cx]="c()"
         [attr.cy]="c()"
         [attr.r]="r()"
         fill="none"
         [attr.stroke]="s.slice.color"
-        [attr.stroke-width]="thickness()"
+        [attr.stroke-width]="
+          s.slice.label === activeLabel() ? thickness() + activeStrokeBoost : thickness()
+        "
         [attr.stroke-dasharray]="s.dasharray"
         [attr.stroke-dashoffset]="s.offset"
         [attr.transform]="'rotate(-90 ' + c() + ' ' + c() + ')'"
+        (mouseenter)="sliceHover.emit(s.slice.label)"
+        (mouseleave)="sliceHover.emit(null)"
       />
     }
   </svg>
   <div class="donut-center">
     <div class="donut-label">{{ centerLabel() }}</div>
-    <div class="donut-value mono" [@valueChange]="centerValue()">{{ centerValue() }}</div>
+    @for (value of [centerValue()]; track value) {
+      <div class="donut-value mono">{{ value }}</div>
+    }
   </div>
 </div>

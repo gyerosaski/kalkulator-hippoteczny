@@ -20,18 +20,7 @@
         </div>
       </div>
     </div>
-    <div class="donut-row">
-      <ui-donut [data]="totalSlices()" centerLabel="razem" [centerValue]="totalCenter()" />
-      <ul class="legend">
-        @for (s of totalSlices(); track s.label) {
-          <li>
-            <ui-color-code-marker [variant]="s.variant" />
-            <span class="leg-lab">{{ s.label }}</span>
-            <span class="leg-val mono">{{ s.value | formatAmount }} zł</span>
-          </li>
-        }
-      </ul>
-    </div>
+    <ui-donut-chart [slices]="totalSlices()" centerLabel="razem" [centerValue]="totalCenter()" />
   </ui-card>
 
   <ui-card>
@@ -44,17 +33,6 @@
         }
       </h3>
     </div>
-    <div class="donut-row">
-      <ui-donut [data]="firstSlices()" centerLabel="rata" [centerValue]="firstCenter()" />
-      <ul class="legend">
-        @for (s of firstSlices(); track s.label) {
-          <li>
-            <ui-color-code-marker [variant]="s.variant" />
-            <span class="leg-lab">{{ s.label }}</span>
-            <span class="leg-val mono">{{ s.value | formatAmount }} zł</span>
-          </li>
-        }
-      </ul>
-    </div>
+    <ui-donut-chart [slices]="firstSlices()" centerLabel="rata" [centerValue]="firstCenter()" />
   </ui-card>
 </div>

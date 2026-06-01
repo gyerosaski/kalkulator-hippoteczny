@@ -687,15 +687,6 @@ ui-cards-group + ui-card {
 }
 
 /* Donut */
-.donut-row {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 18px;
-  align-items: center;
-}
-.donut-row--single {
-  grid-template-columns: auto 1fr;
-}
 .donut-wrap {
   position: relative;
 }
@@ -716,33 +707,6 @@ ui-cards-group + ui-card {
   font-size: 18px;
   font-weight: 600;
   letter-spacing: -0.02em;
-}
-.legend {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.legend li {
-  display: grid;
-  grid-template-columns: 14px 1fr auto;
-  gap: 10px;
-  align-items: center;
-  font-size: 12px;
-}
-.legend .dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 3px;
-}
-.legend .leg-lab {
-  color: var(--ink-2);
-}
-.legend .leg-val {
-  color: var(--ink);
-  font-size: 12px;
 }
 .legend-inline {
   display: flex;

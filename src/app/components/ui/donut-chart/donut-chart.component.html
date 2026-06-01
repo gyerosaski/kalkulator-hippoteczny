@@ -1,0 +1,22 @@
+<div class="donut-row">
+  <ui-donut
+    [data]="slices()"
+    [centerLabel]="centerLabel()"
+    [centerValue]="centerValue()"
+    [activeLabel]="activeSliceLabel()"
+    (sliceHover)="setActiveSlice($event)"
+  />
+  <ul class="legend">
+    @for (slice of slices(); track slice.label) {
+      <li
+        [class.is-active]="activeSliceLabel() === slice.label"
+        (mouseenter)="setActiveSlice(slice.label)"
+        (mouseleave)="setActiveSlice(null)"
+      >
+        <ui-color-code-marker [variant]="slice.variant" />
+        <span class="leg-lab">{{ slice.label }}</span>
+        <span class="leg-val mono">{{ slice.value | formatAmount }} zł</span>
+      </li>
+    }
+  </ul>
+</div>
