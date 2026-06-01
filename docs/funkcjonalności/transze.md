@@ -35,55 +35,17 @@
 
 1. Reguła sumy transz:
    - `Σ(kwota_transzy_i) == kwota_kredytu`.
-   - Niespełnienie reguły oznacza błąd formularza (`is-invalid`) i komunikat o nadwyżce/niedoborze.
+   - niespełnienie reguły oznacza błąd formularza i komunikat o nadwyżce/niedoborze.
 
 2. Reguła kolejności uruchomienia:
-   - data pierwszej transzy jest zawsze równa dacie uruchomienia kredytu (`startDate`) i aktualizuje się automatycznie przy jej zmianie; pole jest zablokowane dla użytkownika,
+   - data pierwszej transzy jest zawsze równa dacie uruchomienia kredytu i aktualizuje się automatycznie przy jej zmianie; pole jest zablokowane dla użytkownika,
    - kolejne transze są definiowane przez użytkownika (kwota + data + opłata za uruchomienie transzy).
+   - data każdej kolejnej transzy musi być większa od daty transzy poprzedniej
 
 3. Reguła opłaty uruchomienia transzy:
-   - opłata dodatkowej transzy podlega walidacji kwotowej,
-   - obserwowany limit: maksymalnie `1000 zł` dla pola opłaty,
    - opłata zwiększa `Koszty okołokredytowe` i tym samym koszt całkowity.
 
-4. Reguła rekalkulacji:
-   - każda zmiana pól sekcji `Transze` powoduje przeliczenie sekcji wynikowej (podsumowania, wykresów, harmonogramu).
-
-5. Reguła kolejności spłaty kapitału:
-   - gdy aktywnych jest więcej niż jedna transza, pole `Początek spłat kapitału` (`capitalStartDate` z sekcji `Dane podstawowe`) musi wskazywać miesiąc ściśle późniejszy niż data ostatniej (najpóźniejszej) transzy,
+4. Reguła kolejności spłaty kapitału:
+   - gdy aktywnych jest więcej niż jedna transza, pole `Początek spłat kapitału` z sekcji `Dane podstawowe` musi wskazywać miesiąc ściśle późniejszy niż data ostatniej (najpóźniejszej) transzy,
    - walidator krzyżowy `capitalBeforeLastTranche` (na głównym `FormGroup`) zgłasza błąd, gdy `capitalStartDate <= max(daty transz)`,
-   - komunikat błędu wyświetlany jest w `ResultsErrorsComponent` w sekcji `Dane podstawowe`.
-
-## 4. Zaobserwowane scenariusze referencyjne
-
-### 4.1. Stan bazowy (1 transza, bez opłat)
-
-- `Suma wszystkich płatności`: `863 736,92 zł`
-- `Odsetki`: `463 736,92 zł`
-- `Koszty okołokredytowe`: `0,00 zł`
-- `Wysokość pierwszej raty`: `3 598,90 zł`
-
-### 4.2. Scenariusz 2 transz + opłata uruchomienia
-
-- Przykład: transze `300 000 zł` + `100 000 zł`, opłata uruchomienia `1 000 zł`.
-- Efekt zaobserwowany:
-  - `Koszty okołokredytowe`: `1 000,00 zł`
-  - `Suma wszystkich płatności`: `864 677,79 zł`
-  - `Odsetki`: `463 677,79 zł`
-  - `Wysokość pierwszej raty`: `3 604,30 zł`
-
-## 5. Uwagi implementacyjne (odtworzenie w Angularze)
-
-- Zakładkę modelować jako listę transz (`FormArray`) z rekordem:
-  - `amount: number`,
-  - `date: MonthYear`,
-  - `disbursementFee?: number` (dla transz dodatkowych).
-- Dodać walidatory:
-  - `sum(transze.amount) === loanAmount`,
-  - `amount > 0` dla transz dodatkowych,
-  - `disbursementFee <= 1000` (zgodnie z obserwowanym zachowaniem UI).
-- Każda zmiana formularza powinna emitować rekalkulację wyników.
-- Formatowanie:
-  - kwoty: locale `pl-PL` (`1 234 567,89`),
-  - daty: `MMM RRRR`.
-- W badanym UI ikony tooltipów są obecne, ale bez treści; przy odtworzeniu warto jawnie zdefiniować zawartość tooltipów.
+   - komunikat o błędzie wyświetlany jest w `ResultsErrorsComponent` w sekcji `Dane podstawowe`.

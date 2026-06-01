@@ -6,6 +6,7 @@ import {
   InsuranceFrequency,
   LifeInsuranceCalcMethod,
   MortgageInputs,
+  OverheadCostKind,
   OverheadCostsInputs,
   PrepaymentEffect,
   PrepaymentFrequency,
@@ -473,5 +474,86 @@ describe('MortgageCalcService (ubezpieczenie niskiego wkładu)', () => {
     const effectiveRateBeforePrepayment = rowBeforePrepayment!.interest / balanceBeforePrepayment;
     const effectiveRateAfterPrepayment = rowAfterPrepayment!.interest / balanceForApril;
     expect(effectiveRateAfterPrepayment).toBeLessThan(effectiveRateBeforePrepayment);
+  });
+});
+
+describe('MortgageCalcService (rozbicie kosztów okołokredytowych)', () => {
+  let service: CalculatorService;
+
+  beforeEach(() => {
+    service = new CalculatorService();
+  });
+
+  it('suma składowych rozbicia powinna odpowiadać overheadCosts oraz insuranceCost wierszy', () => {
+    const inputs: MortgageInputs = {
+      propertyValue: 500_000,
+      loanAmount: 300_000,
+      ltv: 60,
+      loanPeriod: 20 * 12,
+      startDate: '2026-01',
+      capitalStartDate: '2026-02',
+      installmentType: InstallmentType.EQUAL,
+      ratePeriods: [
+        { from: '2026-01', rateType: RateType.FIXED, nominalRate: 8, wibor: 0, margin: 0 },
+      ],
+      prepaymentRules: [
+        {
+          frequency: PrepaymentFrequency.ONE_TIME,
+          from: '2026-06',
+          to: '2026-06',
+          amount: 20_000,
+          effect: PrepaymentEffect.SHORTEN_PERIOD,
+        },
+      ],
+      earlyRepaymentCommission: { ratePct: 2, validUntil: '2030-01' },
+      overheadCosts: {
+        commissionCalcMethod: CommissionCalcMethod.FIXED_AMOUNT,
+        commissionValue: 3_000,
+        appraisalFee: 400,
+        propertyInsurance: {
+          calcMethod: InsuranceCalcMethod.PCT_BALANCE,
+          frequency: InsuranceFrequency.MONTHLY,
+          value: 0.05,
+          from: '2026-02',
+          to: '',
+        },
+        additionalCosts: [
+          {
+            name: 'Opłata administracyjna',
+            calcMethod: LifeInsuranceCalcMethod.FIXED_AMOUNT,
+            frequency: InsuranceFrequency.MONTHLY,
+            value: 25,
+            from: '2026-02',
+          },
+        ],
+      },
+    };
+
+    const result = service.compute(inputs);
+
+    // rozbicie całego okresu sumuje się do overheadCosts
+    const breakdownSum = result.totals.overheadCostsBreakdown.reduce(
+      (sum, item) => sum + item.value,
+      0,
+    );
+    expect(breakdownSum).toBeCloseTo(result.totals.overheadCosts, 2);
+
+    // rozbicie zawiera koszty jednorazowe oraz prowizję za wcześniejszą spłatę
+    const kinds = result.totals.overheadCostsBreakdown.map((item) => item.kind);
+    expect(kinds).toContain(OverheadCostKind.LOAN_COMMISSION);
+    expect(kinds).toContain(OverheadCostKind.APPRAISAL_FEE);
+    expect(kinds).toContain(OverheadCostKind.EARLY_REPAYMENT_COMMISSION);
+
+    // koszt dodatkowy zachowuje swoją nazwę
+    const additionalCost = result.totals.overheadCostsBreakdown.find(
+      (item) => item.kind === OverheadCostKind.ADDITIONAL_COST,
+    );
+    expect(additionalCost?.name).toBe('Opłata administracyjna');
+
+    // rozbicie pojedynczego wiersza sumuje się do jego insuranceCost
+    for (const row of result.schedule) {
+      const rowSum = row.costBreakdown.reduce((sum, item) => sum + item.value, 0);
+      expect(rowSum).toBeCloseTo(row.insuranceCost, 2);
+    }
   });
 });

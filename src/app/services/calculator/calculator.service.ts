@@ -24,6 +24,8 @@ import {
   MortgageInputs,
   ScheduleRow,
   MortgageResults,
+  OverheadCostKind,
+  OverheadCostItem,
 } from '../../model/mortgage.model';
 
 export {
@@ -35,6 +37,7 @@ export {
   InsuranceFrequency,
   InsuranceCalcMethod,
   LifeInsuranceCalcMethod,
+  OverheadCostKind,
 };
 
 export type {
@@ -54,6 +57,7 @@ export type {
   MortgageInputs,
   ScheduleRow,
   MortgageResults,
+  OverheadCostItem,
 };
 
 @Injectable({ providedIn: 'root' })
@@ -165,8 +169,8 @@ export class CalculatorService {
     inputs: MortgageInputs,
     oc: OverheadCostsInputs,
     monthIndexFromStart: number,
-  ): number {
-    let cost = 0;
+  ): OverheadCostItem[] {
+    const items: OverheadCostItem[] = [];
 
     // 4. Ubezpieczenie nieruchomości
     const pi = oc.propertyInsurance;
@@ -185,7 +189,7 @@ export class CalculatorService {
           );
           const amount =
             pi.calcMethod === InsuranceCalcMethod.FIXED_AMOUNT ? pi.value : (base * pi.value) / 100;
-          cost += amount;
+          items.push({ kind: OverheadCostKind.PROPERTY_INSURANCE, value: amount });
         }
       }
     }
@@ -207,7 +211,7 @@ export class CalculatorService {
             li.calcMethod === LifeInsuranceCalcMethod.FIXED_AMOUNT
               ? li.value
               : (base * li.value) / 100;
-          cost += amount;
+          items.push({ kind: OverheadCostKind.LIFE_INSURANCE, value: amount });
         }
       }
     }
@@ -229,7 +233,7 @@ export class CalculatorService {
             jl.calcMethod === LifeInsuranceCalcMethod.FIXED_AMOUNT
               ? jl.value
               : (base * jl.value) / 100;
-          cost += amount;
+          items.push({ kind: OverheadCostKind.JOB_LOSS_INSURANCE, value: amount });
         }
       }
     }
@@ -252,11 +256,11 @@ export class CalculatorService {
           ac.calcMethod === LifeInsuranceCalcMethod.FIXED_AMOUNT
             ? ac.value
             : (base * ac.value) / 100;
-        cost += amount;
+        items.push({ kind: OverheadCostKind.ADDITIONAL_COST, name: ac.name, value: amount });
       }
     }
 
-    return cost;
+    return items;
   }
 
   private getInsuranceBase(
@@ -539,10 +543,22 @@ export class CalculatorService {
           ? prepayment * (commissionRatePct / 100)
           : 0;
 
-      // Koszt ubezpieczeń i dodatkowych kosztów w tym miesiącu
-      const insuranceCost =
-        (oc ? this.calcInsuranceCostForMonth(date, balanceForInsuranceCalc, inputs, oc, idx) : 0) +
-        (idx === 1 ? upfrontCosts : 0);
+      // Koszt ubezpieczeń i dodatkowych kosztów w tym miesiącu — rozbity na składowe
+      const costBreakdown: OverheadCostItem[] = [];
+      if (idx === 1) {
+        if (loanCommission > 0) {
+          costBreakdown.push({ kind: OverheadCostKind.LOAN_COMMISSION, value: loanCommission });
+        }
+        if (appraisalFee > 0) {
+          costBreakdown.push({ kind: OverheadCostKind.APPRAISAL_FEE, value: appraisalFee });
+        }
+      }
+      if (oc) {
+        costBreakdown.push(
+          ...this.calcInsuranceCostForMonth(date, balanceForInsuranceCalc, inputs, oc, idx),
+        );
+      }
+      const insuranceCost = costBreakdown.reduce((sum, item) => sum + item.value, 0);
 
       const totalRateForMonth = baseRate;
 
@@ -557,6 +573,7 @@ export class CalculatorService {
         commission,
         remaining: saldo,
         insuranceCost,
+        costBreakdown,
       });
 
       const hasLowerRatePrepayment = prepaymentLower > 0;
@@ -596,6 +613,36 @@ export class CalculatorService {
     const earlyRepaymentCommissions = schedule.reduce((s, r) => s + r.commission, 0);
 
     const overheadCosts = totalInsuranceCosts + earlyRepaymentCommissions + trancheDisbursementFees;
+
+    // Agregat rozbicia kosztów okołokredytowych dla całego okresu (suma value == overheadCosts)
+    const breakdownByKey = new Map<string, OverheadCostItem>();
+    for (const row of schedule) {
+      for (const item of row.costBreakdown) {
+        const key =
+          item.kind === OverheadCostKind.ADDITIONAL_COST
+            ? `${item.kind}:${item.name ?? ''}`
+            : item.kind;
+        const existing = breakdownByKey.get(key);
+        if (existing) {
+          existing.value += item.value;
+        } else {
+          breakdownByKey.set(key, { kind: item.kind, name: item.name, value: item.value });
+        }
+      }
+    }
+    const overheadCostsBreakdown: OverheadCostItem[] = [...breakdownByKey.values()];
+    if (earlyRepaymentCommissions > 0) {
+      overheadCostsBreakdown.push({
+        kind: OverheadCostKind.EARLY_REPAYMENT_COMMISSION,
+        value: earlyRepaymentCommissions,
+      });
+    }
+    if (trancheDisbursementFees > 0) {
+      overheadCostsBreakdown.push({
+        kind: OverheadCostKind.TRANCHE_DISBURSEMENT_FEE,
+        value: trancheDisbursementFees,
+      });
+    }
     const prepayments = schedule.reduce((s, r) => s + r.prepayment, 0);
     const totalAllPayments = totalRate + overheadCosts + prepayments;
     const bankReturnRatioPct =
@@ -621,6 +668,7 @@ export class CalculatorService {
         totalCapital,
         totalInterest,
         overheadCosts,
+        overheadCostsBreakdown,
         prepayments,
         bankReturnRatioPct,
         totalAllPayments,

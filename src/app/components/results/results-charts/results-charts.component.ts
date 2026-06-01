@@ -1,5 +1,12 @@
 import { Component, input, ChangeDetectionStrategy, inject, computed } from '@angular/core';
-import { MortgageResults, ScheduleRow, ColorCodeArea, ChartSlice } from '../../../model';
+import {
+  MortgageResults,
+  ScheduleRow,
+  ColorCodeArea,
+  ChartSlice,
+  OverheadCostItem,
+} from '../../../model';
+import { OverheadCostKindLabelPipe } from '../../../pipes/overhead-cost-kind-label/overhead-cost-kind-label.pipe';
 import { SelectedMonthService } from '../../../services/selected-month/selected-month.service';
 import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
 import { DonutChartComponent } from '../../ui/donut-chart/donut-chart.component';
@@ -18,6 +25,36 @@ export class ResultsChartsComponent {
   private readonly formService = inject(FormService);
   private readonly selectedMonthService = inject(SelectedMonthService);
   private readonly numberFormat = new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 0 });
+  private readonly costKindLabel = new OverheadCostKindLabelPipe();
+
+  /** buduje rozwijalne składowe slice'a kosztów z rozbicia kalkulatora. */
+  private buildCostChildren(items: OverheadCostItem[]): ChartSlice[] {
+    return items
+      .filter((item) => item.value > 0)
+      .map((item) => ({
+        label: this.costKindLabel.transform(item),
+        value: item.value,
+        color: 'var(--c-cost)',
+        variant: ColorCodeArea.COST,
+      }));
+  }
+
+  /** agreguje rozbicie kosztów wielu wierszy po rodzaju (i nazwie dla kosztów dodatkowych). */
+  private aggregateBreakdown(rows: ScheduleRow[]): OverheadCostItem[] {
+    const byKey = new Map<string, OverheadCostItem>();
+    for (const row of rows) {
+      for (const item of row.costBreakdown) {
+        const key = item.name ? `${item.kind}:${item.name}` : item.kind;
+        const existing = byKey.get(key);
+        if (existing) {
+          existing.value += item.value;
+        } else {
+          byKey.set(key, { kind: item.kind, name: item.name, value: item.value });
+        }
+      }
+    }
+    return [...byKey.values()];
+  }
 
   selectedRow = computed<ScheduleRow | null>(() => {
     const selectedIndex = this.selectedMonthService.selectedMonthIndex();
@@ -39,6 +76,7 @@ export class ResultsChartsComponent {
         (sum, row) => sum + row.rate + row.insuranceCost + row.prepayment + row.commission,
         0,
       ),
+      costBreakdown: this.aggregateBreakdown(rowsUpToSelected),
     };
   });
 
@@ -65,6 +103,7 @@ export class ResultsChartsComponent {
           value: selectedRow.insuranceCost,
           color: 'var(--c-cost)',
           variant: ColorCodeArea.COST,
+          children: this.buildCostChildren(selectedRow.costBreakdown),
         });
       }
       if (this.formService.isPrepaymentEnabled && selectedRow.prepayment > 0) {
@@ -127,6 +166,7 @@ export class ResultsChartsComponent {
           value: cumulative.costs,
           color: 'var(--c-cost)',
           variant: ColorCodeArea.COST,
+          children: this.buildCostChildren(cumulative.costBreakdown),
         });
       }
       if (this.formService.isPrepaymentEnabled && cumulative.prepayments > 0) {
@@ -161,6 +201,7 @@ export class ResultsChartsComponent {
         value: results.totals.overheadCosts,
         color: 'var(--c-cost)',
         variant: ColorCodeArea.COST,
+        children: this.buildCostChildren(results.totals.overheadCostsBreakdown),
       });
     }
     if (this.formService.isPrepaymentEnabled && results.totals.prepayments > 0) {

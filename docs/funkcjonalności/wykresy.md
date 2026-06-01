@@ -2,14 +2,23 @@
 
 ### 5.1. „Struktura wszystkich płatności” (wykres kołowy/donut)
 
-- Typ wykresu: donut (Chart.js).
+- Typ wykresu: donut (natywny SVG `ui-donut`, komponent `ui-donut-chart`).
 - Dane: łączny udział w całkowitych płatnościach dla kategorii: Kapitał, Odsetki, Koszty okołokredytowe, Nadpłaty.
 - Wyliczenia: sumy z całego harmonogramu zgodnie z punktami 4.1–4.2.
+- **Suma nad legendą:** nad legendą prezentowany jest wiersz „Suma wszystkich płatności” (= suma wartości
+  widocznych slice'ów) oddzielony poziomym separatorem (`border-top` w kolorze `--line`) od listy legendy.
+- **Rozwijalna pozycja „Koszty okołokredytowe”:** kliknięcie pozycji „Koszty okołokredytowe” w legendzie rozwija
+  ją na poszczególne składowe — wcięte wiersze ze składnikami (marker w kolorze kosztów `--c-cost`). Łuk kosztów
+  na donucie pozostaje jedną całością (bez podziału).
+- **Źródło rozbicia:** składowe pochodzą z kalkulatora (`MortgageResults.totals.overheadCostsBreakdown` dla
+  całego okresu; agregat `ScheduleRow.costBreakdown` wierszy do wybranego miesiąca w trybie narastającym) —
+  patrz `docs/funkcjonalności/koszty-okolokredytowe-i-promocje.md` §4. Etykiety składowych pochodzą z pipe'u
+  `overheadCostKindLabel`.
 
 ### 5.2. „Wysokość pierwszej raty” + „Struktura pierwszej raty”
 
 - Wysokość pierwszej raty: wartość liczbowa (np. 3 598,90 zł) wynikająca z bieżących ustawień i_m, trybu rat oraz n.
-- „Struktura pierwszej raty”: donut (Chart.js) – udział Kapitał vs Odsetki (+ ewentualne koszty okołokredytowe przypisane do raty).
+- „Struktura pierwszej raty”: donut (`ui-donut-chart`) – udział Kapitał vs Odsetki (+ ewentualne koszty okołokredytowe przypisane do raty). Po wybraniu miesiąca w harmonogramie karta pokazuje strukturę raty wybranego miesiąca, a pozycja „Koszty okołokredytowe” w legendzie jest rozwijalna na składowe tego miesiąca (z `ScheduleRow.costBreakdown`) — analogicznie jak w §5.1. Nad legendą prezentowany jest wiersz „Razem” (suma składników raty) z separatorem.
 - Dodatkowy przycisk „drukuj”: renderuje widok do wydruku (drukarka/PDF) zawierający podsumowania, wykresy i/lub harmonogram.
 
 ### 5.3. „Harmonogram spłaty kredytu …” (wykres trendu)

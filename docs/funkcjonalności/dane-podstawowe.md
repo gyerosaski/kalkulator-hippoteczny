@@ -1,8 +1,6 @@
-### Dokumentacja techniczna – Sekcja „Dane podstawowe”
+### Dokumentacja funkcjonalna sekcji formularza - `Dane podstawowe`
 
-Aplikacja: Kalkulator Hipoteczny (Angular 21, standalone components, Reactive Forms, Vitest)
 Zakres: Specyfikacja elementów i logiki sekcji „Dane podstawowe” odzwierciedlająca aktualny stan implementacji.
-Data aktualizacji: 2026-05-09
 
 ---
 
@@ -163,14 +161,3 @@ Gdy formularz jest niepoprawny (`form.valid === false`), `LayoutComponent.recalc
 - Stan zwijania/rozwijania kart z okresami oprocentowania nie jest persystowany — to czysto wizualna właściwość komponentu.
 
 ---
-
-## 7. Kontekst implementacyjny
-
-- Formularze: Reactive Forms (`FormGroup<MortgageFormGroup>` z typowanymi grupami w `src/app/model/form.model.ts`).
-- Serwis obliczeniowy: `CalculatorService` (`src/app/services/calculator/calculator.service.ts`) — czyste funkcje, brak zależności od komponentów; wszystkie daty przechowywane jako `YYYY-MM`, arytmetyka miesięcy oparta o `year × 12 + month`.
-- Wykresy: implementacja własna (SVG `stroke-dasharray`) w komponencie `ui-donut`. Brak zależności od Chart.js / ngx-charts.
-- Tabela: niestandardowy CSS Grid (klasa `tbl`) z agregacją roczną `groupByYear()` w `LayoutComponent`. Każda kategoria jest sumowana, ostatnie saldo w roku trafia do `lastRemaining`.
-- Trwałość: zapis/odczyt w `localStorage` pod kluczem `'kalkulacje'`; dodatkowo eksport JSON jako plik do pobrania.
-- Lokalizacja: `pl-PL` (`Intl.NumberFormat`). Etykiety i typy domenowe pozostają po polsku (`rowne`/`malejace`, `jednorazowo`, `co rok`, `niższa rata`, `skrócenie okresu`).
-- Strict TypeScript (`strict: true`, `strictTemplates: true`); zakaz `any`. Komponenty standalone z `OnPush`.
-- Testy: Vitest (`describe`/`it`/`expect` przez `vitest/globals`).

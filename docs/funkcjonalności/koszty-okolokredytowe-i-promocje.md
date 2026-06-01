@@ -164,6 +164,19 @@ overheadCosts = Σ insuranceCost                 // 2.1 + 2.2 (wiersz 1) + 2.4 +
 
 `loanCommission` (2.1) i `appraisalFee` (2.2) trafiają do `insuranceCost` **pierwszego wiersza** harmonogramu, dzięki czemu są widoczne w kolumnie „Koszty" harmonogramu spłat.
 
+**Rozbicie na składowe (donut „Struktura płatności”):** kalkulator zapisuje rozbicie kosztów na pozycje typu
+`OverheadCostItem { kind: OverheadCostKind; name?; value }`:
+
+- `ScheduleRow.costBreakdown` — składowe `insuranceCost` danego miesiąca (prowizja za udzielenie i wycena w
+  wierszu 1, ubezpieczenia 2.4/2.6/2.7, dodatkowe koszty 2.8 z zachowaniem `name`); suma `value` == `insuranceCost`.
+- `MortgageResults.totals.overheadCostsBreakdown` — agregat całego okresu: złożenie `costBreakdown` wszystkich
+  wierszy plus pozycje `EARLY_REPAYMENT_COMMISSION` (= Σ `commission`) i `TRANCHE_DISBURSEMENT_FEE`
+  (= Σ opłat z transz dodatkowych); suma `value` == `overheadCosts`.
+
+Te pola zasilają rozwijalny slice „Koszty okołokredytowe” na wykresie (patrz `docs/funkcjonalności/wykresy.md`
+§5.1–5.2). Uwaga: prowizja za wcześniejszą spłatę i opłaty transzowe pojęciowo należą do sekcji „Nadpłaty”/
+„Transze” — obecnie pozostają w `overheadCosts` i w rozbiciu (przekategoryzowanie planowane osobnym zadaniem).
+
 Pola `bridgeInsurance` (2.3), `lowEquityInsurance` (2.5) i `promotionalRate` (2.9) zmieniają **efektywną stopę miesiąca** i wpływają pośrednio przez `interest`, a nie przez `overheadCosts`.
 
 Wartość `totalAllPayments = Σ rate + overheadCosts`, gdzie `rate` w schemacie `ScheduleRow.rate = baseRate + prepayment + commission`. Stąd KPI:
@@ -177,10 +190,3 @@ Wartość `totalAllPayments = Σ rate + overheadCosts`, gdzie `rate` w schemacie
 
 - Każde pole liczbowe ma `Validators.min(0)`. `commissionValue` w trybie `PERCENTAGE` jest dodatkowo ograniczone do 100 przez `crossFieldValidator` (klucz `commissionPctOverMax`). Brak innych walidatorów lokalnych.
 - Sekcja nie ma własnych walidatorów krzyżowych — błędy okresów ubezpieczeń (`from > to`) nie są zgłaszane przez `crossFieldValidator` w `FormService`. Skrajne przypadki są neutralizowane przez `isMonthInRange` (zwraca `false` dla błędnego zakresu, więc składka po prostu nie jest naliczana).
-
-## 6. Uwagi implementacyjne
-
-- Wszystkie pola dat operują na ciągu `YYYY-MM`. Konwersja w UI realizowana jest przez `ui-month-picker` i pipe `formatMonth`.
-- Suffixy i precyzja pól ubezpieczeń są dynamicznie przełączane przez gettery w komponencie (`propInsSuffix`, `lifeInsSuffix`, `jobLossInsSuffix`, `getAdditionalCostSuffix(index)`), reagując na `calcMethod`.
-- Konwersja `commissionValue` przy zmianie `commissionCalcMethod` jest realizowana przez konstruktor `OverheadCostsFormComponent`: subskrypcja `commissionCalcMethodControl.valueChanges.pipe(pairwise(), takeUntilDestroyed())` wykrywa zmianę trybu i wywołuje prywatną metodę `convertCommissionValue(previousMethod, newMethod)`. Dostęp do `loanAmount` odbywa się przez `formService.form.controls.basicData.controls.loanAmount.value`.
-- Komponent korzysta z `ChangeDetectionStrategy.OnPush` i sygnałów (`toSignal` na `valueChanges`).

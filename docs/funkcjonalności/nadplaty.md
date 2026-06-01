@@ -1,4 +1,4 @@
-### Dokumentacja funkcjonalna zakładki `Nadpłaty`
+### Dokumentacja funkcjonalna sekcji formularza - `Nadpłaty`
 
 ### 1. Zakres analizy
 

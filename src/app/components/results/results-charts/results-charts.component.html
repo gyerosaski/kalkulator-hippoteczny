@@ -20,7 +20,12 @@
         </div>
       </div>
     </div>
-    <ui-donut-chart [slices]="totalSlices()" centerLabel="razem" [centerValue]="totalCenter()" />
+    <ui-donut-chart
+      [slices]="totalSlices()"
+      centerLabel="razem"
+      [centerValue]="totalCenter()"
+      totalLabel="Suma wszystkich płatności"
+    />
   </ui-card>
 
   <ui-card>
@@ -33,6 +38,11 @@
         }
       </h3>
     </div>
-    <ui-donut-chart [slices]="firstSlices()" centerLabel="rata" [centerValue]="firstCenter()" />
+    <ui-donut-chart
+      [slices]="firstSlices()"
+      centerLabel="rata"
+      [centerValue]="firstCenter()"
+      totalLabel="Razem"
+    />
   </ui-card>
 </div>

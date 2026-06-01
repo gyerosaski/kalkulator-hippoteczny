@@ -6,17 +6,57 @@
     [activeLabel]="activeSliceLabel()"
     (sliceHover)="setActiveSlice($event)"
   />
-  <ul class="legend">
-    @for (slice of slices(); track slice.label) {
-      <li
-        [class.is-active]="activeSliceLabel() === slice.label"
-        (mouseenter)="setActiveSlice(slice.label)"
-        (mouseleave)="setActiveSlice(null)"
-      >
-        <ui-color-code-marker [variant]="slice.variant" />
-        <span class="leg-lab">{{ slice.label }}</span>
-        <span class="leg-val mono">{{ slice.value | formatAmount }} zł</span>
-      </li>
+  <div class="legend-wrap">
+    @if (totalLabel()) {
+      <div class="legend-total">
+        <span class="leg-lab">{{ totalLabel() }}</span>
+        <span class="leg-val mono">{{ legendTotal() | formatAmount }} zł</span>
+      </div>
     }
-  </ul>
+    <ul class="legend">
+      @for (slice of slices(); track slice.label) {
+        @if (slice.children?.length) {
+          <li
+            class="is-parent"
+            [class.is-active]="activeSliceLabel() === slice.label"
+            [class.is-open]="isExpanded(slice.label)"
+            (click)="toggleExpand(slice.label)"
+            (mouseenter)="setActiveSlice(slice.label)"
+            (mouseleave)="setActiveSlice(null)"
+          >
+            <ui-color-code-marker [variant]="slice.variant" />
+            <span class="leg-lab">{{ slice.label }}</span>
+            <span class="leg-val mono">{{ slice.value | formatAmount }} zł</span>
+          </li>
+          @if (isExpanded(slice.label)) {
+            <li class="children-row" animate.enter="children-in" animate.leave="children-out">
+              <ul class="children">
+                @for (child of slice.children ?? []; track child.label) {
+                  <li
+                    class="is-child"
+                    [class.is-active]="activeSliceLabel() === child.label"
+                    (mouseenter)="setActiveSlice(child.label)"
+                    (mouseleave)="setActiveSlice(null)"
+                  >
+                    <span class="leg-lab">{{ child.label }}</span>
+                    <span class="leg-val mono">{{ child.value | formatAmount }} zł</span>
+                  </li>
+                }
+              </ul>
+            </li>
+          }
+        } @else {
+          <li
+            [class.is-active]="activeSliceLabel() === slice.label"
+            (mouseenter)="setActiveSlice(slice.label)"
+            (mouseleave)="setActiveSlice(null)"
+          >
+            <ui-color-code-marker [variant]="slice.variant" />
+            <span class="leg-lab">{{ slice.label }}</span>
+            <span class="leg-val mono">{{ slice.value | formatAmount }} zł</span>
+          </li>
+        }
+      }
+    </ul>
+  </div>
 </div>

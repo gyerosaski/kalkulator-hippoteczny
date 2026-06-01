@@ -14,6 +14,7 @@ export interface DonutSlice {
 
 export interface ChartSlice extends DonutSlice {
   variant: ColorCodeArea;
+  children?: ChartSlice[]; // pod-składowe slice'a (sumują się do value rodzica); rozwijane w legendzie i na donucie
 }
 
 export interface TrendStackSegmentTotal {

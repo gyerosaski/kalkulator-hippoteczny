@@ -144,6 +144,23 @@ export interface OverheadCostsInputs {
   promotionalRate?: PromotionalRate;
 }
 
+export enum OverheadCostKind {
+  LOAN_COMMISSION = 'LOAN_COMMISSION',
+  APPRAISAL_FEE = 'APPRAISAL_FEE',
+  PROPERTY_INSURANCE = 'PROPERTY_INSURANCE',
+  LIFE_INSURANCE = 'LIFE_INSURANCE',
+  JOB_LOSS_INSURANCE = 'JOB_LOSS_INSURANCE',
+  ADDITIONAL_COST = 'ADDITIONAL_COST',
+  EARLY_REPAYMENT_COMMISSION = 'EARLY_REPAYMENT_COMMISSION',
+  TRANCHE_DISBURSEMENT_FEE = 'TRANCHE_DISBURSEMENT_FEE',
+}
+
+export interface OverheadCostItem {
+  kind: OverheadCostKind;
+  name?: string; // wypełniane tylko dla ADDITIONAL_COST (nazwa kosztu z formularza)
+  value: number; // PLN
+}
+
 export interface MortgageInputs {
   propertyValue: number; // Wartość nieruchomości (PLN)
   loanAmount: number; // Kwota kredytu (PLN)
@@ -171,6 +188,7 @@ export interface ScheduleRow {
   commission: number; // Prowizja za wcześniejszą spłatę
   remaining: number; // Pozostało do spłaty po racie
   insuranceCost: number; // Koszt ubezpieczeń i dodatkowych kosztów w danym miesiącu
+  costBreakdown: OverheadCostItem[]; // Rozbicie insuranceCost na składowe (suma value == insuranceCost)
 }
 
 export interface MortgageResults {
@@ -184,6 +202,7 @@ export interface MortgageResults {
     totalCapital: number;
     totalInterest: number;
     overheadCosts: number; // koszty okołokredytowe
+    overheadCostsBreakdown: OverheadCostItem[]; // rozbicie overheadCosts na składowe (suma value == overheadCosts)
     prepayments: number;
     bankReturnRatioPct: number; // Suma wszystkich płatności / Kwota kredytu * 100
     totalAllPayments: number; // Suma wszystkich płatności = totalRate + overheadCosts + prepayments
