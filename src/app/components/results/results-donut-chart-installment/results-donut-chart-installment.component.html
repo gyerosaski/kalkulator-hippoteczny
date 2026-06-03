@@ -12,8 +12,8 @@
   <div class="donut-row">
     <ui-donut
       [data]="firstSlices()"
-      centerLabel="rata"
-      [centerValue]="firstCenter()"
+      [centerLabel]="centerContent().label"
+      [centerValue]="centerContent().value"
       [activeLabel]="activeLabel()"
       (sliceHover)="activeLabel.set($event)"
     />

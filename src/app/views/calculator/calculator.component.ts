@@ -26,7 +26,6 @@ import { BasicDataFormComponent } from '../../components/form/basic-data-form/ba
 import { OverheadCostsFormComponent } from '../../components/form/overhead-costs-form/overhead-costs-form.component';
 import { TranchesFormComponent } from '../../components/form/tranches-form/tranches-form.component';
 import { PrepaymentsFormComponent } from '../../components/form/prepayments-form/prepayments-form.component';
-import { ResultsSummaryComponent } from '../../components/results/results-summary/results-summary.component';
 import { ResultsDonutChartTotalComponent } from '../../components/results/results-donut-chart-total/results-donut-chart-total.component';
 import { ResultsDonutChartInstallmentComponent } from '../../components/results/results-donut-chart-installment/results-donut-chart-installment.component';
 import { ResultsTrendChartComponent } from '../../components/results/results-trend-chart/results-trend-chart.component';
@@ -44,7 +43,6 @@ import { nextMonthStr } from '../../helpers/date.helper';
     OverheadCostsFormComponent,
     TranchesFormComponent,
     PrepaymentsFormComponent,
-    ResultsSummaryComponent,
     ResultsDonutChartTotalComponent,
     ResultsDonutChartInstallmentComponent,
     ResultsTrendChartComponent,

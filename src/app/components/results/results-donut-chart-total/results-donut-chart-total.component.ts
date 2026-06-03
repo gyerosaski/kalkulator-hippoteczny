@@ -5,6 +5,7 @@ import {
   ColorCodeArea,
   ChartSlice,
   OverheadCostItem,
+  LEGEND_TOTAL_ACTIVE,
 } from '../../../model';
 import { OverheadCostKindLabelPipe } from '../../../pipes/overhead-cost-kind-label/overhead-cost-kind-label.pipe';
 import { SelectedMonthService } from '../../../services/selected-month/selected-month.service';
@@ -27,7 +28,16 @@ export class ResultsDonutChartTotalComponent {
   protected readonly activeLabel = signal<string | null>(null);
   private readonly formService = inject(FormService);
   private readonly selectedMonthService = inject(SelectedMonthService);
-  private readonly numberFormat = new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 0 });
+  private readonly percentageFormat1 = new Intl.NumberFormat('pl-PL', {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
+
+  private readonly percentageFormat2 = new Intl.NumberFormat('pl-PL', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
   private readonly costKindLabel = new OverheadCostKindLabelPipe();
 
   private buildCostChildren(items: OverheadCostItem[]): ChartSlice[] {
@@ -154,11 +164,39 @@ export class ResultsDonutChartTotalComponent {
     return slices;
   });
 
-  totalCenter = computed(() => {
+  private formatPercentage(value: number): string {
+    const formatter = value < 0.05 ? this.percentageFormat2 : this.percentageFormat1;
+    return `${formatter.format(value)}%`;
+  }
+
+  centerContent = computed<{ label: string; value: string }>(() => {
+    const label = this.activeLabel();
+    const results = this.results();
+    if (!label || !results) return { label: '', value: '' };
+
     const cumulative = this.cumulativeToSelected();
-    const total = cumulative?.total ?? this.results()?.totals.totalAllPayments;
-    if (!total) return '';
-    return `${this.numberFormat.format(Math.round(total / 1000))}k`;
+    const totalAllPayments = cumulative?.total ?? results.totals.totalAllPayments;
+    const loanAmount = results.totals.totalCapital;
+
+    if (label === LEGEND_TOTAL_ACTIVE) {
+      const percentage = loanAmount > 0 ? (totalAllPayments / loanAmount) * 100 : 0;
+      return { label: '% kwoty kredytu', value: this.formatPercentage(percentage) };
+    }
+
+    for (const slice of this.totalSlices()) {
+      if (slice.label === label) {
+        const percentage = totalAllPayments > 0 ? (slice.value / totalAllPayments) * 100 : 0;
+        return { label: '% sumy płatności', value: this.formatPercentage(percentage) };
+      }
+      for (const child of slice.children ?? []) {
+        if (child.label === label) {
+          const percentage = totalAllPayments > 0 ? (child.value / totalAllPayments) * 100 : 0;
+          return { label: '% sumy płatności', value: this.formatPercentage(percentage) };
+        }
+      }
+    }
+
+    return { label: '', value: '' };
   });
 
   clearSelection(): void {

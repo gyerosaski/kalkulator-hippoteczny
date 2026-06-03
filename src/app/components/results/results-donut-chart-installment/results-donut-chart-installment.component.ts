@@ -5,6 +5,7 @@ import {
   ColorCodeArea,
   ChartSlice,
   OverheadCostItem,
+  LEGEND_TOTAL_ACTIVE,
 } from '../../../model';
 import { OverheadCostKindLabelPipe } from '../../../pipes/overhead-cost-kind-label/overhead-cost-kind-label.pipe';
 import { SelectedMonthService } from '../../../services/selected-month/selected-month.service';
@@ -27,7 +28,16 @@ export class ResultsDonutChartInstallmentComponent {
   protected readonly activeLabel = signal<string | null>(null);
   private readonly formService = inject(FormService);
   private readonly selectedMonthService = inject(SelectedMonthService);
-  private readonly numberFormat = new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 0 });
+  private readonly percentageFormat1 = new Intl.NumberFormat('pl-PL', {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
+
+  private readonly percentageFormat2 = new Intl.NumberFormat('pl-PL', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
   private readonly costKindLabel = new OverheadCostKindLabelPipe();
 
   private buildCostChildren(items: OverheadCostItem[]): ChartSlice[] {
@@ -102,11 +112,31 @@ export class ResultsDonutChartInstallmentComponent {
     ];
   });
 
-  firstCenter = computed(() => {
-    const selectedRow = this.selectedRow();
-    if (selectedRow) return this.numberFormat.format(selectedRow.rate);
-    const firstInstallment = this.results()?.firstInstallment;
-    if (!firstInstallment) return '';
-    return this.numberFormat.format(firstInstallment.rate);
+  private formatPercentage(value: number): string {
+    const formatter = value < 0.05 ? this.percentageFormat2 : this.percentageFormat1;
+    return `${formatter.format(value)}%`;
+  }
+
+  centerContent = computed<{ label: string; value: string }>(() => {
+    const label = this.activeLabel();
+    if (!label || label === LEGEND_TOTAL_ACTIVE) return { label: '', value: '' };
+
+    const slices = this.firstSlices();
+    const total = slices.reduce((sum, slice) => sum + slice.value, 0);
+
+    for (const slice of slices) {
+      if (slice.label === label) {
+        const percentage = total > 0 ? (slice.value / total) * 100 : 0;
+        return { label: '% raty', value: this.formatPercentage(percentage) };
+      }
+      for (const child of slice.children ?? []) {
+        if (child.label === label) {
+          const percentage = total > 0 ? (child.value / total) * 100 : 0;
+          return { label: '% raty', value: this.formatPercentage(percentage) };
+        }
+      }
+    }
+
+    return { label: '', value: '' };
   });
 }

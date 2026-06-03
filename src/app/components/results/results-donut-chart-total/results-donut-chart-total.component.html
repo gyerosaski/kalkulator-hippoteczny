@@ -21,8 +21,8 @@
   <div class="donut-row">
     <ui-donut
       [data]="totalSlices()"
-      centerLabel="razem"
-      [centerValue]="totalCenter()"
+      [centerLabel]="centerContent().label"
+      [centerValue]="centerContent().value"
       [activeLabel]="activeLabel()"
       (sliceHover)="activeLabel.set($event)"
     />

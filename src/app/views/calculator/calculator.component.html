@@ -9,7 +9,6 @@
   <div class="column">
     @if (results(); as resultsValue) {
       @if (yearlyGroups()?.length) {
-        <app-results-summary [results]="resultsValue" />
         <app-results-donut-chart-total [results]="resultsValue" />
         <app-results-donut-chart-installment [results]="resultsValue" />
         <app-results-trend-chart
