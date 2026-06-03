@@ -2,7 +2,9 @@
   @if (totalLabel()) {
     <div class="legend-total">
       <span class="leg-lab">{{ totalLabel() }}</span>
-      <span class="leg-val mono">{{ legendTotal() | formatAmount }} zł</span>
+      <span class="leg-val mono" (click)="copyAmount(legendTotal())"
+        >{{ legendTotal() | formatAmount }} zł</span
+      >
     </div>
   }
   <ul class="legend">
@@ -12,13 +14,14 @@
           class="is-parent"
           [class.is-active]="activeLabel() === slice.label"
           [class.is-open]="isExpanded(slice.label)"
-          (click)="toggleExpand(slice.label)"
           (mouseenter)="onHover(slice.label)"
           (mouseleave)="onHover(null)"
         >
           <ui-color-code-marker [variant]="slice.variant" />
-          <span class="leg-lab">{{ slice.label }}</span>
-          <span class="leg-val mono">{{ slice.value | formatAmount }} zł</span>
+          <span class="leg-lab" (click)="toggleExpand(slice.label)">{{ slice.label }}</span>
+          <span class="leg-val mono" (click)="copyAmount(slice.value)"
+            >{{ slice.value | formatAmount }} zł</span
+          >
         </li>
         @if (isExpanded(slice.label)) {
           <li class="children-row" animate.enter="children-in" animate.leave="children-out">
@@ -31,7 +34,9 @@
                   (mouseleave)="onHover(null)"
                 >
                   <span class="leg-lab">{{ child.label }}</span>
-                  <span class="leg-val mono">{{ child.value | formatAmount }} zł</span>
+                  <span class="leg-val mono" (click)="copyAmount(child.value)"
+                    >{{ child.value | formatAmount }} zł</span
+                  >
                 </li>
               }
             </ul>
@@ -45,7 +50,9 @@
         >
           <ui-color-code-marker [variant]="slice.variant" />
           <span class="leg-lab">{{ slice.label }}</span>
-          <span class="leg-val mono">{{ slice.value | formatAmount }} zł</span>
+          <span class="leg-val mono" (click)="copyAmount(slice.value)"
+            >{{ slice.value | formatAmount }} zł</span
+          >
         </li>
       }
     }

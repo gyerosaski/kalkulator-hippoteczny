@@ -1,5 +1,14 @@
-import { Component, ChangeDetectionStrategy, input, output, signal, computed } from '@angular/core';
-import { ChartSlice } from '../../../model';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  input,
+  output,
+  signal,
+  computed,
+} from '@angular/core';
+import { ChartSlice, ToastVariant } from '../../../model';
+import { ToastService } from '../../../services/toast/toast.service';
 import { ColorCodeMarkerComponent } from '../color-code-marker/color-code-marker.component';
 import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
 
@@ -11,6 +20,8 @@ import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pip
   imports: [ColorCodeMarkerComponent, FormatAmountPipe],
 })
 export class LegendComponent {
+  private readonly toastService = inject(ToastService);
+
   slices = input.required<ChartSlice[]>();
   /** etykieta wiersza sumy nad legendą; gdy pusta — wiersz sumy i separator nie są renderowane. */
   totalLabel = input<string>('');
@@ -33,5 +44,15 @@ export class LegendComponent {
 
   protected isExpanded(label: string): boolean {
     return this.expandedLabel() === label;
+  }
+
+  protected copyAmount(value: number): void {
+    const formatted = value.toLocaleString('pl-PL', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+    navigator.clipboard.writeText(formatted).then(() => {
+      this.toastService.show(`Wartość skopiowana do schowka`, ToastVariant.INFO);
+    });
   }
 }
