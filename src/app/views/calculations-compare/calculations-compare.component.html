@@ -151,13 +151,18 @@
     </div>
   } @else {
     <section class="compare-placeholder">
-      <div class="compare-placeholder-tag">SEKCJE 3.3–3.8</div>
-      <h2 class="compare-placeholder-title">Szczegóły porównania w przygotowaniu</h2>
+      <div class="compare-placeholder-tag">SEKCJE 3.3–3.7</div>
+      <h2 class="compare-placeholder-title">Parametry, wskaźniki i wykresy w przygotowaniu</h2>
       <p class="muted">
-        Obie oferty są wybrane. Tabele parametrów, wskaźniki, donuty i wykres trendu pojawią się w
-        kolejnym etapie prac.
+        Tabele parametrów, kluczowe wskaźniki KPI, donuty i wykres trendu pojawią się w kolejnym
+        etapie prac.
       </p>
     </section>
+
+    <app-comparison-diff-table
+      [offerA]="comparisonState.offerA()!"
+      [offerB]="comparisonState.offerB()!"
+    />
   }
 
   <app-select-offer-dialog />

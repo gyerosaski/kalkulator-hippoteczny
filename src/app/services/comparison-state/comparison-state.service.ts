@@ -5,6 +5,7 @@ import {
   ComparableOfferKind,
   ComparisonSlot,
   DRAFT_OFFER_ID,
+  OverheadCostKind,
   RateType,
 } from '../../model';
 import { CalculatorStateService } from '../calculator-state/calculator-state.service';
@@ -39,6 +40,8 @@ export class ComparisonStateService {
         ? (firstRatePeriod?.wibor ?? 0) + (firstRatePeriod?.margin ?? 0)
         : (firstRatePeriod?.nominalRate ?? 0);
     const loanPeriodMonths = basicData.loanPeriod;
+    const results = this.calculatorState.results();
+    const breakdown = results?.totals.overheadCostsBreakdown ?? [];
 
     return {
       id: DRAFT_OFFER_ID,
@@ -51,7 +54,17 @@ export class ComparisonStateService {
       nominalRate,
       rateType,
       installmentType: basicData.installmentType,
-      firstInstallment: this.calculatorState.results()?.firstInstallment?.rate ?? 0,
+      firstInstallment: results?.firstInstallment?.rate ?? 0,
+      totalInterest: results?.totals.totalInterest ?? 0,
+      totalCosts: results?.totals.overheadCosts ?? 0,
+      commission: breakdown
+        .filter((item) => item.kind === OverheadCostKind.LOAN_COMMISSION)
+        .reduce((sum, item) => sum + item.value, 0),
+      appraisalFee: breakdown
+        .filter((item) => item.kind === OverheadCostKind.APPRAISAL_FEE)
+        .reduce((sum, item) => sum + item.value, 0),
+      totalOverpayments: results?.totals.prepayments ?? 0,
+      totalPayments: results?.totals.totalAllPayments ?? 0,
       hasErrors: this.formService.form.invalid,
     };
   });
@@ -71,6 +84,12 @@ export class ComparisonStateService {
         rateType: saved.rateType,
         installmentType: saved.installmentType,
         firstInstallment: saved.firstInstallment,
+        totalInterest: saved.totalInterest,
+        totalCosts: saved.totalCosts,
+        commission: saved.commission,
+        appraisalFee: saved.appraisalFee,
+        totalOverpayments: saved.totalOverpayments,
+        totalPayments: saved.totalPayments,
         hasErrors: saved.hasErrors,
       };
     }),

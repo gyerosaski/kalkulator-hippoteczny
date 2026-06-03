@@ -7,6 +7,10 @@ export interface SavedCalculationMetadata {
   overpaymentsEnabled: boolean;
   trancheCount: number;
   hasErrors: boolean;
+  commission?: number;
+  appraisalFee?: number;
+  totalOverpayments?: number;
+  totalPayments?: number;
 }
 
 export interface SavedCalculationRecord {
@@ -32,6 +36,10 @@ export interface SavedCalculation {
   firstInstallment: number;
   totalInterest: number;
   totalCosts: number;
+  commission: number;
+  appraisalFee: number;
+  totalOverpayments: number;
+  totalPayments: number;
   overpaymentsEnabled: boolean;
   trancheCount: number;
   hasErrors: boolean;

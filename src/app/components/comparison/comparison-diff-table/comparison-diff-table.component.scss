@@ -1,0 +1,154 @@
+.diff-table-section {
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.diff-table-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.diff-table-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.diff-table-title {
+  margin: 6px 0 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* ---------- Table grid ---------- */
+.diff-table {
+  display: grid;
+}
+
+.diff-table-head,
+.diff-table-row {
+  display: grid;
+  grid-template-columns: 1fr 180px 180px 140px;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.diff-table-head {
+  background: var(--surface-2);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.diff-table-head-sub {
+  font-weight: 400;
+  text-transform: none;
+}
+
+.diff-table-cell {
+  padding: 10px 16px;
+}
+
+.diff-table-cell--label {
+  color: var(--ink-2);
+}
+
+.diff-table-cell--offer {
+  position: relative;
+  text-align: right;
+}
+
+.diff-table-cell--a {
+  border-left: 1px solid var(--line);
+}
+
+.diff-table-cell--b {
+  border-left: 1px solid var(--line);
+}
+
+.diff-table-cell--delta {
+  border-left: 1px solid var(--line);
+  text-align: right;
+  color: var(--muted);
+}
+
+/* ---------- Row states ---------- */
+.diff-table-row--emphasized {
+  font-weight: 700;
+  background: var(--surface-2);
+
+  .diff-table-cell--label {
+    color: var(--ink);
+  }
+}
+
+.diff-table-row:not(.diff-table-row--emphasized):nth-child(odd) {
+  background: var(--surface-stripe);
+}
+
+/* ---------- Leader ---------- */
+.is-leader {
+  color: var(--ink);
+}
+
+.leader-marker {
+  color: var(--accent-sage-deep);
+  margin-right: 4px;
+  font-size: 11px;
+  line-height: 1;
+}
+
+/* ---------- Delta coloring ---------- */
+.delta--up {
+  color: var(--c-int);
+}
+
+.delta--down {
+  color: var(--accent-sage-deep);
+}
+
+.delta--flat {
+  color: var(--muted);
+}
+
+/* ---------- Offer badges ---------- */
+.offer-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--surface);
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.offer-badge--a {
+  background: var(--offer-a);
+}
+
+.offer-badge--b {
+  background: var(--offer-b);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 720px) {
+  .diff-table-head,
+  .diff-table-row {
+    grid-template-columns: 1fr 120px 120px 100px;
+  }
+}

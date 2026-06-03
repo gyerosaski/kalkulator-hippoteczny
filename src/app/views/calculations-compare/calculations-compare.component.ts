@@ -24,6 +24,7 @@ import { FormatAmountPipe } from '../../pipes/format-amount/format-amount.pipe';
 import { FormatLoanPeriodPipe } from '../../pipes/format-loan-period/format-loan-period.pipe';
 import { FormatRatePipe } from '../../pipes/format-rate/format-rate.pipe';
 import { FormatWholeAmountPipe } from '../../pipes/format-whole-amount/format-whole-amount.pipe';
+import { ComparisonDiffTableComponent } from '../../components/comparison/comparison-diff-table/comparison-diff-table.component';
 
 @Component({
   selector: 'app-calculations-compare',
@@ -42,6 +43,7 @@ import { FormatWholeAmountPipe } from '../../pipes/format-whole-amount/format-wh
     FormatLoanPeriodPipe,
     FormatRatePipe,
     FormatWholeAmountPipe,
+    ComparisonDiffTableComponent,
   ],
   templateUrl: './calculations-compare.component.html',
   styleUrls: ['./calculations-compare.component.scss'],

@@ -14,7 +14,12 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { ask as askDialog } from '@tauri-apps/plugin-dialog';
 
-import { AppRoute, SavedCalculationMetadata, SavedCalculationRecord } from '../../model';
+import {
+  AppRoute,
+  OverheadCostKind,
+  SavedCalculationMetadata,
+  SavedCalculationRecord,
+} from '../../model';
 import { SavedCalculation, SavedCalculationSortOption } from '../../model';
 import { CalculationsStoreService } from '../../services/calculations-store/calculations-store.service';
 import { CalculatorStateService } from '../../services/calculator-state/calculator-state.service';
@@ -200,6 +205,14 @@ export class CalculationsManagerComponent implements OnInit {
           firstInstallment: results.firstInstallment?.rate ?? 0,
           totalInterest: results.totals.totalInterest,
           totalCosts: results.totals.overheadCosts,
+          commission: results.totals.overheadCostsBreakdown
+            .filter((item) => item.kind === OverheadCostKind.LOAN_COMMISSION)
+            .reduce((sum, item) => sum + item.value, 0),
+          appraisalFee: results.totals.overheadCostsBreakdown
+            .filter((item) => item.kind === OverheadCostKind.APPRAISAL_FEE)
+            .reduce((sum, item) => sum + item.value, 0),
+          totalOverpayments: results.totals.prepayments,
+          totalPayments: results.totals.totalAllPayments,
           overpaymentsEnabled: formData.prepayments.enabled,
           trancheCount: formData.tranches.enabled
             ? ((formData.tranches.fields.tranches as unknown[])?.length ?? 1)
@@ -246,6 +259,14 @@ export class CalculationsManagerComponent implements OnInit {
           firstInstallment: results.firstInstallment?.rate ?? 0,
           totalInterest: results.totals.totalInterest,
           totalCosts: results.totals.overheadCosts,
+          commission: results.totals.overheadCostsBreakdown
+            .filter((item) => item.kind === OverheadCostKind.LOAN_COMMISSION)
+            .reduce((sum, item) => sum + item.value, 0),
+          appraisalFee: results.totals.overheadCostsBreakdown
+            .filter((item) => item.kind === OverheadCostKind.APPRAISAL_FEE)
+            .reduce((sum, item) => sum + item.value, 0),
+          totalOverpayments: results.totals.prepayments,
+          totalPayments: results.totals.totalAllPayments,
           overpaymentsEnabled: formData.prepayments.enabled,
           trancheCount: formData.tranches.enabled
             ? ((formData.tranches.fields.tranches as unknown[])?.length ?? 1)

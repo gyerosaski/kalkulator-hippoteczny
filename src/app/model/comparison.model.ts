@@ -29,7 +29,26 @@ export interface ComparableOffer {
   rateType: RateType;
   installmentType: InstallmentType;
   firstInstallment: number;
+  totalInterest: number;
+  totalCosts: number;
+  commission: number;
+  appraisalFee: number;
+  totalOverpayments: number;
+  totalPayments: number;
   hasErrors: boolean;
+}
+
+/** Wiersz tabeli różnic kosztowych (sekcja 3.8) w widoku „Porównanie ofert”. */
+export interface ComparisonDiffRow {
+  label: string;
+  aText: string;
+  bText: string;
+  deltaText: string;
+  unit: string;
+  deltaClass: 'delta--up' | 'delta--down' | 'delta--flat';
+  aIsLeader: boolean;
+  bIsLeader: boolean;
+  isEmphasized: boolean;
 }
 
 /** Kontekst przekazywany do dialogu wyboru oferty (`SelectOfferDialogComponent.open`). */
