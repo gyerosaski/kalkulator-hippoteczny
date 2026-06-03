@@ -14,20 +14,19 @@ import { FormService } from '../../../services/form/form';
 import { CardComponent } from '../../ui/card/card.component';
 
 @Component({
-  selector: 'app-results-charts',
+  selector: 'app-results-donut-chart-total',
   standalone: true,
   imports: [DonutChartComponent, FormatMonthPipe, CardComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './results-charts.component.html',
+  templateUrl: './results-donut-chart-total.component.html',
 })
-export class ResultsChartsComponent {
+export class ResultsDonutChartTotalComponent {
   results = input.required<MortgageResults | null>();
   private readonly formService = inject(FormService);
   private readonly selectedMonthService = inject(SelectedMonthService);
   private readonly numberFormat = new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 0 });
   private readonly costKindLabel = new OverheadCostKindLabelPipe();
 
-  /** buduje rozwijalne składowe slice'a kosztów z rozbicia kalkulatora. */
   private buildCostChildren(items: OverheadCostItem[]): ChartSlice[] {
     return items
       .filter((item) => item.value > 0)
@@ -78,69 +77,6 @@ export class ResultsChartsComponent {
       ),
       costBreakdown: this.aggregateBreakdown(rowsUpToSelected),
     };
-  });
-
-  firstSlices = computed<ChartSlice[]>(() => {
-    const selectedRow = this.selectedRow();
-    if (selectedRow) {
-      const slices: ChartSlice[] = [
-        {
-          label: 'Kapitał',
-          value: selectedRow.capital,
-          color: 'var(--c-cap)',
-          variant: ColorCodeArea.CAPITAL,
-        },
-        {
-          label: 'Odsetki',
-          value: selectedRow.interest,
-          color: 'var(--c-int)',
-          variant: ColorCodeArea.INTEREST,
-        },
-      ];
-      if (this.formService.isOverheadCostsEnabled && selectedRow.insuranceCost > 0) {
-        slices.push({
-          label: 'Koszty okołokredytowe',
-          value: selectedRow.insuranceCost,
-          color: 'var(--c-cost)',
-          variant: ColorCodeArea.COST,
-          children: this.buildCostChildren(selectedRow.costBreakdown),
-        });
-      }
-      if (this.formService.isPrepaymentEnabled && selectedRow.prepayment > 0) {
-        slices.push({
-          label: 'Nadpłaty',
-          value: selectedRow.prepayment,
-          color: 'var(--c-over)',
-          variant: ColorCodeArea.PREPAYMENT,
-        });
-      }
-      return slices;
-    }
-    const results = this.results();
-    const firstInstallment = results?.firstInstallment;
-    if (!firstInstallment) return [];
-    return [
-      {
-        label: 'Kapitał',
-        value: firstInstallment.capital,
-        color: 'var(--c-cap)',
-        variant: ColorCodeArea.CAPITAL,
-      },
-      {
-        label: 'Odsetki',
-        value: firstInstallment.interest,
-        color: 'var(--c-int)',
-        variant: ColorCodeArea.INTEREST,
-      },
-    ];
-  });
-
-  firstCenter = computed(() => {
-    const selectedRow = this.selectedRow();
-    if (selectedRow) return this.numberFormat.format(selectedRow.rate);
-    const firstInstallment = this.results()?.firstInstallment;
-    if (!firstInstallment) return '';
-    return this.numberFormat.format(firstInstallment.rate);
   });
 
   totalSlices = computed<ChartSlice[]>(() => {
@@ -215,14 +151,14 @@ export class ResultsChartsComponent {
     return slices;
   });
 
-  clearSelection(): void {
-    this.selectedMonthService.clearSelectedMonth();
-  }
-
   totalCenter = computed(() => {
     const cumulative = this.cumulativeToSelected();
     const total = cumulative?.total ?? this.results()?.totals.totalAllPayments;
     if (!total) return '';
     return `${this.numberFormat.format(Math.round(total / 1000))}k`;
   });
+
+  clearSelection(): void {
+    this.selectedMonthService.clearSelectedMonth();
+  }
 }

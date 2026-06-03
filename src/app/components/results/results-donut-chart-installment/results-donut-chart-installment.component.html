@@ -1,0 +1,18 @@
+@let row = selectedRow();
+<ui-card>
+  <div class="card-head">
+    <h3>
+      @if (row) {
+        Struktura raty w miesiącu {{ row.date | formatMonth }}
+      } @else {
+        Struktura pierwszej raty
+      }
+    </h3>
+  </div>
+  <ui-donut-chart
+    [slices]="firstSlices()"
+    centerLabel="rata"
+    [centerValue]="firstCenter()"
+    totalLabel="Razem"
+  />
+</ui-card>
