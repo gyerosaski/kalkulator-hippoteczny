@@ -9,10 +9,19 @@
       }
     </h3>
   </div>
-  <ui-donut-chart
-    [slices]="firstSlices()"
-    centerLabel="rata"
-    [centerValue]="firstCenter()"
-    totalLabel="Razem"
-  />
+  <div class="donut-row">
+    <ui-donut
+      [data]="firstSlices()"
+      centerLabel="rata"
+      [centerValue]="firstCenter()"
+      [activeLabel]="activeLabel()"
+      (sliceHover)="activeLabel.set($event)"
+    />
+    <ui-legend
+      [slices]="firstSlices()"
+      totalLabel="Razem"
+      [activeLabel]="activeLabel()"
+      (sliceHover)="activeLabel.set($event)"
+    />
+  </div>
 </ui-card>

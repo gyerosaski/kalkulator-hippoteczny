@@ -18,10 +18,19 @@
       </div>
     </div>
   </div>
-  <ui-donut-chart
-    [slices]="totalSlices()"
-    centerLabel="razem"
-    [centerValue]="totalCenter()"
-    totalLabel="Suma wszystkich płatności"
-  />
+  <div class="donut-row">
+    <ui-donut
+      [data]="totalSlices()"
+      centerLabel="razem"
+      [centerValue]="totalCenter()"
+      [activeLabel]="activeLabel()"
+      (sliceHover)="activeLabel.set($event)"
+    />
+    <ui-legend
+      [slices]="totalSlices()"
+      totalLabel="Suma wszystkich płatności"
+      [activeLabel]="activeLabel()"
+      (sliceHover)="activeLabel.set($event)"
+    />
+  </div>
 </ui-card>

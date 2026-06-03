@@ -1,4 +1,4 @@
-import { Component, input, ChangeDetectionStrategy, inject, computed } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy, inject, computed, signal } from '@angular/core';
 import {
   MortgageResults,
   ScheduleRow,
@@ -9,19 +9,22 @@ import {
 import { OverheadCostKindLabelPipe } from '../../../pipes/overhead-cost-kind-label/overhead-cost-kind-label.pipe';
 import { SelectedMonthService } from '../../../services/selected-month/selected-month.service';
 import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
-import { DonutChartComponent } from '../../ui/donut-chart/donut-chart.component';
+import { DonutComponent } from '../../ui/donut/donut.component';
+import { LegendComponent } from '../../ui/legend/legend.component';
 import { FormService } from '../../../services/form/form';
 import { CardComponent } from '../../ui/card/card.component';
 
 @Component({
   selector: 'app-results-donut-chart-installment',
   standalone: true,
-  imports: [DonutChartComponent, FormatMonthPipe, CardComponent],
+  imports: [DonutComponent, LegendComponent, FormatMonthPipe, CardComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './results-donut-chart-installment.component.html',
+  styleUrl: './results-donut-chart-installment.component.scss',
 })
 export class ResultsDonutChartInstallmentComponent {
   results = input.required<MortgageResults | null>();
+  protected readonly activeLabel = signal<string | null>(null);
   private readonly formService = inject(FormService);
   private readonly selectedMonthService = inject(SelectedMonthService);
   private readonly numberFormat = new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 0 });
