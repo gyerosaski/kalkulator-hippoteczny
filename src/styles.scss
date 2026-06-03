@@ -680,11 +680,6 @@ ui-cards-group + ui-card {
   font-weight: 600;
   letter-spacing: -0.005em;
 }
-.result-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
 
 /* Donut */
 .donut-wrap {

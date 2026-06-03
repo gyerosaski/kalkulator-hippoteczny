@@ -15,7 +15,7 @@
   justify-content: space-between;
   align-items: baseline;
   gap: 10px;
-  font-size: 12px;
+  font-size: 16px;
   padding-bottom: 8px;
   margin-bottom: 8px;
   border-bottom: 1px solid var(--line);
@@ -44,7 +44,7 @@
   grid-template-columns: 14px 1fr auto;
   gap: 10px;
   align-items: center;
-  font-size: 12px;
+  font-size: 14px;
   cursor: pointer;
   transition: transform 0.2s ease;
 }
@@ -127,7 +127,7 @@
 .legend li.is-child {
   grid-template-columns: 1fr auto;
   padding-left: 24px;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .leg-lab {

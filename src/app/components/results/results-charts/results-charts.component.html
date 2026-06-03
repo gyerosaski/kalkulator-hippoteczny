@@ -1,48 +1,45 @@
-<div class="result-grid">
-  @let row = selectedRow();
-
-  <ui-card>
-    <div class="card-head">
-      <div>
-        <h3>
-          Struktura płatności
-          @if (row) {
-            <span class="card-head-suffix"> do {{ row.date | formatMonth }}</span>
-          }
-        </h3>
-        <div class="muted small">
-          @if (row) {
-            narastająco od początku do wybranego miesiąca ·
-            <button class="link-btn" (click)="clearSelection()">pokaż cały okres</button>
-          } @else {
-            w pełnym okresie kredytowania
-          }
-        </div>
-      </div>
-    </div>
-    <ui-donut-chart
-      [slices]="totalSlices()"
-      centerLabel="razem"
-      [centerValue]="totalCenter()"
-      totalLabel="Suma wszystkich płatności"
-    />
-  </ui-card>
-
-  <ui-card>
-    <div class="card-head">
+@let row = selectedRow();
+<ui-card>
+  <div class="card-head">
+    <div>
       <h3>
+        Struktura płatności
         @if (row) {
-          Struktura raty w miesiącu {{ row.date | formatMonth }}
-        } @else {
-          Struktura pierwszej raty
+          <span class="card-head-suffix"> do {{ row.date | formatMonth }}</span>
         }
       </h3>
+      <div class="muted small">
+        @if (row) {
+          narastająco od początku do wybranego miesiąca ·
+          <button class="link-btn" (click)="clearSelection()">pokaż cały okres</button>
+        } @else {
+          w pełnym okresie kredytowania
+        }
+      </div>
     </div>
-    <ui-donut-chart
-      [slices]="firstSlices()"
-      centerLabel="rata"
-      [centerValue]="firstCenter()"
-      totalLabel="Razem"
-    />
-  </ui-card>
-</div>
+  </div>
+  <ui-donut-chart
+    [slices]="totalSlices()"
+    centerLabel="razem"
+    [centerValue]="totalCenter()"
+    totalLabel="Suma wszystkich płatności"
+  />
+</ui-card>
+
+<ui-card>
+  <div class="card-head">
+    <h3>
+      @if (row) {
+        Struktura raty w miesiącu {{ row.date | formatMonth }}
+      } @else {
+        Struktura pierwszej raty
+      }
+    </h3>
+  </div>
+  <ui-donut-chart
+    [slices]="firstSlices()"
+    centerLabel="rata"
+    [centerValue]="firstCenter()"
+    totalLabel="Razem"
+  />
+</ui-card>

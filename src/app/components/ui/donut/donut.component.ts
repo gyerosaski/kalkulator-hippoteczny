@@ -10,8 +10,8 @@ import { DonutSlice } from '../../../model';
 })
 export class DonutComponent {
   data = input.required<DonutSlice[]>();
-  size = input<number>(180);
-  thickness = input<number>(26);
+  size = input<number>(216);
+  thickness = input<number>(32);
   centerLabel = input<string>('');
   centerValue = input<string>('');
   activeLabel = input<string | null>(null);
