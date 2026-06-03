@@ -11,14 +11,16 @@
     @for (s of slices(); track s.slice.label) {
       <circle
         class="donut-slice"
-        [class.donut-slice--active]="s.slice.label === activeLabel()"
+        [class.donut-slice--active]="s.slice.label === activeLabel() || isAllActive()"
         [attr.cx]="c()"
         [attr.cy]="c()"
         [attr.r]="r()"
         fill="none"
         [attr.stroke]="s.slice.color"
         [attr.stroke-width]="
-          s.slice.label === activeLabel() ? thickness() + activeStrokeBoost : thickness()
+          s.slice.label === activeLabel() || isAllActive()
+            ? thickness() + activeStrokeBoost
+            : thickness()
         "
         [attr.stroke-dasharray]="s.dasharray"
         [attr.stroke-dashoffset]="s.offset"

@@ -7,7 +7,7 @@ import {
   signal,
   computed,
 } from '@angular/core';
-import { ChartSlice, ToastVariant } from '../../../model';
+import { ChartSlice, LEGEND_TOTAL_ACTIVE, ToastVariant } from '../../../model';
 import { ToastService } from '../../../services/toast/toast.service';
 import { ColorCodeMarkerComponent } from '../color-code-marker/color-code-marker.component';
 import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
@@ -27,6 +27,8 @@ export class LegendComponent {
   totalLabel = input<string>('');
   activeLabel = input<string | null>(null);
   sliceHover = output<string | null>();
+
+  protected readonly legendTotalActive = LEGEND_TOTAL_ACTIVE;
 
   private readonly expandedLabel = signal<string | null>(null);
 

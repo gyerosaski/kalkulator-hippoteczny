@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, input, output, computed } from '@angular/core';
-import { DonutSlice } from '../../../model';
+import { DonutSlice, LEGEND_TOTAL_ACTIVE } from '../../../model';
 
 @Component({
   selector: 'ui-donut',
@@ -20,6 +20,8 @@ export class DonutComponent {
 
   /** Ile px grubości dodajemy aktywnemu wycinkowi przy najechaniu. */
   readonly activeStrokeBoost = 6;
+
+  protected readonly isAllActive = computed(() => this.activeLabel() === LEGEND_TOTAL_ACTIVE);
 
   r = computed(() => (this.size() - this.thickness() - this.activeStrokeBoost) / 2);
   c = computed(() => this.size() / 2);

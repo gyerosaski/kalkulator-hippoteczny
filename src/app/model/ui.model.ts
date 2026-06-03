@@ -141,6 +141,8 @@ export interface RateChartGeometry {
   readonly columnWidth: number;
 }
 
+export const LEGEND_TOTAL_ACTIVE = '__legend_total__';
+
 export interface RateChartTooltipModel {
   readonly tooltipX: number;
   readonly tooltipY: number;

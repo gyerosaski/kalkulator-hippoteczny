@@ -1,6 +1,11 @@
 <div class="legend-wrap">
   @if (totalLabel()) {
-    <div class="legend-total">
+    <div
+      class="legend-total"
+      [class.is-active]="activeLabel() === legendTotalActive"
+      (mouseenter)="onHover(legendTotalActive)"
+      (mouseleave)="onHover(null)"
+    >
       <span class="leg-lab">{{ totalLabel() }}</span>
       <span class="leg-val mono" (click)="copyAmount(legendTotal())"
         >{{ legendTotal() | formatAmount }} zł</span

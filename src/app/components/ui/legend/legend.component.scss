@@ -12,6 +12,7 @@
   padding-bottom: 8px;
   margin-bottom: 8px;
   border-bottom: 1px solid var(--line);
+  cursor: pointer;
 }
 
 .legend-total .leg-lab {
@@ -20,7 +21,12 @@
 
 .legend-total .leg-val {
   color: var(--ink);
+}
+
+.legend-total.is-active .leg-lab,
+.legend-total.is-active .leg-val {
   font-weight: 700;
+  color: var(--ink);
 }
 
 .legend {
@@ -40,10 +46,6 @@
   font-size: 14px;
   cursor: pointer;
   transition: transform 0.2s ease;
-}
-
-.legend li.is-active {
-  transform: translateX(2px);
 }
 
 .legend li.is-active .leg-lab,
