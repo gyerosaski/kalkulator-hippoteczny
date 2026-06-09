@@ -3,7 +3,7 @@
   [marker]="colorCodeArea.PREPAYMENT"
   [badge]="badge()"
   [toggleable]="true"
-  [expandedControl]="expandedControl"
+  [defaultOpen]="false"
   [enabled]="isSectionEnabled()"
   (enabledChange)="sectionEnabledControl.setValue($event)"
 >
@@ -12,7 +12,7 @@
       [context]="colorCodeArea.PREPAYMENT"
       [num]="1"
       title="Reguły nadpłat"
-      [open]="subsectionsOpen().prepaymentRules"
+      [open]="openSubsection() === 'prepaymentRules'"
       (openChange)="setSubsectionOpen('prepaymentRules', $event)"
     >
       @for (rule of prepaymentRulesArray.controls; track $index) {
@@ -85,7 +85,7 @@
       [context]="colorCodeArea.PREPAYMENT"
       [num]="2"
       title="Docelowa rata"
-      [open]="subsectionsOpen().rataDocelowaRegula"
+      [open]="openSubsection() === 'rataDocelowaRegula'"
       (openChange)="setSubsectionOpen('rataDocelowaRegula', $event)"
     >
       <div class="row row--2">
@@ -130,7 +130,7 @@
       [context]="colorCodeArea.PREPAYMENT"
       [num]="3"
       title="Prowizja za wcześniejszą spłatę"
-      [open]="subsectionsOpen().prowizjaWczesniejszaSplata"
+      [open]="openSubsection() === 'prowizjaWczesniejszaSplata'"
       (openChange)="setSubsectionOpen('prowizjaWczesniejszaSplata', $event)"
     >
       <div class="row row--2">

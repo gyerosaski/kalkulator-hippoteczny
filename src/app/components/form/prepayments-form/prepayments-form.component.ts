@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectionStrategy, computed } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, computed, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -50,10 +50,6 @@ export class PrepaymentsFormComponent {
     return this.formService.prepaymentsSection;
   }
 
-  get expandedControl() {
-    return this.section.controls.expanded;
-  }
-
   get sectionEnabledControl() {
     return this.section.controls.enabled;
   }
@@ -80,35 +76,10 @@ export class PrepaymentsFormComponent {
     return this.formService.prepaymentsGroup;
   }
 
-  private getExpandedStates() {
-    const f = this.prepaymentsGroup.controls;
-    return {
-      prepaymentRules: f.prepaymentRules.controls.expanded.value,
-      rataDocelowaRegula: f.rataDocelowaRegula.controls.expanded.value,
-      prowizjaWczesniejszaSplata: f.prowizjaWczesniejszaSplata.controls.expanded.value,
-    };
-  }
-
-  readonly subsectionsOpen = toSignal(
-    this.formService.prepaymentsGroup.valueChanges.pipe(map(() => this.getExpandedStates())),
-    { initialValue: this.getExpandedStates() },
-  );
+  readonly openSubsection = signal<string | null>(null);
 
   setSubsectionOpen(key: string, open: boolean): void {
-    if (open) {
-      for (const subsectionKey of Object.keys(this.getExpandedStates())) {
-        if (subsectionKey !== key) {
-          (
-            this.prepaymentsGroup.get(
-              `${subsectionKey}.expanded`,
-            ) as unknown as FormControl<boolean>
-          )?.setValue(false, { emitEvent: false });
-        }
-      }
-    }
-    (this.prepaymentsGroup.get(`${key}.expanded`) as unknown as FormControl<boolean>)?.setValue(
-      open,
-    );
+    this.openSubsection.set(open ? key : null);
   }
 
   get prepaymentRulesArray() {

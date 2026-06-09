@@ -34,7 +34,6 @@ export interface PrepaymentRuleFormGroup {
 }
 
 export interface TargetInstallmentFormGroup {
-  expanded: FormControl<boolean>;
   targetRate: FormControl<number>;
   from: FormControl<string>;
   to: FormControl<string>;
@@ -42,13 +41,11 @@ export interface TargetInstallmentFormGroup {
 }
 
 export interface EarlyRepaymentCommissionFormGroup {
-  expanded: FormControl<boolean>;
   ratePct: FormControl<number>;
   validUntil: FormControl<string>;
 }
 
 export interface PrepaymentRulesSectionFormGroup {
-  expanded: FormControl<boolean>;
   items: FormArray<FormGroup<PrepaymentRuleFormGroup>>;
 }
 
@@ -62,24 +59,20 @@ export interface AdditionalCostFormGroup {
 }
 
 export interface CommissionFormGroup {
-  expanded: FormControl<boolean>;
   commissionValue: FormControl<number>;
   commissionCalcMethod: FormControl<CommissionCalcMethod>;
 }
 
 export interface AppraisalFormGroup {
-  expanded: FormControl<boolean>;
   appraisalFee: FormControl<number>;
 }
 
 export interface BridgeInsuranceFormGroup {
-  expanded: FormControl<boolean>;
   bridgeRateIncrease: FormControl<number>;
   bridgeMonths: FormControl<number>;
 }
 
 export interface PropertyInsuranceFormGroup {
-  expanded: FormControl<boolean>;
   propInsFrequency: FormControl<InsuranceFrequency>;
   propInsCalcMethod: FormControl<InsuranceCalcMethod>;
   propInsValue: FormControl<number>;
@@ -88,12 +81,10 @@ export interface PropertyInsuranceFormGroup {
 }
 
 export interface LowEquityInsuranceFormGroup {
-  expanded: FormControl<boolean>;
   lowEquityRateIncrease: FormControl<number>;
 }
 
 export interface LifeInsuranceFormGroup {
-  expanded: FormControl<boolean>;
   lifeInsFrequency: FormControl<InsuranceFrequency>;
   lifeInsCalcMethod: FormControl<LifeInsuranceCalcMethod>;
   lifeInsValue: FormControl<number>;
@@ -102,7 +93,6 @@ export interface LifeInsuranceFormGroup {
 }
 
 export interface JobLossInsuranceFormGroup {
-  expanded: FormControl<boolean>;
   jobLossInsFrequency: FormControl<InsuranceFrequency>;
   jobLossInsCalcMethod: FormControl<LifeInsuranceCalcMethod>;
   jobLossInsValue: FormControl<number>;
@@ -111,12 +101,10 @@ export interface JobLossInsuranceFormGroup {
 }
 
 export interface AdditionalCostsSectionFormGroup {
-  expanded: FormControl<boolean>;
   items: FormArray<FormGroup<AdditionalCostFormGroup>>;
 }
 
 export interface PromoRateFormGroup {
-  expanded: FormControl<boolean>;
   promoRateDecrease: FormControl<number>;
   promoFrom: FormControl<string>;
   promoTo: FormControl<string>;
@@ -147,13 +135,11 @@ export interface TranchesFieldsFormGroup {
 export interface ToggleableSectionFormGroup<
   T extends { [K in keyof T]: import('@angular/forms').AbstractControl },
 > {
-  expanded: FormControl<boolean>;
   enabled: FormControl<boolean>;
   fields: FormGroup<T>;
 }
 
 export interface BasicDataFormGroup {
-  expanded: FormControl<boolean>;
   propertyValue: FormControl<number>;
   loanAmount: FormControl<number>;
   ltv: FormControl<number>;

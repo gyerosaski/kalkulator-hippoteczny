@@ -254,7 +254,6 @@ export class FormService {
   private createBasicDataGroup(): FormGroup<BasicDataFormGroup> {
     const today = ym();
     return this.fb.group({
-      expanded: this.fb.control(true),
       propertyValue: this.fb.control(500_000, [Validators.required, Validators.min(0.01)]),
       loanAmount: this.fb.control(400_000, [Validators.required, Validators.min(0.01)]),
       ltv: this.fb.control(80, [Validators.required, Validators.min(0), Validators.max(100)]),
@@ -272,27 +271,22 @@ export class FormService {
       {
         basicData: this.createBasicDataGroup(),
         overheadCosts: this.fb.group({
-          expanded: this.fb.control(true),
           enabled: this.fb.control(false),
           fields: this.createOverheadCostsGroup(),
         }),
         tranches: this.fb.group({
-          expanded: this.fb.control(false),
           enabled: this.fb.control(false),
           fields: this.fb.group({
             tranches: this.fb.array([this.createTrancheGroup(true)]),
           }),
         }),
         prepayments: this.fb.group({
-          expanded: this.fb.control(false),
           enabled: this.fb.control(false),
           fields: this.fb.group({
             prepaymentRules: this.fb.group({
-              expanded: this.fb.control(false),
               items: this.fb.array([this.createPrepaymentRuleGroup()]),
             }),
             rataDocelowaRegula: this.fb.group({
-              expanded: this.fb.control(false),
               targetRate: this.fb.control(0, [Validators.min(0)]),
               from: this.fb.control(nextMonthStr(), [Validators.required]),
               to: this.fb.control(addMonthsStr(nextMonthStr(), 12), [Validators.required]),
@@ -301,7 +295,6 @@ export class FormService {
               ]),
             }),
             prowizjaWczesniejszaSplata: this.fb.group({
-              expanded: this.fb.control(false),
               ratePct: this.fb.control(0, [Validators.min(0), Validators.max(100)]),
               validUntil: this.fb.control(addMonthsStr(nextMonthStr(), 36), [Validators.required]),
             }),
@@ -315,23 +308,17 @@ export class FormService {
   private createOverheadCostsGroup(): FormGroup<OverheadCostsFormGroup> {
     return this.fb.group({
       commission: this.fb.group({
-        expanded: this.fb.control(false),
         commissionValue: this.fb.control(0, [Validators.min(0)]),
         commissionCalcMethod: this.fb.control<CommissionCalcMethod>(
           CommissionCalcMethod.PERCENTAGE,
         ),
       }),
-      appraisal: this.fb.group({
-        expanded: this.fb.control(false),
-        appraisalFee: this.fb.control(0, [Validators.min(0)]),
-      }),
+      appraisal: this.fb.group({ appraisalFee: this.fb.control(0, [Validators.min(0)]) }),
       bridge: this.fb.group({
-        expanded: this.fb.control(false),
         bridgeRateIncrease: this.fb.control(0, [Validators.min(0)]),
         bridgeMonths: this.fb.control(0, [Validators.min(0)]),
       }),
       propertyInsurance: this.fb.group({
-        expanded: this.fb.control(false),
         propInsFrequency: this.fb.control<InsuranceFrequency>(InsuranceFrequency.YEARLY),
         propInsCalcMethod: this.fb.control<InsuranceCalcMethod>(
           InsuranceCalcMethod.PCT_PROPERTY_VALUE,
@@ -341,11 +328,9 @@ export class FormService {
         propInsTo: this.fb.control(endOfLoanDate()),
       }),
       lowEquityInsurance: this.fb.group({
-        expanded: this.fb.control(false),
         lowEquityRateIncrease: this.fb.control(0, [Validators.min(0)]),
       }),
       lifeInsurance: this.fb.group({
-        expanded: this.fb.control(false),
         lifeInsFrequency: this.fb.control<InsuranceFrequency>(InsuranceFrequency.YEARLY),
         lifeInsCalcMethod: this.fb.control<LifeInsuranceCalcMethod>(
           LifeInsuranceCalcMethod.PCT_LOAN_AMOUNT,
@@ -355,7 +340,6 @@ export class FormService {
         lifeInsTo: this.fb.control(endOfLoanDate()),
       }),
       jobLossInsurance: this.fb.group({
-        expanded: this.fb.control(false),
         jobLossInsFrequency: this.fb.control<InsuranceFrequency>(InsuranceFrequency.ONE_TIME),
         jobLossInsCalcMethod: this.fb.control<LifeInsuranceCalcMethod>(
           LifeInsuranceCalcMethod.PCT_LOAN_AMOUNT,
@@ -364,12 +348,8 @@ export class FormService {
         jobLossInsFrom: this.fb.control(nextMonthStr()),
         jobLossInsTo: this.fb.control(endOfLoanDate()),
       }),
-      additionalCosts: this.fb.group({
-        expanded: this.fb.control(false),
-        items: this.fb.array([this.createAdditionalCostGroup()]),
-      }),
+      additionalCosts: this.fb.group({ items: this.fb.array([this.createAdditionalCostGroup()]) }),
       promoRate: this.fb.group({
-        expanded: this.fb.control(false),
         promoRateDecrease: this.fb.control(0, [Validators.min(0)]),
         promoFrom: this.fb.control(nextMonthStr()),
         promoTo: this.fb.control(addMonthsStr(nextMonthStr(), 12)),

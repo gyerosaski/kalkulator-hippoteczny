@@ -65,10 +65,6 @@ export class BasicDataFormComponent {
     return this.formService.form.controls.basicData;
   }
 
-  get expandedControl() {
-    return this.basicData.controls.expanded;
-  }
-
   get propertyValueControl() {
     return this.basicData.controls.propertyValue;
   }

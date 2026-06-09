@@ -1,5 +1,4 @@
 import { Component, ChangeDetectionStrategy, input, output, computed } from '@angular/core';
-import { BtnRemoveComponent } from '../btn-remove/btn-remove.component';
 import { IconChevronRightComponent } from '../../icons/icon-chevron-right/icon-chevron-right.component';
 import { ColorCodeArea } from '../../../model';
 
@@ -30,7 +29,7 @@ const NUM_COLOR_MAP: Record<ColorCodeArea, { color: string; background: string; 
   selector: 'ui-subsection',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [BtnRemoveComponent, IconChevronRightComponent],
+  imports: [IconChevronRightComponent],
   templateUrl: './subsection.component.html',
   styleUrl: './subsection.component.scss',
   host: {
@@ -44,8 +43,6 @@ export class SubsectionComponent {
   readonly title = input<string>('');
   readonly open = input<boolean>(false);
   readonly openChange = output<boolean>();
-  readonly removable = input<boolean>(false);
-  readonly remove = output<void>();
   readonly context = input<ColorCodeArea | null>(null);
 
   protected readonly numColor = computed(() => {

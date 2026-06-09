@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { distinctUntilChanged, map } from 'rxjs';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import {
   CommissionCalcMethod,
   InsuranceCalcMethod,
@@ -95,10 +95,6 @@ export class OverheadCostsFormComponent {
 
   get section() {
     return this.formService.overheadCostsSection;
-  }
-
-  get expandedControl() {
-    return this.section.controls.expanded;
   }
 
   get sectionEnabledControl() {
@@ -236,38 +232,10 @@ export class OverheadCostsFormComponent {
     return this.form.controls.promoRate.controls.promoTo;
   }
 
-  private getExpandedStates() {
-    const f = this.form.controls;
-    return {
-      commission: f.commission.controls.expanded.value,
-      appraisal: f.appraisal.controls.expanded.value,
-      bridge: f.bridge.controls.expanded.value,
-      propertyInsurance: f.propertyInsurance.controls.expanded.value,
-      lowEquityInsurance: f.lowEquityInsurance.controls.expanded.value,
-      lifeInsurance: f.lifeInsurance.controls.expanded.value,
-      jobLossInsurance: f.jobLossInsurance.controls.expanded.value,
-      additionalCosts: f.additionalCosts.controls.expanded.value,
-      promoRate: f.promoRate.controls.expanded.value,
-    };
-  }
-
-  readonly subsectionsOpen = toSignal(
-    this.form.valueChanges.pipe(map(() => this.getExpandedStates())),
-    { initialValue: this.getExpandedStates() },
-  );
+  readonly openSubsection = signal<string | null>(null);
 
   setSubsectionOpen(key: string, open: boolean): void {
-    if (open) {
-      for (const subsectionKey of Object.keys(this.getExpandedStates())) {
-        if (subsectionKey !== key) {
-          (this.form.get(`${subsectionKey}.expanded`) as unknown as FormControl<boolean>)?.setValue(
-            false,
-            { emitEvent: false },
-          );
-        }
-      }
-    }
-    (this.form.get(`${key}.expanded`) as unknown as FormControl<boolean>)?.setValue(open);
+    this.openSubsection.set(open ? key : null);
   }
 
   get propInsSuffix(): string {

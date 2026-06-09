@@ -3,7 +3,6 @@
   [marker]="colorCodeArea.COST"
   badge="opcjonalne"
   [toggleable]="true"
-  [expandedControl]="expandedControl"
   [enabled]="isSectionEnabled()"
   (enabledChange)="sectionEnabledControl.setValue($event)"
 >
@@ -11,7 +10,7 @@
     <ui-subsection
       [num]="1"
       title="Prowizja za udzielenie"
-      [open]="subsectionsOpen().commission"
+      [open]="openSubsection() === 'commission'"
       (openChange)="setSubsectionOpen('commission', $event)"
     >
       <div class="row row--3">
@@ -37,7 +36,7 @@
     <ui-subsection
       [num]="2"
       title="Opłata za wycenę"
-      [open]="subsectionsOpen().appraisal"
+      [open]="openSubsection() === 'appraisal'"
       (openChange)="setSubsectionOpen('appraisal', $event)"
     >
       <div class="row row--3">
@@ -55,7 +54,7 @@
     <ui-subsection
       [num]="3"
       title="Ubezpieczenie pomostowe"
-      [open]="subsectionsOpen().bridge"
+      [open]="openSubsection() === 'bridge'"
       (openChange)="setSubsectionOpen('bridge', $event)"
     >
       <div class="row row--3">
@@ -83,7 +82,7 @@
     <ui-subsection
       [num]="4"
       title="Ubezpieczenie nieruchomości"
-      [open]="subsectionsOpen().propertyInsurance"
+      [open]="openSubsection() === 'propertyInsurance'"
       (openChange)="setSubsectionOpen('propertyInsurance', $event)"
     >
       <div class="row row--3">
@@ -127,7 +126,7 @@
     <ui-subsection
       [num]="5"
       title="Ubezpieczenie niskiego wkładu"
-      [open]="subsectionsOpen().lowEquityInsurance"
+      [open]="openSubsection() === 'lowEquityInsurance'"
       (openChange)="setSubsectionOpen('lowEquityInsurance', $event)"
     >
       <div class="row row--2">
@@ -151,7 +150,7 @@
     <ui-subsection
       [num]="6"
       title="Ubezpieczenie na życie"
-      [open]="subsectionsOpen().lifeInsurance"
+      [open]="openSubsection() === 'lifeInsurance'"
       (openChange)="setSubsectionOpen('lifeInsurance', $event)"
     >
       <div class="row row--3">
@@ -203,7 +202,7 @@
     <ui-subsection
       [num]="7"
       title="Ubezpieczenie od utraty pracy"
-      [open]="subsectionsOpen().jobLossInsurance"
+      [open]="openSubsection() === 'jobLossInsurance'"
       (openChange)="setSubsectionOpen('jobLossInsurance', $event)"
     >
       <div class="row row--3">
@@ -255,7 +254,7 @@
     <ui-subsection
       [num]="8"
       title="Dodatkowe koszty"
-      [open]="subsectionsOpen().additionalCosts"
+      [open]="openSubsection() === 'additionalCosts'"
       (openChange)="setSubsectionOpen('additionalCosts', $event)"
     >
       <div>
@@ -336,7 +335,7 @@
     <ui-subsection
       [num]="9"
       title="Promocja oprocentowania"
-      [open]="subsectionsOpen().promoRate"
+      [open]="openSubsection() === 'promoRate'"
       (openChange)="setSubsectionOpen('promoRate', $event)"
     >
       <div class="row row--3">
