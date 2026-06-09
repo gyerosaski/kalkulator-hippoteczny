@@ -31,7 +31,7 @@
       </label>
     }
   </div>
-  @if (open() && !isOff()) {
-    <div class="sec-body"><ng-content /></div>
-  }
+  <div class="sec-body" [class.sec-body--open]="open() && !isOff()">
+    <div class="sec-body-inner"><ng-content /></div>
+  </div>
 </section>

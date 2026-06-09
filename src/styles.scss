@@ -344,7 +344,21 @@ body {
   letter-spacing: 0.01em;
 }
 .sec-body {
-  padding: 20px 20px;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    max-height 0.3s ease,
+    opacity 0.25s ease;
+}
+
+.sec-body--open {
+  max-height: 1200px;
+  opacity: 1;
+}
+
+.sec-body-inner {
+  padding: 20px;
   display: flex;
   flex-direction: column;
   gap: var(--gap);

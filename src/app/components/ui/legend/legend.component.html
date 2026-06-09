@@ -28,25 +28,23 @@
             >{{ slice.value | formatAmount }} zł</span
           >
         </li>
-        @if (isExpanded(slice.label)) {
-          <li class="children-row" animate.enter="children-in" animate.leave="children-out">
-            <ul class="children">
-              @for (child of slice.children ?? []; track child.label) {
-                <li
-                  class="is-child"
-                  [class.is-active]="activeLabel() === child.label"
-                  (mouseenter)="onHover(child.label)"
-                  (mouseleave)="onHover(null)"
+        <li class="children-row" [class.children-row--open]="isExpanded(slice.label)">
+          <ul class="children">
+            @for (child of slice.children ?? []; track child.label) {
+              <li
+                class="is-child"
+                [class.is-active]="activeLabel() === child.label"
+                (mouseenter)="onHover(child.label)"
+                (mouseleave)="onHover(null)"
+              >
+                <span class="leg-lab">{{ child.label }}</span>
+                <span class="leg-val mono" (click)="copyAmount(child.value)"
+                  >{{ child.value | formatAmount }} zł</span
                 >
-                  <span class="leg-lab">{{ child.label }}</span>
-                  <span class="leg-val mono" (click)="copyAmount(child.value)"
-                    >{{ child.value | formatAmount }} zł</span
-                  >
-                </li>
-              }
-            </ul>
-          </li>
-        }
+              </li>
+            }
+          </ul>
+        </li>
       } @else {
         <li
           [class.is-active]="activeLabel() === slice.label"

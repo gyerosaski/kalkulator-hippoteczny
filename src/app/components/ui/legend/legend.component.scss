@@ -89,13 +89,23 @@
   border-bottom: 1px solid var(--line);
 }
 
-/* kontener składowych — animowana wysokość przez trik grid-template-rows 0fr↔1fr */
 .legend li.children-row {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 1fr;
-  gap: 0;
+  display: block;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
   cursor: default;
+  margin-top: -8px;
+  transition:
+    max-height 0.3s ease,
+    opacity 0.25s ease,
+    margin-top 0.3s ease;
+}
+
+.legend li.children-row--open {
+  max-height: 400px;
+  opacity: 1;
+  margin-top: 0;
 }
 
 .children-row .children {
@@ -105,38 +115,6 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  overflow: hidden;
-  min-height: 0;
-}
-
-.children-row.children-in {
-  animation: children-expand 0.22s ease;
-}
-
-.children-row.children-out {
-  animation: children-collapse 0.18s ease;
-}
-
-@keyframes children-expand {
-  from {
-    grid-template-rows: 0fr;
-    opacity: 0;
-  }
-  to {
-    grid-template-rows: 1fr;
-    opacity: 1;
-  }
-}
-
-@keyframes children-collapse {
-  from {
-    grid-template-rows: 1fr;
-    opacity: 1;
-  }
-  to {
-    grid-template-rows: 0fr;
-    opacity: 0;
-  }
 }
 
 .legend li.is-child {
