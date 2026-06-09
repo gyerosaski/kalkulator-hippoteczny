@@ -34,10 +34,7 @@ export class SegmentedComponent implements ControlValueAccessor {
 
   private readonly segBtnElements = viewChildren<ElementRef<HTMLButtonElement>>('segBtn');
   private readonly activeIndex = computed(() => this.options().indexOf(this._value() ?? ''));
-  protected readonly indicatorStyle = signal<{ left: string; width: string }>({
-    left: '0px',
-    width: '0px',
-  });
+  protected readonly indicatorStyle = signal<{ left: string; width: string } | null>(null);
 
   protected readonly isIndicatorVisible = signal(false);
 
