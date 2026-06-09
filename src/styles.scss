@@ -347,6 +347,9 @@ body {
   max-height: 0;
   overflow: hidden;
   opacity: 0;
+}
+
+.sec-body.sec-body--animate {
   transition:
     max-height 0.3s ease,
     opacity 0.25s ease;

@@ -31,7 +31,11 @@
       </label>
     }
   </div>
-  <div class="sec-body" [class.sec-body--open]="open() && !isOff()">
+  <div
+    class="sec-body"
+    [class.sec-body--open]="open() && !isOff()"
+    [class.sec-body--animate]="isAnimatable()"
+  >
     <div class="sec-body-inner"><ng-content /></div>
   </div>
 </section>

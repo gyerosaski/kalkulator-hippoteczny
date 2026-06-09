@@ -1,4 +1,12 @@
-import { Component, ChangeDetectionStrategy, input, linkedSignal, output } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  afterNextRender,
+  input,
+  linkedSignal,
+  output,
+  signal,
+} from '@angular/core';
 import { IconChevronRightComponent } from '../../icons/icon-chevron-right/icon-chevron-right.component';
 import { ColorCodeArea } from '../../../model';
 import { ColorCodeMarkerComponent } from '../color-code-marker/color-code-marker.component';
@@ -21,6 +29,11 @@ export class SectionComponent {
   enabledChange = output<boolean>();
 
   readonly open = linkedSignal(() => this.defaultOpen());
+  protected readonly isAnimatable = signal(false);
+
+  constructor() {
+    afterNextRender(() => this.isAnimatable.set(true));
+  }
 
   isOff = () => this.toggleable() && !this.enabled();
 
