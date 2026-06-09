@@ -38,7 +38,9 @@
       "mcp__serena__check_onboarding_performed",
       "mcp__serena__get_diagnostics_for_file",
       "Bash(dir D:\\\\repozytoria\\\\kalkulator-hipoteczny\\\\src\\\\app\\\\components\\\\icons *)",
-      "Bash(find \"D:\\\\repozytoria\\\\kalkulator-hipoteczny\\\\docs\" -type f -name \"*.md\" | head -20)"
+      "Bash(find \"D:\\\\repozytoria\\\\kalkulator-hipoteczny\\\\docs\" -type f -name \"*.md\" | head -20)",
+      "Bash(Select-Object FullName, Length)",
+      "Bash(Format-Table -AutoSize)"
     ]
   }
 }

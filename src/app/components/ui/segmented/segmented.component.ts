@@ -1,4 +1,14 @@
-import { Component, ChangeDetectionStrategy, input, signal, forwardRef } from '@angular/core';
+import {
+  afterRenderEffect,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  ElementRef,
+  forwardRef,
+  input,
+  signal,
+  viewChildren,
+} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
@@ -22,8 +32,32 @@ export class SegmentedComponent implements ControlValueAccessor {
   disabled = signal(false);
   readonly _value = signal<string | null>(null);
 
+  private readonly segBtnElements = viewChildren<ElementRef<HTMLButtonElement>>('segBtn');
+  private readonly activeIndex = computed(() => this.options().indexOf(this._value() ?? ''));
+  protected readonly indicatorStyle = signal<{ left: string; width: string }>({
+    left: '0px',
+    width: '0px',
+  });
+
+  protected readonly isIndicatorVisible = signal(false);
+
   private _onChange?: (v: string) => void;
   private _onTouched?: () => void;
+
+  constructor() {
+    afterRenderEffect(() => {
+      const buttons = this.segBtnElements();
+      const activeButton = buttons[this.activeIndex()]?.nativeElement;
+      if (!activeButton) return;
+      const parentRect = activeButton.parentElement!.getBoundingClientRect();
+      const buttonRect = activeButton.getBoundingClientRect();
+      this.indicatorStyle.set({
+        left: `${buttonRect.left - parentRect.left}px`,
+        width: `${buttonRect.width}px`,
+      });
+      this.isIndicatorVisible.set(true);
+    });
+  }
 
   writeValue(v: string): void {
     this._value.set(v ?? '');

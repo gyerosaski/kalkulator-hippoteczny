@@ -17,25 +17,19 @@ export interface ChartSlice extends DonutSlice {
   children?: ChartSlice[]; // pod-składowe slice'a (sumują się do value rodzica); rozwijane w legendzie i na donucie
 }
 
-export interface TrendStackSegmentTotal {
-  label: string;
-  value: number;
-  color: string;
-}
-
 export interface TrendBarSegmentRect {
   x: number;
   y: number;
   width: number;
   height: number;
   color: string;
+  label: string; // etykieta segmentu (np. „Kapitał") — używana do synchronizacji hovera z ui-legend
 }
 
 export interface TrendBarColumn {
   year: number;
   centerX: number;
   segments: TrendBarSegmentRect[];
-  segmentTotals: TrendStackSegmentTotal[];
   totalSum: number;
   endingBalance: number;
 }
@@ -74,18 +68,6 @@ export interface TrendChartGeometry {
   balanceTicks: TrendAxisTick[];
   stackTicks: TrendAxisTick[];
   xTicks: TrendXTick[];
-}
-
-export interface TrendTooltipModel {
-  bar: TrendBarColumn;
-  tooltipX: number;
-  tooltipY: number;
-  tooltipWidth: number;
-  tooltipHeight: number;
-  paddingX: number;
-  paddingY: number;
-  lineHeight: number;
-  dividerGap: number;
 }
 
 export enum AppRoute {

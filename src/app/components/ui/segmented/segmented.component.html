@@ -1,7 +1,14 @@
 <div class="seg" [class.seg--compact]="compact()">
+  <span
+    class="seg-indicator"
+    [class.is-visible]="isIndicatorVisible()"
+    [style.left]="indicatorStyle().left"
+    [style.width]="indicatorStyle().width"
+  ></span>
   @for (o of options(); track o; let i = $index) {
     <button
       class="seg-btn"
+      #segBtn
       [class.is-on]="o === _value()"
       [disabled]="disabled()"
       (click)="select(o)"

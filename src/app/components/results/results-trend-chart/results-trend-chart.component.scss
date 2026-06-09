@@ -59,12 +59,20 @@
   letter-spacing: 0.02em;
 }
 
+.trend-chart-bar-group {
+  cursor: pointer;
+}
+
 .trend-chart-bar-group rect {
   transition: opacity 0.15s ease;
 }
 
-.trend-chart-bar-group.is-hovered rect {
+.trend-chart-bar-group.is-selected .trend-chart-bar-segment {
   opacity: 0.85;
+}
+
+.trend-chart-bar-segment.is-dimmed {
+  opacity: 0.25;
 }
 
 .trend-chart-line {
@@ -77,56 +85,25 @@
 
 .trend-chart-hover-target {
   fill: transparent;
-  cursor: pointer;
 }
 
-.trend-chart-hover-target:hover {
+.trend-chart-bar-group:hover .trend-chart-hover-target {
   fill: color-mix(in oklch, var(--accent) 18%, transparent);
 }
 
-.trend-chart-tooltip-bg {
-  fill: var(--surface);
-  stroke: var(--line-2);
-  stroke-width: 1;
-  filter: drop-shadow(0 4px 12px oklch(40% 0.02 250 / 0.18));
+.trend-chart-legend-section {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
 }
 
-.trend-chart-tooltip-header {
-  font-size: 15px;
-  font-weight: 600;
-  fill: var(--ink);
-}
-
-.trend-chart-tooltip-row-label {
+.trend-chart-hint {
+  margin: 16px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  text-align: center;
+  color: var(--muted);
   font-size: 13px;
-  fill: var(--ink-2);
-}
-
-.trend-chart-tooltip-row-label--footer {
-  fill: var(--muted);
-  font-size: 12px;
-}
-
-.trend-chart-tooltip-row-value {
-  font-size: 13px;
-  fill: var(--ink);
-  font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-  font-feature-settings: 'tnum';
-  font-variant-numeric: tabular-nums;
-}
-
-.trend-chart-tooltip-row-value--strong {
-  font-weight: 600;
-}
-
-.trend-chart-tooltip-row-value--footer {
-  fill: var(--muted);
-  font-size: 12px;
-}
-
-.trend-chart-tooltip-divider {
-  stroke: var(--line);
-  stroke-width: 1;
 }
 
 .trend-chart-empty {

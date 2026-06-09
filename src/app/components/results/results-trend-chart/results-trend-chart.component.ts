@@ -1,31 +1,51 @@
-import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
-import { ColorCodeArea, MortgageResults } from '../../../model';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
+import { ChartSlice, ColorCodeArea, LEGEND_TOTAL_ACTIVE, MortgageResults } from '../../../model';
 import {
   TrendAxisTick,
   TrendBarColumn,
   TrendBarSegmentRect,
   TrendChartGeometry,
   TrendLinePoint,
-  TrendStackSegmentTotal,
-  TrendTooltipModel,
   TrendXTick,
   YearGroup,
 } from '../../../model';
-import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
 import { CardComponent } from '../../ui/card/card.component';
 import { ColorCodeMarkerComponent } from '../../ui/color-code-marker/color-code-marker.component';
+import { LegendComponent } from '../../ui/legend/legend.component';
+import { OverheadCostBreakdownService } from '../../../services/overhead-cost-breakdown/overhead-cost-breakdown.service';
 
 interface StackSegmentDescriptor {
   readonly fieldKey: 'sumInterest' | 'sumInsuranceCost' | 'sumCapital' | 'sumPrepayment';
   readonly label: string;
   readonly color: string;
+  readonly variant: ColorCodeArea;
 }
 
 const STACK_SEGMENT_DESCRIPTORS: readonly StackSegmentDescriptor[] = [
-  { fieldKey: 'sumPrepayment', label: 'Nadpłaty', color: 'var(--c-over)' },
-  { fieldKey: 'sumCapital', label: 'Kapitał', color: 'var(--c-cap)' },
-  { fieldKey: 'sumInsuranceCost', label: 'Koszty okołokredytowe', color: 'var(--c-cost)' },
-  { fieldKey: 'sumInterest', label: 'Odsetki', color: 'var(--c-int)' },
+  {
+    fieldKey: 'sumPrepayment',
+    label: 'Nadpłaty',
+    color: 'var(--c-over)',
+    variant: ColorCodeArea.PREPAYMENT,
+  },
+  {
+    fieldKey: 'sumCapital',
+    label: 'Kapitał',
+    color: 'var(--c-cap)',
+    variant: ColorCodeArea.CAPITAL,
+  },
+  {
+    fieldKey: 'sumInsuranceCost',
+    label: 'Koszty okołokredytowe',
+    color: 'var(--c-cost)',
+    variant: ColorCodeArea.COST,
+  },
+  {
+    fieldKey: 'sumInterest',
+    label: 'Odsetki',
+    color: 'var(--c-int)',
+    variant: ColorCodeArea.INTEREST,
+  },
 ];
 
 const STACK_TICK_STEP = 5_000;
@@ -45,7 +65,7 @@ function formatAxisAmount(value: number): string {
 @Component({
   selector: 'app-results-trend-chart',
   standalone: true,
-  imports: [FormatAmountPipe, CardComponent, ColorCodeMarkerComponent],
+  imports: [CardComponent, ColorCodeMarkerComponent, LegendComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './results-trend-chart.component.html',
   styleUrl: './results-trend-chart.component.scss',
@@ -58,7 +78,10 @@ export class ResultsTrendChartComponent {
   prepaymentsEnabled = input.required<boolean>();
 
   protected readonly ColorCodeMarkerVariant = ColorCodeArea;
-  protected readonly hoveredYearIndex = signal<number | null>(null);
+  protected readonly selectedYearIndex = signal<number | null>(null);
+  protected readonly activeLabel = signal<string | null>(null);
+
+  private readonly overheadCostBreakdownService = inject(OverheadCostBreakdownService);
 
   protected readonly geometry = computed<TrendChartGeometry | null>(() => {
     const groups = this.yearlyGroups();
@@ -78,14 +101,6 @@ export class ResultsTrendChartComponent {
     const columnWidth = innerWidth / yearCount;
     const barWidth = Math.max(8, columnWidth * 0.74);
     const xCenterForIndex = (index: number) => paddingLeft + columnWidth * (index + 0.5);
-
-    const visibleDescriptors = new Set(
-      STACK_SEGMENT_DESCRIPTORS.filter((descriptor) => {
-        if (descriptor.fieldKey === 'sumInsuranceCost') return this.overheadCostsEnabled();
-        if (descriptor.fieldKey === 'sumPrepayment') return this.prepaymentsEnabled();
-        return true;
-      }),
-    );
 
     const stackTotals = groups.map(
       (year) => year.sumInterest + year.sumInsuranceCost + year.sumCapital + year.sumPrepayment,
@@ -122,18 +137,10 @@ export class ResultsTrendChartComponent {
     const bars: TrendBarColumn[] = groups.map((year, index) => {
       const centerX = xCenterForIndex(index);
       const segments: TrendBarSegmentRect[] = [];
-      const segmentTotals: TrendStackSegmentTotal[] = [];
       let stackedSum = 0;
       let totalSum = 0;
       for (const descriptor of STACK_SEGMENT_DESCRIPTORS) {
         const segmentValue = year[descriptor.fieldKey];
-        if (visibleDescriptors.has(descriptor)) {
-          segmentTotals.push({
-            label: descriptor.label,
-            value: segmentValue,
-            color: descriptor.color,
-          });
-        }
         totalSum += segmentValue;
         if (segmentValue <= 0) continue;
         const topY = yForStackValue(stackedSum + segmentValue);
@@ -145,13 +152,13 @@ export class ResultsTrendChartComponent {
           width: barWidth,
           height: Math.max(0, bottomY - topY),
           color: descriptor.color,
+          label: descriptor.label,
         });
       }
       return {
         year: year.year,
         centerX,
         segments,
-        segmentTotals,
         totalSum,
         endingBalance: year.lastRemaining,
       };
@@ -194,52 +201,53 @@ export class ResultsTrendChartComponent {
     };
   });
 
-  protected readonly tooltip = computed<TrendTooltipModel | null>(() => {
-    const geometry = this.geometry();
-    const index = this.hoveredYearIndex();
-    if (!geometry || index === null) return null;
-    const bar = geometry.bars[index];
-    if (!bar) return null;
-
-    const paddingX = 12;
-    const paddingY = 12;
-    const lineHeight = 22;
-    const dividerGap = 8;
-    const segmentLineCount = bar.segmentTotals.length;
-    const tooltipWidth = 240;
-    const tooltipHeight = paddingY * 2 + lineHeight * (segmentLineCount + 2) + 16 + dividerGap;
-
-    const chartRightEdge = geometry.paddingLeft + geometry.innerWidth;
-    const placeOnLeftSide = bar.centerX > geometry.paddingLeft + geometry.innerWidth / 2;
-    const horizontalOffset = 16;
-    let tooltipX = placeOnLeftSide
-      ? bar.centerX - horizontalOffset - tooltipWidth
-      : bar.centerX + horizontalOffset;
-    if (tooltipX < geometry.paddingLeft) tooltipX = geometry.paddingLeft;
-    if (tooltipX + tooltipWidth > chartRightEdge) tooltipX = chartRightEdge - tooltipWidth;
-
-    const tooltipY = Math.max(
-      geometry.paddingTop + 4,
-      Math.min(
-        geometry.paddingTop + geometry.innerHeight - tooltipHeight - 4,
-        geometry.paddingTop + 24,
-      ),
-    );
-
-    return {
-      bar,
-      tooltipX,
-      tooltipY,
-      tooltipWidth,
-      tooltipHeight,
-      paddingX,
-      paddingY,
-      lineHeight,
-      dividerGap,
-    };
+  protected readonly selectedYear = computed<YearGroup | null>(() => {
+    const index = this.selectedYearIndex();
+    const groups = this.yearlyGroups();
+    if (index === null || !groups) return null;
+    return groups[index] ?? null;
   });
 
-  protected setHoveredIndex(index: number | null): void {
-    this.hoveredYearIndex.set(index);
+  protected readonly selectedYearSlices = computed<ChartSlice[]>(() => {
+    const year = this.selectedYear();
+    if (!year) return [];
+    const slices: ChartSlice[] = [];
+    for (const descriptor of STACK_SEGMENT_DESCRIPTORS) {
+      const value = year[descriptor.fieldKey];
+      if (descriptor.fieldKey === 'sumPrepayment' && !this.prepaymentsEnabled()) continue;
+      if (descriptor.fieldKey === 'sumInsuranceCost' && !this.overheadCostsEnabled()) continue;
+      const slice: ChartSlice = {
+        label: descriptor.label,
+        value,
+        color: descriptor.color,
+        variant: descriptor.variant,
+      };
+      if (descriptor.fieldKey === 'sumInsuranceCost' && value > 0) {
+        slice.children = this.overheadCostBreakdownService.buildCostChildren(
+          this.overheadCostBreakdownService.aggregateBreakdown(year.rows),
+        );
+      }
+      slices.push(slice);
+    }
+    return slices;
+  });
+
+  protected selectYear(index: number): void {
+    this.selectedYearIndex.update((current) => (current === index ? null : index));
+  }
+
+  protected setActiveLabel(label: string | null): void {
+    this.activeLabel.set(label);
+  }
+
+  protected isSegmentDimmed(segmentLabel: string, yearIndex: number): boolean {
+    if (this.selectedYearIndex() !== yearIndex) return false;
+    const active = this.activeLabel();
+    if (!active) return false;
+    if (active === LEGEND_TOTAL_ACTIVE) return false;
+    if (active === segmentLabel) return false;
+    const matchingSlice = this.selectedYearSlices().find((slice) => slice.label === segmentLabel);
+    if (matchingSlice?.children?.some((child) => child.label === active)) return false;
+    return true;
   }
 }

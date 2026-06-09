@@ -62,4 +62,12 @@
       }
     }
   </ul>
+  @if (footerLabel()) {
+    <div class="legend-footer">
+      <span class="leg-lab">{{ footerLabel() }}</span>
+      <span class="leg-val mono" (click)="copyAmount(footerValue() ?? 0)"
+        >{{ footerValue() ?? 0 | formatAmount }} zł</span
+      >
+    </div>
+  }
 </div>

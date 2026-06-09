@@ -29,6 +29,26 @@
   color: var(--ink);
 }
 
+.legend-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 14px;
+  padding-top: 8px;
+  margin-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
+.legend-footer .leg-lab {
+  color: var(--ink-2);
+}
+
+.legend-footer .leg-val {
+  color: var(--ink);
+  cursor: copy;
+}
+
 .legend {
   list-style: none;
   padding: 0;

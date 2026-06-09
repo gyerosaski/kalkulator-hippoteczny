@@ -41,7 +41,6 @@
       class="trend-chart-svg"
       [attr.viewBox]="'0 0 ' + geometry.width + ' ' + geometry.height"
       preserveAspectRatio="xMidYMid meet"
-      (mouseleave)="setHoveredIndex(null)"
     >
       @for (tick of geometry.balanceTicks; track tick.value) {
         <line
@@ -103,10 +102,23 @@
         Suma rocznych płatności
       </text>
 
-      @for (bar of geometry.bars; track bar.year) {
-        <g class="trend-chart-bar-group" [class.is-hovered]="hoveredYearIndex() === $index">
+      @for (bar of geometry.bars; track bar.year; let yearIndex = $index) {
+        <g
+          class="trend-chart-bar-group"
+          [class.is-selected]="selectedYearIndex() === yearIndex"
+          (click)="selectYear(yearIndex)"
+        >
+          <rect
+            class="trend-chart-hover-target"
+            [attr.x]="bar.centerX - geometry.columnWidth / 2"
+            [attr.y]="geometry.paddingTop"
+            [attr.width]="geometry.columnWidth"
+            [attr.height]="geometry.innerHeight"
+          />
           @for (segment of bar.segments; track $index) {
             <rect
+              class="trend-chart-bar-segment"
+              [class.is-dimmed]="isSegmentDimmed(segment.label, yearIndex)"
               [attr.x]="segment.x"
               [attr.y]="segment.y"
               [attr.width]="segment.width"
@@ -159,152 +171,22 @@
         [attr.y1]="geometry.paddingTop + geometry.innerHeight"
         [attr.y2]="geometry.paddingTop + geometry.innerHeight"
       />
-
-      @for (bar of geometry.bars; track bar.year) {
-        <rect
-          class="trend-chart-hover-target"
-          [attr.x]="bar.centerX - geometry.columnWidth / 2"
-          [attr.y]="geometry.paddingTop"
-          [attr.width]="geometry.columnWidth"
-          [attr.height]="geometry.innerHeight"
-          (mouseenter)="setHoveredIndex($index)"
-        />
-      }
-
-      @let tooltipModel = tooltip();
-      @if (tooltipModel) {
-        <g class="trend-chart-tooltip" pointer-events="none">
-          <rect
-            class="trend-chart-tooltip-bg"
-            [attr.x]="tooltipModel.tooltipX"
-            [attr.y]="tooltipModel.tooltipY"
-            [attr.width]="tooltipModel.tooltipWidth"
-            [attr.height]="tooltipModel.tooltipHeight"
-            rx="8"
-            ry="8"
-          />
-          <text
-            class="trend-chart-tooltip-header"
-            [attr.x]="tooltipModel.tooltipX + tooltipModel.paddingX"
-            [attr.y]="tooltipModel.tooltipY + tooltipModel.paddingY + 12"
-          >
-            {{ tooltipModel.bar.year }}
-          </text>
-          @for (row of tooltipModel.bar.segmentTotals; track row.label) {
-            <circle
-              [attr.cx]="tooltipModel.tooltipX + tooltipModel.paddingX + 5"
-              [attr.cy]="
-                tooltipModel.tooltipY +
-                tooltipModel.paddingY +
-                12 +
-                tooltipModel.lineHeight * ($index + 1) -
-                4
-              "
-              r="4"
-              [attr.fill]="row.color"
-            />
-            <text
-              class="trend-chart-tooltip-row-label"
-              [attr.x]="tooltipModel.tooltipX + tooltipModel.paddingX + 16"
-              [attr.y]="
-                tooltipModel.tooltipY +
-                tooltipModel.paddingY +
-                12 +
-                tooltipModel.lineHeight * ($index + 1)
-              "
-            >
-              {{ row.label }}
-            </text>
-            <text
-              class="trend-chart-tooltip-row-value"
-              [attr.x]="tooltipModel.tooltipX + tooltipModel.tooltipWidth - tooltipModel.paddingX"
-              [attr.y]="
-                tooltipModel.tooltipY +
-                tooltipModel.paddingY +
-                12 +
-                tooltipModel.lineHeight * ($index + 1)
-              "
-              text-anchor="end"
-            >
-              {{ row.value | formatAmount }} zł
-            </text>
-          }
-          <line
-            class="trend-chart-tooltip-divider"
-            [attr.x1]="tooltipModel.tooltipX + tooltipModel.paddingX"
-            [attr.x2]="tooltipModel.tooltipX + tooltipModel.tooltipWidth - tooltipModel.paddingX"
-            [attr.y1]="
-              tooltipModel.tooltipY +
-              tooltipModel.paddingY +
-              12 +
-              tooltipModel.lineHeight * (tooltipModel.bar.segmentTotals.length + 1) -
-              10
-            "
-            [attr.y2]="
-              tooltipModel.tooltipY +
-              tooltipModel.paddingY +
-              12 +
-              tooltipModel.lineHeight * (tooltipModel.bar.segmentTotals.length + 1) -
-              10
-            "
-          />
-          <text
-            class="trend-chart-tooltip-row-label"
-            [attr.x]="tooltipModel.tooltipX + tooltipModel.paddingX"
-            [attr.y]="
-              tooltipModel.tooltipY +
-              tooltipModel.paddingY +
-              12 +
-              tooltipModel.lineHeight * (tooltipModel.bar.segmentTotals.length + 1) +
-              tooltipModel.dividerGap
-            "
-          >
-            Razem w roku
-          </text>
-          <text
-            class="trend-chart-tooltip-row-value trend-chart-tooltip-row-value--strong"
-            [attr.x]="tooltipModel.tooltipX + tooltipModel.tooltipWidth - tooltipModel.paddingX"
-            [attr.y]="
-              tooltipModel.tooltipY +
-              tooltipModel.paddingY +
-              12 +
-              tooltipModel.lineHeight * (tooltipModel.bar.segmentTotals.length + 1) +
-              tooltipModel.dividerGap
-            "
-            text-anchor="end"
-          >
-            {{ tooltipModel.bar.totalSum | formatAmount }} zł
-          </text>
-          <text
-            class="trend-chart-tooltip-row-label trend-chart-tooltip-row-label--footer"
-            [attr.x]="tooltipModel.tooltipX + tooltipModel.paddingX"
-            [attr.y]="
-              tooltipModel.tooltipY +
-              tooltipModel.paddingY +
-              12 +
-              tooltipModel.lineHeight * (tooltipModel.bar.segmentTotals.length + 2) +
-              tooltipModel.dividerGap
-            "
-          >
-            Saldo na koniec roku
-          </text>
-          <text
-            class="trend-chart-tooltip-row-value trend-chart-tooltip-row-value--footer"
-            [attr.x]="tooltipModel.tooltipX + tooltipModel.tooltipWidth - tooltipModel.paddingX"
-            [attr.y]="
-              tooltipModel.tooltipY +
-              tooltipModel.paddingY +
-              12 +
-              tooltipModel.lineHeight * (tooltipModel.bar.segmentTotals.length + 2) +
-              tooltipModel.dividerGap
-            "
-            text-anchor="end"
-          >
-            {{ tooltipModel.bar.endingBalance | formatAmount }} zł
-          </text>
-        </g>
-      }
     </svg>
+
+    @if (selectedYear(); as year) {
+      <div class="trend-chart-legend-section">
+        <ui-legend
+          [slices]="selectedYearSlices()"
+          [totalLabel]="'Razem w ' + year.year"
+          footerLabel="Saldo na koniec roku"
+          [footerValue]="year.lastRemaining"
+          [activeLabel]="activeLabel()"
+          (sliceHover)="setActiveLabel($event)"
+        />
+      </div>
+    } @else {
+      <p class="trend-chart-hint">Kliknij rok na wykresie, aby zobaczyć szczegóły</p>
+    }
   } @else {
     <div class="trend-chart-empty">Brak danych do wyświetlenia.</div>
   }

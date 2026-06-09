@@ -4,16 +4,15 @@ import {
   ScheduleRow,
   ColorCodeArea,
   ChartSlice,
-  OverheadCostItem,
   LEGEND_TOTAL_ACTIVE,
 } from '../../../model';
-import { OverheadCostKindLabelPipe } from '../../../pipes/overhead-cost-kind-label/overhead-cost-kind-label.pipe';
 import { SelectedMonthService } from '../../../services/selected-month/selected-month.service';
 import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
 import { DonutComponent } from '../../ui/donut/donut.component';
 import { LegendComponent } from '../../ui/legend/legend.component';
 import { FormService } from '../../../services/form/form';
 import { CardComponent } from '../../ui/card/card.component';
+import { OverheadCostBreakdownService } from '../../../services/overhead-cost-breakdown/overhead-cost-breakdown.service';
 
 @Component({
   selector: 'app-results-donut-chart-total',
@@ -38,35 +37,7 @@ export class ResultsDonutChartTotalComponent {
     maximumFractionDigits: 2,
   });
 
-  private readonly costKindLabel = new OverheadCostKindLabelPipe();
-
-  private buildCostChildren(items: OverheadCostItem[]): ChartSlice[] {
-    return items
-      .filter((item) => item.value > 0)
-      .map((item) => ({
-        label: this.costKindLabel.transform(item),
-        value: item.value,
-        color: 'var(--c-cost)',
-        variant: ColorCodeArea.COST,
-      }));
-  }
-
-  /** agreguje rozbicie kosztów wielu wierszy po rodzaju (i nazwie dla kosztów dodatkowych). */
-  private aggregateBreakdown(rows: ScheduleRow[]): OverheadCostItem[] {
-    const byKey = new Map<string, OverheadCostItem>();
-    for (const row of rows) {
-      for (const item of row.costBreakdown) {
-        const key = item.name ? `${item.kind}:${item.name}` : item.kind;
-        const existing = byKey.get(key);
-        if (existing) {
-          existing.value += item.value;
-        } else {
-          byKey.set(key, { kind: item.kind, name: item.name, value: item.value });
-        }
-      }
-    }
-    return [...byKey.values()];
-  }
+  private readonly overheadCostBreakdownService = inject(OverheadCostBreakdownService);
 
   selectedRow = computed<ScheduleRow | null>(() => {
     const selectedIndex = this.selectedMonthService.selectedMonthIndex();
@@ -88,7 +59,7 @@ export class ResultsDonutChartTotalComponent {
         (sum, row) => sum + row.rate + row.insuranceCost + row.prepayment + row.commission,
         0,
       ),
-      costBreakdown: this.aggregateBreakdown(rowsUpToSelected),
+      costBreakdown: this.overheadCostBreakdownService.aggregateBreakdown(rowsUpToSelected),
     };
   });
 
@@ -115,7 +86,7 @@ export class ResultsDonutChartTotalComponent {
           value: cumulative.costs,
           color: 'var(--c-cost)',
           variant: ColorCodeArea.COST,
-          children: this.buildCostChildren(cumulative.costBreakdown),
+          children: this.overheadCostBreakdownService.buildCostChildren(cumulative.costBreakdown),
         });
       }
       if (this.formService.isPrepaymentEnabled && cumulative.prepayments > 0) {
@@ -150,7 +121,9 @@ export class ResultsDonutChartTotalComponent {
         value: results.totals.overheadCosts,
         color: 'var(--c-cost)',
         variant: ColorCodeArea.COST,
-        children: this.buildCostChildren(results.totals.overheadCostsBreakdown),
+        children: this.overheadCostBreakdownService.buildCostChildren(
+          results.totals.overheadCostsBreakdown,
+        ),
       });
     }
     if (this.formService.isPrepaymentEnabled && results.totals.prepayments > 0) {

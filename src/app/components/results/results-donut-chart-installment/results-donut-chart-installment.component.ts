@@ -4,16 +4,15 @@ import {
   ScheduleRow,
   ColorCodeArea,
   ChartSlice,
-  OverheadCostItem,
   LEGEND_TOTAL_ACTIVE,
 } from '../../../model';
-import { OverheadCostKindLabelPipe } from '../../../pipes/overhead-cost-kind-label/overhead-cost-kind-label.pipe';
 import { SelectedMonthService } from '../../../services/selected-month/selected-month.service';
 import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
 import { DonutComponent } from '../../ui/donut/donut.component';
 import { LegendComponent } from '../../ui/legend/legend.component';
 import { FormService } from '../../../services/form/form';
 import { CardComponent } from '../../ui/card/card.component';
+import { OverheadCostBreakdownService } from '../../../services/overhead-cost-breakdown/overhead-cost-breakdown.service';
 
 @Component({
   selector: 'app-results-donut-chart-installment',
@@ -38,18 +37,7 @@ export class ResultsDonutChartInstallmentComponent {
     maximumFractionDigits: 2,
   });
 
-  private readonly costKindLabel = new OverheadCostKindLabelPipe();
-
-  private buildCostChildren(items: OverheadCostItem[]): ChartSlice[] {
-    return items
-      .filter((item) => item.value > 0)
-      .map((item) => ({
-        label: this.costKindLabel.transform(item),
-        value: item.value,
-        color: 'var(--c-cost)',
-        variant: ColorCodeArea.COST,
-      }));
-  }
+  private readonly overheadCostBreakdownService = inject(OverheadCostBreakdownService);
 
   selectedRow = computed<ScheduleRow | null>(() => {
     const selectedIndex = this.selectedMonthService.selectedMonthIndex();
@@ -80,7 +68,7 @@ export class ResultsDonutChartInstallmentComponent {
           value: selectedRow.insuranceCost,
           color: 'var(--c-cost)',
           variant: ColorCodeArea.COST,
-          children: this.buildCostChildren(selectedRow.costBreakdown),
+          children: this.overheadCostBreakdownService.buildCostChildren(selectedRow.costBreakdown),
         });
       }
       if (this.formService.isPrepaymentEnabled && selectedRow.prepayment > 0) {

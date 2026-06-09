@@ -25,6 +25,10 @@ export class LegendComponent {
   slices = input.required<ChartSlice[]>();
   /** etykieta wiersza sumy nad legendą; gdy pusta — wiersz sumy i separator nie są renderowane. */
   totalLabel = input<string>('');
+  /** etykieta wiersza stopki pod legendą; gdy pusta — wiersz stopki nie jest renderowany. */
+  footerLabel = input<string>('');
+  /** wartość liczbowa wiersza stopki (np. saldo na koniec roku). */
+  footerValue = input<number | null>(null);
   activeLabel = input<string | null>(null);
   sliceHover = output<string | null>();
 
