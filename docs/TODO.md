@@ -42,3 +42,13 @@
 - [x] Ubezpieczenie niskiego wkładu powinno przestawać obowiązywać gdy LTV spadnie poniżej 80%
 - [x] dotyczy podsekcji "Ubezpieczenie na życie", "Ubezpieczenie od utraty pracy" i "Dodatkowe koszty" w przypadku, gdy składka/koszt płacony jest jednorazowo nie prezentować pól od/do tylko jeden moth picker z miesiącem płatności składki/kosztu, jeśli ubezpieczenie/koszt płacone jesty cyklicznie (co rok/co miesiąc), prezentować 2 month pickery od/do
 - [x] dla pustego stanu listy kalkulacji nie wyświetlaj nagłówków tabeli tj. "Nazwa Kwota · LTV Okres Oproc. Pierwsza rata Odsetki Zmodyfikowano Akcje"
+- Zakładka "Twoje kalkulacje" -> kliknij importuj -> zamknij file picker -> wyświetla się toast "Zaimportowano kalkulacje"
+- UI state service, rozwinięcie/zwinięcie sekcji, podsekcji, legendy, aktualnie wybrany rok w rocznych składowych płatności, wybrany miesiąc w harmonogramie spłat
+- wyśrodkowanie wertykalne ikonki i labelki na toaście
+- po kliknięcie w koszt na legendzie przescrollowanie formularza do odpowiedniej sekcji
+- moth picker w okresach oprocentowania ucina nazwy miesięcy
+- animacja zwijania rozwijania i animowany chevron dla wierszy lat w harmonogramie spłaty kredytu
+- przeniesienie okresów oprocentowania do oddzielnej formGroup i zwijanej sekcji
+- zmiana nazwy ui-section na ui-foldable-section
+- wyśrodkowanie wertykalne elementów transzy
+- zmniejszenie odstępów pomiędzy transzami

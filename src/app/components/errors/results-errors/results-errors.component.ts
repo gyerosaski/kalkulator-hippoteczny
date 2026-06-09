@@ -1,9 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormService } from '../../../services/form/form';
-import { FormError, FormErrorSection } from '../../../model/mortgage.model';
+import { FormError, FormErrorSection } from '../../../model';
 import { IconWarningComponent } from '../../icons/icon-warning/icon-warning.component';
 import { IconWarningSmComponent } from '../../icons/icon-warning-sm/icon-warning-sm.component';
+import { BadgeComponent } from '../../ui/badge/badge.component';
+import { BadgeVariant } from '../../../model';
 
 function pluralErr(n: number): string {
   if (n === 1) return '1 błąd';
@@ -23,12 +25,13 @@ interface ErrorGroup {
   selector: 'app-results-errors',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IconWarningComponent, IconWarningSmComponent],
+  imports: [IconWarningComponent, IconWarningSmComponent, BadgeComponent],
   templateUrl: './results-errors.component.html',
   styleUrl: './results-errors.component.scss',
 })
 export class ResultsErrorsComponent {
   private readonly formService = inject(FormService);
+  protected readonly BadgeVariant = BadgeVariant;
 
   private readonly _formVersion = toSignal(this.formService.form.valueChanges, {
     initialValue: undefined,

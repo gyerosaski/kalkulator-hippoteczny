@@ -102,16 +102,6 @@
   color: var(--ink);
 }
 
-.err-card-count {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--err-deep);
-  background: oklch(95% 0.04 30);
-  padding: 2px 8px;
-  border-radius: 999px;
-  flex-shrink: 0;
-}
-
 /* Error list */
 .err-list {
   list-style: none;

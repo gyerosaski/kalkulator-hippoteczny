@@ -21,7 +21,7 @@
       <div class="err-card">
         <div class="err-card-head">
           <h3 class="err-card-title">{{ g.section }}</h3>
-          <span class="err-card-count">{{ pluralFor(g.items.length) }}</span>
+          <ui-badge [label]="pluralFor(g.items.length)" [variant]="BadgeVariant.RED" />
         </div>
         <ul class="err-list">
           @for (err of g.items; track $index) {
