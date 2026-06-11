@@ -1,0 +1,14 @@
+:host {
+  display: inline-flex;
+}
+
+.sec-switch.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.switch-label {
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--ink-2);
+}

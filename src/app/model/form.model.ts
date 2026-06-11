@@ -157,3 +157,21 @@ export interface MortgageFormGroup {
   tranches: FormGroup<ToggleableSectionFormGroup<TranchesFieldsFormGroup>>;
   prepayments: FormGroup<ToggleableSectionFormGroup<PrepaymentsFieldsFormGroup>>;
 }
+
+/**
+ * Migawka wartości formularza kalkulatora (`form.getRawValue()`) — dokładnie ten kształt
+ * jest zapisywany jako `SavedCalculationRecord.data` i odtwarzany w widoku porównania.
+ */
+export type MortgageFormRawValue = ReturnType<FormGroup<MortgageFormGroup>['getRawValue']>;
+
+/** Migawka wartości sekcji „Dane podstawowe” formularza kalkulatora. */
+export type BasicDataRawValue = MortgageFormRawValue['basicData'];
+
+/** Migawka wartości pól sekcji „Koszty okołokredytowe i promocje” (bez flagi `enabled`). */
+export type OverheadCostsRawValue = MortgageFormRawValue['overheadCosts']['fields'];
+
+/** Migawka wartości pól sekcji „Transze” (bez flagi `enabled`). */
+export type TranchesRawValue = MortgageFormRawValue['tranches']['fields'];
+
+/** Migawka wartości pól sekcji „Nadpłaty” (bez flagi `enabled`). */
+export type PrepaymentsRawValue = MortgageFormRawValue['prepayments']['fields'];

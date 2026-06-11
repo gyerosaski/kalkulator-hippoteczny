@@ -1,0 +1,214 @@
+<section class="trend-compare-section">
+  <div class="trend-compare-header">
+    <div class="trend-compare-tag">3.7 · WYKRES TRENDU</div>
+    <h2 class="trend-compare-title">{{ chartTitle() }}</h2>
+  </div>
+
+  <div class="trend-compare-legend" role="list" aria-label="Legenda ofert">
+    <span class="trend-compare-legend-item" role="listitem">
+      <span
+        class="trend-compare-swatch"
+        [style.background]="seriesA().color"
+        aria-hidden="true"
+      ></span>
+      A: {{ seriesA().name }}
+    </span>
+    <span class="trend-compare-legend-item" role="listitem">
+      <span
+        class="trend-compare-swatch"
+        [style.background]="seriesB().color"
+        aria-hidden="true"
+      ></span>
+      B: {{ seriesB().name }}
+    </span>
+  </div>
+
+  @if (geometry(); as geometry) {
+    <svg
+      class="trend-compare-svg"
+      [attr.viewBox]="'0 0 ' + geometry.width + ' ' + geometry.height"
+      preserveAspectRatio="xMidYMid meet"
+      role="img"
+      aria-label="Porównanie salda pozostałego do spłaty w czasie"
+      (mouseleave)="setHoveredColumnIndex(null)"
+    >
+      @for (tick of geometry.balanceTicks; track tick.value) {
+        <line
+          class="trend-compare-grid"
+          [attr.x1]="geometry.paddingLeft"
+          [attr.x2]="geometry.paddingLeft + geometry.innerWidth"
+          [attr.y1]="tick.position"
+          [attr.y2]="tick.position"
+        />
+        <text
+          class="trend-compare-axis-label"
+          [attr.x]="geometry.paddingLeft - 10"
+          [attr.y]="tick.position + 4"
+          text-anchor="end"
+        >
+          {{ tick.label }}
+        </text>
+      }
+
+      <text
+        class="trend-compare-axis-title"
+        [attr.x]="geometry.paddingLeft - 96"
+        [attr.y]="geometry.paddingTop + geometry.innerHeight / 2"
+        [attr.transform]="
+          'rotate(-90 ' +
+          (geometry.paddingLeft - 96) +
+          ' ' +
+          (geometry.paddingTop + geometry.innerHeight / 2) +
+          ')'
+        "
+        text-anchor="middle"
+      >
+        Pozostało do spłaty
+      </text>
+
+      @for (tick of geometry.xTicks; track tick.year) {
+        <text
+          class="trend-compare-axis-label"
+          [attr.x]="tick.x"
+          [attr.y]="geometry.paddingTop + geometry.innerHeight + 12"
+          [attr.transform]="
+            'rotate(-90 ' + tick.x + ' ' + (geometry.paddingTop + geometry.innerHeight + 12) + ')'
+          "
+          text-anchor="end"
+        >
+          {{ tick.year }}
+        </text>
+      }
+
+      <line
+        class="trend-compare-baseline"
+        [attr.x1]="geometry.paddingLeft"
+        [attr.x2]="geometry.paddingLeft + geometry.innerWidth"
+        [attr.y1]="geometry.paddingTop + geometry.innerHeight"
+        [attr.y2]="geometry.paddingTop + geometry.innerHeight"
+      />
+
+      <path
+        class="trend-compare-line"
+        [attr.d]="geometry.seriesA.linePath"
+        fill="none"
+        [attr.stroke]="geometry.seriesA.color"
+        stroke-width="2"
+        stroke-linejoin="round"
+        stroke-linecap="round"
+      >
+        <title>{{ geometry.seriesA.titleText }}</title>
+      </path>
+      <path
+        class="trend-compare-line"
+        [attr.d]="geometry.seriesB.linePath"
+        fill="none"
+        [attr.stroke]="geometry.seriesB.color"
+        stroke-width="2"
+        stroke-linejoin="round"
+        stroke-linecap="round"
+      >
+        <title>{{ geometry.seriesB.titleText }}</title>
+      </path>
+
+      @for (point of geometry.seriesA.points; track point.year) {
+        <circle
+          class="trend-compare-node"
+          [attr.cx]="point.x"
+          [attr.cy]="point.y"
+          r="4"
+          [attr.fill]="geometry.seriesA.color"
+        />
+      }
+      @for (point of geometry.seriesB.points; track point.year) {
+        <circle
+          class="trend-compare-node"
+          [attr.cx]="point.x"
+          [attr.cy]="point.y"
+          r="4"
+          [attr.fill]="geometry.seriesB.color"
+        />
+      }
+
+      @for (column of geometry.columns; track column.year) {
+        <rect
+          class="trend-compare-hover-target"
+          [attr.x]="column.centerX - geometry.columnWidth / 2"
+          [attr.y]="geometry.paddingTop"
+          [attr.width]="geometry.columnWidth"
+          [attr.height]="geometry.innerHeight"
+          (mouseenter)="setHoveredColumnIndex($index)"
+        />
+      }
+
+      @let tooltipModel = tooltip();
+      @if (tooltipModel) {
+        <g class="trend-compare-tooltip" pointer-events="none">
+          <rect
+            class="trend-compare-tooltip-bg"
+            [attr.x]="tooltipModel.tooltipX"
+            [attr.y]="tooltipModel.tooltipY"
+            [attr.width]="tooltipModel.tooltipWidth"
+            [attr.height]="tooltipModel.tooltipHeight"
+            rx="8"
+            ry="8"
+          />
+          <text
+            class="trend-compare-tooltip-header"
+            [attr.x]="tooltipModel.tooltipX + tooltipModel.paddingX"
+            [attr.y]="tooltipModel.tooltipY + tooltipModel.paddingY + 12"
+          >
+            {{ tooltipModel.yearLabel }}
+          </text>
+          <text
+            class="trend-compare-tooltip-row-label"
+            [attr.x]="tooltipModel.tooltipX + tooltipModel.paddingX"
+            [attr.y]="tooltipModel.tooltipY + tooltipModel.paddingY + 12 + 22"
+          >
+            A
+          </text>
+          <text
+            class="trend-compare-tooltip-row-value"
+            [attr.x]="tooltipModel.tooltipX + tooltipModel.tooltipWidth - tooltipModel.paddingX"
+            [attr.y]="tooltipModel.tooltipY + tooltipModel.paddingY + 12 + 22"
+            text-anchor="end"
+          >
+            {{ tooltipModel.aLabel ?? '—' }}
+          </text>
+          <text
+            class="trend-compare-tooltip-row-label"
+            [attr.x]="tooltipModel.tooltipX + tooltipModel.paddingX"
+            [attr.y]="tooltipModel.tooltipY + tooltipModel.paddingY + 12 + 40"
+          >
+            B
+          </text>
+          <text
+            class="trend-compare-tooltip-row-value"
+            [attr.x]="tooltipModel.tooltipX + tooltipModel.tooltipWidth - tooltipModel.paddingX"
+            [attr.y]="tooltipModel.tooltipY + tooltipModel.paddingY + 12 + 40"
+            text-anchor="end"
+          >
+            {{ tooltipModel.bLabel ?? '—' }}
+          </text>
+          <text
+            class="trend-compare-tooltip-row-label"
+            [attr.x]="tooltipModel.tooltipX + tooltipModel.paddingX"
+            [attr.y]="tooltipModel.tooltipY + tooltipModel.paddingY + 12 + 58"
+          >
+            Δ (B − A)
+          </text>
+          <text
+            class="trend-compare-tooltip-row-value"
+            [attr.x]="tooltipModel.tooltipX + tooltipModel.tooltipWidth - tooltipModel.paddingX"
+            [attr.y]="tooltipModel.tooltipY + tooltipModel.paddingY + 12 + 58"
+            text-anchor="end"
+          >
+            {{ tooltipModel.deltaLabel ?? '—' }}
+          </text>
+        </g>
+      }
+    </svg>
+  } @else {
+    <div class="trend-compare-empty">Brak danych do wyświetlenia.</div>
+  }
+</section>

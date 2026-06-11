@@ -1,0 +1,136 @@
+:host {
+  display: block;
+}
+
+.trend-compare-section {
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.trend-compare-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.trend-compare-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.trend-compare-title {
+  margin: 6px 0 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* ---------- Legenda ofert ---------- */
+.trend-compare-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 14px 24px 0;
+  font-size: 12px;
+  color: var(--ink-2);
+}
+
+.trend-compare-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.trend-compare-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+/* ---------- SVG ---------- */
+.trend-compare-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  padding: 8px 16px 16px;
+  box-sizing: border-box;
+}
+
+.trend-compare-grid {
+  stroke: var(--grid);
+  stroke-dasharray: 2 4;
+}
+
+.trend-compare-baseline {
+  stroke: var(--line-2);
+}
+
+.trend-compare-axis-label {
+  font-size: 14px;
+  fill: var(--muted);
+  font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  font-feature-settings: 'tnum';
+  font-variant-numeric: tabular-nums;
+}
+
+.trend-compare-axis-title {
+  font-size: 14px;
+  fill: var(--ink-2);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.trend-compare-line,
+.trend-compare-node {
+  pointer-events: none;
+}
+
+.trend-compare-hover-target {
+  fill: transparent;
+  cursor: pointer;
+}
+
+.trend-compare-hover-target:hover {
+  fill: color-mix(in oklch, var(--accent) 18%, transparent);
+}
+
+/* ---------- Tooltip ---------- */
+.trend-compare-tooltip-bg {
+  fill: var(--surface);
+  stroke: var(--line-2);
+  stroke-width: 1;
+  filter: drop-shadow(0 4px 12px oklch(40% 0.02 250 / 0.18));
+}
+
+.trend-compare-tooltip-header {
+  font-size: 15px;
+  font-weight: 600;
+  fill: var(--ink);
+}
+
+.trend-compare-tooltip-row-label {
+  font-size: 13px;
+  fill: var(--ink-2);
+}
+
+.trend-compare-tooltip-row-value {
+  font-size: 13px;
+  fill: var(--ink);
+  font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  font-feature-settings: 'tnum';
+  font-variant-numeric: tabular-nums;
+}
+
+.trend-compare-empty {
+  padding: 32px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}

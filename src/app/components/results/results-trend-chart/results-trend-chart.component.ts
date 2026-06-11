@@ -13,6 +13,7 @@ import { CardComponent } from '../../ui/card/card.component';
 import { ColorCodeMarkerComponent } from '../../ui/color-code-marker/color-code-marker.component';
 import { LegendComponent } from '../../ui/legend/legend.component';
 import { OverheadCostBreakdownService } from '../../../services/overhead-cost-breakdown/overhead-cost-breakdown.service';
+import { roundUpToStep } from '../../../helpers/chart-scale.helper';
 
 interface StackSegmentDescriptor {
   readonly fieldKey: 'sumInterest' | 'sumInsuranceCost' | 'sumCapital' | 'sumPrepayment';
@@ -53,11 +54,6 @@ const BALANCE_TICK_STEP = 50_000;
 
 const AXIS_AMOUNT_FORMATTER = new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 0 });
 
-function roundUpToStep(value: number, step: number): number {
-  if (value <= 0) return step;
-  return Math.ceil(value / step) * step;
-}
-
 function formatAxisAmount(value: number): string {
   return `${AXIS_AMOUNT_FORMATTER.format(value)} zł`;
 }
@@ -76,6 +72,10 @@ export class ResultsTrendChartComponent {
   results = input.required<MortgageResults>();
   overheadCostsEnabled = input.required<boolean>();
   prepaymentsEnabled = input.required<boolean>();
+  /** Wymuszone maksimum osi salda — używane w widoku porównania do wspólnej skali obu wykresów. */
+  forcedBalanceAxisMax = input<number | null>(null);
+  /** Wymuszone maksimum osi sum rocznych — używane w widoku porównania do wspólnej skali obu wykresów. */
+  forcedStackAxisMax = input<number | null>(null);
 
   protected readonly ColorCodeMarkerVariant = ColorCodeArea;
   protected readonly selectedYearIndex = signal<number | null>(null);
@@ -108,8 +108,9 @@ export class ResultsTrendChartComponent {
     const maxStack = Math.max(0, ...stackTotals);
     const maxBalance = Math.max(loanAmount, ...groups.map((year) => year.lastRemaining));
 
-    const stackAxisMax = roundUpToStep(maxStack, STACK_TICK_STEP);
-    const balanceAxisMax = roundUpToStep(maxBalance, BALANCE_TICK_STEP);
+    const stackAxisMax = this.forcedStackAxisMax() ?? roundUpToStep(maxStack, STACK_TICK_STEP);
+    const balanceAxisMax =
+      this.forcedBalanceAxisMax() ?? roundUpToStep(maxBalance, BALANCE_TICK_STEP);
 
     const yForStackValue = (value: number) =>
       paddingTop + innerHeight - (value / stackAxisMax) * innerHeight;

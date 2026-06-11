@@ -1,0 +1,146 @@
+.kpi-section {
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.kpi-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.kpi-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.kpi-title {
+  margin: 6px 0 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.kpi-grid {
+  display: grid;
+  gap: 12px;
+  padding: 16px 24px 20px;
+}
+
+.kpi-row {
+  display: grid;
+  grid-template-columns: 1fr 170px 1fr;
+  align-items: stretch;
+  gap: 12px;
+}
+
+/* ---------- Kafelek oferty ---------- */
+.kpi-tile {
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg, 12px);
+  padding: 12px 16px;
+  background: var(--surface);
+
+  &.is-leader {
+    background: var(--accent-sage-soft, var(--surface-2));
+    border-color: var(--accent-sage-deep);
+  }
+}
+
+.kpi-tile--a {
+  border-top: 3px solid var(--offer-a);
+}
+
+.kpi-tile--b {
+  border-top: 3px solid var(--offer-b);
+}
+
+.kpi-tile-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.kpi-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.kpi-leader {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-sage-deep);
+  white-space: nowrap;
+}
+
+.kpi-value {
+  margin-top: 6px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.kpi-meta {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ---------- Kolumna delty ---------- */
+.kpi-delta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border-radius: var(--r-lg, 12px);
+  background: var(--surface-2);
+  padding: 8px;
+  text-align: center;
+}
+
+.kpi-delta-arrow {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.kpi-delta-value {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.kpi-delta-percent {
+  font-size: 11px;
+}
+
+/* ---------- Delta coloring ---------- */
+.delta--up {
+  color: var(--c-int);
+}
+
+.delta--down {
+  color: var(--accent-sage-deep);
+}
+
+.delta--flat {
+  color: var(--muted);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 720px) {
+  .kpi-row {
+    grid-template-columns: 1fr;
+  }
+
+  .kpi-delta {
+    order: 3;
+  }
+}

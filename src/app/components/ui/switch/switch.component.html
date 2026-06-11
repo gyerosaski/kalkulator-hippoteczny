@@ -1,0 +1,14 @@
+<label class="sec-switch" [class.is-disabled]="disabled()">
+  <input
+    type="checkbox"
+    [checked]="checked()"
+    [disabled]="disabled()"
+    (change)="toggle($any($event.target).checked)"
+  />
+  <span class="switch-track">
+    <span class="switch-thumb"></span>
+  </span>
+  @if (label()) {
+    <span class="switch-label">{{ label() }}</span>
+  }
+</label>

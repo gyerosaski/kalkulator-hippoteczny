@@ -76,6 +76,11 @@ export enum AppRoute {
   CALCULATIONS_COMPARE = 'calculations-compare',
 }
 
+export enum BannerVariant {
+  INFO = 'INFO',
+  WARNING = 'WARNING',
+}
+
 export enum ToastVariant {
   SUCCESS = 'SUCCESS',
   ERROR = 'ERROR',

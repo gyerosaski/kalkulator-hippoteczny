@@ -23,23 +23,32 @@ Ograniczenie do dwóch ofert jest decyzją projektową. Para to najczęstszy rea
 
 ## 2. Model danych — czym jest „oferta”
 
-`Oferta` w tym widoku to wynik `CalcService.compute(input)` opakowany w meta‑rekord:
+Modele żyją w `src/app/model/comparison.model.ts`. „Oferta” występuje na dwóch poziomach szczegółowości:
 
 ```
-Offer = {
-  id:          string,                  // identyfikator zapisanej kalkulacji
-  name:        string,                  // nazwa nadana przez użytkownika (np. „PKO 7,5% / 25 lat”)
-  savedAt:     Date,                    // data ostatniego zapisu
-  input:       MortgageInput,           // pełna kopia danych z zakładek „Dane podstawowe”, „Koszty…”, „Transze”, „Nadpłaty”
-  result:      ComputeResult            // wynik = { firstInstallment, totalPayments, totalInterest, totalCosts, commission, valuationFee, totalOverpayments, rows[], yearly[] }
-  isDraft?:    boolean,                 // true dla bieżącej, niezapisanej kalkulacji dodanej tymczasowo
+ComparableOffer = {            // model widoku slotu i dialogu wyboru (lekki, skalarne metadane)
+  id: string,                  // identyfikator = nazwa zapisanej kalkulacji; dla bieżącej — DRAFT_OFFER_ID
+  kind: SAVED | DRAFT,
+  name, loanAmount, propertyValue, loanPeriodYears, loanPeriodExtraMonths,
+  nominalRate, rateType, installmentType,
+  firstInstallment, totalInterest, totalCosts, commission, appraisalFee,
+  totalOverpayments, totalPayments, hasErrors,
 }
 
-Comparison = {
-  offerA:      Offer,                   // lewa kolumna
-  offerB:      Offer,                   // prawa kolumna
+ComparisonOfferData = {        // komplet danych oferty wybranej do slotu (sekcje 3.3–3.8)
+  offer: ComparableOffer,
+  formValue: MortgageFormRawValue | null,   // migawka wejść (SavedCalculationRecord.data)
+  computation: OfferComputation | null,     // null = błędy walidacji / nieudane przeliczenie
+}
+
+OfferComputation = {           // pełne przeliczenie bieżącym silnikiem
+  inputs: MortgageInputs,
+  results: MortgageResults,    // m.in. schedule: ScheduleRow[] (≈ dawne rows[])
+  yearlyGroups: YearGroup[],   // agregaty roczne (≈ dawne yearly[])
 }
 ```
+
+`ComparisonStateService` przechowuje wyłącznie identyfikatory slotów (`offerAId`/`offerBId`) i wystawia computed `sideA`/`sideB: ComparisonOfferData`. Skalary `ComparableOffer` wybranych ofert są nadpisywane wartościami z `computation.results` (jedno źródło prawdy — patrz § 12).
 
 Konwencja `A` / `B`:
 
@@ -47,7 +56,7 @@ Konwencja `A` / `B`:
 - `offerB` zajmuje prawą kolumnę i jest „porównywaną”.
 - Przycisk `↔ Zamień strony` (4.2) zamienia `A ↔ B`, co odwraca znak delt — przydatne, gdy użytkownik chce spojrzeć na różnicę z drugiej perspektywy.
 
-`ComputeResult.rows[]` i `ComputeResult.yearly[]` są dokładnie tymi samymi strukturami, które konsumują `Donut` i `TrendChart` na zakładce `Kalkulator` — dzięki temu wykresy są ponownie używane **bez zmian w warstwie komponentów**.
+`MortgageResults.schedule` i `YearGroup[]` są dokładnie tymi samymi strukturami, które konsumują wykresy na zakładce `Kalkulator` — dzięki temu komponenty wynikowe są ponownie używane tam, gdzie to bezpieczne (szczegóły w § 11).
 
 ---
 
@@ -62,14 +71,14 @@ Konwencja `A` / `B`:
 │ 3.4  KPI grid — 4 wskaźniki × 2 oferty + środkowa kolumna delty Δ        │
 ├──────────────────────────────────────────────────────────────────────────┤
 │ 3.5  Para donutów „Struktura wszystkich płatności” — A obok B            │
-│       (REUŻYCIE komponentu `Donut`)                                      │
+│       (`app-comparison-donuts-total`, reużycie `ui-donut`)               │
 ├──────────────────────────────────────────────────────────────────────────┤
 │ 3.6  Para donutów „Struktura pierwszej raty” — A obok B                  │
-│       (REUŻYCIE komponentu `Donut`)                                      │
+│       (`app-comparison-donuts-installment`, reużycie `ui-donut`)         │
 ├──────────────────────────────────────────────────────────────────────────┤
-│ 3.7  Wykres trendu — nakładka 2 linii „Pozostało do spłaty” + 2 stacki  │
-│       roczne obok siebie w tej samej kategorii roku                      │
-│       (REUŻYCIE komponentu `TrendChart` z rozszerzeniem `series`)        │
+│ 3.7  Wykres trendu — nakładka 2 linii „Pozostało do spłaty”             │
+│       (`app-comparison-trend-chart`) lub 2× pełny wykres obok siebie    │
+│       (`app-results-trend-chart` z wymuszonymi maksimami osi)            │
 ├──────────────────────────────────────────────────────────────────────────┤
 │ 3.8  Tabela różnic — pozycja | A | B | Δ (= B − A)                      │
 └──────────────────────────────────────────────────────────────────────────┘
@@ -103,25 +112,25 @@ Liczba kolumn ofertowych jest stała: **dwie**. Widok pokazuje pusty stan z CTA 
 | `Tryb wykresu trendu`       | `Segmented`: `nakładka` \| `obok siebie`. Domyślnie `nakładka`. Wpływ na renderowanie sekcji 3.7.                                    |
 | `Pokaż wykluczone segmenty` | Toggle. Domyślnie `wyłączony` — segmenty puste (np. `Nadpłaty = 0`) chowane w donutach i tabeli. Włączony — zawsze pokazuj pełną oś. |
 | `Tylko różnice`             | Toggle w 3.3. Domyślnie `wyłączony`. Włączony — ukrywa wiersze parametrów identycznych w obu ofertach.                               |
-| `Drukuj`                    | Generuje wydruk widoku (sekcje 3.3 – 3.8) w formacie A4 poziomo.                                                                     |
-| `Eksportuj CSV`             | Eksportuje 3.3, 3.4 i 3.8 jako jeden arkusz (`metric`, `offer_a`, `offer_b`, `delta`).                                               |
-| `Otwórz w kalkulatorze`     | Akcja per‑oferta (przycisk w nagłówku kolumny). Ładuje `input` oferty na zakładkę `Kalkulator` i przełącza widok.                    |
+| `Drukuj`                    | **ODŁOŻONE** (poza bieżącą iterację). Docelowo: wydruk widoku (sekcje 3.3 – 3.8) w formacie A4 poziomo.                              |
+| `Eksportuj CSV`             | **ODŁOŻONE** (poza bieżącą iterację). Docelowo: eksport 3.3, 3.4 i 3.8 jako jeden arkusz (`metric`, `offer_a`, `offer_b`, `delta`).  |
+| `Otwórz w kalkulatorze`     | Akcja per‑oferta (przycisk na chipie slotu). Ładuje migawkę wejść oferty do formularza i przełącza na zakładkę `Kalkulator`.         |
 
 ### 4.3. Akcje per kolumna (header oferty)
 
-| Element          | Typ                  | Działanie                                                                                               |
-| ---------------- | -------------------- | ------------------------------------------------------------------------------------------------------- |
-| Etykieta strony  | badge                | `A` (lewa) lub `B` (prawa) — stała, identyfikuje stronę porównania.                                     |
-| Nazwa oferty     | `text` (inline edit) | Zmiana nazwy zapisanej kalkulacji (zapis natychmiastowy).                                               |
-| Znacznik koloru  | swatch (2 kolory)    | Kolor identyfikujący ofertę w wykresie trendu (sekcja 3.7): A = `var(--offer-a)`, B = `var(--offer-b)`. |
-| `Otwórz w kalk.` | `button`             | Patrz 4.2.                                                                                              |
-| `Zmień ofertę`   | `link-btn`           | Otwiera popover z 4.1 dla tego slotu (zamiast „usuń + dodaj”).                                          |
+| Element          | Typ                    | Działanie                                                                                               |
+| ---------------- | ---------------------- | ------------------------------------------------------------------------------------------------------- |
+| Etykieta strony  | badge                  | `A` (lewa) lub `B` (prawa) — stała, identyfikuje stronę porównania.                                     |
+| Nazwa oferty     | `text`                 | Edycja inline **ODŁOŻONA** — zmiana nazwy wyłącznie w widoku „Twoje kalkulacje”.                        |
+| Znacznik koloru  | swatch (2 kolory)      | Kolor identyfikujący ofertę w wykresie trendu (sekcja 3.7): A = `var(--offer-a)`, B = `var(--offer-b)`. |
+| `Otwórz w kalk.` | `button`               | Patrz 4.2.                                                                                              |
+| `Zmień ofertę`   | `button` (treść chipa) | Kliknięcie chipa otwiera dialog z 4.1 dla tego slotu (zamiast „usuń + dodaj”).                          |
 
 ---
 
 ## 5. Sekcja 3.3 — Tabela parametrów wejściowych
 
-Tabela 4 kolumn: `Parametr | Oferta A | Oferta B | Δ`. Cel: pokazać **co użytkownik zmienił** między dwiema ofertami.
+Komponent `app-comparison-params-table`. Tabela 4 kolumn: `Parametr | Oferta A | Oferta B | Δ`, wiersze pogrupowane nagłówkami sekcji formularza (`FormErrorSection`). Cel: pokazać **co użytkownik zmienił** między dwiema ofertami. Czyta wyłącznie `formValue` (migawkę wejść), więc działa także dla ofert z błędami walidacji (§ 13).
 
 Kolumna `Δ` (różnica) prezentowana jest zależnie od typu parametru:
 
@@ -134,33 +143,33 @@ Wiersze, w których wartości są identyczne (`Δ = 0` lub `=`), są opcjonalnie
 
 Wiersze:
 
-| Grupa           | Pole                               | Format prezentacji                           |
-| --------------- | ---------------------------------- | -------------------------------------------- |
-| Dane podstawowe | Wartość nieruchomości              | `zł`                                         |
-| Dane podstawowe | Kwota kredytu                      | `zł`                                         |
-| Dane podstawowe | LTV                                | `%` (2 miejsca)                              |
-| Dane podstawowe | Okres kredytowania                 | `X lat Y m-cy` (oraz `Σ miesięcy`)           |
-| Dane podstawowe | Data uruchomienia                  | `MMM RRRR`                                   |
-| Dane podstawowe | Początek spłat kapitału (karencja) | `MMM RRRR` lub `bez karencji`                |
-| Dane podstawowe | Tryb rat                           | `równe` \| `malejące`                        |
-| Dane podstawowe | Rodzaj stopy                       | `zmienna` \| `stała`                         |
-| Dane podstawowe | Oprocentowanie nominalne (start)   | `%` (2 miejsca)                              |
-| Dane podstawowe | WIBOR / Marża                      | `%` + `%` (tylko dla stopy zmiennej)         |
-| Dane podstawowe | Liczba okresów oprocentowania      | `n` (jeśli > 1 — link „pokaż okresy”)        |
-| Koszty          | Prowizja za udzielenie             | `% (= zł)`                                   |
-| Koszty          | Opłata za wycenę                   | `zł`                                         |
-| Koszty          | Ubezpieczenie pomostowe            | `+% przez N m-cy`                            |
-| Koszty          | Ubezp. nieruchomości               | `freq · mode · wartość`                      |
-| Koszty          | Ubezp. niskiego wkładu             | `+%`                                         |
-| Koszty          | Ubezp. na życie                    | `freq · mode · wartość`                      |
-| Koszty          | Ubezp. od utraty pracy             | `freq · mode · wartość`                      |
-| Koszty          | Dodatkowe koszty (lista)           | wiersz per pozycja: `nazwa · freq · wartość` |
-| Koszty          | Promocyjna obniżka oprocentowania  | `−% · od → do`                               |
-| Transze         | Liczba transz                      | `n`                                          |
-| Transze         | Suma opłat za uruchomienie         | `zł`                                         |
-| Nadpłaty        | Reguła nadpłat (A)                 | `freq · kwota · skutek · od → do`            |
-| Nadpłaty        | Docelowa rata miesięczna (B)       | `zł · skutek · od → do`                      |
-| Nadpłaty        | Prowizja za wcześniejszą spłatę    | `% do MMM RRRR`                              |
+| Grupa           | Pole                               | Format prezentacji                                                    |
+| --------------- | ---------------------------------- | --------------------------------------------------------------------- |
+| Dane podstawowe | Wartość nieruchomości              | `zł`                                                                  |
+| Dane podstawowe | Kwota kredytu                      | `zł`                                                                  |
+| Dane podstawowe | LTV                                | `%` (2 miejsca)                                                       |
+| Dane podstawowe | Okres kredytowania                 | `X lat Y m-cy` (oraz `Σ miesięcy`)                                    |
+| Dane podstawowe | Data uruchomienia                  | `MMM RRRR`                                                            |
+| Dane podstawowe | Początek spłat kapitału (karencja) | `MMM RRRR (N m-cy)` lub `bez karencji`; Δ = różnica długości karencji |
+| Dane podstawowe | Tryb rat                           | `równe` \| `malejące`                                                 |
+| Dane podstawowe | Rodzaj stopy                       | `zmienna` \| `stała`                                                  |
+| Dane podstawowe | Oprocentowanie nominalne (start)   | `%` (2 miejsca)                                                       |
+| Dane podstawowe | WIBOR / Marża                      | `%` + `%` (tylko dla stopy zmiennej)                                  |
+| Dane podstawowe | Liczba okresów oprocentowania      | `n` (link „pokaż okresy” **ODŁOŻONY**)                                |
+| Koszty          | Prowizja za udzielenie             | `% (= zł)`                                                            |
+| Koszty          | Opłata za wycenę                   | `zł`                                                                  |
+| Koszty          | Ubezpieczenie pomostowe            | `+% przez N m-cy`                                                     |
+| Koszty          | Ubezp. nieruchomości               | `freq · mode · wartość`                                               |
+| Koszty          | Ubezp. niskiego wkładu             | `+%`                                                                  |
+| Koszty          | Ubezp. na życie                    | `freq · mode · wartość`                                               |
+| Koszty          | Ubezp. od utraty pracy             | `freq · mode · wartość`                                               |
+| Koszty          | Dodatkowe koszty (lista)           | `n pozycji`; Δ = `≠/=` (porównanie zawartości)                        |
+| Koszty          | Promocyjna obniżka oprocentowania  | `−% · od → do`                                                        |
+| Transze         | Liczba transz                      | `n`                                                                   |
+| Transze         | Suma opłat za uruchomienie         | `zł`                                                                  |
+| Nadpłaty        | Reguły nadpłat                     | `n pozycji`; Δ = `≠/=` (porównanie zawartości)                        |
+| Nadpłaty        | Docelowa rata miesięczna           | `zł · skutek · od → do`                                               |
+| Nadpłaty        | Prowizja za wcześniejszą spłatę    | `% do MMM RRRR`                                                       |
 
 Reguły wizualne wiersza:
 
@@ -172,28 +181,27 @@ Reguły wizualne wiersza:
 
 ## 6. Sekcja 3.4 — KPI grid
 
-Siatka `4 wskaźniki × (Oferta A | Δ | Oferta B)`. Dokładnie te same cztery KPI co w pasku wyników na zakładce `Kalkulator` (`Pierwsza rata`, `Suma wszystkich płatności`, `Odsetki`, `Koszty okołokredytowe`) — komponent kafelka `Kpi` jest ponownie używany.
+Komponent `app-comparison-kpi-grid` (kafelek jest jego wewnętrznym markupem — generyczny komponent `Kpi` nie istnieje w kodzie). Siatka `4 wskaźniki × (Oferta A | Δ | Oferta B)` — dokładnie te same cztery KPI co w pasku wyników na zakładce `Kalkulator` (`Pierwsza rata`, `Suma wszystkich płatności`, `Odsetki`, `Koszty okołokredytowe`).
 
 Układ każdego wiersza KPI:
 
 ```
 ┌───────────────────┬──────────┬───────────────────┐
-│  Kafelek Kpi (A) │    Δ     │  Kafelek Kpi (B)  │
+│  Kafelek KPI (A) │    Δ     │  Kafelek KPI (B)  │
 │  wartość + meta  │  B − A   │  wartość + meta   │
 └───────────────────┴──────────┴───────────────────┘
 ```
 
 Każda kolumna oferty zawiera:
 
-1. `Pierwsza rata` (= `result.firstInstallment`) — wartość `zł`, meta: `tryb rat · rodzaj stopy · %`.
-2. `Suma wszystkich płatności` (= `result.totalPayments`) — wartość `zł`, meta: `oddasz X% pożyczonej kwoty` (`= result.totalPayments / loanAmount × 100`).
-3. `Odsetki` (= `result.totalInterest`) — wartość `zł`, meta: `% od kapitału`.
-4. `Koszty okołokredytowe` (= `result.totalCosts`) — wartość `zł`, meta: `prowizja … · wycena …`.
+1. `Pierwsza rata` (= `results.firstInstallment.rate`) — wartość `zł`, meta: `tryb rat · rodzaj stopy · %`.
+2. `Suma wszystkich płatności` (= `totals.totalAllPayments`) — wartość `zł`, meta: `oddasz X% pożyczonej kwoty`.
+3. `Odsetki` (= `totals.totalInterest`) — wartość `zł`, meta: `% od kapitału`.
+4. `Koszty okołokredytowe` (= `totals.overheadCosts`) — wartość `zł`, meta: `prowizja … · wycena …`.
 
 Środkowa kolumna `Δ` dla każdego wskaźnika prezentuje:
 
 - liczbę `B − A` w mono (`+1 234 zł` / `−2 567 zł`),
-- strzałkę `↑` lub `↓` przy znaku,
 - procentową zmianę względem A w nawiasie (`(+1,3%)` / `(−5,2%)`),
 - kolor: `var(--c-int)` gdy `B > A` (B gorsza) i `var(--accent-sage-deep)` gdy `B < A` (B lepsza).
 
@@ -203,16 +211,16 @@ Kafelek oferty z **mniejszą wartością** (czyli lepszej dla wskaźników „mn
 
 ## 7. Sekcja 3.5 — Para donutów „Struktura wszystkich płatności”
 
-**Ponowne wykorzystanie:** komponent `<Donut data={...} centerLabel="Razem" centerValue={`${(total/1000).toFixed(0)}k`} />` z `charts.jsx` bez modyfikacji.
+Komponent `app-comparison-donuts-total`; **reużycie generycznego `ui-donut`** (komponenty `app-results-donut-chart-*` z Kalkulatora są sprzężone z `FormService`/`SelectedMonthService` i nie są tu używane).
 
 Dwa donuty obok siebie (`A` po lewej, `B` po prawej), każdy z czterema segmentami w identycznych kolorach jak w widoku `Kalkulator`:
 
-| Segment               | Wartość                    | Kolor CSS       |
-| --------------------- | -------------------------- | --------------- |
-| Kapitał               | `loanAmount`               | `var(--c-cap)`  |
-| Odsetki               | `result.totalInterest`     | `var(--c-int)`  |
-| Koszty okołokredytowe | `result.totalCosts`        | `var(--c-cost)` |
-| Nadpłaty              | `result.totalOverpayments` | `var(--c-over)` |
+| Segment               | Wartość                | Kolor CSS       |
+| --------------------- | ---------------------- | --------------- |
+| Kapitał               | `totals.totalCapital`  | `var(--c-cap)`  |
+| Odsetki               | `totals.totalInterest` | `var(--c-int)`  |
+| Koszty okołokredytowe | `totals.overheadCosts` | `var(--c-cost)` |
+| Nadpłaty              | `totals.prepayments`   | `var(--c-over)` |
 
 Konfiguracja sekcji:
 
@@ -226,19 +234,19 @@ Konfiguracja sekcji:
 
 ## 8. Sekcja 3.6 — Para donutów „Struktura pierwszej raty”
 
-**Ponowne wykorzystanie:** ten sam komponent `<Donut size={160} thickness={22} centerLabel="rata" centerValue={fmtPLN(rata, 0)} />`.
+Komponent `app-comparison-donuts-installment`; reużycie generycznego `ui-donut` (rozmiar 160 px, grubość 22 px).
 
 Dwa donuty obok siebie (`A` i `B`), każdy z **dwoma segmentami** zgodnie ze specyfikacją z `wykresy.md` § 5.2:
 
-| Segment | Wartość                    | Kolor CSS      |
-| ------- | -------------------------- | -------------- |
-| Kapitał | `result.rows[0].principal` | `var(--c-cap)` |
-| Odsetki | `result.rows[0].interest`  | `var(--c-int)` |
+| Segment | Wartość                             | Kolor CSS      |
+| ------- | ----------------------------------- | -------------- |
+| Kapitał | `results.firstInstallment.capital`  | `var(--c-cap)` |
+| Odsetki | `results.firstInstallment.interest` | `var(--c-int)` |
 
 Dla rat malejących oraz ofert z karencją (`Początek spłat kapitału > Data uruchomienia`) tytuł karty jest dynamiczny:
 
 - standardowo: `Struktura pierwszej raty`,
-- w okresie karencji (`rows[0].principal === 0`): `Pierwsza rata (okres karencji)` — dodatkowo segment kapitału jest renderowany jako pusty pierścień, a centralna etykieta to `100% odsetek`.
+- gdy **obie** oferty są w okresie karencji (`capital === 0`): `Pierwsza rata (okres karencji)`; oferta w karencji ma centralną etykietę `100% / odsetek` i podpis `(okres karencji)`.
 
 Pod każdym donutem etykieta: `A`/`B` + `nazwa oferty` + `rata = X zł` + `oprocentowanie startowe %`.
 Między donutami pojedynczy wskaźnik `Δ raty` = `rata_B − rata_A` w `zł`, kolorowany wg konwencji § 14.
@@ -251,31 +259,25 @@ To kluczowa sekcja porównania w czasie. Zapewniamy **dwa tryby**, przełączane
 
 ### 9.1. Tryb `nakładka` (domyślny)
 
-Pojedynczy wykres zbudowany na bazie `<TrendChart>`, w którym:
+**Decyzja implementacyjna (D2):** zamiast rozszerzać `app-results-trend-chart` o tryb `series` (ryzyko regresji w Kalkulatorze: hover-donut, dimming, legenda jednej oferty), nakładkę realizuje **nowy, lekki komponent `app-comparison-trend-chart`** z inputami `seriesA`/`seriesB: ComparisonTrendSeries { name; color; loanAmount; yearlyGroups }`.
 
-- **dwie linie „Pozostało do spłaty”** są nałożone na siebie (A w kolorze `var(--offer-a)`, B w kolorze `var(--offer-b)`),
-- **słupki skumulowane** są ukryte. Powód: łączenie dwóch stacków w tej samej kategorii roku (parą obok siebie) przeszło w testach makietowych jako trudne do odczytania przy 20+ słupkach/rok — nakładka linii salda jest zdecydowanie czytelniejsza dla dwóch ofert.
+Zachowanie:
 
-Rozszerzenie komponentu `TrendChart`:
-
-- Nowa, **opcjonalna** prop `series?: { name: string, color: string, yearly: YearAggregate[] }[]` (max 2 pozycje w tym widoku).
-- Gdy `series` jest podane, komponent:
-  - nie renderuje słupków (`stack`),
-  - dla każdej pozycji `series[i]` rysuje linię „Pozostało do spłaty” w kolorze `series[i].color`, węzły `r=4 px`, `stroke-width: 2 px`,
-  - zachowuje oś X kategorialną (rok) zorientowaną do **unii zakresów lat** obu ofert (najwcześniejszy rok startu → najpóźniejszy rok końca),
-  - oś Y lewa: maks. = `ceil(max(saldo z obu serii) / 50000) * 50000`,
-  - tooltip per rok wymienia saldo obu ofert (jeden wiersz `A: ... zł`, jeden `B: ... zł`, dodatkowo `Δ: B − A`).
-- Gdy `series` nie jest podane — działa tak jak dotąd (`rows` + `yearly` jednej oferty).
+- **dwie linie „Pozostało do spłaty”** nałożone na siebie (A w kolorze `var(--offer-a)`, B w kolorze `var(--offer-b)`), węzły `r=4 px`, `stroke-width: 2 px`; **bez słupków skumulowanych** — nakładka linii salda jest czytelniejsza dla dwóch ofert,
+- oś X kategorialna (rok) obejmuje **unię zakresów lat** obu ofert (najwcześniejszy rok startu → najpóźniejszy rok końca); brak danych oferty w roku = brak punktu,
+- oś Y: maks. = `roundUpToStep(max(loanAmount, salda z obu serii), 50 000)`,
+- tooltip per rok wymienia saldo obu ofert (`A: ... zł`, `B: ... zł`, dodatkowo `Δ: B − A`),
+- każda linia ma `<title>` z nazwą oferty i saldem na koniec ostatniego roku (a11y).
 
 Legenda nad wykresem: dokładnie dwie pozycje (`A: <nazwa>` w swoim kolorze, `B: <nazwa>` w swoim).
 
-Tytuł dynamiczny: `Harmonogram spłaty — porównanie: <min(startDate) słownie> – <max(endDate) słownie>`.
+Tytuł dynamiczny: `Harmonogram spłaty — porównanie: <pierwszy rok> – <ostatni rok>`.
 
 ### 9.2. Tryb `obok siebie`
 
-Dwa wykresy `<TrendChart rows={offer.result.rows} yearly={offer.result.yearly} />` renderowane w jednym rzędzie (50% / 50% szerokości). Każdy wykres dziedziczy swą pełną zawartość — słupki stacked + linia salda — dokładnie jak na widoku `Kalkulator`. Pod każdym wykresem etykieta `A` / `B` + nazwa oferty.
+Dwa pełne wykresy `app-results-trend-chart` renderowane w jednym rzędzie (50% / 50% szerokości). Każdy wykres dziedziczy swą pełną zawartość — słupki stacked + linia salda — dokładnie jak na widoku `Kalkulator`. Pod każdym wykresem etykieta `A` / `B` + nazwa oferty.
 
-Wymóg porównywalności wzrokowej: w tym trybie **wymuszamy wspólne maks. osi Y** (lewej i prawej) wyznaczone dla obu ofert łącznie. Propagacja przez nowe propsy `forcedMaxLeft?: number` i `forcedMaxRight?: number` w `TrendChart` (patrz 11). Bez tego porównanie kształtu krzywych jest mylące — automatyczne skalowanie sprawi, że niższa kwota kredytu „wygląda jak ta sama wielkość”.
+Wymóg porównywalności wzrokowej: w tym trybie **wymuszamy wspólne maks. osi Y** (salda i stacka) wyznaczone dla obu ofert łącznie — przez nowe opcjonalne inputy `forcedBalanceAxisMax` / `forcedStackAxisMax` w `app-results-trend-chart` (patrz § 11). Bez tego porównanie kształtu krzywych jest mylące — automatyczne skalowanie sprawi, że niższa kwota kredytu „wygląda jak ta sama wielkość”.
 
 ---
 
@@ -285,18 +287,18 @@ Tabela 4 kolumn: `Pozycja | Oferta A | Oferta B | Δ (= B − A)`.
 
 Wiersze:
 
-| Pozycja                                | Źródło                                                                       |
-| -------------------------------------- | ---------------------------------------------------------------------------- |
-| Kapitał                                | `loanAmount`                                                                 |
-| Odsetki — łącznie                      | `result.totalInterest`                                                       |
-| Odsetki — w okresie ubezp. pomostowego | `Σ interest dla rows[0..bridgeMonths-1]`                                     |
-| Prowizja za udzielenie                 | `result.commission`                                                          |
-| Opłata za wycenę                       | `result.valuationFee`                                                        |
-| Ubezpieczenia (wszystkie)              | `result.totalCosts − commission − valuationFee` (suma składek)               |
-| Nadpłaty                               | `result.totalOverpayments`                                                   |
-| Prowizja za wcześniejszą spłatę        | część kosztów wynikająca z nadpłat (osobne wyliczenie z `nadplaty.md` § 5.4) |
-| **SUMA — całkowity koszt kredytu**     | `result.totalPayments`                                                       |
-| **Oddasz do banku [%]**                | `result.totalPayments / loanAmount × 100`                                    |
+| Pozycja                                | Źródło (z `computation.results`)                                                                                                                                                                                                                                                                                     |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Kapitał                                | `inputs.loanAmount`                                                                                                                                                                                                                                                                                                  |
+| Odsetki — łącznie                      | `totals.totalInterest`                                                                                                                                                                                                                                                                                               |
+| Odsetki — w okresie ubezp. pomostowego | `Σ interest dla schedule[0..bridgeMonths-1]`; `—` gdy sekcja kosztów wyłączona lub `bridgeMonths = 0`                                                                                                                                                                                                                |
+| Prowizja za udzielenie                 | `overheadCostsBreakdown` o rodzaju `LOAN_COMMISSION`                                                                                                                                                                                                                                                                 |
+| Opłata za wycenę                       | `overheadCostsBreakdown` o rodzaju `APPRAISAL_FEE`                                                                                                                                                                                                                                                                   |
+| Ubezpieczenia (wszystkie)              | Σ `overheadCostsBreakdown` rodzajów: `PROPERTY_INSURANCE`, `LIFE_INSURANCE`, `JOB_LOSS_INSURANCE`, `ADDITIONAL_COST` oraz `TRANCHE_DISBURSEMENT_FEE` (opłaty za uruchomienie transz wliczone tutaj, by suma wierszy domykała się do `overheadCosts`); celowo **bez** `EARLY_REPAYMENT_COMMISSION` — ma własny wiersz |
+| Nadpłaty                               | `totals.prepayments`                                                                                                                                                                                                                                                                                                 |
+| Prowizja za wcześniejszą spłatę        | Σ `overheadCostsBreakdown` rodzaju `EARLY_REPAYMENT_COMMISSION`; `—` gdy sekcja nadpłat wyłączona                                                                                                                                                                                                                    |
+| **SUMA — całkowity koszt kredytu**     | `totals.totalAllPayments`                                                                                                                                                                                                                                                                                            |
+| **Oddasz do banku [%]**                | `totals.totalAllPayments / loanAmount × 100`                                                                                                                                                                                                                                                                         |
 
 Każdy wiersz zawiera:
 
@@ -313,58 +315,55 @@ Wiersz `SUMA` jest pogrubiony i ma cieniowane tło; wiersz `Oddasz do banku [%]`
 
 ---
 
-## 11. Wymagane rozszerzenia komponentów wykresów
+## 11. Rozszerzenia komponentów wykresów (stan faktyczny)
 
-Cel: maksymalnie ponowne wykorzystanie istniejących komponentów z `charts.jsx`. Nie wprowadzamy nowych wykresów.
+Sekcja pisana pierwotnie pod makietę Reactową (`charts.jsx`); poniżej rzeczywiste odpowiedniki w kodzie Angular.
 
-### 11.1. `Donut` — bez zmian
+### 11.1. `ui-donut` — bez zmian
 
-Komponent działa bez modyfikacji — w sekcjach 3.5 i 3.6 jest wywoływany identycznie jak na zakładce `Kalkulator`. Decyzja o ukrywaniu zerowych segmentów rozstrzygana jest poza komponentem (filtrowaniem `data` przed przekazaniem).
+Generyczny komponent działa bez modyfikacji — w sekcjach 3.5 i 3.6 jest wywoływany przez `app-comparison-donuts-*`. Decyzja o ukrywaniu zerowych segmentów rozstrzygana jest poza komponentem (filtrowaniem segmentów przed przekazaniem).
 
-### 11.2. `TrendChart` — opcjonalne propsy
+### 11.2. `app-results-trend-chart` — dwa opcjonalne inputy
 
 ```
-TrendChart({
-  // dotychczas:
-  rows, yearly, w, h,
-  // NOWE — opcjonalne, niełamiące dotychczasowych użyć:
-  series?:          { name: string, color: string, yearly: YearAggregate[] }[],   // 1–2 pozycje; jeśli podane → tryb nakładki
-  forcedMaxLeft?:   number,                                                       // wymuszone maks. osi salda
-  forcedMaxRight?:  number,                                                       // wymuszone maks. osi sumy płatności
-  showBars?:        boolean = true,                                               // false dla trybu nakładki ofertowej
-})
+forcedBalanceAxisMax: number | null = null   // wymuszone maks. osi salda
+forcedStackAxisMax:   number | null = null   // wymuszone maks. osi stacka rocznego
 ```
 
-Domyślne wartości zapewniają **pełną wsteczną zgodność** z bieżącym użyciem na zakładce `Kalkulator`.
+Domyślne `null` = auto-skalowanie jak dotąd — **pełna wsteczna zgodność** z użyciem na zakładce `Kalkulator`. Tryb `series`/`showBars` ze spec **nie został zaimplementowany** — nakładkę realizuje dedykowany `app-comparison-trend-chart` (decyzja D2, § 9.1).
 
-### 11.3. `TrendChartHeader` — rozszerzony props `legendSeries?`
+### 11.3. `TrendChartHeader` — nieaktualne
 
-Gdy podany, header renderuje legendę z dwoma pozycjami `A: <nazwa>` + `B: <nazwa>` (każda z własnym swatchem koloru) zamiast standardowej legendy `Odsetki / Koszty / Kapitał / Nadpłaty / Saldo`.
+Komponent nie istnieje w kodzie; legendę A/B renderuje `app-comparison-trend-chart` we własnym nagłówku.
 
 ---
 
 ## 12. Zdarzenia i reguły aktualizacji
 
-- Wszystkie wartości są **migawkami** zapisanymi w momencie `savedAt`. Widok nie rekalkuluje kalkulacji w locie; ewentualne odświeżenie wymaga przejścia do `Kalkulator` i ponownego zapisu oferty.
-- Wyjątek: oferta `isDraft: true` (bieżąca robocza) jest rekalkulowana na żywo, identycznie jak na zakładce `Kalkulator` (te same zależności `useMemo`).
+**Decyzja implementacyjna (D1):** zapisany rekord (`SavedCalculationRecord.data`) jest **migawką wejść** (`form.getRawValue()`), nie wyników. Wszystkie liczby sekcji 3.3–3.8 pochodzą z **przeliczenia na żywo bieżącym silnikiem**: `record.data → buildMortgageInputs() → CalculatorService.compute() → groupByYear()`. Metadane zapisane przy zapisie służą wyłącznie liście w dialogu wyboru i chipom slotów; po wybraniu oferty jej skalary są nadpisywane wartościami z przeliczenia (spójność między sekcjami).
+
+- Przeliczenia zapisanych ofert są memoizowane (klucz: `nazwa::data ostatniego zapisu`) — przełączanie toggli i trybów nie powtarza obliczeń.
+- Oferta `DRAFT` (bieżąca robocza) jest rekalkulowana na każdą zmianę formularza, identycznie jak na zakładce `Kalkulator`.
 - Zmiana zawartości slotu (4.1) lub akcji `↔ Zamień strony` (4.2) przelicza:
   - delty `Δ` w 3.3, 3.4 i 3.8 (znaki się odwracają przy zamianie stron),
-  - markery lidera (która strona ma `✓`),
-  - skale wspólne `forcedMaxLeft/Right` w trybie `obok siebie` (9.2).
+  - markery lidera (która strona ma `✓`/`▌`),
+  - skale wspólne `forcedBalanceAxisMax`/`forcedStackAxisMax` w trybie `obok siebie` (9.2).
 - Zmiana `Trybu wykresu trendu` (4.2) zmienia tylko sposób renderowania 3.7.
 
 ---
 
 ## 13. Walidacje i komunikaty
 
-| Sytuacja                                      | Komunikat / zachowanie                                                                            |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| Slot A i/lub B pusty                          | Pusty stan: ilustracja + tekst „Wybierz dwie oferty do porównania”. Sekcje 3.3 – 3.8 ukryte.      |
-| Próba wybrania tej samej oferty w obu slotach | Picker odrzuca wybór, komunikat: „Oferta jest już wybrana po drugiej stronie”.                    |
-| Oferta A lub B z błędami walidacji wejść      | Kolumna szara, baner ⚠ + przycisk „Otwórz w kalkulatorze”. 3.3 widoczna, sekcje 3.4 – 3.8 ukryte. |
-| Oferty mają różne `loanAmount`                | Banner informacyjny nad 3.4: „Oferty mają różne kwoty kredytu — porównuj ostrożnie”.              |
-| Oferty mają różne `period (n)`                | Banner informacyjny nad 3.7: „Różne okresy spłaty — wykres trendu pokazuje unię lat”.             |
-| Usunięto ofertę z `Twoje kalkulacje`          | Slot przechodzi w stan pusty z toastęm „Oferta została usunięta”.                                 |
+| Sytuacja                                      | Komunikat / zachowanie                                                                                                    |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Slot A i/lub B pusty                          | Pusty stan: ilustracja + tekst „Wybierz dwie oferty do porównania”. Sekcje 3.3 – 3.8 ukryte.                              |
+| Próba wybrania tej samej oferty w obu slotach | Picker odrzuca wybór, komunikat: „Oferta jest już wybrana po drugiej stronie”.                                            |
+| Oferta A lub B z błędami walidacji wejść      | Chip slotu oznaczony błędem, baner ⚠ + przycisk „Otwórz w kalkulatorze”. 3.3 widoczna, sekcje 3.4 – 3.8 ukryte.           |
+| Oferty mają różne `loanAmount`                | Banner informacyjny nad 3.4: „Oferty mają różne kwoty kredytu — porównuj ostrożnie”.                                      |
+| Oferty mają różne `period (n)`                | Banner informacyjny nad 3.7: „Różne okresy spłaty — wykres trendu pokazuje unię lat”.                                     |
+| Usunięto ofertę z `Twoje kalkulacje`          | Slot przechodzi w stan pusty z toastem „Oferta została usunięta” (kontrola przy wejściu do widoku, po wczytaniu store'a). |
+
+**Znana niedoskonałość:** identyfikatorem oferty jest jej **nazwa** — zmiana nazwy kalkulacji w „Twoje kalkulacje” osieroca slot porównania (objawia się jak usunięcie: pusty slot + toast).
 
 ---
 
@@ -387,7 +386,9 @@ Wartości formatowane przez `fmtPLN` z `pl-PL`, dwa miejsca po przecinku.
 
 ---
 
-## 15. Drukowanie i eksport
+## 15. Drukowanie i eksport — ODŁOŻONE
+
+Cała sekcja jest **odłożona poza bieżącą iterację** (decyzja D3). Docelowe zachowanie:
 
 - `Drukuj` (4.2): generuje wydruk dla A4 poziomo. Sekcje 3.3 i 3.4 zawsze na pierwszej stronie. Wykres trendu (3.7) zawsze w trybie `nakładka` (bez względu na bieżące ustawienie ekranu), ponieważ generuje czytelny obrazek na 1 stronie.
 - `Eksport CSV` (4.2): jeden plik, kolumny:
@@ -401,11 +402,11 @@ Wartości formatowane przez `fmtPLN` z `pl-PL`, dwa miejsca po przecinku.
 ## 16. Dostępność i UX
 
 - Każdy slot oferty w 4.1 ma `aria-label` w postaci `Oferta A: <nazwa>, kwota <kwota>, oprocentowanie <%>` (i analogicznie dla B).
-- Tabela 3.3 i 3.8: nawigacja klawiaturą po komórkach (`tab` + `arrows`).
+- Tabela 3.3 i 3.8: nawigacja klawiaturą po komórkach (`tab` + `arrows`) — **ODŁOŻONE** (decyzja D3); zostają semantyczne role (`role="table"/"row"/"cell"`).
 - Donuty 3.5/3.6: legenda jest zawsze obecna jako element opisowy; same łuki donuta mają `aria-label` opisujący segment.
 - Wykres 3.7 w trybie nakładki: każda z dwóch linii ma `<title>` z nazwą oferty + saldem na koniec ostatniego widocznego roku.
 - Kontrast lidera (`✓`) niesie informację także kolorem **i** glifem (zgodność z WCAG 1.4.1).
-- Czytniki ekranu: kolumny `A` i `B` mają `<th scope="col">` z nazwą oferty; wiersze 3.3/3.8 mają `<th scope="row">`. Kolumna `Δ` ma `<th scope="col">Różnica (B − A)</th>`.
+- Czytniki ekranu: tabele 3.3/3.8 są zbudowane na `div`-ach z rolami ARIA — kolumny `A` i `B` mają `role="columnheader"` z nazwą oferty, etykiety wierszy `role="rowheader"`, kolumna `Δ` nagłówek `Δ (B − A)`.
 
 ---
 

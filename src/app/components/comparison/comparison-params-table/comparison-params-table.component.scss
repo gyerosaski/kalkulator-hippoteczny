@@ -1,0 +1,175 @@
+.params-table-section {
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.params-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.params-table-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.params-table-title {
+  margin: 6px 0 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* ---------- Table grid ---------- */
+.params-table {
+  display: grid;
+}
+
+.params-table-head,
+.params-table-row {
+  display: grid;
+  grid-template-columns: 1fr 220px 220px 120px;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.params-table-head {
+  background: var(--surface-2);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.params-table-head-sub {
+  font-weight: 400;
+  text-transform: none;
+}
+
+.params-table-group-head {
+  padding: 8px 16px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--line);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.params-table-cell {
+  padding: 10px 16px;
+}
+
+.params-table-group-head .params-table-cell {
+  padding: 0;
+}
+
+.params-table-cell--label {
+  color: var(--ink-2);
+}
+
+.params-table-cell--offer {
+  position: relative;
+  text-align: right;
+  font-size: 13px;
+}
+
+.params-table-cell--a,
+.params-table-cell--b,
+.params-table-cell--delta {
+  border-left: 1px solid var(--line);
+}
+
+.params-table-cell--delta {
+  text-align: right;
+  color: var(--muted);
+}
+
+.params-table-empty {
+  padding: 16px 24px;
+  font-size: 13px;
+}
+
+/* ---------- Row states ---------- */
+.params-table-row--equal {
+  background: var(--track);
+
+  .params-table-cell {
+    color: var(--muted);
+  }
+}
+
+/* ---------- Leader ---------- */
+.is-leader {
+  color: var(--ink);
+}
+
+.leader-marker {
+  color: var(--accent-sage-deep);
+  margin-right: 4px;
+  font-size: 11px;
+  line-height: 1;
+}
+
+/* ---------- Delta coloring ---------- */
+.delta--up {
+  color: var(--c-int);
+}
+
+.delta--down {
+  color: var(--accent-sage-deep);
+}
+
+.delta--flat {
+  color: var(--muted);
+}
+
+/* ---------- Offer badges ---------- */
+.offer-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--surface);
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.offer-badge--a {
+  background: var(--offer-a);
+}
+
+.offer-badge--b {
+  background: var(--offer-b);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 860px) {
+  .params-table-head,
+  .params-table-row {
+    grid-template-columns: 1fr 140px 140px 90px;
+  }
+
+  .params-table-cell--offer {
+    font-size: 12px;
+  }
+}

@@ -52,3 +52,5 @@
 - zmiana nazwy ui-section na ui-foldable-section
 - wyśrodkowanie wertykalne elementów transzy
 - zmniejszenie odstępów pomiędzy transzami
+- RRSO
+- Zmiana WIBOR na Wskaźnik referencyjny

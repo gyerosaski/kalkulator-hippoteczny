@@ -1,0 +1,48 @@
+<section class="kpi-section">
+  <div class="kpi-header">
+    <div class="kpi-tag">3.4 · KLUCZOWE WSKAŹNIKI</div>
+    <h2 class="kpi-title">Rata, suma płatności, odsetki i koszty obok siebie</h2>
+  </div>
+
+  <div class="kpi-grid">
+    @for (row of kpiRows(); track row.label) {
+      <div class="kpi-row">
+        <div class="kpi-tile kpi-tile--a" [class.is-leader]="row.aIsLeader">
+          <div class="kpi-tile-head">
+            <span class="kpi-label">{{ row.label }}</span>
+            @if (row.aIsLeader) {
+              <span class="kpi-leader">✓ lider</span>
+            }
+          </div>
+          <div class="kpi-value mono">{{ row.aValueText }}</div>
+          <div class="kpi-meta">{{ row.aMetaText }}</div>
+        </div>
+
+        <div class="kpi-delta" [class]="row.deltaClass">
+          <span class="kpi-delta-arrow" aria-hidden="true">
+            @if (row.deltaClass === 'delta--up') {
+              ↑
+            } @else if (row.deltaClass === 'delta--down') {
+              ↓
+            }
+          </span>
+          <span class="kpi-delta-value mono">{{ row.deltaText }}</span>
+          @if (row.deltaPercentText) {
+            <span class="kpi-delta-percent mono">{{ row.deltaPercentText }}</span>
+          }
+        </div>
+
+        <div class="kpi-tile kpi-tile--b" [class.is-leader]="row.bIsLeader">
+          <div class="kpi-tile-head">
+            <span class="kpi-label">{{ row.label }}</span>
+            @if (row.bIsLeader) {
+              <span class="kpi-leader">✓ lider</span>
+            }
+          </div>
+          <div class="kpi-value mono">{{ row.bValueText }}</div>
+          <div class="kpi-meta">{{ row.bMetaText }}</div>
+        </div>
+      </div>
+    }
+  </div>
+</section>

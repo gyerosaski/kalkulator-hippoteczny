@@ -1,0 +1,82 @@
+<section class="params-table-section">
+  <div class="params-table-header">
+    <div>
+      <div class="params-table-tag">3.3 · PARAMETRY WEJŚCIOWE</div>
+      <h2 class="params-table-title">Co różni się w założeniach ofert</h2>
+    </div>
+    <ui-switch label="Tylko różnice" [formControl]="onlyDifferencesControl" />
+  </div>
+
+  <div class="params-table" role="table" aria-label="Tabela parametrów wejściowych">
+    <div class="params-table-head" role="row">
+      <div class="params-table-cell params-table-cell--label" role="columnheader">Parametr</div>
+      <div
+        class="params-table-cell params-table-cell--offer params-table-cell--a"
+        role="columnheader"
+      >
+        <span class="offer-badge offer-badge--a">A</span>
+        {{ offerName().a }}
+      </div>
+      <div
+        class="params-table-cell params-table-cell--offer params-table-cell--b"
+        role="columnheader"
+      >
+        <span class="offer-badge offer-badge--b">B</span>
+        {{ offerName().b }}
+      </div>
+      <div class="params-table-cell params-table-cell--delta" role="columnheader">
+        Δ <span class="params-table-head-sub">(B − A)</span>
+      </div>
+    </div>
+
+    @for (group of visibleGroups(); track group.name) {
+      <div class="params-table-group-head" role="row">
+        <div class="params-table-cell params-table-cell--group" role="rowheader">
+          {{ group.name }}
+        </div>
+      </div>
+
+      @for (row of group.rows; track row.label) {
+        <div class="params-table-row" [class.params-table-row--equal]="row.isEqual" role="row">
+          <div class="params-table-cell params-table-cell--label" role="rowheader">
+            {{ row.label }}
+          </div>
+
+          <div
+            class="params-table-cell params-table-cell--offer params-table-cell--a mono"
+            [class.is-leader]="row.aIsLeader"
+            role="cell"
+          >
+            @if (row.aIsLeader) {
+              <span class="leader-marker" aria-hidden="true">▌</span>
+            }
+            {{ row.aText }}
+          </div>
+
+          <div
+            class="params-table-cell params-table-cell--offer params-table-cell--b mono"
+            [class.is-leader]="row.bIsLeader"
+            role="cell"
+          >
+            @if (row.bIsLeader) {
+              <span class="leader-marker" aria-hidden="true">▌</span>
+            }
+            {{ row.bText }}
+          </div>
+
+          <div
+            class="params-table-cell params-table-cell--delta mono"
+            [class]="row.deltaClass"
+            role="cell"
+          >
+            {{ row.deltaText }}
+          </div>
+        </div>
+      }
+    } @empty {
+      <div class="params-table-empty muted">
+        Brak różnic — obie oferty mają identyczne parametry wejściowe.
+      </div>
+    }
+  </div>
+</section>

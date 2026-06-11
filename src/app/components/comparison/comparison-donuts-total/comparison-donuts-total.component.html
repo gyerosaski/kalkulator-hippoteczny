@@ -1,0 +1,62 @@
+<section class="donut-pair-section">
+  <div class="donut-pair-header">
+    <div class="donut-pair-tag">3.5 · STRUKTURA WSZYSTKICH PŁATNOŚCI</div>
+    <h2 class="donut-pair-title">Na co składa się suma płatności w każdej z ofert</h2>
+  </div>
+
+  <div class="donut-pair-legend" role="list" aria-label="Legenda segmentów">
+    @for (segment of visibleSegments(); track segment.label) {
+      <span class="donut-pair-legend-item" role="listitem">
+        <ui-color-code-marker [variant]="segment.variant" />
+        {{ segment.label }}
+      </span>
+    }
+  </div>
+
+  <div class="donut-pair">
+    <figure class="donut-pair-chart">
+      <ui-donut
+        [data]="slicesA()"
+        [size]="donutSize"
+        [thickness]="donutThickness"
+        centerLabel="Razem"
+        [centerValue]="centerValueA()"
+      />
+      <figcaption class="donut-pair-caption">
+        <span class="offer-badge offer-badge--a" aria-hidden="true">A</span>
+        <span class="donut-pair-caption-name">{{ sideA().offer.name }}</span>
+        <span class="donut-pair-caption-total mono">Σ {{ totalTextA() }}</span>
+      </figcaption>
+    </figure>
+
+    <div class="donut-pair-deltas" aria-label="Różnice segmentów (B − A)">
+      <div class="donut-pair-deltas-head">Δ (B − A)</div>
+      @for (row of deltaRows(); track row.label) {
+        <div class="donut-pair-delta-row">
+          <span class="donut-pair-delta-label">
+            <ui-color-code-marker [variant]="row.variant" />
+            {{ row.label }}
+          </span>
+          <span class="donut-pair-delta-value mono" [class]="row.deltaClass">{{
+            row.deltaText
+          }}</span>
+        </div>
+      }
+    </div>
+
+    <figure class="donut-pair-chart">
+      <ui-donut
+        [data]="slicesB()"
+        [size]="donutSize"
+        [thickness]="donutThickness"
+        centerLabel="Razem"
+        [centerValue]="centerValueB()"
+      />
+      <figcaption class="donut-pair-caption">
+        <span class="offer-badge offer-badge--b" aria-hidden="true">B</span>
+        <span class="donut-pair-caption-name">{{ sideB().offer.name }}</span>
+        <span class="donut-pair-caption-total mono">Σ {{ totalTextB() }}</span>
+      </figcaption>
+    </figure>
+  </div>
+</section>

@@ -1,3 +1,10 @@
+:host {
+  display: block;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
 .compare-view {
   display: flex;
   flex-direction: column;
@@ -163,6 +170,30 @@
   margin-top: 2px;
 }
 
+.slot--error {
+  border-color: var(--c-int);
+  opacity: 0.8;
+}
+
+.slot-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+}
+
 .slot-placeholder {
   display: inline-flex;
   align-items: center;
@@ -172,6 +203,57 @@
 
 .dot-sep {
   color: var(--line-2);
+}
+
+/* ---------- Pasek akcji globalnych ---------- */
+.compare-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.compare-actions-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.compare-actions-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+/* ---------- Wykres trendu — tryb „obok siebie" ---------- */
+.trend-side-by-side {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.trend-side {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.trend-side-caption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+@media (max-width: 1024px) {
+  .trend-side-by-side {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ---------- Empty state ---------- */
@@ -311,29 +393,6 @@
 
 .empty-preview-hint {
   font-size: 12px;
-}
-
-/* ---------- Both-selected placeholder ---------- */
-.compare-placeholder {
-  padding: 32px 24px;
-  border: 1px dashed var(--line-2);
-  border-radius: var(--r-xl);
-  background: var(--surface);
-  text-align: center;
-}
-
-.compare-placeholder-tag {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--muted);
-}
-
-.compare-placeholder-title {
-  margin: 6px 0 8px;
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--ink);
 }
 
 @media (max-width: 720px) {

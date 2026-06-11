@@ -1,0 +1,41 @@
+:host {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--line-2);
+  font-size: 13px;
+  line-height: 1.4;
+
+  &.banner--info {
+    background: var(--surface-2);
+    color: var(--ink-2);
+  }
+
+  &.banner--warning {
+    background: var(--c-cost-soft);
+    border-color: var(--c-cost-mid);
+    color: var(--ink);
+  }
+}
+
+.banner-icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.banner-content {
+  flex: 1 1 auto;
+}
+
+.banner-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+
+  &:empty {
+    display: none;
+  }
+}

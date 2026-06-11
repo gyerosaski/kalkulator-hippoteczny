@@ -9,11 +9,11 @@
       <div class="diff-table-cell diff-table-cell--label" role="columnheader">Pozycja</div>
       <div class="diff-table-cell diff-table-cell--offer diff-table-cell--a" role="columnheader">
         <span class="offer-badge offer-badge--a">A</span>
-        {{ offerA().name }}
+        {{ offerName().a }}
       </div>
       <div class="diff-table-cell diff-table-cell--offer diff-table-cell--b" role="columnheader">
         <span class="offer-badge offer-badge--b">B</span>
-        {{ offerB().name }}
+        {{ offerName().b }}
       </div>
       <div class="diff-table-cell diff-table-cell--delta" role="columnheader">
         Δ <span class="diff-table-head-sub">(B − A)</span>
@@ -32,7 +32,7 @@
           @if (row.aIsLeader) {
             <span class="leader-marker" aria-hidden="true">▌</span>
           }
-          {{ row.aText }} {{ row.unit }}
+          {{ row.aText }}
         </div>
 
         <div
@@ -43,7 +43,7 @@
           @if (row.bIsLeader) {
             <span class="leader-marker" aria-hidden="true">▌</span>
           }
-          {{ row.bText }} {{ row.unit }}
+          {{ row.bText }}
         </div>
 
         <div

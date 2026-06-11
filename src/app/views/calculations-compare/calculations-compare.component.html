@@ -150,19 +150,117 @@
       </div>
     </div>
   } @else {
-    <section class="compare-placeholder">
-      <div class="compare-placeholder-tag">SEKCJE 3.3–3.7</div>
-      <h2 class="compare-placeholder-title">Parametry, wskaźniki i wykresy w przygotowaniu</h2>
-      <p class="muted">
-        Tabele parametrów, kluczowe wskaźniki KPI, donuty i wykres trendu pojawią się w kolejnym
-        etapie prac.
-      </p>
-    </section>
+    @if (invalidOffer(); as offer) {
+      <ui-banner [variant]="BannerVariant.WARNING">
+        Oferta „{{ offer.name }}” zawiera błędy walidacji i nie może zostać przeliczona — sekcje
+        wskaźników i wykresów są ukryte.
+        <button
+          bannerAction
+          class="btn btn--primary"
+          type="button"
+          (click)="openInCalculator(offer)"
+        >
+          Otwórz w kalkulatorze
+        </button>
+      </ui-banner>
+    } @else {
+      @if (loanAmountsDiffer()) {
+        <ui-banner [variant]="BannerVariant.INFO">
+          Oferty mają różne kwoty kredytu — porównuj ostrożnie.
+        </ui-banner>
+      }
 
-    <app-comparison-diff-table
-      [offerA]="comparisonState.offerA()!"
-      [offerB]="comparisonState.offerB()!"
+      <div class="compare-actions">
+        <ui-switch label="Pokaż wykluczone segmenty" [formControl]="showExcludedSegmentsControl" />
+        <div class="compare-actions-group">
+          <span class="compare-actions-label">Tryb wykresu trendu</span>
+          <ui-segmented
+            [options]="trendModeOptions"
+            [labels]="trendModeOptions | comparisonTrendModeLabel"
+            [compact]="true"
+            [formControl]="trendModeControl"
+          />
+        </div>
+      </div>
+    }
+
+    <app-comparison-params-table
+      [sideA]="comparisonState.sideA()!"
+      [sideB]="comparisonState.sideB()!"
     />
+
+    @if (!invalidOffer()) {
+      <app-comparison-kpi-grid
+        [sideA]="comparisonState.sideA()!"
+        [sideB]="comparisonState.sideB()!"
+      />
+
+      <app-comparison-donuts-total
+        [sideA]="comparisonState.sideA()!"
+        [sideB]="comparisonState.sideB()!"
+        [showExcludedSegments]="showExcludedSegments()"
+      />
+
+      <app-comparison-donuts-installment
+        [sideA]="comparisonState.sideA()!"
+        [sideB]="comparisonState.sideB()!"
+      />
+
+      @if (loanPeriodsDiffer()) {
+        <ui-banner [variant]="BannerVariant.INFO">
+          Różne okresy spłaty — wykres trendu pokazuje unię lat.
+        </ui-banner>
+      }
+
+      @if (trendMode() === ComparisonTrendMode.OVERLAY) {
+        @if (trendSeriesA() && trendSeriesB()) {
+          <app-comparison-trend-chart [seriesA]="trendSeriesA()!" [seriesB]="trendSeriesB()!" />
+        }
+      } @else {
+        @let trendA = trendSideA();
+        @let trendB = trendSideB();
+        @let axisMax = sharedTrendAxisMax();
+        @if (trendA && trendB && axisMax) {
+          <div class="trend-side-by-side">
+            <div class="trend-side">
+              <div class="trend-side-caption">
+                <span class="slot-badge slot-badge--a" aria-hidden="true">A</span>
+                {{ trendA.name }}
+              </div>
+              <app-results-trend-chart
+                [yearlyGroups]="trendA.yearlyGroups"
+                [loanAmount]="trendA.loanAmount"
+                [results]="trendA.results"
+                [overheadCostsEnabled]="trendA.overheadCostsEnabled"
+                [prepaymentsEnabled]="trendA.prepaymentsEnabled"
+                [forcedBalanceAxisMax]="axisMax.balance"
+                [forcedStackAxisMax]="axisMax.stack"
+              />
+            </div>
+            <div class="trend-side">
+              <div class="trend-side-caption">
+                <span class="slot-badge slot-badge--b" aria-hidden="true">B</span>
+                {{ trendB.name }}
+              </div>
+              <app-results-trend-chart
+                [yearlyGroups]="trendB.yearlyGroups"
+                [loanAmount]="trendB.loanAmount"
+                [results]="trendB.results"
+                [overheadCostsEnabled]="trendB.overheadCostsEnabled"
+                [prepaymentsEnabled]="trendB.prepaymentsEnabled"
+                [forcedBalanceAxisMax]="axisMax.balance"
+                [forcedStackAxisMax]="axisMax.stack"
+              />
+            </div>
+          </div>
+        }
+      }
+
+      <app-comparison-diff-table
+        [sideA]="comparisonState.sideA()!"
+        [sideB]="comparisonState.sideB()!"
+      />
+    }
   }
 
   <app-select-offer-dialog />
@@ -173,6 +271,7 @@
         class="slot slot--filled"
         [class.slot--a]="slot === ComparisonSlot.A"
         [class.slot--b]="slot === ComparisonSlot.B"
+        [class.slot--error]="invalidOffer()?.id === offer.id"
       >
         <span
           class="slot-badge"
@@ -196,6 +295,15 @@
             <span class="dot-sep">·</span>
             <span>rata {{ offer.firstInstallment | formatAmount }} zł</span>
           </div>
+        </button>
+        <button
+          class="slot-action"
+          type="button"
+          (click)="openInCalculator(offer)"
+          title="Otwórz w kalkulatorze"
+          aria-label="Otwórz w kalkulatorze"
+        >
+          <icon-calculator />
         </button>
         <ui-btn-remove (remove)="clearSlot(slot)" />
       </div>
