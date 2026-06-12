@@ -35,6 +35,7 @@ import {
   TranchesFieldsFormGroup,
 } from '../../model';
 import { addMonthsStr, nextMonthStr, ym } from '../../helpers/date.helper';
+import { normalizeCalculationData } from '../../helpers/saved-calculation-data.helper';
 
 function endOfLoanDate(): string {
   return addMonthsStr(nextMonthStr(), 20 * 12 - 1);
@@ -179,7 +180,7 @@ export class FormService {
   }
 
   get ratePeriodsArray(): FormArray<FormGroup<RatePeriodFormGroup>> {
-    return this.form.controls.basicData.controls.ratePeriods;
+    return this.form.controls.ratePeriods.controls.items;
   }
 
   get prepaymentRulesArray(): FormArray<FormGroup<PrepaymentRuleFormGroup>> {
@@ -262,7 +263,6 @@ export class FormService {
       startDate: this.fb.control(today, [Validators.required]),
       capitalStartDate: this.fb.control(nextMonthStr(), [Validators.required]),
       installmentType: this.fb.control<InstallmentType>(InstallmentType.EQUAL),
-      ratePeriods: this.fb.array([this.createRatePeriodGroup({ from: today })]),
     });
   }
 
@@ -270,6 +270,9 @@ export class FormService {
     return this.fb.group(
       {
         basicData: this.createBasicDataGroup(),
+        ratePeriods: this.fb.group({
+          items: this.fb.array([this.createRatePeriodGroup({ from: ym() })]),
+        }),
         overheadCosts: this.fb.group({
           enabled: this.fb.control(false),
           fields: this.createOverheadCostsGroup(),
@@ -526,9 +529,10 @@ export class FormService {
   }
 
   loadFromFile(savedData: any): void {
-    const data = savedData?.data ?? savedData;
+    const data: any = normalizeCalculationData(savedData?.data ?? savedData);
+    if (!data) return;
 
-    const ratePeriods: any[] = data?.basicData?.ratePeriods ?? [];
+    const ratePeriods: any[] = data?.ratePeriods?.items ?? [];
     this.ratePeriodsArray.clear();
     (ratePeriods.length > 0
       ? ratePeriods.map((rp: any) => this.createRatePeriodGroup(rp))
@@ -542,7 +546,12 @@ export class FormService {
       : [this.createTrancheGroup(true)]
     ).forEach((group) => this.tranchesArray.push(group));
 
-    const prepaymentRules: any[] = data?.prepayments?.fields?.prepaymentRules ?? [];
+    const prepaymentRulesSection = data?.prepayments?.fields?.prepaymentRules;
+    const prepaymentRules: any[] = Array.isArray(prepaymentRulesSection?.items)
+      ? prepaymentRulesSection.items
+      : Array.isArray(prepaymentRulesSection)
+        ? prepaymentRulesSection
+        : [];
     this.prepaymentRulesArray.clear();
     (prepaymentRules.length > 0
       ? prepaymentRules.map((r: any) => this.createPrepaymentRuleGroup(r))

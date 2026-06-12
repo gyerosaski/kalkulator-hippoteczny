@@ -14,6 +14,7 @@ import {
   SavedCalculationRecord,
 } from '../../model';
 import { buildMortgageInputs } from '../../helpers/mortgage-inputs.helper';
+import { normalizeCalculationData } from '../../helpers/saved-calculation-data.helper';
 import { groupByYear } from '../../helpers/year-group.helper';
 import { CalculatorService } from '../calculator/calculator.service';
 import { FormService } from '../form/form';
@@ -54,7 +55,7 @@ export class ComparisonStateService {
   private readonly draftOffer = computed<ComparableOffer>(() => {
     const formValue = this.formService.formValue();
     const basicData = formValue.basicData;
-    const firstRatePeriod = basicData.ratePeriods[0];
+    const firstRatePeriod = formValue.ratePeriods.items[0];
     const rateType = firstRatePeriod?.rateType ?? RateType.VARIABLE;
     const nominalRate =
       rateType === RateType.VARIABLE
@@ -207,8 +208,7 @@ export class ComparisonStateService {
   }
 
   private extractFormValue(record: SavedCalculationRecord): MortgageFormRawValue | null {
-    if (typeof record.data !== 'object' || record.data === null) return null;
-    return record.data as MortgageFormRawValue;
+    return normalizeCalculationData(record.data);
   }
 
   /** Nadpisuje skalarne wyniki oferty wartościami z pełnego przeliczenia (jedno źródło prawdy dla sekcji 3.4–3.8). */

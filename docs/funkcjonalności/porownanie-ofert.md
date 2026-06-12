@@ -154,7 +154,7 @@ Wiersze:
 | Dane podstawowe | Tryb rat                           | `równe` \| `malejące`                                                 |
 | Dane podstawowe | Rodzaj stopy                       | `zmienna` \| `stała`                                                  |
 | Dane podstawowe | Oprocentowanie nominalne (start)   | `%` (2 miejsca)                                                       |
-| Dane podstawowe | WIBOR / Marża                      | `%` + `%` (tylko dla stopy zmiennej)                                  |
+| Dane podstawowe | Wskaźnik referencyjny / marża      | `%` + `%` (tylko dla stopy zmiennej)                                  |
 | Dane podstawowe | Liczba okresów oprocentowania      | `n` (link „pokaż okresy” **ODŁOŻONY**)                                |
 | Koszty          | Prowizja za udzielenie             | `% (= zł)`                                                            |
 | Koszty          | Opłata za wycenę                   | `zł`                                                                  |

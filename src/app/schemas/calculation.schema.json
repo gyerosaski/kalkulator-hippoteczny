@@ -4,9 +4,10 @@
   "title": "Kalkulacja hipoteczna — dane formularza",
   "description": "Schemat struktury danych zapisanej kalkulacji hipotecznej (getRawValue() formularza).",
   "type": "object",
-  "required": ["basicData", "overheadCosts", "tranches", "prepayments"],
+  "required": ["basicData", "ratePeriods", "overheadCosts", "tranches", "prepayments"],
   "properties": {
     "basicData": { "$ref": "#/$defs/BasicData" },
+    "ratePeriods": { "$ref": "#/$defs/RatePeriodsSection" },
     "overheadCosts": { "$ref": "#/$defs/OverheadCostsSection" },
     "tranches": { "$ref": "#/$defs/TranchesSection" },
     "prepayments": { "$ref": "#/$defs/PrepaymentsSection" }
@@ -59,6 +60,17 @@
         "margin": { "type": "number", "minimum": 0 }
       }
     },
+    "RatePeriodsSection": {
+      "type": "object",
+      "required": ["items"],
+      "properties": {
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/RatePeriod" }
+        }
+      }
+    },
     "BasicData": {
       "type": "object",
       "required": [
@@ -68,8 +80,7 @@
         "loanPeriod",
         "startDate",
         "capitalStartDate",
-        "installmentType",
-        "ratePeriods"
+        "installmentType"
       ],
       "properties": {
         "propertyValue": { "type": "number", "exclusiveMinimum": 0 },
@@ -78,12 +89,7 @@
         "loanPeriod": { "type": "integer", "minimum": 1 },
         "startDate": { "$ref": "#/$defs/YyyyMm" },
         "capitalStartDate": { "$ref": "#/$defs/YyyyMm" },
-        "installmentType": { "$ref": "#/$defs/InstallmentType" },
-        "ratePeriods": {
-          "type": "array",
-          "minItems": 1,
-          "items": { "$ref": "#/$defs/RatePeriod" }
-        }
+        "installmentType": { "$ref": "#/$defs/InstallmentType" }
       }
     },
     "AdditionalCost": {

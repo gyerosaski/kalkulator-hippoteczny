@@ -3,8 +3,9 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormService } from '../../../services/form/form';
+import { FormSectionId } from '../../../model';
 import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
-import { SectionComponent } from '../../ui/section/section.component';
+import { FoldableSectionComponent } from '../../ui/foldable-section/foldable-section.component';
 import { FieldComponent } from '../../ui/field/field.component';
 import { NumberInputComponent } from '../../ui/number-input/number-input.component';
 import { MonthPickerComponent } from '../../ui/month-picker/month-picker.component';
@@ -18,7 +19,7 @@ import { CardComponent } from '../../ui/card/card.component';
   imports: [
     ReactiveFormsModule,
     FormatAmountPipe,
-    SectionComponent,
+    FoldableSectionComponent,
     FieldComponent,
     NumberInputComponent,
     MonthPickerComponent,
@@ -31,6 +32,8 @@ import { CardComponent } from '../../ui/card/card.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TranchesFormComponent {
+  protected readonly FormSectionId = FormSectionId;
+
   readonly formService = inject(FormService);
   get section() {
     return this.formService.tranchesSection;

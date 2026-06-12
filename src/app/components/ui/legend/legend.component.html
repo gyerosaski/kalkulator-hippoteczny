@@ -37,7 +37,13 @@
                 (mouseenter)="onHover(child.label)"
                 (mouseleave)="onHover(null)"
               >
-                <span class="leg-lab">{{ child.label }}</span>
+                @if (child.navigationTarget; as target) {
+                  <button type="button" class="leg-lab leg-lab--nav" (click)="navigateTo(target)">
+                    {{ child.label }}
+                  </button>
+                } @else {
+                  <span class="leg-lab">{{ child.label }}</span>
+                }
                 <span class="leg-val mono" (click)="copyAmount(child.value)"
                   >{{ child.value | formatAmount }} zł</span
                 >
@@ -52,7 +58,13 @@
           (mouseleave)="onHover(null)"
         >
           <ui-color-code-marker [variant]="slice.variant" />
-          <span class="leg-lab">{{ slice.label }}</span>
+          @if (slice.navigationTarget; as target) {
+            <button type="button" class="leg-lab leg-lab--nav" (click)="navigateTo(target)">
+              {{ slice.label }}
+            </button>
+          } @else {
+            <span class="leg-lab">{{ slice.label }}</span>
+          }
           <span class="leg-val mono" (click)="copyAmount(slice.value)"
             >{{ slice.value | formatAmount }} zł</span
           >

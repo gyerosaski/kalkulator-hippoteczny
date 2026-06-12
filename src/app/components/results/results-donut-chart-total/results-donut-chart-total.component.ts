@@ -5,28 +5,32 @@ import {
   ColorCodeArea,
   ChartSlice,
   LEGEND_TOTAL_ACTIVE,
+  LegendId,
 } from '../../../model';
-import { SelectedMonthService } from '../../../services/selected-month/selected-month.service';
+import { UiStateService } from '../../../services/ui-state/ui-state.service';
 import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
+import { FormatRatePipe } from '../../../pipes/format-rate/format-rate.pipe';
 import { DonutComponent } from '../../ui/donut/donut.component';
 import { LegendComponent } from '../../ui/legend/legend.component';
 import { FormService } from '../../../services/form/form';
 import { CardComponent } from '../../ui/card/card.component';
 import { OverheadCostBreakdownService } from '../../../services/overhead-cost-breakdown/overhead-cost-breakdown.service';
+import { PREPAYMENTS_NAVIGATION_TARGET } from '../../../helpers/form-navigation.helper';
 
 @Component({
   selector: 'app-results-donut-chart-total',
   standalone: true,
-  imports: [DonutComponent, LegendComponent, FormatMonthPipe, CardComponent],
+  imports: [DonutComponent, LegendComponent, FormatMonthPipe, FormatRatePipe, CardComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './results-donut-chart-total.component.html',
   styleUrl: './results-donut-chart-total.component.scss',
 })
 export class ResultsDonutChartTotalComponent {
   results = input.required<MortgageResults | null>();
+  protected readonly LegendId = LegendId;
   protected readonly activeLabel = signal<string | null>(null);
   private readonly formService = inject(FormService);
-  private readonly selectedMonthService = inject(SelectedMonthService);
+  private readonly uiStateService = inject(UiStateService);
   private readonly percentageFormat1 = new Intl.NumberFormat('pl-PL', {
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
@@ -40,7 +44,7 @@ export class ResultsDonutChartTotalComponent {
   private readonly overheadCostBreakdownService = inject(OverheadCostBreakdownService);
 
   selectedRow = computed<ScheduleRow | null>(() => {
-    const selectedIndex = this.selectedMonthService.selectedMonthIndex();
+    const selectedIndex = this.uiStateService.selectedMonthIndex();
     if (selectedIndex === null) return null;
     return this.results()?.schedule.find((row) => row.index === selectedIndex) ?? null;
   });
@@ -95,6 +99,7 @@ export class ResultsDonutChartTotalComponent {
           value: cumulative.prepayments,
           color: 'var(--c-over)',
           variant: ColorCodeArea.PREPAYMENT,
+          navigationTarget: PREPAYMENTS_NAVIGATION_TARGET,
         });
       }
       return slices;
@@ -132,6 +137,7 @@ export class ResultsDonutChartTotalComponent {
         value: results.totals.prepayments,
         color: 'var(--c-over)',
         variant: ColorCodeArea.PREPAYMENT,
+        navigationTarget: PREPAYMENTS_NAVIGATION_TARGET,
       });
     }
     return slices;
@@ -173,6 +179,6 @@ export class ResultsDonutChartTotalComponent {
   });
 
   clearSelection(): void {
-    this.selectedMonthService.clearSelectedMonth();
+    this.uiStateService.clearSelectedMonth();
   }
 }

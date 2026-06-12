@@ -177,6 +177,7 @@
       <div class="trend-chart-legend-section">
         <ui-legend
           [slices]="selectedYearSlices()"
+          [legendId]="rememberUiState() ? LegendId.TREND_CHART : null"
           [totalLabel]="'Razem w ' + year.year"
           footerLabel="Saldo na koniec roku"
           [footerValue]="year.lastRemaining"

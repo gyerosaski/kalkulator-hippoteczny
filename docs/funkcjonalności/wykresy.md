@@ -4,6 +4,7 @@
 
 - Typ wykresu: donut (natywny SVG `ui-donut`, komponent `ui-donut-chart`).
 - Dane: łączny udział w całkowitych płatnościach dla kategorii: Kapitał, Odsetki, Koszty okołokredytowe, Nadpłaty.
+- **RRSO w nagłówku karty:** po prawej stronie nagłówka prezentowana jest metryka `RRSO` (`MortgageResults.rrso`, format pl-PL, 2 miejsca po przecinku, sufiks `%`); ukrywana gdy wartość jest `null`. Sposób wyliczania — patrz `docs/funkcjonalności/dane-podstawowe.md` §4.1.
 - Wyliczenia: sumy z całego harmonogramu zgodnie z punktami 4.1–4.2.
 - **Suma nad legendą:** nad legendą prezentowany jest wiersz „Suma wszystkich płatności” (= suma wartości
   widocznych slice'ów) oddzielony poziomym separatorem (`border-top` w kolorze `--line`) od listy legendy.
@@ -14,6 +15,13 @@
   całego okresu; agregat `ScheduleRow.costBreakdown` wierszy do wybranego miesiąca w trybie narastającym) —
   patrz `docs/funkcjonalności/koszty-okolokredytowe-i-promocje.md` §4. Etykiety składowych pochodzą z pipe'u
   `overheadCostKindLabel`.
+- **Nawigacja z legendy do formularza:** kliknięcie etykiety pozycji legendy powiązanej z sekcją formularza
+  (rozwinięte składowe kosztów okołokredytowych oraz pozycja „Nadpłaty”) otwiera odpowiednią sekcję
+  (i podsekcję) w lewej kolumnie i przewija do niej widok (`UiStateService.revealFormSection()`; mapowanie
+  koszt → sekcja w `form-navigation.helper.ts`). Etykiety nawigowalne renderowane są jako przyciski
+  (`.leg-lab--nav`) — wyróżnia je kursor pointer i podkreślenie na hover; dostępne też z klawiatury.
+  Pozycje „Kapitał” i „Odsetki” oraz wiersz-rodzic „Koszty okołokredytowe” (który klikiem rozwija składowe)
+  nie nawigują.
 
 ### 5.2. „Wysokość pierwszej raty” + „Struktura pierwszej raty”
 

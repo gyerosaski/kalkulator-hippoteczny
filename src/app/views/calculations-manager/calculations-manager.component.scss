@@ -92,3 +92,12 @@
 .sort-control ui-select {
   min-width: 180px;
 }
+
+.sort-control .ico-btn icon-arrow-up {
+  display: inline-flex;
+  transition: transform 0.15s ease;
+}
+
+.sort-control .ico-btn.is-flipped icon-arrow-up {
+  transform: rotate(180deg);
+}

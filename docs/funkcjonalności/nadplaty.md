@@ -67,7 +67,14 @@
   - efekt: niższy cashflow miesięczny, oszczędność odsetkowa zwykle mniejsza niż przy skróceniu okresu.
 - `skrócenie okresu`:
   - po nadpłacie system utrzymuje zbliżoną ratę i redukuje liczbę okresów,
+  - skrócenie jest jawne: pozostała liczba miesięcy amortyzacji jest przeliczana po nadpłacie,
+    - raty równe: `n' = ceil(ln(rata / (rata - saldo * i)) / ln(1 + i))` (gdy rata nie pokrywa odsetek, okres nie jest skracany),
+    - raty malejące: `n' = ceil(saldo / część_kapitałowa)`,
   - efekt: zwykle większa oszczędność odsetek (krótszy czas naliczania).
+- Współistnienie reguł o różnych skutkach w tym samym miesiącu:
+  - obie części nadpłaty pomniejszają saldo; przy ograniczeniu do salda najpierw konsumowana jest część `niższa rata`, a reszta przypada części `skrócenie okresu`,
+  - kolejność efektów w miesiącu: najpierw skrócenie pozostałego okresu przy utrzymanej racie (część `skrócenie okresu`), następnie rekalkulacja raty na — ewentualnie skróconym — pozostałym okresie (część `niższa rata`),
+  - dzięki temu oba skutki działają jednocześnie: okres ulega skróceniu, a rata obniżeniu.
 
 #### 5.4 Prowizja za wcześniejszą spłatę
 

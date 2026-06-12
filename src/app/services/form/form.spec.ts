@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 
 import { FormService } from './form';
+import { PrepaymentEffect, PrepaymentFrequency, RateType } from '../../model';
 
 describe('FormService', () => {
   let service: FormService;
@@ -12,6 +13,100 @@ describe('FormService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+  });
+
+  describe('loadFromFile — okresy oprocentowania', () => {
+    it('wczytuje okresy oprocentowania z bieżącego kształtu (`ratePeriods.items`)', () => {
+      const data = service.form.getRawValue();
+      data.ratePeriods.items = [
+        { from: '2026-06', rateType: RateType.FIXED, nominalRate: 7.5, wibor: 0, margin: 0 },
+        { from: '2028-06', rateType: RateType.VARIABLE, nominalRate: 0, wibor: 5.5, margin: 2 },
+      ];
+
+      service.loadFromFile(data);
+
+      expect(service.ratePeriodsArray.length).toBe(2);
+      expect(service.ratePeriodsArray.at(0).getRawValue().nominalRate).toBe(7.5);
+      expect(service.ratePeriodsArray.at(1).getRawValue().wibor).toBe(5.5);
+    });
+
+    it('wczytuje okresy oprocentowania ze starego kształtu (`basicData.ratePeriods`)', () => {
+      const current = service.form.getRawValue();
+      const legacySnapshot = {
+        ...current,
+        ratePeriods: undefined,
+        basicData: {
+          ...current.basicData,
+          ratePeriods: [
+            { from: '2026-06', rateType: RateType.FIXED, nominalRate: 6.8, wibor: 0, margin: 0 },
+          ],
+        },
+      };
+
+      service.loadFromFile(legacySnapshot);
+
+      expect(service.ratePeriodsArray.length).toBe(1);
+      expect(service.ratePeriodsArray.at(0).getRawValue().rateType).toBe(RateType.FIXED);
+      expect(service.ratePeriodsArray.at(0).getRawValue().nominalRate).toBe(6.8);
+    });
+  });
+
+  describe('loadFromFile — reguły nadpłat', () => {
+    it('wczytuje wszystkie reguły nadpłat z kształtu `prepaymentRules.items`', () => {
+      const data = service.form.getRawValue();
+      data.prepayments.enabled = true;
+      data.prepayments.fields.prepaymentRules.items = [
+        {
+          frequency: PrepaymentFrequency.ONE_TIME,
+          from: '2027-01',
+          to: '2027-01',
+          amount: 10_000,
+          effect: PrepaymentEffect.SHORTEN_PERIOD,
+        },
+        {
+          frequency: PrepaymentFrequency.MONTHLY,
+          from: '2028-01',
+          to: '2029-01',
+          amount: 500,
+          effect: PrepaymentEffect.LOWER_INSTALLMENT,
+        },
+      ];
+
+      service.loadFromFile(data);
+
+      expect(service.prepaymentRulesArray.length).toBe(2);
+      expect(service.prepaymentRulesArray.at(0).getRawValue().amount).toBe(10_000);
+      expect(service.prepaymentRulesArray.at(1).getRawValue()).toEqual({
+        frequency: PrepaymentFrequency.MONTHLY,
+        from: '2028-01',
+        to: '2029-01',
+        amount: 500,
+        effect: PrepaymentEffect.LOWER_INSTALLMENT,
+      });
+    });
+
+    it('wczytuje reguły nadpłat z historycznego kształtu z płaską tablicą', () => {
+      const data = service.form.getRawValue() as Record<string, unknown> & {
+        prepayments: { fields: { prepaymentRules: unknown } };
+      };
+      data.prepayments.fields.prepaymentRules = [
+        {
+          frequency: PrepaymentFrequency.YEARLY,
+          from: '2027-01',
+          to: '2030-01',
+          amount: 7_500,
+          effect: PrepaymentEffect.SHORTEN_PERIOD,
+        },
+      ];
+
+      service.loadFromFile(data);
+
+      expect(service.prepaymentRulesArray.length).toBe(1);
+      expect(service.prepaymentRulesArray.at(0).getRawValue().amount).toBe(7_500);
+      expect(service.prepaymentRulesArray.at(0).getRawValue().frequency).toBe(
+        PrepaymentFrequency.YEARLY,
+      );
+    });
   });
 
   describe('crossFieldValidator — capitalBeforeLastTranche', () => {

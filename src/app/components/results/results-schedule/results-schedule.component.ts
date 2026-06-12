@@ -1,12 +1,19 @@
-import { Component, input, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
+import {
+  Component,
+  input,
+  ChangeDetectionStrategy,
+  afterNextRender,
+  inject,
+  computed,
+  signal,
+} from '@angular/core';
 import { YearGroup, ScheduleRow, MortgageResults } from '../../../model';
-import { SelectedMonthService } from '../../../services/selected-month/selected-month.service';
+import { UiStateService } from '../../../services/ui-state/ui-state.service';
 import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
 import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
 import { FormatRatePipe } from '../../../pipes/format-rate/format-rate.pipe';
 import { FormService } from '../../../services/form/form';
 import { IconChevronRightComponent } from '../../icons/icon-chevron-right/icon-chevron-right.component';
-import { IconChevronDownComponent } from '../../icons/icon-chevron-down/icon-chevron-down.component';
 import { IconArrowRightComponent } from '../../icons/icon-arrow-right/icon-arrow-right.component';
 import { ColorCodeArea } from '../../../model';
 import { ColorCodeMarkerComponent } from '../../ui/color-code-marker/color-code-marker.component';
@@ -31,7 +38,6 @@ const TITLE_MONTH_FORMATTER = new Intl.DateTimeFormat('pl-PL', {
     FormatAmountPipe,
     FormatRatePipe,
     IconChevronRightComponent,
-    IconChevronDownComponent,
     IconArrowRightComponent,
     ColorCodeMarkerComponent,
     CardComponent,
@@ -47,11 +53,17 @@ export class ResultsScheduleComponent {
   protected readonly ColorCodeMarkerVariant = ColorCodeArea;
 
   private readonly formService = inject(FormService);
-  private readonly selectedMonthService = inject(SelectedMonthService);
+  private readonly uiStateService = inject(UiStateService);
 
-  expandedYear = signal<number | null>(null);
+  readonly expandedYear = this.uiStateService.expandedScheduleYear;
 
-  readonly selectedMonthIndex = this.selectedMonthService.selectedMonthIndex;
+  readonly selectedMonthIndex = this.uiStateService.selectedMonthIndex;
+
+  protected readonly isAnimatable = signal(false);
+
+  constructor() {
+    afterNextRender(() => this.isAnimatable.set(true));
+  }
 
   readonly selectedScheduleRow = computed<ScheduleRow | null>(() => {
     const selectedIndex = this.selectedMonthIndex();
@@ -91,14 +103,14 @@ export class ResultsScheduleComponent {
   });
 
   toggle(year: number): void {
-    this.expandedYear.update((curr) => (curr === year ? null : year));
+    this.uiStateService.toggleScheduleYear(year);
   }
 
   selectMonth(rowIndex: number): void {
-    this.selectedMonthService.toggleSelectedMonth(rowIndex);
+    this.uiStateService.toggleSelectedMonth(rowIndex);
   }
 
   clearSelection(): void {
-    this.selectedMonthService.clearSelectedMonth();
+    this.uiStateService.clearSelectedMonth();
   }
 }

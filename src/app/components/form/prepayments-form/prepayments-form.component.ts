@@ -1,13 +1,14 @@
-import { Component, inject, ChangeDetectionStrategy, computed, signal } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, computed } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FormService } from '../../../services/form/form';
+import { UiStateService } from '../../../services/ui-state/ui-state.service';
 import { PrepaymentFrequency, PrepaymentEffect } from '../../../model';
 import { PrepaymentFrequencyLabelPipe } from '../../../pipes/prepayment-frequency-label/prepayment-frequency-label.pipe';
 import { PrepaymentEffectLabelPipe } from '../../../pipes/prepayment-effect-label/prepayment-effect-label.pipe';
-import { SectionComponent } from '../../ui/section/section.component';
-import { ColorCodeArea } from '../../../model';
+import { FoldableSectionComponent } from '../../ui/foldable-section/foldable-section.component';
+import { ColorCodeArea, FormSectionId } from '../../../model';
 import { FieldComponent } from '../../ui/field/field.component';
 import { NumberInputComponent } from '../../ui/number-input/number-input.component';
 import { MonthPickerComponent } from '../../ui/month-picker/month-picker.component';
@@ -22,7 +23,7 @@ import { DividerComponent } from '../../ui/divider/divider.component';
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    SectionComponent,
+    FoldableSectionComponent,
     FieldComponent,
     NumberInputComponent,
     MonthPickerComponent,
@@ -39,9 +40,11 @@ import { DividerComponent } from '../../ui/divider/divider.component';
 })
 export class PrepaymentsFormComponent {
   private readonly formService = inject(FormService);
+  private readonly uiStateService = inject(UiStateService);
 
   protected readonly colorCodeArea = ColorCodeArea;
   protected readonly PrepaymentFrequency = PrepaymentFrequency;
+  protected readonly FormSectionId = FormSectionId;
 
   readonly prepaymentFrequencyOptions = Object.values(PrepaymentFrequency);
   readonly prepaymentEffectOptions = Object.values(PrepaymentEffect);
@@ -76,10 +79,10 @@ export class PrepaymentsFormComponent {
     return this.formService.prepaymentsGroup;
   }
 
-  readonly openSubsection = signal<string | null>(null);
+  readonly openSubsection = this.uiStateService.openSubsection(FormSectionId.PREPAYMENTS);
 
   setSubsectionOpen(key: string, open: boolean): void {
-    this.openSubsection.set(open ? key : null);
+    this.uiStateService.setOpenSubsection(FormSectionId.PREPAYMENTS, open ? key : null);
   }
 
   get prepaymentRulesArray() {

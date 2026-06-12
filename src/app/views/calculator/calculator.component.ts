@@ -7,8 +7,9 @@ import { MortgageResults, YearGroup } from '../../model';
 import { CalculatorService } from '../../services/calculator/calculator.service';
 import { CalculatorStateService } from '../../services/calculator-state/calculator-state.service';
 import { FormService } from '../../services/form/form';
-import { SelectedMonthService } from '../../services/selected-month/selected-month.service';
+import { UiStateService } from '../../services/ui-state/ui-state.service';
 import { BasicDataFormComponent } from '../../components/form/basic-data-form/basic-data-form.component';
+import { RatePeriodsFormComponent } from '../../components/form/rate-periods-form/rate-periods-form.component';
 import { OverheadCostsFormComponent } from '../../components/form/overhead-costs-form/overhead-costs-form.component';
 import { TranchesFormComponent } from '../../components/form/tranches-form/tranches-form.component';
 import { PrepaymentsFormComponent } from '../../components/form/prepayments-form/prepayments-form.component';
@@ -27,6 +28,7 @@ import { groupByYear } from '../../helpers/year-group.helper';
   imports: [
     ReactiveFormsModule,
     BasicDataFormComponent,
+    RatePeriodsFormComponent,
     OverheadCostsFormComponent,
     TranchesFormComponent,
     PrepaymentsFormComponent,
@@ -45,7 +47,7 @@ export class CalculatorComponent {
   private readonly calc = inject(CalculatorService);
   private readonly formService = inject(FormService);
   private readonly calculatorState = inject(CalculatorStateService);
-  private readonly selectedMonthService = inject(SelectedMonthService);
+  private readonly uiStateService = inject(UiStateService);
 
   get form() {
     return this.formService.form;
@@ -74,7 +76,7 @@ export class CalculatorComponent {
   }
 
   private recalculate() {
-    this.selectedMonthService.clearSelectedMonth();
+    this.uiStateService.clearSelectedMonth();
     if (this.form.valid) {
       const inputs = buildMortgageInputs(this.form.getRawValue());
       const computedResults = this.calc.compute(inputs);

@@ -19,6 +19,10 @@ export interface RatePeriodFormGroup {
   margin: FormControl<number>;
 }
 
+export interface RatePeriodsSectionFormGroup {
+  items: FormArray<FormGroup<RatePeriodFormGroup>>;
+}
+
 export interface TrancheFormGroup {
   amount: FormControl<number>;
   date: FormControl<string>;
@@ -148,11 +152,11 @@ export interface BasicDataFormGroup {
   startDate: FormControl<string>;
   capitalStartDate: FormControl<string>;
   installmentType: FormControl<InstallmentType>;
-  ratePeriods: FormArray<FormGroup<RatePeriodFormGroup>>;
 }
 
 export interface MortgageFormGroup {
   basicData: FormGroup<BasicDataFormGroup>;
+  ratePeriods: FormGroup<RatePeriodsSectionFormGroup>;
   overheadCosts: FormGroup<ToggleableSectionFormGroup<OverheadCostsFormGroup>>;
   tranches: FormGroup<ToggleableSectionFormGroup<TranchesFieldsFormGroup>>;
   prepayments: FormGroup<ToggleableSectionFormGroup<PrepaymentsFieldsFormGroup>>;
@@ -166,6 +170,9 @@ export type MortgageFormRawValue = ReturnType<FormGroup<MortgageFormGroup>['getR
 
 /** Migawka wartości sekcji „Dane podstawowe” formularza kalkulatora. */
 export type BasicDataRawValue = MortgageFormRawValue['basicData'];
+
+/** Migawka wartości sekcji „Okresy oprocentowania” formularza kalkulatora. */
+export type RatePeriodsRawValue = MortgageFormRawValue['ratePeriods'];
 
 /** Migawka wartości pól sekcji „Koszty okołokredytowe i promocje” (bez flagi `enabled`). */
 export type OverheadCostsRawValue = MortgageFormRawValue['overheadCosts']['fields'];

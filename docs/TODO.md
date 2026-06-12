@@ -15,26 +15,26 @@
 - [x] udostępnić możliwość wczytywania uprzednio zapisanej konfiguracji formularza
 - [x] data wypłaty pierwszej transzy jest zawsze równa dacie uruchomienia kredytu. Pole powinno być zablokowane i aktualizować się po zmianie w polu "Data uruchomienia kredytu". zaktualizuj dokumentacje
 - [x] pierwsza rata prezentowana w src/app/components/results/results-summary powinna być pierwszą ratą pełną kapitałowo-odsetkową. w przypadku uruchomienia kredytu w transzach prezentować labelkę "PIERWSZA RATA KAPITAŁOWO-ODSETKOWA" oraz poprawną wartość
-- brak walidacji pola "6. Początek spłat kapitału (YYYY-MM)" - jeśli są zdefiniowane transze, data musi być większa od daty uruchomienia ostatniej transzy
+- [x] brak walidacji pola "6. Początek spłat kapitału (YYYY-MM)" - jeśli są zdefiniowane transze, data musi być większa od daty uruchomienia ostatniej transzy
 - [x] cały kapitał nie jest spłacany, zostają jakieś grosze
 - [x] w przypadku wypłaty kredytu w transzach rata kredytu powinna się zwiększać w miesiącu po jej uruchomieniu, a nie w tym samym miesiącu, sekcja "Pozostało" prawidłowo przyrasta o wysokość transzy w miesiącu jej uruchomienia
 - [x] w harmonogramie spłat w miesiącu nadpłaty rata jest zwiększana o nadpłatę, a nie powinna
 - [x] usunąć metodę CalculatorService.round2
-- przy dwóch regułach nadpłaty jeden skracającej okres, a drugiej obniżającej ratę okres kredytowania nie ulega skróceniu
+- [x] przy dwóch regułach nadpłaty jeden skracającej okres, a drugiej obniżającej ratę okres kredytowania nie ulega skróceniu
 - [x] dodaj regułę, żeby preferować użycie enumów zamiast literal types, zamień wszystkie wykorzystania, enumy powinny mieć klucze i wartości w języku angielskim, THIS_WAY, konwersja enumów na docelowe labelki w języku polskim powinna odbywać się w pipe'ach
 - [x] stwórz scheme opisującą strukturę zapisanych ustawień w formacie .json, waliduj .json na podstawie schemy przy wczytywaniu ustawień - jeśli walidacje nie przebiegnie pomyślnie, prezentuj natywny dialog wzorem SaveCalculationDialogComponent z informacją o tym, które pola są niepoprawne/mają niepoprawne wartości
 - [x] jeśli transzę są włączone ich suma musi być równa kwocie kredytu
 - [x] umożliwić zaznaczenie wiersza miesięcznego w tabeli harmonogram spłat, po zaznaczeniu, donut "Struktura wszystkich płatności" powinien przekształcić się w "Struktura wszystkich płatności do <zaznaczony miesiąc i rok>", a donut "Struktura pierwszej raty" w "Struktura raty w miesiącu <zaznaczony miesiąc i rok>", ponowne kliknięcie w dany wiersz odznacza go i przywraca domyślne zachowanie donutów
-- Podsekcja "Prowizja za udzielenie" powinna się składać z inputa numerycznego i przełącznika "%/zł" tak, aby użytkownik mógł wprowadzić wartość procentową lub konkretną kwotę
+- [x] Podsekcja "Prowizja za udzielenie" powinna się składać z inputa numerycznego i przełącznika "%/zł" tak, aby użytkownik mógł wprowadzić wartość procentową lub konkretną kwotę
 - [x] Opłata za wycenę powinna być ujęta w harmonogramie spłat w kolumnie koszty w pierwszym miesiącu kredytu
 - [x] zmień konfigurację tauri tak, żeby aplikacja domyślnie uruchamiała się w trybie pełnoekranowym
 - [x] wynieś listę kalkulacji z komponentu src/app/views/calculations-manager do dedykowanego komponentu w przestrzeni src/app/components
 - [x] nowe ikony użyte w komponencie src/app/views/calculations-manager przenieś do przestrzeni src/app/components/ui
 - [x] usuń kolumnę przebieg salda
 - [x] usuń filtr "Robocze"
-- customowy dropdown zgodny z design systemem
+- [x] customowy dropdown zgodny z design systemem
 - [x] nowy badge "Zmodyfikowana"
-- Eksportuj wszystkie do .json
+- [x] Eksportuj wszystkie do .json
 - [x] ucięte menu harmburger
 - [x] przy zmianie CommissionCalcMethod w forumlarzu aplikacja powinna przeliczać aktualną wartość CommissionFormGroup.commissionValue na nową jednostkę
 - [x] po uzupełnieniu podsekcji "ubezpieczenie pomostowe" w harmonogramie spłat dla miesięcy, w których bank podwyższa oprocentowanie rata kapitałowa wynosi 0zł co jest błędem
@@ -42,15 +42,16 @@
 - [x] Ubezpieczenie niskiego wkładu powinno przestawać obowiązywać gdy LTV spadnie poniżej 80%
 - [x] dotyczy podsekcji "Ubezpieczenie na życie", "Ubezpieczenie od utraty pracy" i "Dodatkowe koszty" w przypadku, gdy składka/koszt płacony jest jednorazowo nie prezentować pól od/do tylko jeden moth picker z miesiącem płatności składki/kosztu, jeśli ubezpieczenie/koszt płacone jesty cyklicznie (co rok/co miesiąc), prezentować 2 month pickery od/do
 - [x] dla pustego stanu listy kalkulacji nie wyświetlaj nagłówków tabeli tj. "Nazwa Kwota · LTV Okres Oproc. Pierwsza rata Odsetki Zmodyfikowano Akcje"
-- Zakładka "Twoje kalkulacje" -> kliknij importuj -> zamknij file picker -> wyświetla się toast "Zaimportowano kalkulacje"
-- UI state service, rozwinięcie/zwinięcie sekcji, podsekcji, legendy, aktualnie wybrany rok w rocznych składowych płatności, wybrany miesiąc w harmonogramie spłat
-- wyśrodkowanie wertykalne ikonki i labelki na toaście
-- po kliknięcie w koszt na legendzie przescrollowanie formularza do odpowiedniej sekcji
-- moth picker w okresach oprocentowania ucina nazwy miesięcy
-- animacja zwijania rozwijania i animowany chevron dla wierszy lat w harmonogramie spłaty kredytu
-- przeniesienie okresów oprocentowania do oddzielnej formGroup i zwijanej sekcji
-- zmiana nazwy ui-section na ui-foldable-section
-- wyśrodkowanie wertykalne elementów transzy
-- zmniejszenie odstępów pomiędzy transzami
-- RRSO
-- Zmiana WIBOR na Wskaźnik referencyjny
+- [x] Błąd - Zakładka "Twoje kalkulacje" -> kliknij importuj -> zamknij file picker -> wyświetla się toast "Zaimportowano kalkulacje"
+- [x] Stworzenie UI state service przechowującej rozwinięcie/zwinięcie sekcji, podsekcji, legendy, aktualnie wybrany rok w rocznych składowych płatności, wybrany miesiąc w harmonogramie spłat, etc.
+- [x] wyśrodkowanie wertykalne ikonki i labelki na toaście
+- [x] po kliknięciu w koszt na legendzie przescrollowanie formularza do odpowiedniej sekcji
+- [x] moth picker w okresach oprocentowania ucina nazwy miesięcy
+- [x] animacja zwijania rozwijania i animowany chevron dla wierszy lat w harmonogramie spłaty kredytu
+- [x] przeniesienie okresów oprocentowania do oddzielnej formGroup i zwijanej sekcji
+- [x] zmiana nazwy ui-section na ui-foldable-section
+- [x] wyśrodkowanie wertykalne elementów transzy
+- [x] zmniejszenie odstępów pomiędzy transzami
+- [x] obliczanie i prezentacja RRSO
+- [x] Zmiana WIBOR na Wskaźnik referencyjny
+- [x] przycisk do odwracania sortowania obok kryterium sortowania w "Twoje kalkulacje"

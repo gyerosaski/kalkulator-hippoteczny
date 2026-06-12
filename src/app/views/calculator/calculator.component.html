@@ -1,6 +1,7 @@
 <div class="two-column-layout">
   <div class="column">
     <app-basic-data-form />
+    <app-rate-periods-form />
     <app-tranches-form />
     <app-overhead-costs-form />
     <app-prepayments-form />
@@ -13,6 +14,7 @@
         <app-results-donut-chart-installment [results]="resultsValue" />
         <app-results-trend-chart
           [yearlyGroups]="yearlyGroups()"
+          [rememberUiState]="true"
           [loanAmount]="loanAmount"
           [results]="resultsValue"
           [overheadCostsEnabled]="overheadCostsEnabled"

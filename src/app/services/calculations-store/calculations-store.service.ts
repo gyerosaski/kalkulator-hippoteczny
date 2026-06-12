@@ -86,12 +86,16 @@ export class CalculationsStoreService {
       title: 'Wczytaj kalkulację z pliku',
     });
     if (!selected) return null;
-    const content = await readTextFile(selected);
-    const parsed = JSON.parse(content);
-    if (this.isSavedCalculationRecord(parsed)) {
-      return { record: parsed, rawData: parsed.data };
+    try {
+      const content = await readTextFile(selected);
+      const parsed = JSON.parse(content);
+      if (this.isSavedCalculationRecord(parsed)) {
+        return { record: parsed, rawData: parsed.data };
+      }
+      return { record: null, rawData: parsed };
+    } catch {
+      return { record: null, rawData: null };
     }
-    return { record: null, rawData: parsed };
   }
 
   async getStorePath(): Promise<string> {

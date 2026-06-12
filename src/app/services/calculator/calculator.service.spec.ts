@@ -122,6 +122,117 @@ describe('MortgageCalcService (nadpłaty)', () => {
     expect(rowAfterEventLower!.rate).toBeLessThan(rowAfterEventShorten!.rate);
   });
 
+  it('powinien jednocześnie skrócić okres i obniżyć ratę przy regułach o różnych efektach', () => {
+    const secondRule = (effect: PrepaymentEffect) => ({
+      frequency: PrepaymentFrequency.ONE_TIME,
+      from: '2026-03',
+      to: '2026-03',
+      amount: 10_000,
+      effect,
+    });
+
+    const mixedInputs = baseInputs(PrepaymentEffect.LOWER_INSTALLMENT);
+    mixedInputs.prepaymentRules!.push(secondRule(PrepaymentEffect.SHORTEN_PERIOD));
+
+    const lowerBothInputs = baseInputs(PrepaymentEffect.LOWER_INSTALLMENT);
+    lowerBothInputs.prepaymentRules!.push(secondRule(PrepaymentEffect.LOWER_INSTALLMENT));
+
+    const shortenBothInputs = baseInputs(PrepaymentEffect.SHORTEN_PERIOD);
+    shortenBothInputs.prepaymentRules!.push(secondRule(PrepaymentEffect.SHORTEN_PERIOD));
+
+    const mixed = service.compute(mixedInputs);
+    const lowerBoth = service.compute(lowerBothInputs);
+    const shortenBoth = service.compute(shortenBothInputs);
+
+    // Okres krótszy niż w wariancie wyłącznie obniżającym ratę (ta sama suma nadpłat)
+    expect(mixed.schedule.length).toBeLessThan(lowerBoth.schedule.length);
+
+    // Rata po nadpłacie niższa niż w wariancie wyłącznie skracającym okres
+    const mixedRowAfterEvent = mixed.schedule.find((r) => r.date === '2026-04');
+    const shortenRowAfterEvent = shortenBoth.schedule.find((r) => r.date === '2026-04');
+    expect(mixedRowAfterEvent).toBeTruthy();
+    expect(shortenRowAfterEvent).toBeTruthy();
+    expect(mixedRowAfterEvent!.rate).toBeLessThan(shortenRowAfterEvent!.rate);
+  });
+
+  it('powinien skracać okres przy równoległych regułach cyklicznych o różnych efektach', () => {
+    const monthlyRule = (effect: PrepaymentEffect) => ({
+      frequency: PrepaymentFrequency.MONTHLY,
+      from: '2026-03',
+      to: '2027-12',
+      amount: 500,
+      effect,
+    });
+
+    const mixedInputs = baseInputs();
+    mixedInputs.prepaymentRules = [
+      monthlyRule(PrepaymentEffect.LOWER_INSTALLMENT),
+      monthlyRule(PrepaymentEffect.SHORTEN_PERIOD),
+    ];
+
+    const lowerOnlyInputs = baseInputs();
+    lowerOnlyInputs.prepaymentRules = [
+      monthlyRule(PrepaymentEffect.LOWER_INSTALLMENT),
+      monthlyRule(PrepaymentEffect.LOWER_INSTALLMENT),
+    ];
+
+    const mixed = service.compute(mixedInputs);
+    const lowerOnly = service.compute(lowerOnlyInputs);
+
+    expect(mixed.schedule.length).toBeLessThan(lowerOnly.schedule.length);
+  });
+
+  it('powinien skrócić okres dla rat malejących przy regułach o różnych efektach', () => {
+    const secondRule = (effect: PrepaymentEffect) => ({
+      frequency: PrepaymentFrequency.ONE_TIME,
+      from: '2026-03',
+      to: '2026-03',
+      amount: 10_000,
+      effect,
+    });
+
+    const mixedInputs = baseInputs(PrepaymentEffect.LOWER_INSTALLMENT);
+    mixedInputs.installmentType = InstallmentType.DECREASING;
+    mixedInputs.prepaymentRules!.push(secondRule(PrepaymentEffect.SHORTEN_PERIOD));
+
+    const lowerBothInputs = baseInputs(PrepaymentEffect.LOWER_INSTALLMENT);
+    lowerBothInputs.installmentType = InstallmentType.DECREASING;
+    lowerBothInputs.prepaymentRules!.push(secondRule(PrepaymentEffect.LOWER_INSTALLMENT));
+
+    const mixed = service.compute(mixedInputs);
+    const lowerBoth = service.compute(lowerBothInputs);
+
+    expect(mixed.schedule.length).toBeLessThan(lowerBoth.schedule.length);
+  });
+
+  it('powinien przyciąć nadpłaty do salda, gdy ich suma przekracza pozostały kapitał', () => {
+    const inputs = baseInputs(PrepaymentEffect.LOWER_INSTALLMENT);
+    inputs.prepaymentRules = [
+      {
+        frequency: PrepaymentFrequency.ONE_TIME,
+        from: '2026-03',
+        to: '2026-03',
+        amount: 200_000,
+        effect: PrepaymentEffect.LOWER_INSTALLMENT,
+      },
+      {
+        frequency: PrepaymentFrequency.ONE_TIME,
+        from: '2026-03',
+        to: '2026-03',
+        amount: 200_000,
+        effect: PrepaymentEffect.SHORTEN_PERIOD,
+      },
+    ];
+
+    const result = service.compute(inputs);
+    const lastRow = result.schedule[result.schedule.length - 1];
+
+    expect(lastRow.date).toBe('2026-03');
+    expect(lastRow.remaining).toBe(0);
+    expect(lastRow.prepayment).toBeLessThan(400_000);
+    expect(lastRow.prepayment).toBeLessThanOrEqual(300_000);
+  });
+
   it('powinien dodać automatyczną nadpłatę dla reguły docelowej raty', () => {
     const inputs = baseInputs();
     inputs.prepaymentRules = [];
@@ -555,5 +666,82 @@ describe('MortgageCalcService (rozbicie kosztów okołokredytowych)', () => {
       const rowSum = row.costBreakdown.reduce((sum, item) => sum + item.value, 0);
       expect(rowSum).toBeCloseTo(row.insuranceCost, 2);
     }
+  });
+});
+
+describe('MortgageCalcService (RRSO)', () => {
+  let service: CalculatorService;
+
+  beforeEach(() => {
+    service = new CalculatorService();
+  });
+
+  function noCostInputs(nominalRate: number): MortgageInputs {
+    return {
+      propertyValue: 500_000,
+      loanAmount: 300_000,
+      ltv: 60,
+      loanPeriod: 20 * 12,
+      startDate: '2026-01',
+      capitalStartDate: '2026-02',
+      installmentType: InstallmentType.EQUAL,
+      ratePeriods: [
+        { from: '2026-01', rateType: RateType.FIXED, nominalRate, wibor: 0, margin: 0 },
+      ],
+    };
+  }
+
+  it('dla kredytu bez kosztów RRSO ≈ efektywna stopa roczna z kapitalizacją miesięczną', () => {
+    const result = service.compute(noCostInputs(8));
+
+    // (1 + 0,08/12)^12 − 1 ≈ 8,30%
+    const expectedRrso = (Math.pow(1 + 0.08 / 12, 12) - 1) * 100;
+    expect(result.rrso).not.toBeNull();
+    expect(result.rrso!).toBeCloseTo(expectedRrso, 2);
+  });
+
+  it('dla kredytu 0% bez kosztów RRSO ≈ 0', () => {
+    const result = service.compute(noCostInputs(0));
+
+    expect(result.rrso).not.toBeNull();
+    expect(result.rrso!).toBeCloseTo(0, 4);
+  });
+
+  it('prowizja za udzielenie podnosi RRSO względem kredytu bez kosztów', () => {
+    const withoutCosts = service.compute(noCostInputs(8));
+
+    const inputsWithCommission = noCostInputs(8);
+    inputsWithCommission.overheadCosts = {
+      commissionCalcMethod: CommissionCalcMethod.PERCENTAGE,
+      commissionValue: 2,
+      appraisalFee: 0,
+    };
+    const withCommission = service.compute(inputsWithCommission);
+
+    expect(withCommission.rrso!).toBeGreaterThan(withoutCosts.rrso!);
+  });
+
+  it('dla kredytu w transzach i z nadpłatami RRSO jest skończone', () => {
+    const inputs = noCostInputs(8);
+    inputs.tranches = [
+      { amount: 200_000, date: '2026-01', disbursementFee: 0 },
+      { amount: 100_000, date: '2026-06', disbursementFee: 150 },
+    ];
+    inputs.capitalStartDate = '2026-07';
+    inputs.prepaymentRules = [
+      {
+        frequency: PrepaymentFrequency.ONE_TIME,
+        from: '2027-01',
+        to: '2027-01',
+        amount: 20_000,
+        effect: PrepaymentEffect.SHORTEN_PERIOD,
+      },
+    ];
+
+    const result = service.compute(inputs);
+
+    expect(result.rrso).not.toBeNull();
+    expect(Number.isFinite(result.rrso!)).toBe(true);
+    expect(result.rrso!).toBeGreaterThan(0);
   });
 });

@@ -17,6 +17,12 @@
         }
       </div>
     </div>
+    @if (results()?.rrso; as rrsoValue) {
+      <div class="head-metric">
+        <span class="muted small">RRSO</span>
+        <span class="head-metric-value mono">{{ rrsoValue | formatRate }}</span>
+      </div>
+    }
   </div>
   <div class="donut-row">
     <ui-donut
@@ -28,6 +34,7 @@
     />
     <ui-legend
       [slices]="totalSlices()"
+      [legendId]="LegendId.DONUT_TOTAL"
       totalLabel="Suma wszystkich płatności"
       [activeLabel]="activeLabel()"
       (sliceHover)="activeLabel.set($event)"

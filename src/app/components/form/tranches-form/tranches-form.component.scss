@@ -6,4 +6,14 @@
   > .row {
     flex: 1;
   }
+
+  /* 5px = (38px wysokości inputa − 28px badge'a) / 2 — centruje względem pasa kontrolek */
+  > .tranche-num,
+  > ui-btn-remove {
+    margin-bottom: 5px;
+  }
+}
+
+ui-card + ui-card {
+  margin-top: 8px;
 }

@@ -89,7 +89,7 @@
           <div class="rate-value mono">{{ calculation.nominalRate | formatRate }}</div>
           <div class="rate-sub muted">
             @if (calculation.rateType === RateType.VARIABLE) {
-              WIBOR {{ calculation.wibor | formatRate }} + marża
+              Wskaźnik referencyjny {{ calculation.wibor | formatRate }} + marża
               {{ calculation.margin | formatRate }}
             } @else {
               stała

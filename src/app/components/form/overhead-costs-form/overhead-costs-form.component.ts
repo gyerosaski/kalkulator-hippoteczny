@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { distinctUntilChanged, map } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -9,12 +9,13 @@ import {
   LifeInsuranceCalcMethod,
 } from '../../../model';
 import { FormService } from '../../../services/form/form';
+import { UiStateService } from '../../../services/ui-state/ui-state.service';
 import { InsuranceFrequencyLabelPipe } from '../../../pipes/insurance-frequency-label/insurance-frequency-label.pipe';
 import { InsuranceCalcMethodLabelPipe } from '../../../pipes/insurance-calc-method-label/insurance-calc-method-label.pipe';
 import { LifeInsuranceCalcMethodLabelPipe } from '../../../pipes/life-insurance-calc-method-label/life-insurance-calc-method-label.pipe';
 import { CommissionCalcMethodLabelPipe } from '../../../pipes/commission-calc-method-label/commission-calc-method-label.pipe';
-import { SectionComponent } from '../../ui/section/section.component';
-import { ColorCodeArea } from '../../../model';
+import { FoldableSectionComponent } from '../../ui/foldable-section/foldable-section.component';
+import { ColorCodeArea, FormSectionId } from '../../../model';
 import { FieldComponent } from '../../ui/field/field.component';
 import { NumberInputComponent } from '../../ui/number-input/number-input.component';
 import { MonthPickerComponent } from '../../ui/month-picker/month-picker.component';
@@ -30,7 +31,7 @@ import { SegmentedComponent } from '../../ui/segmented/segmented.component';
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    SectionComponent,
+    FoldableSectionComponent,
     FieldComponent,
     NumberInputComponent,
     MonthPickerComponent,
@@ -51,8 +52,10 @@ import { SegmentedComponent } from '../../ui/segmented/segmented.component';
 export class OverheadCostsFormComponent {
   protected readonly colorCodeArea = ColorCodeArea;
   protected readonly InsuranceFrequency = InsuranceFrequency;
+  protected readonly FormSectionId = FormSectionId;
 
   private formService = inject(FormService);
+  private readonly uiStateService = inject(UiStateService);
 
   constructor() {
     this.commissionCalcMethodControl.valueChanges
@@ -232,10 +235,10 @@ export class OverheadCostsFormComponent {
     return this.form.controls.promoRate.controls.promoTo;
   }
 
-  readonly openSubsection = signal<string | null>(null);
+  readonly openSubsection = this.uiStateService.openSubsection(FormSectionId.OVERHEAD_COSTS);
 
   setSubsectionOpen(key: string, open: boolean): void {
-    this.openSubsection.set(open ? key : null);
+    this.uiStateService.setOpenSubsection(FormSectionId.OVERHEAD_COSTS, open ? key : null);
   }
 
   get propInsSuffix(): string {

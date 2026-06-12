@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { FormService } from '../services/form/form';
 import { CommissionCalcMethod, PrepaymentEffect, PrepaymentFrequency } from '../model';
 import { buildMortgageInputs } from './mortgage-inputs.helper';
+import { normalizeCalculationData } from './saved-calculation-data.helper';
 
 describe('buildMortgageInputs', () => {
   let formService: FormService;
@@ -23,9 +24,28 @@ describe('buildMortgageInputs', () => {
     expect(inputs.startDate).toBe(formValue.basicData.startDate);
     expect(inputs.capitalStartDate).toBe(formValue.basicData.capitalStartDate);
     expect(inputs.installmentType).toBe(formValue.basicData.installmentType);
-    expect(inputs.ratePeriods).toHaveLength(formValue.basicData.ratePeriods.length);
-    expect(inputs.ratePeriods[0].wibor).toBe(formValue.basicData.ratePeriods[0].wibor);
-    expect(inputs.ratePeriods[0].margin).toBe(formValue.basicData.ratePeriods[0].margin);
+    expect(inputs.ratePeriods).toHaveLength(formValue.ratePeriods.items.length);
+    expect(inputs.ratePeriods[0].wibor).toBe(formValue.ratePeriods.items[0].wibor);
+    expect(inputs.ratePeriods[0].margin).toBe(formValue.ratePeriods.items[0].margin);
+  });
+
+  it('powinien zmapować okresy oprocentowania ze starej migawki po normalizacji', () => {
+    const formValue = formService.form.getRawValue();
+    const legacySnapshot = {
+      ...formValue,
+      basicData: {
+        ...formValue.basicData,
+        ratePeriods: formValue.ratePeriods.items,
+      },
+      ratePeriods: undefined,
+    };
+
+    const normalized = normalizeCalculationData(legacySnapshot);
+    expect(normalized).not.toBeNull();
+
+    const inputs = buildMortgageInputs(normalized!);
+    expect(inputs.ratePeriods).toHaveLength(formValue.ratePeriods.items.length);
+    expect(inputs.ratePeriods[0].wibor).toBe(formValue.ratePeriods.items[0].wibor);
   });
 
   it('powinien wyzerować sekcje wyłączone (koszty, transze, nadpłaty)', () => {

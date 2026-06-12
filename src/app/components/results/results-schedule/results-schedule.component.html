@@ -43,11 +43,7 @@
         (click)="toggle(year.year)"
       >
         <div class="cell-year">
-          @if (expandedYear() === year.year) {
-            <icon-chevron-down />
-          } @else {
-            <icon-chevron-right />
-          }
+          <span class="sec-chev"><icon-chevron-right /></span>
           {{ year.year }}
         </div>
         <div class="mono">{{ year.sumRate | formatAmount }}</div>
@@ -74,39 +70,46 @@
           <b>{{ year.lastRemaining | formatAmount }}</b>
         </div>
       </button>
-      @if (expandedYear() === year.year) {
-        @for (row of year.rows; track row.index) {
-          <button
-            type="button"
-            class="tbl-row tbl-row--month"
-            [class.is-selected]="selectedMonthIndex() === row.index"
-            [attr.aria-pressed]="selectedMonthIndex() === row.index"
-            (click)="selectMonth(row.index)"
-          >
-            <div class="cell-month">{{ row.date | formatMonth }}</div>
-            <div class="mono">{{ row.rate | formatAmount }}</div>
-            <div class="mono c-cap">{{ row.capital | formatAmount }}</div>
-            <div class="mono c-int">{{ row.interest | formatAmount }}</div>
-            @if (isRateColumnEnabled()) {
-              @let prevRate = $index > 0 ? year.rows[$index - 1].interestRate : row.interestRate;
-              <div
-                class="mono"
-                [class.rate-lower]="row.interestRate < prevRate"
-                [class.rate-higher]="row.interestRate > prevRate"
-              >
-                {{ row.interestRate | formatRate }}
-              </div>
-            }
-            @if (isPrepaymentEnabled) {
-              <div class="mono c-over">{{ row.prepayment | formatAmount }}</div>
-            }
-            @if (isOverheadCostsEnabled) {
-              <div class="mono c-cost">{{ row.insuranceCost | formatAmount }}</div>
-            }
-            <div class="mono">{{ row.remaining | formatAmount }}</div>
-          </button>
-        }
-      }
+      <div
+        class="rows-reveal"
+        [class.rows-reveal--open]="expandedYear() === year.year"
+        [class.rows-reveal--animate]="isAnimatable()"
+        [attr.inert]="expandedYear() === year.year ? null : ''"
+      >
+        <div class="rows-reveal-inner">
+          @for (row of year.rows; track row.index) {
+            <button
+              type="button"
+              class="tbl-row tbl-row--month"
+              [class.is-selected]="selectedMonthIndex() === row.index"
+              [attr.aria-pressed]="selectedMonthIndex() === row.index"
+              (click)="selectMonth(row.index)"
+            >
+              <div class="cell-month">{{ row.date | formatMonth }}</div>
+              <div class="mono">{{ row.rate | formatAmount }}</div>
+              <div class="mono c-cap">{{ row.capital | formatAmount }}</div>
+              <div class="mono c-int">{{ row.interest | formatAmount }}</div>
+              @if (isRateColumnEnabled()) {
+                @let prevRate = $index > 0 ? year.rows[$index - 1].interestRate : row.interestRate;
+                <div
+                  class="mono"
+                  [class.rate-lower]="row.interestRate < prevRate"
+                  [class.rate-higher]="row.interestRate > prevRate"
+                >
+                  {{ row.interestRate | formatRate }}
+                </div>
+              }
+              @if (isPrepaymentEnabled) {
+                <div class="mono c-over">{{ row.prepayment | formatAmount }}</div>
+              }
+              @if (isOverheadCostsEnabled) {
+                <div class="mono c-cost">{{ row.insuranceCost | formatAmount }}</div>
+              }
+              <div class="mono">{{ row.remaining | formatAmount }}</div>
+            </button>
+          }
+        </div>
+      </div>
     }
   </div>
 </ui-card>

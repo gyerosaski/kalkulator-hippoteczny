@@ -191,8 +191,15 @@ export interface ScheduleRow {
   costBreakdown: OverheadCostItem[]; // Rozbicie insuranceCost na składowe (suma value == insuranceCost)
 }
 
+/** Pojedynczy przepływ pieniężny na osi czasu kredytu (do wyliczenia RRSO). */
+export interface CashFlowEvent {
+  monthOffset: number; // liczba miesięcy od daty uruchomienia kredytu (0 = moment uruchomienia)
+  amount: number;
+}
+
 export interface MortgageResults {
   effectiveRate: number; // nominalna %
+  rrso: number | null; // Rzeczywista Roczna Stopa Oprocentowania w %; null gdy nieobliczalna
   totalMonths: number; // n łącznie (lata*12+miesiące)
   amortizationMonths: number; // n po karencji
   firstInstallment: { rate: number; capital: number; interest: number } | null;

@@ -1,5 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
-import { ChartSlice, ColorCodeArea, LEGEND_TOTAL_ACTIVE, MortgageResults } from '../../../model';
+import {
+  ChartSlice,
+  ColorCodeArea,
+  LEGEND_TOTAL_ACTIVE,
+  LegendId,
+  MortgageResults,
+} from '../../../model';
 import {
   TrendAxisTick,
   TrendBarColumn,
@@ -13,6 +19,7 @@ import { CardComponent } from '../../ui/card/card.component';
 import { ColorCodeMarkerComponent } from '../../ui/color-code-marker/color-code-marker.component';
 import { LegendComponent } from '../../ui/legend/legend.component';
 import { OverheadCostBreakdownService } from '../../../services/overhead-cost-breakdown/overhead-cost-breakdown.service';
+import { UiStateService } from '../../../services/ui-state/ui-state.service';
 import { roundUpToStep } from '../../../helpers/chart-scale.helper';
 
 interface StackSegmentDescriptor {
@@ -77,11 +84,23 @@ export class ResultsTrendChartComponent {
   /** Wymuszone maksimum osi sum rocznych — używane w widoku porównania do wspólnej skali obu wykresów. */
   forcedStackAxisMax = input<number | null>(null);
 
+  /** Gdy true, wybrany rok i rozwinięcie legendy są trzymane w UiStateService (widok kalkulatora). */
+  rememberUiState = input<boolean>(false);
+
   protected readonly ColorCodeMarkerVariant = ColorCodeArea;
-  protected readonly selectedYearIndex = signal<number | null>(null);
+  protected readonly LegendId = LegendId;
   protected readonly activeLabel = signal<string | null>(null);
 
   private readonly overheadCostBreakdownService = inject(OverheadCostBreakdownService);
+  private readonly uiStateService = inject(UiStateService);
+
+  private readonly localSelectedYearIndex = signal<number | null>(null);
+
+  protected readonly selectedYearIndex = computed(() =>
+    this.rememberUiState()
+      ? this.uiStateService.selectedTrendYearIndex()
+      : this.localSelectedYearIndex(),
+  );
 
   protected readonly geometry = computed<TrendChartGeometry | null>(() => {
     const groups = this.yearlyGroups();
@@ -234,7 +253,11 @@ export class ResultsTrendChartComponent {
   });
 
   protected selectYear(index: number): void {
-    this.selectedYearIndex.update((current) => (current === index ? null : index));
+    if (this.rememberUiState()) {
+      this.uiStateService.toggleTrendYear(index);
+    } else {
+      this.localSelectedYearIndex.update((current) => (current === index ? null : index));
+    }
   }
 
   protected setActiveLabel(label: string | null): void {

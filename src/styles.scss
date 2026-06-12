@@ -626,7 +626,7 @@ body {
 }
 
 .rate-period-from {
-  width: 148px;
+  width: 184px;
   flex-shrink: 0;
 }
 
@@ -717,6 +717,18 @@ ui-cards-group + ui-card {
   font-size: 14px;
   font-weight: 600;
   letter-spacing: -0.005em;
+}
+.head-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  white-space: nowrap;
+}
+.head-metric-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
 }
 
 /* Donut */

@@ -4,6 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
 import {
   BasicDataRawValue,
+  RatePeriodsRawValue,
   CommissionCalcMethod,
   ComparisonOfferData,
   ComparisonParamCell,
@@ -279,6 +280,8 @@ export class ComparisonParamsTableComponent {
   ): ComparisonParamRow[] {
     const basicA = formValueA?.basicData ?? null;
     const basicB = formValueB?.basicData ?? null;
+    const ratePeriodsA = formValueA?.ratePeriods.items ?? null;
+    const ratePeriodsB = formValueB?.ratePeriods.items ?? null;
 
     return [
       buildNumericParamRow(
@@ -326,24 +329,24 @@ export class ComparisonParamsTableComponent {
       ),
       buildChoiceParamRow(
         'Rodzaj stopy',
-        this.initialRateTypeText(basicA),
-        this.initialRateTypeText(basicB),
+        this.initialRateTypeText(ratePeriodsA),
+        this.initialRateTypeText(ratePeriodsB),
       ),
       buildNumericParamRow(
         'Oprocentowanie nominalne (start)',
-        percentCell(this.initialNominalRate(basicA)),
-        percentCell(this.initialNominalRate(basicB)),
+        percentCell(this.initialNominalRate(ratePeriodsA)),
+        percentCell(this.initialNominalRate(ratePeriodsB)),
         { formatDelta: formatPercentDelta, lessIsBetter: true },
       ),
       buildChoiceParamRow(
-        'WIBOR / marża',
-        this.wiborMarginText(basicA),
-        this.wiborMarginText(basicB),
+        'Wskaźnik referencyjny / marża',
+        this.wiborMarginText(ratePeriodsA),
+        this.wiborMarginText(ratePeriodsB),
       ),
       buildNumericParamRow(
         'Liczba okresów oprocentowania',
-        countCell(basicA?.ratePeriods.length ?? null),
-        countCell(basicB?.ratePeriods.length ?? null),
+        countCell(ratePeriodsA?.length ?? null),
+        countCell(ratePeriodsB?.length ?? null),
         { formatDelta: formatCountDelta },
       ),
     ];
@@ -380,22 +383,22 @@ export class ComparisonParamsTableComponent {
     };
   }
 
-  private initialRateTypeText(basicData: BasicDataRawValue | null): string | null {
-    const firstRatePeriod = basicData?.ratePeriods[0];
+  private initialRateTypeText(ratePeriods: RatePeriodsRawValue['items'] | null): string | null {
+    const firstRatePeriod = ratePeriods?.[0];
     if (!firstRatePeriod) return null;
     return this.rateTypeLabel.transform(firstRatePeriod.rateType);
   }
 
-  private initialNominalRate(basicData: BasicDataRawValue | null): number | null {
-    const firstRatePeriod = basicData?.ratePeriods[0];
+  private initialNominalRate(ratePeriods: RatePeriodsRawValue['items'] | null): number | null {
+    const firstRatePeriod = ratePeriods?.[0];
     if (!firstRatePeriod) return null;
     return firstRatePeriod.rateType === RateType.VARIABLE
       ? (Number(firstRatePeriod.wibor) || 0) + (Number(firstRatePeriod.margin) || 0)
       : Number(firstRatePeriod.nominalRate) || 0;
   }
 
-  private wiborMarginText(basicData: BasicDataRawValue | null): string | null {
-    const firstRatePeriod = basicData?.ratePeriods[0];
+  private wiborMarginText(ratePeriods: RatePeriodsRawValue['items'] | null): string | null {
+    const firstRatePeriod = ratePeriods?.[0];
     if (!firstRatePeriod) return null;
     if (firstRatePeriod.rateType !== RateType.VARIABLE) return NO_VALUE_TEXT;
     const wibor = Number(firstRatePeriod.wibor) || 0;

@@ -31,20 +31,23 @@ Czas względny wyznaczany na podstawie pola `updatedAt` — szczegóły w sekcji
 
 ### 3. Pasek narzędzi
 
-| Element           | Typ          | Opcje / działanie                                                                                                    |
-| ----------------- | ------------ | -------------------------------------------------------------------------------------------------------------------- |
-| Pole wyszukiwania | `text input` | Filtruje po polu `name` (case-insensitive, substring); przycisk `×` (widoczny gdy pole niepuste) czyści wyszukiwanie |
-| Sortowanie        | `select`     | 5 opcji — patrz tabela poniżej                                                                                       |
+| Element             | Typ                       | Opcje / działanie                                                                                                    |
+| ------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Pole wyszukiwania   | `text input`              | Filtruje po polu `name` (case-insensitive, substring); przycisk `×` (widoczny gdy pole niepuste) czyści wyszukiwanie |
+| Sortowanie          | `select`                  | 5 opcji — patrz tabela poniżej                                                                                       |
+| Kierunek sortowania | `button` (ikona strzałki) | Odwraca aktualny kierunek sortowania; strzałka w górę = rosnąco, w dół (ikona obrócona o 180°) = malejąco            |
 
 #### 3.1 Opcje sortowania
 
-| Wartość   | Etykieta               | Kierunek                     |
-| --------- | ---------------------- | ---------------------------- |
-| `updated` | ostatnio zmodyfikowane | malejąco (`updatedAt`)       |
-| `created` | data utworzenia        | malejąco (`createdAt`)       |
-| `name`    | nazwa (A–Z)            | rosnąco, locale `pl`         |
-| `loan`    | kwota kredytu          | malejąco (`loanAmount`)      |
-| `rata`    | wysokość raty          | rosnąco (`firstInstallment`) |
+| Wartość             | Etykieta               | Kierunek domyślny            |
+| ------------------- | ---------------------- | ---------------------------- |
+| `UPDATED`           | ostatnio zmodyfikowane | malejąco (`updatedAt`)       |
+| `CREATED`           | data utworzenia        | malejąco (`createdAt`)       |
+| `NAME`              | nazwa                  | rosnąco, locale `pl`         |
+| `LOAN_AMOUNT`       | kwota kredytu          | malejąco (`loanAmount`)      |
+| `FIRST_INSTALLMENT` | wysokość raty          | rosnąco (`firstInstallment`) |
+
+Zmiana kryterium sortowania resetuje kierunek do domyślnego dla tego kryterium (mapa `DEFAULT_SORT_DIRECTIONS` w `saved-calculation-sort.helper.ts`). Przycisk obok selecta odwraca kierunek (`SortDirection.ASCENDING`/`DESCENDING`). Kryterium i kierunek są przechowywane w `UiStateService`, dzięki czemu przeżywają przełączanie widoków w ramach sesji.
 
 ---
 
@@ -55,7 +58,7 @@ Czas względny wyznaczany na podstawie pola `updatedAt` — szczegóły w sekcji
 | 1   | `Nazwa`         | Nazwa kalkulacji; badge `wczytana` gdy rekord aktualnie załadowany; badge `zmodyfikowana` gdy bieżący stan formularza różni się od wczytanego snapshotu | tekst                                                           |
 | 2   | `Kwota · LTV`   | Kwota kredytu + wartość nieruchomości w podwierszu + wskaźnik LTV%; LTV wyróżnione (czerwone) gdy `> 80%`                                               | PLN bez miejsc dziesiętnych; LTV `X %`                          |
 | 3   | `Okres`         | Liczba lat i miesięcy kredytu + typ raty w podwierszu                                                                                                   | `X lat` lub `X l. Y m-cy`; badge `rata równa` / `rata malejąca` |
-| 4   | `Oproc.`        | Łączna stopa procentowa; w podwierszu `WIBOR X,XX + marża X,XX` dla stopy zmiennej lub `stała`                                                          | 2 miejsca dziesiętne, `%`                                       |
+| 4   | `Oproc.`        | Łączna stopa procentowa; w podwierszu `Wskaźnik referencyjny X,XX + marża X,XX` dla stopy zmiennej lub `stała`                                          | 2 miejsca dziesiętne, `%`                                       |
 | 5   | `Pierwsza rata` | Pierwsza rata miesięczna                                                                                                                                | PLN, 2 miejsca dziesiętne                                       |
 | 6   | `Odsetki`       | Suma odsetek przez cały okres kredytowania                                                                                                              | PLN bez miejsc dziesiętnych                                     |
 | 7   | `Zmodyfikowano` | Czas względny (`updatedAt`); po najechaniu kursorem — pełna data i godzina jako tooltip; w podwierszu data bez godziny                                  | `DD.MM.RRRR`                                                    |
@@ -179,27 +182,27 @@ Przy zapisaniu zmian: zachowywane jest oryginalne pole `createdAt`, aktualizowan
 
 Interfejs używany w warstwie widoku (design). W warstwie persystencji (Tauri store) kalkulacja przechowywana jest jako `SavedCalculationRecord` — patrz sekcja 11.
 
-| Pole                  | Typ                     | Opis                                    |
-| --------------------- | ----------------------- | --------------------------------------- |
-| `id`                  | `string`                | Unikalny identyfikator UUID             |
-| `name`                | `string`                | Nazwa nadana przez użytkownika          |
-| `note`                | `string \| null`        | Opcjonalna notatka tekstowa             |
-| `propertyValue`       | `number`                | Wartość nieruchomości (PLN)             |
-| `loanAmount`          | `number`                | Kwota kredytu (PLN)                     |
-| `years`               | `number`                | Okres kredytowania — pełne lata         |
-| `months`              | `number`                | Okres kredytowania — dodatkowe miesiące |
-| `installmentType`     | `'równe' \| 'malejące'` | Typ raty                                |
-| `rateType`            | `'zmienna' \| 'stała'`  | Typ oprocentowania                      |
-| `wibor`               | `number`                | Stawka WIBOR (%) — dla stopy zmiennej   |
-| `margin`              | `number`                | Marża banku (%) — dla stopy zmiennej    |
-| `rate`                | `number`                | Łączna stopa procentowa (%)             |
-| `firstInstallment`    | `number`                | Wartość pierwszej raty (PLN)            |
-| `totalInterest`       | `number`                | Suma odsetek przez cały okres (PLN)     |
-| `totalCosts`          | `number`                | Suma wszystkich kosztów kredytu (PLN)   |
-| `overpaymentsEnabled` | `boolean`               | Czy kalkulacja zawiera nadpłaty         |
-| `tranches`            | `number`                | Liczba transz                           |
-| `updatedAt`           | `Date`                  | Data ostatniej modyfikacji              |
-| `createdAt`           | `Date`                  | Data pierwszego zapisu                  |
+| Pole                  | Typ                     | Opis                                           |
+| --------------------- | ----------------------- | ---------------------------------------------- |
+| `id`                  | `string`                | Unikalny identyfikator UUID                    |
+| `name`                | `string`                | Nazwa nadana przez użytkownika                 |
+| `note`                | `string \| null`        | Opcjonalna notatka tekstowa                    |
+| `propertyValue`       | `number`                | Wartość nieruchomości (PLN)                    |
+| `loanAmount`          | `number`                | Kwota kredytu (PLN)                            |
+| `years`               | `number`                | Okres kredytowania — pełne lata                |
+| `months`              | `number`                | Okres kredytowania — dodatkowe miesiące        |
+| `installmentType`     | `'równe' \| 'malejące'` | Typ raty                                       |
+| `rateType`            | `'zmienna' \| 'stała'`  | Typ oprocentowania                             |
+| `wibor`               | `number`                | Wskaźnik referencyjny (%) — dla stopy zmiennej |
+| `margin`              | `number`                | Marża banku (%) — dla stopy zmiennej           |
+| `rate`                | `number`                | Łączna stopa procentowa (%)                    |
+| `firstInstallment`    | `number`                | Wartość pierwszej raty (PLN)                   |
+| `totalInterest`       | `number`                | Suma odsetek przez cały okres (PLN)            |
+| `totalCosts`          | `number`                | Suma wszystkich kosztów kredytu (PLN)          |
+| `overpaymentsEnabled` | `boolean`               | Czy kalkulacja zawiera nadpłaty                |
+| `tranches`            | `number`                | Liczba transz                                  |
+| `updatedAt`           | `Date`                  | Data ostatniej modyfikacji                     |
+| `createdAt`           | `Date`                  | Data pierwszego zapisu                         |
 
 ---
 
@@ -257,7 +260,7 @@ Deklarowane w `src-tauri/capabilities/default.json`:
 Operacje wykonywane przez computed signal `filtered()` w następującej kolejności:
 
 1. **Filtr wyszukiwania:** tekst z pola `search` sprawdzany jako substring (case-insensitive) w `name`
-2. **Sortowanie:** według wybranej opcji z pola `sortBy` (kierunek — patrz sekcja 3.1)
+2. **Sortowanie:** `sortSavedCalculations()` z `saved-calculation-sort.helper.ts` — komparator rosnący wybranego kryterium, a następnie odwrócenie listy przy kierunku malejącym (kryterium i kierunek — patrz sekcja 3.1)
 
 Computed signal `filterCount(id)` wyznacza liczniki zakładek niezależnie od aktualnie aktywnego wyszukiwania (liczy zawsze po pełnej liście rekordów).
 

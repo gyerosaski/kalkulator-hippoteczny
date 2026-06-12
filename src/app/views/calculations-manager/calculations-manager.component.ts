@@ -10,17 +10,22 @@ import {
   viewChild,
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { ask as askDialog } from '@tauri-apps/plugin-dialog';
 
 import {
   AppRoute,
+  CalculationImportStatus,
   OverheadCostKind,
   SavedCalculationMetadata,
   SavedCalculationRecord,
+  SortDirection,
+  ToastVariant,
 } from '../../model';
 import { SavedCalculation, SavedCalculationSortOption } from '../../model';
+import { sortSavedCalculations } from '../../helpers/saved-calculation-sort.helper';
+import { UiStateService } from '../../services/ui-state/ui-state.service';
 import { CalculationsStoreService } from '../../services/calculations-store/calculations-store.service';
 import { CalculatorStateService } from '../../services/calculator-state/calculator-state.service';
 import { SaveCalculationDialogComponent } from '../../dialogs/save-calculation/save-calculation-dialog.component';
@@ -36,18 +41,9 @@ import { SelectComponent } from '../../components/ui/select/select.component';
 import { IconPlusComponent } from '../../components/icons/icon-plus/icon-plus.component';
 import { IconDownloadComponent } from '../../components/icons/icon-download/icon-download.component';
 import { IconSearchComponent } from '../../components/icons/icon-search/icon-search.component';
+import { IconArrowUpComponent } from '../../components/icons/icon-arrow-up/icon-arrow-up.component';
 import { CalculationsFooterComponent } from '../../components/calculations/calculations-footer/calculations-footer.component';
 import { ToastService } from '../../services/toast/toast.service';
-
-type SortComparator = (a: SavedCalculation, b: SavedCalculation) => number;
-
-const SORT_COMPARATORS: Record<SavedCalculationSortOption, SortComparator> = {
-  [SavedCalculationSortOption.UPDATED]: (a, b) => b.updatedAt.getTime() - a.updatedAt.getTime(),
-  [SavedCalculationSortOption.CREATED]: (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
-  [SavedCalculationSortOption.NAME]: (a, b) => a.name.localeCompare(b.name, 'pl'),
-  [SavedCalculationSortOption.LOAN_AMOUNT]: (a, b) => b.loanAmount - a.loanAmount,
-  [SavedCalculationSortOption.FIRST_INSTALLMENT]: (a, b) => a.firstInstallment - b.firstInstallment,
-};
 
 @Component({
   selector: 'app-calculations-manager',
@@ -65,11 +61,13 @@ const SORT_COMPARATORS: Record<SavedCalculationSortOption, SortComparator> = {
     IconPlusComponent,
     IconDownloadComponent,
     IconSearchComponent,
+    IconArrowUpComponent,
     CalculationsFooterComponent,
   ],
 })
 export class CalculationsManagerComponent implements OnInit {
   private readonly savedCalculationsStateService = inject(SavedCalculationsStateService);
+  private readonly uiStateService = inject(UiStateService);
   private readonly calculationsStore = inject(CalculationsStoreService);
   private readonly calculatorState = inject(CalculatorStateService);
   private readonly formService = inject(FormService);
@@ -83,7 +81,7 @@ export class CalculationsManagerComponent implements OnInit {
   private readonly sortOptions: { value: SavedCalculationSortOption; label: string }[] = [
     { value: SavedCalculationSortOption.UPDATED, label: 'ostatnio zmodyfikowane' },
     { value: SavedCalculationSortOption.CREATED, label: 'data utworzenia' },
-    { value: SavedCalculationSortOption.NAME, label: 'nazwa (A–Z)' },
+    { value: SavedCalculationSortOption.NAME, label: 'nazwa' },
     { value: SavedCalculationSortOption.LOAN_AMOUNT, label: 'kwota kredytu' },
     { value: SavedCalculationSortOption.FIRST_INSTALLMENT, label: 'wysokość raty' },
   ];
@@ -93,13 +91,18 @@ export class CalculationsManagerComponent implements OnInit {
 
   readonly searchQuery = signal('');
   readonly activeSortControl = new FormControl<SavedCalculationSortOption>(
-    SavedCalculationSortOption.UPDATED,
+    this.uiStateService.savedCalculationsSortOption(),
     { nonNullable: true },
   );
 
-  private readonly activeSortValue = toSignal(this.activeSortControl.valueChanges, {
-    initialValue: SavedCalculationSortOption.UPDATED,
-  });
+  protected readonly sortDirection = this.uiStateService.savedCalculationsSortDirection;
+  protected readonly SortDirection = SortDirection;
+
+  constructor() {
+    this.activeSortControl.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((sortOption) => this.uiStateService.setSavedCalculationsSortOption(sortOption));
+  }
 
   protected readonly storePathResource = resource({
     loader: () => this.calculationsStore.getStorePath(),
@@ -115,8 +118,16 @@ export class CalculationsManagerComponent implements OnInit {
     if (query) {
       items = items.filter((item) => item.name.toLowerCase().includes(query));
     }
-    return [...items].sort(SORT_COMPARATORS[this.activeSortValue()]);
+    return sortSavedCalculations(
+      items,
+      this.uiStateService.savedCalculationsSortOption(),
+      this.uiStateService.savedCalculationsSortDirection(),
+    );
   });
+
+  toggleSortDirection(): void {
+    this.uiStateService.toggleSavedCalculationsSortDirection();
+  }
 
   readonly hasActiveFilter = computed(() => !!this.searchQuery());
 
@@ -178,8 +189,12 @@ export class CalculationsManagerComponent implements OnInit {
   }
 
   async importFromFile(): Promise<void> {
-    await this.savedCalculationsStateService.importFromFile();
-    this.toastService.show('Zaimportowano kalkulację');
+    const importStatus = await this.savedCalculationsStateService.importFromFile();
+    if (importStatus === CalculationImportStatus.SUCCESS) {
+      this.toastService.show('Zaimportowano kalkulację');
+    } else if (importStatus === CalculationImportStatus.INVALID_FILE) {
+      this.toastService.show('Nieprawidłowy plik kalkulacji', ToastVariant.ERROR);
+    }
   }
 
   async exportAllToFile(): Promise<void> {

@@ -1,0 +1,96 @@
+<ui-foldable-section
+  title="Okresy oprocentowania"
+  badge="Oprocentowanie kredytu w poszczególnych okresach"
+  [sectionId]="FormSectionId.RATE_PERIODS"
+>
+  <ui-cards-group>
+    <div>
+      @for (period of ratePeriodControls(); track $index) {
+        @let wiborId = 'rate-period-' + $index + '-wibor';
+        @let marginId = 'rate-period-' + $index + '-margin';
+        @let rateId = 'rate-period-' + $index + '-rate';
+        <ui-card
+          [tag]="'OKRES ' + ($index + 1)"
+          [removable]="$index > 0"
+          (remove)="removeRatePeriod($index)"
+        >
+          @if ($index === 0) {
+            <span slot="header" class="muted small">od daty uruchomienia kredytu</span>
+          } @else {
+            <ng-container slot="header">
+              <span class="muted small">od</span>
+              <div class="rate-period-from">
+                <ui-month-picker [formControl]="period.controls.from" />
+              </div>
+            </ng-container>
+          }
+          <div class="row row--4">
+            <ui-field label="Stopa" num="8">
+              <ui-segmented
+                [formControl]="period.controls.rateType"
+                [options]="rateTypeOptions"
+                [labels]="rateTypeOptions | rateTypeLabel"
+              />
+            </ui-field>
+            @if (period.controls.rateType.value === RateType.VARIABLE) {
+              <ui-field num="9a" label="Wskaźnik referencyjny" [inputId]="wiborId">
+                <ui-number-input
+                  [inputId]="wiborId"
+                  [formControl]="period.controls.wibor"
+                  suffix="%"
+                  [decimals]="2"
+                />
+              </ui-field>
+              <ui-field num="9b" label="Marża" [inputId]="marginId">
+                <ui-number-input
+                  [inputId]="marginId"
+                  [formControl]="period.controls.margin"
+                  suffix="%"
+                  [decimals]="2"
+                />
+              </ui-field>
+            }
+            <ui-field
+              num="9"
+              label="Oprocentowanie"
+              [inputId]="rateId"
+              [style.gridColumn]="
+                period.controls.rateType.value !== RateType.VARIABLE ? 'span 1' : null
+              "
+              [hint]="
+                period.controls.rateType.value === RateType.VARIABLE
+                  ? 'Wskaźnik referencyjny + marża'
+                  : 'wartość stała'
+              "
+            >
+              @if (period.controls.rateType.value === RateType.VARIABLE) {
+                <div class="inp inp--disabled">
+                  <input
+                    [id]="rateId"
+                    type="text"
+                    class="mono"
+                    [value]="
+                      ((period.controls.wibor.value || 0) + (period.controls.margin.value || 0))
+                        .toFixed(2)
+                        .replace('.', ',')
+                    "
+                    readonly
+                  />
+                  <span class="suffix">%</span>
+                </div>
+              } @else {
+                <ui-number-input
+                  [inputId]="rateId"
+                  [formControl]="period.controls.nominalRate"
+                  suffix="%"
+                  [decimals]="2"
+                />
+              }
+            </ui-field>
+          </div>
+        </ui-card>
+      }
+    </div>
+    <ui-btn-add label="Dodaj okres oprocentowania" (add)="addRatePeriod()" />
+  </ui-cards-group>
+</ui-foldable-section>

@@ -139,7 +139,7 @@ export function buildMortgageInputs(formValue: MortgageFormRawValue): MortgageIn
       };
 
   const basicData = formValue.basicData;
-  const ratePeriods: RatePeriod[] = (basicData.ratePeriods ?? []).map((ratePeriod) => ({
+  const ratePeriods: RatePeriod[] = (formValue.ratePeriods?.items ?? []).map((ratePeriod) => ({
     from: ratePeriod.from || basicData.startDate,
     rateType: ratePeriod.rateType,
     nominalRate: Number(ratePeriod.nominalRate) || 0,

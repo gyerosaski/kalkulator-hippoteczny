@@ -26,7 +26,9 @@ import {
   MortgageResults,
   OverheadCostKind,
   OverheadCostItem,
+  CashFlowEvent,
 } from '../../model/mortgage.model';
+import { computeRrso } from '../../helpers/rrso.helper';
 
 export {
   CommissionCalcMethod,
@@ -94,6 +96,45 @@ export class CalculatorService {
     if (periods <= 0) return 0;
     if (monthlyRate === 0) return principal / periods;
     return (principal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -periods));
+  }
+
+  /**
+   * Liczba miesięcy potrzebna do spłaty salda przy stałej racie annuitetowej.
+   * Zwraca Infinity, gdy rata nie pokrywa odsetek (saldo nie amortyzuje się).
+   */
+  private annuityTermMonths(balance: number, monthlyRate: number, payment: number): number {
+    if (balance <= 0) return 0;
+    if (payment <= 0) return Number.POSITIVE_INFINITY;
+    if (monthlyRate === 0) return Math.ceil(balance / payment);
+    if (payment <= balance * monthlyRate) return Number.POSITIVE_INFINITY;
+    return Math.ceil(
+      Math.log(payment / (payment - balance * monthlyRate)) / Math.log(1 + monthlyRate),
+    );
+  }
+
+  /**
+   * Skrócony pozostały okres amortyzacji po nadpłacie skracającej okres:
+   * rata (lub część kapitałowa) pozostaje bez zmian, skraca się liczba miesięcy.
+   */
+  private shortenedAmortMonths(
+    balance: number,
+    monthlyRate: number,
+    currentAmortMonths: number,
+    installmentType: InstallmentType,
+    equalRate: number,
+    decreasingCapitalPart: number,
+  ): number {
+    if (installmentType === InstallmentType.EQUAL) {
+      const referencePayment =
+        equalRate > 0 ? equalRate : this.annuityPayment(balance, monthlyRate, currentAmortMonths);
+      return Math.min(
+        currentAmortMonths,
+        this.annuityTermMonths(balance, monthlyRate, referencePayment),
+      );
+    }
+    const capitalPart =
+      decreasingCapitalPart > 0 ? decreasingCapitalPart : balance / Math.max(1, currentAmortMonths);
+    return Math.min(currentAmortMonths, Math.ceil(balance / capitalPart));
   }
 
   private isMonthInRange(month: string, from: string, to?: string): boolean {
@@ -530,10 +571,14 @@ export class CalculatorService {
         }
       }
 
-      let prepayment = prepaymentLower + prepaymentShorten;
-      if (prepayment > saldo) {
-        prepayment = saldo;
-      }
+      // Clamp do salda: najpierw konsumowana jest część obniżająca ratę,
+      // dopiero reszta salda przypada części skracającej okres
+      const appliedPrepaymentLower = Math.min(prepaymentLower, saldo);
+      const appliedPrepaymentShorten = Math.min(
+        prepaymentShorten,
+        Math.max(0, saldo - appliedPrepaymentLower),
+      );
+      const prepayment = appliedPrepaymentLower + appliedPrepaymentShorten;
       saldo = Math.max(0, saldo - prepayment);
 
       const commission =
@@ -576,23 +621,48 @@ export class CalculatorService {
         costBreakdown,
       });
 
-      const hasLowerRatePrepayment = prepaymentLower > 0;
       if (!inGrace && remainingAmortMonths > 0) {
         remainingAmortMonths -= 1;
         if (saldo <= 0) {
           remainingAmortMonths = 0;
-        } else if (hasLowerRatePrepayment) {
+        } else {
+          // Kolejność efektów w miesiącu: najpierw skrócenie okresu przy utrzymanej racie,
+          // potem przeliczenie raty na (ewentualnie skróconym) pozostałym okresie
+          if (appliedPrepaymentShorten > 0) {
+            remainingAmortMonths = this.shortenedAmortMonths(
+              saldo,
+              iCurrent,
+              remainingAmortMonths,
+              inputs.installmentType,
+              equalRate,
+              decreasingCapitalPart,
+            );
+          }
+          if (appliedPrepaymentLower > 0) {
+            if (inputs.installmentType === InstallmentType.EQUAL) {
+              equalRate = this.annuityPayment(saldo, iCurrent, Math.max(1, remainingAmortMonths));
+            } else {
+              decreasingCapitalPart = saldo / Math.max(1, remainingAmortMonths);
+            }
+          }
+        }
+      } else if (inGrace && remainingAmortMonths > 0 && saldo > 0) {
+        if (appliedPrepaymentShorten > 0) {
+          remainingAmortMonths = this.shortenedAmortMonths(
+            saldo,
+            iCurrent,
+            remainingAmortMonths,
+            inputs.installmentType,
+            equalRate,
+            decreasingCapitalPart,
+          );
+        }
+        if (appliedPrepaymentLower > 0) {
           if (inputs.installmentType === InstallmentType.EQUAL) {
             equalRate = this.annuityPayment(saldo, iCurrent, Math.max(1, remainingAmortMonths));
           } else {
-            decreasingCapitalPart = saldo / remainingAmortMonths;
+            decreasingCapitalPart = saldo / Math.max(1, remainingAmortMonths);
           }
-        }
-      } else if (inGrace && hasLowerRatePrepayment && remainingAmortMonths > 0) {
-        if (inputs.installmentType === InstallmentType.EQUAL) {
-          equalRate = this.annuityPayment(saldo, iCurrent, Math.max(1, remainingAmortMonths));
-        } else {
-          decreasingCapitalPart = saldo / Math.max(1, remainingAmortMonths);
         }
       }
 
@@ -648,6 +718,47 @@ export class CalculatorService {
     const bankReturnRatioPct =
       inputs.loanAmount > 0 ? (totalAllPayments / inputs.loanAmount) * 100 : 0;
 
+    // RRSO — przepływy pieniężne z perspektywy kredytobiorcy.
+    // Wypłaty: saldo początkowe w t=0 + kolejne transze w miesiącach ich uruchomienia.
+    // Płatności: raty + nadpłaty + prowizje + koszty z harmonogramu, przy czym koszty
+    // wstępne (prowizja za udzielenie + wycena, księgowane w wierszu 1) trafiają do t=0,
+    // a prowizje za uruchomienie transz (nieobecne w harmonogramie) do miesięcy transz.
+    const initialDisbursement =
+      tranches.length > 1
+        ? this.asNonNegativeNumber(tranches[0].amount)
+        : this.asNonNegativeNumber(inputs.loanAmount);
+    const disbursements: CashFlowEvent[] = [{ monthOffset: 0, amount: initialDisbursement }];
+    const borrowerPayments: CashFlowEvent[] = [];
+    if (tranches.length > 1) {
+      // Pierwsza transza z definicji nie ma prowizji za uruchomienie — pomijana tu i w totals
+      for (let trancheIndex = 1; trancheIndex < tranches.length; trancheIndex++) {
+        const tranche = tranches[trancheIndex];
+        const trancheAmount = this.asNonNegativeNumber(tranche.amount);
+        const trancheMonthOffset = tranche.date
+          ? Math.max(0, this.monthDiff(inputs.startDate, tranche.date))
+          : 0;
+        if (trancheAmount > 0 && tranche.date) {
+          disbursements.push({ monthOffset: trancheMonthOffset, amount: trancheAmount });
+        }
+        const trancheFee = this.asNonNegativeNumber(tranche.disbursementFee);
+        if (trancheFee > 0) {
+          borrowerPayments.push({ monthOffset: trancheMonthOffset, amount: trancheFee });
+        }
+      }
+    }
+    if (upfrontCosts > 0 && schedule.length > 0) {
+      borrowerPayments.push({ monthOffset: 0, amount: upfrontCosts });
+    }
+    for (const row of schedule) {
+      const upfrontCostsInRow = row.index === 1 ? upfrontCosts : 0;
+      const paymentAmount =
+        row.rate + row.prepayment + row.commission + row.insuranceCost - upfrontCostsInRow;
+      if (paymentAmount > 0) {
+        borrowerPayments.push({ monthOffset: row.index, amount: paymentAmount });
+      }
+    }
+    const rrso = computeRrso(disbursements, borrowerPayments);
+
     const firstCapitalRow = schedule.find((r) => r.capital > 0) ?? schedule[0] ?? null;
     const first = firstCapitalRow
       ? {
@@ -659,6 +770,7 @@ export class CalculatorService {
 
     return {
       effectiveRate: initialBaseRate,
+      rrso,
       totalMonths: schedule.length,
       amortizationMonths: Math.max(0, schedule.length - Math.min(graceMonths, schedule.length)),
       firstInstallment: first,

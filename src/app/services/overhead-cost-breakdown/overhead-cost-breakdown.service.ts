@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ChartSlice, ColorCodeArea, OverheadCostItem, ScheduleRow } from '../../model';
 import { OverheadCostKindLabelPipe } from '../../pipes/overhead-cost-kind-label/overhead-cost-kind-label.pipe';
+import { overheadCostNavigationTarget } from '../../helpers/form-navigation.helper';
 
 @Injectable({ providedIn: 'root' })
 export class OverheadCostBreakdownService {
@@ -32,6 +33,7 @@ export class OverheadCostBreakdownService {
         value: item.value,
         color: 'var(--c-cost)',
         variant: ColorCodeArea.COST,
+        navigationTarget: overheadCostNavigationTarget(item.kind),
       }));
   }
 }

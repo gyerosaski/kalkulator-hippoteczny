@@ -35,6 +35,16 @@
         [options]="sortOptionValues"
         [labels]="sortOptionLabels"
       />
+      <button
+        class="ico-btn"
+        type="button"
+        [class.is-flipped]="sortDirection() === SortDirection.DESCENDING"
+        (click)="toggleSortDirection()"
+        title="Odwróć kierunek sortowania"
+        aria-label="Odwróć kierunek sortowania"
+      >
+        <icon-arrow-up />
+      </button>
     </div>
   </div>
 

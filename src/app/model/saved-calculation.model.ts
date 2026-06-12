@@ -47,6 +47,12 @@ export interface SavedCalculation {
   updatedAt: Date;
 }
 
+export enum CalculationImportStatus {
+  SUCCESS = 'SUCCESS',
+  CANCELED = 'CANCELED',
+  INVALID_FILE = 'INVALID_FILE',
+}
+
 export enum SavedCalculationSortOption {
   UPDATED = 'UPDATED',
   CREATED = 'CREATED',

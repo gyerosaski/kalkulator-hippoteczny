@@ -1,13 +1,18 @@
 import { inject, Injectable, signal } from '@angular/core';
 
 import { InstallmentType, RateType } from '../../model';
-import { SavedCalculation, SavedCalculationRecord } from '../../model';
+import { CalculationImportStatus, SavedCalculation, SavedCalculationRecord } from '../../model';
 import { CalculationsStoreService } from '../calculations-store/calculations-store.service';
+import { normalizeCalculationData } from '../../helpers/saved-calculation-data.helper';
 
 export function toSavedCalculation(record: SavedCalculationRecord): SavedCalculation {
-  const rawData = record.data as Record<string, unknown>;
+  const rawData = (normalizeCalculationData(record.data) ?? {}) as unknown as Record<
+    string,
+    unknown
+  >;
   const basicData = (rawData?.['basicData'] ?? {}) as Record<string, unknown>;
-  const ratePeriods = (basicData?.['ratePeriods'] as unknown[]) ?? [];
+  const ratePeriodsSection = (rawData?.['ratePeriods'] ?? {}) as Record<string, unknown>;
+  const ratePeriods = (ratePeriodsSection?.['items'] as unknown[]) ?? [];
   const firstRate = (ratePeriods[0] ?? {}) as Record<string, unknown>;
 
   const loanPeriodMonths = Number(basicData?.['loanPeriod'] ?? 0);
@@ -103,9 +108,10 @@ export class SavedCalculationsStateService {
     await this.refreshRecords();
   }
 
-  async importFromFile(): Promise<void> {
+  async importFromFile(): Promise<CalculationImportStatus> {
     const result = await this.calculationsStore.importFromFile();
-    if (!result?.record) return;
+    if (!result) return CalculationImportStatus.CANCELED;
+    if (!result.record) return CalculationImportStatus.INVALID_FILE;
 
     const now = new Date().toISOString();
     const record: SavedCalculationRecord = {
@@ -114,6 +120,7 @@ export class SavedCalculationsStateService {
     };
     await this.calculationsStore.saveCalculation(record);
     await this.refreshRecords();
+    return CalculationImportStatus.SUCCESS;
   }
 
   public async refreshRecords(): Promise<void> {

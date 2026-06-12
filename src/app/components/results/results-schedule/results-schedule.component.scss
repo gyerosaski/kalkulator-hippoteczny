@@ -32,3 +32,31 @@ ui-card {
 .rate-higher {
   color: var(--c-int);
 }
+
+/* Rotacja chevrona wiersza roku — bazowe style .sec-chev są globalne */
+.tbl-row--year.is-open .sec-chev {
+  transform: rotate(90deg);
+}
+
+/* Animowane rozwijanie wierszy miesięcy: grid-template-rows 0fr → 1fr nie wymaga znanej wysokości */
+.rows-reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+
+.rows-reveal--animate {
+  transition:
+    grid-template-rows 0.3s ease,
+    opacity 0.25s ease;
+}
+
+.rows-reveal--open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.rows-reveal-inner {
+  overflow: hidden;
+  min-height: 0;
+}

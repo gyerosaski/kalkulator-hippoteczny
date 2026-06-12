@@ -7,8 +7,15 @@ import {
   signal,
   computed,
 } from '@angular/core';
-import { ChartSlice, LEGEND_TOTAL_ACTIVE, ToastVariant } from '../../../model';
+import {
+  ChartSlice,
+  FormSectionNavigationTarget,
+  LEGEND_TOTAL_ACTIVE,
+  LegendId,
+  ToastVariant,
+} from '../../../model';
 import { ToastService } from '../../../services/toast/toast.service';
+import { UiStateService } from '../../../services/ui-state/ui-state.service';
 import { ColorCodeMarkerComponent } from '../color-code-marker/color-code-marker.component';
 import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
 
@@ -21,8 +28,11 @@ import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pip
 })
 export class LegendComponent {
   private readonly toastService = inject(ToastService);
+  private readonly uiStateService = inject(UiStateService);
 
   slices = input.required<ChartSlice[]>();
+  /** Gdy ustawione, stan rozwinięcia pozycji jest trzymany w UiStateService i przeżywa zmianę widoku. */
+  legendId = input<LegendId | null>(null);
   /** etykieta wiersza sumy nad legendą; gdy pusta — wiersz sumy i separator nie są renderowane. */
   totalLabel = input<string>('');
   /** etykieta wiersza stopki pod legendą; gdy pusta — wiersz stopki nie jest renderowany. */
@@ -34,7 +44,7 @@ export class LegendComponent {
 
   protected readonly legendTotalActive = LEGEND_TOTAL_ACTIVE;
 
-  private readonly expandedLabel = signal<string | null>(null);
+  private readonly localExpandedLabel = signal<string | null>(null);
 
   protected readonly legendTotal = computed(() =>
     this.slices().reduce((sum, slice) => sum + slice.value, 0),
@@ -45,11 +55,26 @@ export class LegendComponent {
   }
 
   protected toggleExpand(label: string): void {
-    this.expandedLabel.update((current) => (current === label ? null : label));
+    const legendId = this.legendId();
+    if (legendId !== null) {
+      this.uiStateService.toggleLegendLabel(legendId, label);
+    } else {
+      this.localExpandedLabel.update((current) => (current === label ? null : label));
+    }
   }
 
   protected isExpanded(label: string): boolean {
-    return this.expandedLabel() === label;
+    const legendId = this.legendId();
+    const expandedLabel =
+      legendId !== null
+        ? this.uiStateService.expandedLegendLabel(legendId)()
+        : this.localExpandedLabel();
+    return expandedLabel === label;
+  }
+
+  /** Otwiera i przewija lewą kolumnę do sekcji formularza odpowiadającej pozycji legendy. */
+  protected navigateTo(target: FormSectionNavigationTarget): void {
+    this.uiStateService.revealFormSection(target);
   }
 
   protected copyAmount(value: number): void {

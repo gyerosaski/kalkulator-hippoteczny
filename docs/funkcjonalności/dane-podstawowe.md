@@ -74,25 +74,9 @@ Wszystkie pola walutowe i procentowe korzystają z generycznego komponentu `ui-n
   - `malejace`: część kapitałowa stała `Kapitał_m = saldo / n_pozostałe`, odsetki `Odsetki_m = saldo_{m-1} × i_m`, rata `R_m = Kapitał_m + Odsetki_m`.
 - Przy zmianie okresu oprocentowania, dołączeniu transzy lub nadpłacie z efektem „niższa rata” rata jest przeliczana ponownie od bieżącego salda i pozostałej liczby rat.
 
-### 2.8. Okresy oprocentowania (`ratePeriods` — `FormArray`)
+### 2.8. Okresy oprocentowania
 
-Sekcja `ui-cards-group` zawiera listę kart `OKRES n` (`FormArray` z `RatePeriodFormGroup`). Każdy okres definiuje typ stopy i jej wartość obowiązującą od wskazanej daty. Domyślnie istnieje jeden okres startujący od `startDate`.
-
-Pola w karcie:
-
-- 8. `Stopa` (`rateType`): `ui-segmented` z opcjami `['zmienna', 'stala']`. Domyślnie `zmienna`.
-- 9. `Oprocentowanie` (`nominalRate`): `ui-number-input`, `suffix="%"`, `[decimals]="2"`. Wyświetlane tylko dla `rateType === 'stala'`.
-  - Dla `rateType === 'zmienna'` to pole jest zastąpione polem tylko do odczytu (`inp inp--disabled`) prezentującym sumę `wibor + margin`.
-- 9a. `WIBOR` (`wibor`): widoczne tylko dla `rateType === 'zmienna'`. `ui-number-input`, `suffix="%"`, `[decimals]="2"`. Domyślnie `7,00`.
-- 9b. `Marża` (`margin`): widoczne tylko dla `rateType === 'zmienna'`. `ui-number-input`, `suffix="%"`, `[decimals]="2"`. Domyślnie `2,00`.
-
-Walidatory: `Validators.min(0)`, `Validators.max(50)` dla wszystkich pól liczbowych w okresie.
-
-Pierwszy okres (`$index === 0`) ma stałą datę startu „od daty uruchomienia kredytu” i nie udostępnia pickera. Kolejne okresy mają edytowalne pole `from` (`ui-month-picker`) w nagłówku karty oraz przycisk „usuń”.
-
-Przycisk `+ Dodaj okres oprocentowania` (`addRatePeriod()` w `FormService`) tworzy nowy okres z datą `lastFrom + 12 miesięcy` i kopiuje pozostałe wartości z poprzedniego okresu.
-
-W silniku obliczeniowym (`CalculatorService.compute`) okresy są sortowane rosnąco po `from`. Dla danego miesiąca `date` brany jest ostatni okres spełniający `period.from <= date`. Każda zmiana okresu w trakcie spłaty wywołuje rekalkulację `equalRate` lub `decreasingCapitalPart`.
+Okresy oprocentowania zostały wydzielone do osobnej, zwijanej sekcji formularza „Okresy oprocentowania” (`RatePeriodsFormComponent`), prezentowanej bezpośrednio pod sekcją „Dane podstawowe”. Pełny opis: `docs/funkcjonalności/okresy-oprocentowania.md`.
 
 ---
 
@@ -116,14 +100,9 @@ Sekcja danych podstawowych nie ma osobnego paska akcji — globalne przyciski zn
 
 ---
 
-## 4. Panel wyników (`ResultsSummaryComponent`)
+## 4. Panel wyników
 
-Bezpośrednio nad wykresami i tabelą harmonogramu wyświetlany jest pasek 4 kafelków KPI (`kpi-strip`):
-
-1. **Pierwsza rata** (`r.firstInstallment.rate`) — z dopiskiem `installmentTypeLabel · rateTypeLabel effectiveRate%`.
-2. **Suma wszystkich płatności** (`r.totals.totalAllPayments = totalRate + overheadCosts`) — z dopiskiem „oddasz X% pożyczonej kwoty” (`bankReturnRatioPct`).
-3. **Odsetki** (`r.totals.totalInterest`) — z dopiskiem `intPct = totalInterest / totalCapital × 100`.
-4. **Koszty okołokredytowe** / **Nadpłaty** / **Koszty i nadpłaty** — etykieta zależna od włączonych sekcji (`kpi4Label`); wartość = `overheadCosts + prepayments`. Dolny meta-tekst opcjonalnie rozbija sumę na składniki.
+Wyniki prezentowane są w prawej kolumnie jako seria kart (wykresy + harmonogram) — opis poszczególnych kart w `docs/funkcjonalności/wykresy.md` i `docs/funkcjonalności/harmonogram-splaty.md`. (Wcześniej opisywany tu `ResultsSummaryComponent` z paskiem `kpi-strip` nie istnieje w bieżącej implementacji.)
 
 Wartości totali są obliczane w `CalculatorService.compute()`:
 
@@ -131,6 +110,25 @@ Wartości totali są obliczane w `CalculatorService.compute()`:
 - `overheadCosts = loanCommission + appraisalFee + Σ insuranceCost + Σ commission + Σ trancheDisbursementFees`,
 - `prepayments = Σ schedule[i].prepayment`,
 - `bankReturnRatioPct = totalAllPayments / loanAmount × 100`.
+
+### 4.1. RRSO (Rzeczywista Roczna Stopa Oprocentowania)
+
+`MortgageResults.rrso` (w %, `null` gdy nieobliczalna) — wyliczana w `CalculatorService.compute()` przez `computeRrso()` (`src/app/helpers/rrso.helper.ts`) według formuły APRC z dyrektywy 2008/48/WE: szukana jest stopa `X`, dla której suma zdyskontowanych wypłat kredytu równa się sumie zdyskontowanych płatności kredytobiorcy:
+
+```
+Σ Dₖ·(1+X)^(−tₖ/12) = Σ Pⱼ·(1+X)^(−tⱼ/12)      (t — miesiące od uruchomienia, wykładnik w latach)
+```
+
+Montaż przepływów pieniężnych:
+
+- **Wypłaty (Dₖ):** saldo początkowe w `t=0` (pierwsza transza lub cała kwota kredytu) + każda kolejna transza w miesiącu jej uruchomienia.
+- **Płatności (Pⱼ):** dla każdego wiersza harmonogramu `rate + prepayment + commission + insuranceCost`, z dwiema korektami:
+  - koszty wstępne (prowizja za udzielenie + opłata za wycenę), księgowane w harmonogramie w wierszu 1, są przenoszone do `t=0` (zgodnie z konwencją dyrektywy — koszty płatne przy zawarciu umowy),
+  - prowizje za uruchomienie transz (nieobecne w wierszach harmonogramu) są dodawane w miesiącach uruchomienia transz; pierwsza transza z definicji nie ma prowizji za uruchomienie, więc jest pomijana (tak samo jak w totalach silnika).
+
+Solver: bisekcja na przedziale od −99,99% do górnej granicy podwajanej aż do zmiany znaku (cap 10 000%; ~200 iteracji, precyzja 1e−10). `null` gdy brak wypłat/płatności lub brak pierwiastka w zakresie.
+
+**Prezentacja:** RRSO wyświetlane jest w nagłówku karty „Struktura płatności” (`ResultsDonutChartTotalComponent`), po prawej stronie (`.head-metric`), w formacie pl-PL z 2 miejscami po przecinku (`formatRate`). Metryka jest ukryta, gdy `rrso === null`.
 
 ---
 

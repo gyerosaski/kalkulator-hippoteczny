@@ -1,5 +1,6 @@
-<ui-section
+<ui-foldable-section
   title="Transze"
+  [sectionId]="FormSectionId.TRANCHES"
   [badge]="badge()"
   [toggleable]="true"
   [defaultOpen]="false"
@@ -52,4 +53,4 @@
       ><b>{{ trancheSum | formatAmount }}</b> zł</span
     >
   </div>
-</ui-section>
+</ui-foldable-section>

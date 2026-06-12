@@ -1,37 +1,27 @@
-import { Component, inject, ChangeDetectionStrategy, computed } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormService } from '../../../services/form/form';
 import { CalculatorService } from '../../../services/calculator/calculator.service';
-import { InstallmentType, LoanPeriodUnit, RateType } from '../../../model';
+import { FormSectionId, InstallmentType, LoanPeriodUnit } from '../../../model';
 import { InstallmentTypeLabelPipe } from '../../../pipes/installment-type-label/installment-type-label.pipe';
-import { RateTypeLabelPipe } from '../../../pipes/rate-type-label/rate-type-label.pipe';
 import { LoanPeriodUnitLabelPipe } from '../../../pipes/loan-period-unit-label/loan-period-unit-label.pipe';
-import { SectionComponent } from '../../ui/section/section.component';
+import { FoldableSectionComponent } from '../../ui/foldable-section/foldable-section.component';
 import { FieldComponent } from '../../ui/field/field.component';
 import { NumberInputComponent } from '../../ui/number-input/number-input.component';
 import { MonthPickerComponent } from '../../ui/month-picker/month-picker.component';
 import { SegmentedComponent } from '../../ui/segmented/segmented.component';
-import { BtnAddComponent } from '../../ui/btn-add/btn-add.component';
-import { CardComponent } from '../../ui/card/card.component';
-import { CardsGroupComponent } from '../../ui/cards-group/cards-group.component';
 
 @Component({
   selector: 'app-basic-data-form',
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    SectionComponent,
+    FoldableSectionComponent,
     FieldComponent,
     NumberInputComponent,
     MonthPickerComponent,
     SegmentedComponent,
-    BtnAddComponent,
-    CardComponent,
-    CardsGroupComponent,
     InstallmentTypeLabelPipe,
-    RateTypeLabelPipe,
     LoanPeriodUnitLabelPipe,
   ],
   templateUrl: './basic-data-form.component.html',
@@ -41,21 +31,10 @@ export class BasicDataFormComponent {
   private readonly formService = inject(FormService);
   private readonly calculatorService = inject(CalculatorService);
 
-  protected readonly RateType = RateType;
+  protected readonly FormSectionId = FormSectionId;
 
   readonly installmentTypeOptions = Object.values(InstallmentType);
-  readonly rateTypeOptions = Object.values(RateType);
   readonly loanPeriodUnitOptions = Object.values(LoanPeriodUnit);
-
-  private readonly _ratePeriodsSync = toSignal(
-    this.formService.ratePeriodsArray.valueChanges.pipe(map(() => null)),
-    { initialValue: null },
-  );
-
-  protected readonly ratePeriodControls = computed(() => {
-    this._ratePeriodsSync();
-    return this.formService.ratePeriodsArray.controls;
-  });
 
   get form() {
     return this.formService.form;
@@ -143,13 +122,5 @@ export class BasicDataFormComponent {
     );
     this.basicData.patchValue(synced, { emitEvent: false });
     this.form.updateValueAndValidity();
-  }
-
-  addRatePeriod() {
-    this.formService.addRatePeriod();
-  }
-
-  removeRatePeriod(index: number) {
-    this.formService.removeRatePeriod(index);
   }
 }
