@@ -76,7 +76,7 @@ Wszystkie pola walutowe i procentowe korzystają z generycznego komponentu `ui-n
 
 ### 2.8. Okresy oprocentowania
 
-Okresy oprocentowania zostały wydzielone do osobnej, zwijanej sekcji formularza „Okresy oprocentowania” (`RatePeriodsFormComponent`), prezentowanej bezpośrednio pod sekcją „Dane podstawowe”. Pełny opis: `docs/funkcjonalności/okresy-oprocentowania.md`.
+Okresy oprocentowania zostały wydzielone do osobnej, zwijanej sekcji formularza „Oprocentowanie” (`RatePeriodsFormComponent`), prezentowanej bezpośrednio pod sekcją „Dane podstawowe”. Pełny opis: `docs/funkcjonalności/okresy-oprocentowania.md`.
 
 ---
 

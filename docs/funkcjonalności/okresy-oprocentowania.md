@@ -2,7 +2,7 @@
 
 ## 1. Kontekst
 
-- Sekcja formularza: „Okresy oprocentowania” (`RatePeriodsFormComponent`, `src/app/components/form/rate-periods-form/`).
+- Sekcja formularza: „Oprocentowanie” (`RatePeriodsFormComponent`, `src/app/components/form/rate-periods-form/`).
 - Pozycja w lewej kolumnie: bezpośrednio pod sekcją „Dane podstawowe”, nad sekcją „Transze”.
 - Sekcja jest **zwijana** (`ui-foldable-section`, `FormSectionId.RATE_PERIODS`, domyślnie rozwinięta), ale **nie jest wyłączalna** — co najmniej jeden okres oprocentowania jest zawsze wymagany do przeprowadzenia obliczeń.
 

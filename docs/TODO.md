@@ -56,7 +56,7 @@
 - [x] Zmiana WIBOR na Wskaźnik referencyjny
 - [x] przycisk do odwracania sortowania obok kryterium sortowania w "Twoje kalkulacje"
 - [x] Przenieść RRSO do sekcji footer komponentu ui-legend w komponencie `ResultsDonutChartTotalComponent`
-- Zmienić nazwę sekcji formularza "Okresy oprocentowania" na "Oprocentowanie"
+- [x] Zmienić nazwę sekcji formularza "Okresy oprocentowania" na "Oprocentowanie"
 - [x] Umożliwić rozwinięcie "Odsetek" na legendzie donutów, pokazywać składowe odsetek: wynikające z wartości ustawionych w sekcji "Oprocentowanie", wynikających z "Ubezpieczenia pomostowego", "Ubezpieczenia niskiego wkładu", etc. Zadbać, żeby mechanizm klik -> scroll do sekcji działał tu również poprawnie
 - [x] Przeprowadzić audyt color code'u formularza i przygotować poprawki, obecnie cała sekcja "Koszty okołokredytowe i promocje" jest oznaczona na żółto co jest niezgodne ze stanem faktycznym, bo na przykład podsekcja "Ubezpieczenie pomostowe" wpływa na wysokość odsetek i nie zalicza się do kosztów. Podobnie "Prowizja za wcześniejszą spłatę" zalicza się do kosztów, a jest pokolorowana na niebiesko (kolor przypisany nadpłatom)
 - [x] Dla poszczególnych wierszy w widoku "Twoje kalkulacje" w dots-menu akcję "Eksportuj CSV" zastąpić akcją "Eksportuj" z zagnieżdżoną listą formatów eksportu. Na początek powinna znaleźć się tam opcja "JSON" - oprogramować eksport do JSON
