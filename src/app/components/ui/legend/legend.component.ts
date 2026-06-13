@@ -39,6 +39,8 @@ export class LegendComponent {
   footerLabel = input<string>('');
   /** wartość liczbowa wiersza stopki (np. saldo na koniec roku). */
   footerValue = input<number | null>(null);
+  /** gotowy tekst wiersza stopki (np. sformatowane RRSO); gdy ustawiony — renderowany zamiast kwoty w zł. */
+  footerValueText = input<string>('');
   activeLabel = input<string | null>(null);
   sliceHover = output<string | null>();
 
@@ -82,7 +84,11 @@ export class LegendComponent {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
-    navigator.clipboard.writeText(formatted).then(() => {
+    this.copyText(formatted);
+  }
+
+  protected copyText(text: string): void {
+    navigator.clipboard.writeText(text).then(() => {
       this.toastService.show(`Wartość skopiowana do schowka`, ToastVariant.INFO);
     });
   }

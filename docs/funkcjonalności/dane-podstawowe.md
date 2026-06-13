@@ -128,7 +128,7 @@ Montaż przepływów pieniężnych:
 
 Solver: bisekcja na przedziale od −99,99% do górnej granicy podwajanej aż do zmiany znaku (cap 10 000%; ~200 iteracji, precyzja 1e−10). `null` gdy brak wypłat/płatności lub brak pierwiastka w zakresie.
 
-**Prezentacja:** RRSO wyświetlane jest w nagłówku karty „Struktura płatności” (`ResultsDonutChartTotalComponent`), po prawej stronie (`.head-metric`), w formacie pl-PL z 2 miejscami po przecinku (`formatRate`). Metryka jest ukryta, gdy `rrso === null`.
+**Prezentacja:** RRSO wyświetlane jest w stopce legendy karty „Struktura płatności” (`ResultsDonutChartTotalComponent`) — w wierszu stopki komponentu `ui-legend` (`footerLabel="RRSO"`, `footerValueText`), w formacie pl-PL z 2 miejscami po przecinku (`formatRate`). Stopka jest ukryta, gdy `rrso === null`.
 
 ---
 

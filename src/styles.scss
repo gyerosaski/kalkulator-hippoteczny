@@ -725,19 +725,6 @@ ui-cards-group + ui-card {
   font-weight: 600;
   letter-spacing: -0.005em;
 }
-.head-metric {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-  white-space: nowrap;
-}
-.head-metric-value {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--ink);
-}
-
 /* Donut */
 .donut-wrap {
   position: relative;

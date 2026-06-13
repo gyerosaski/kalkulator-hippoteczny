@@ -10,6 +10,7 @@ import {
 import { UiStateService } from '../../../services/ui-state/ui-state.service';
 import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
 import { FormatRatePipe } from '../../../pipes/format-rate/format-rate.pipe';
+import { DecimalPipe } from '@angular/common';
 import { DonutComponent } from '../../ui/donut/donut.component';
 import { LegendComponent } from '../../ui/legend/legend.component';
 import { FormService } from '../../../services/form/form';
@@ -20,7 +21,8 @@ import { PREPAYMENTS_NAVIGATION_TARGET } from '../../../helpers/form-navigation.
 @Component({
   selector: 'app-results-donut-chart-total',
   standalone: true,
-  imports: [DonutComponent, LegendComponent, FormatMonthPipe, FormatRatePipe, CardComponent],
+  imports: [DonutComponent, LegendComponent, FormatMonthPipe, CardComponent],
+  providers: [FormatRatePipe, DecimalPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './results-donut-chart-total.component.html',
   styleUrl: './results-donut-chart-total.component.scss',
@@ -31,6 +33,19 @@ export class ResultsDonutChartTotalComponent {
   protected readonly activeLabel = signal<string | null>(null);
   private readonly formService = inject(FormService);
   private readonly uiStateService = inject(UiStateService);
+  private readonly formatRatePipe = inject(FormatRatePipe);
+
+  /** Etykieta stopki legendy z RRSO; pusta, gdy RRSO nie jest dostępne. */
+  protected readonly rrsoFooterLabel = computed<string>(() =>
+    this.results()?.rrso != null ? 'RRSO' : '',
+  );
+
+  /** Sformatowana wartość RRSO prezentowana w stopce legendy. */
+  protected readonly rrsoFooterValue = computed<string>(() => {
+    const rrso = this.results()?.rrso;
+    return rrso != null ? (this.formatRatePipe.transform(rrso) ?? '') : '';
+  });
+
   private readonly percentageFormat1 = new Intl.NumberFormat('pl-PL', {
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
