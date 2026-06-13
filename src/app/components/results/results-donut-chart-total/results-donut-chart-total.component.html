@@ -1,5 +1,5 @@
 @let row = selectedRow();
-<ui-card>
+<ui-card [bare]="embedded()">
   <div class="card-head">
     <div>
       <h3>
@@ -10,8 +10,7 @@
       </h3>
       <div class="muted small">
         @if (row) {
-          narastająco od początku do wybranego miesiąca ·
-          <button class="link-btn" (click)="clearSelection()">pokaż cały okres</button>
+          narastająco od początku do wybranego miesiąca
         } @else {
           w pełnym okresie kredytowania
         }

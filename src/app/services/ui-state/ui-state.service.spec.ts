@@ -91,5 +91,22 @@ describe('UiStateService', () => {
       service.clearSelectedMonth();
       expect(service.selectedMonthIndex()).toBeNull();
     });
+
+    it('powinien zachować zaznaczenie mieszczące się w nowym harmonogramie (przełączanie zakładek)', () => {
+      service.toggleSelectedMonth(120);
+      service.clampSelectedMonth(360);
+      expect(service.selectedMonthIndex()).toBe(120);
+    });
+
+    it('powinien wyczyścić zaznaczenie wykraczające poza nowy harmonogram', () => {
+      service.toggleSelectedMonth(300);
+      service.clampSelectedMonth(180);
+      expect(service.selectedMonthIndex()).toBeNull();
+    });
+
+    it('powinien pozostawić brak zaznaczenia bez zmian', () => {
+      service.clampSelectedMonth(180);
+      expect(service.selectedMonthIndex()).toBeNull();
+    });
   });
 });

@@ -1,5 +1,5 @@
 @let row = selectedRow();
-<ui-card>
+<ui-card [bare]="embedded()">
   <div class="card-head">
     <h3>
       @if (row) {

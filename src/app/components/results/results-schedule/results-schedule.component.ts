@@ -18,6 +18,9 @@ import { IconArrowRightComponent } from '../../icons/icon-arrow-right/icon-arrow
 import { ColorCodeArea } from '../../../model';
 import { ColorCodeMarkerComponent } from '../../ui/color-code-marker/color-code-marker.component';
 import { CardComponent } from '../../ui/card/card.component';
+import { ResultsDonutChartTotalComponent } from '../results-donut-chart-total/results-donut-chart-total.component';
+import { ResultsDonutChartInstallmentComponent } from '../results-donut-chart-installment/results-donut-chart-installment.component';
+import { DividerComponent } from '../../ui/divider/divider.component';
 
 function formatMonthYearLong(monthString: string | null | undefined): string {
   if (!monthString || !/^\d{4}-\d{2}$/.test(monthString)) return '';
@@ -41,6 +44,9 @@ const TITLE_MONTH_FORMATTER = new Intl.DateTimeFormat('pl-PL', {
     IconArrowRightComponent,
     ColorCodeMarkerComponent,
     CardComponent,
+    ResultsDonutChartTotalComponent,
+    ResultsDonutChartInstallmentComponent,
+    DividerComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './results-schedule.component.html',
@@ -108,9 +114,5 @@ export class ResultsScheduleComponent {
 
   selectMonth(rowIndex: number): void {
     this.uiStateService.toggleSelectedMonth(rowIndex);
-  }
-
-  clearSelection(): void {
-    this.uiStateService.clearSelectedMonth();
   }
 }

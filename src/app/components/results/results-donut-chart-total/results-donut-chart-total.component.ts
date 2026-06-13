@@ -31,19 +31,25 @@ import { PREPAYMENTS_NAVIGATION_TARGET } from '../../../helpers/form-navigation.
 })
 export class ResultsDonutChartTotalComponent {
   results = input.required<MortgageResults | null>();
+  readonly embedded = input<boolean>(false);
+  readonly followsMonthSelection = input<boolean>(true);
   protected readonly LegendId = LegendId;
   protected readonly activeLabel = signal<string | null>(null);
   private readonly formService = inject(FormService);
   private readonly uiStateService = inject(UiStateService);
   private readonly formatRatePipe = inject(FormatRatePipe);
 
-  /** Etykieta stopki legendy z RRSO; pusta, gdy RRSO nie jest dostępne. */
+  /**
+   * Etykieta stopki legendy z RRSO; pusta, gdy RRSO nie jest dostępne lub gdy donut
+   * dotyczy wybranego miesiąca (RRSO jest stałe dla całego kredytu, więc nie ma sensu dla miesiąca).
+   */
   protected readonly rrsoFooterLabel = computed<string>(() =>
-    this.results()?.rrso != null ? 'RRSO' : '',
+    !this.selectedRow() && this.results()?.rrso != null ? 'RRSO' : '',
   );
 
-  /** Sformatowana wartość RRSO prezentowana w stopce legendy. */
+  /** Sformatowana wartość RRSO prezentowana w stopce legendy; pusta dla widoku wybranego miesiąca. */
   protected readonly rrsoFooterValue = computed<string>(() => {
+    if (this.selectedRow()) return '';
     const rrso = this.results()?.rrso;
     return rrso != null ? (this.formatRatePipe.transform(rrso) ?? '') : '';
   });
@@ -76,6 +82,7 @@ export class ResultsDonutChartTotalComponent {
   }
 
   selectedRow = computed<ScheduleRow | null>(() => {
+    if (!this.followsMonthSelection()) return null;
     const selectedIndex = this.uiStateService.selectedMonthIndex();
     if (selectedIndex === null) return null;
     return this.results()?.schedule.find((row) => row.index === selectedIndex) ?? null;
@@ -200,8 +207,4 @@ export class ResultsDonutChartTotalComponent {
 
     return { label: '', value: '' };
   });
-
-  clearSelection(): void {
-    this.uiStateService.clearSelectedMonth();
-  }
 }

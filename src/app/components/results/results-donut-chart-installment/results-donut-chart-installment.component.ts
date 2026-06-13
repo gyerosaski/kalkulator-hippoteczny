@@ -28,6 +28,8 @@ import { PREPAYMENTS_NAVIGATION_TARGET } from '../../../helpers/form-navigation.
 })
 export class ResultsDonutChartInstallmentComponent {
   results = input.required<MortgageResults | null>();
+  readonly embedded = input<boolean>(false);
+  readonly followsMonthSelection = input<boolean>(true);
   protected readonly LegendId = LegendId;
   protected readonly activeLabel = signal<string | null>(null);
   private readonly formService = inject(FormService);
@@ -60,6 +62,7 @@ export class ResultsDonutChartInstallmentComponent {
   }
 
   selectedRow = computed<ScheduleRow | null>(() => {
+    if (!this.followsMonthSelection()) return null;
     const selectedIndex = this.uiStateService.selectedMonthIndex();
     if (selectedIndex === null) return null;
     return this.results()?.schedule.find((row) => row.index === selectedIndex) ?? null;

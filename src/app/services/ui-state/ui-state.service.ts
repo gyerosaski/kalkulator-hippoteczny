@@ -111,6 +111,18 @@ export class UiStateService {
     this._selectedMonthIndex.set(null);
   }
 
+  /**
+   * Zachowuje zaznaczony miesiąc przy przeliczeniu/powrocie do widoku, czyszcząc go tylko gdy
+   * indeks (1-based) wykracza poza nowy harmonogram. Dzięki temu zaznaczenie i rozwinięte
+   * pozycje legendy nie giną przy przełączaniu zakładek, a same przeżywają zmianę widoku
+   * (stan trzymany w singletonie `providedIn: 'root'`).
+   */
+  clampSelectedMonth(scheduleLength: number): void {
+    this._selectedMonthIndex.update((current) =>
+      current !== null && (current < 1 || current > scheduleLength) ? null : current,
+    );
+  }
+
   private sectionOpenState(
     sectionId: FormSectionId,
     defaultOpen: boolean,

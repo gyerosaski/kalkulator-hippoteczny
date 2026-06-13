@@ -6,7 +6,6 @@
         agregacja roczna · kliknij miesiąc aby zaznaczyć
         @if (selectedScheduleRow(); as row) {
           · zaznaczony: <b>{{ row.date | formatMonth }}</b>
-          <button type="button" class="link-btn" (click)="clearSelection()">odznacz</button>
         }
       </div>
     </div>
@@ -107,6 +106,13 @@
               }
               <div class="mono">{{ row.remaining | formatAmount }}</div>
             </button>
+            @if (selectedMonthIndex() === row.index) {
+              <div class="month-detail">
+                <app-results-donut-chart-total [results]="results()" [embedded]="true" />
+                <ui-divider />
+                <app-results-donut-chart-installment [results]="results()" [embedded]="true" />
+              </div>
+            }
           }
         </div>
       </div>

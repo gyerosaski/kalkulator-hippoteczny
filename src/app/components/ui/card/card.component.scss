@@ -17,6 +17,12 @@
   background: var(--surface);
 }
 
+.card--bare {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
 .card-head {
   display: flex;
   align-items: center;

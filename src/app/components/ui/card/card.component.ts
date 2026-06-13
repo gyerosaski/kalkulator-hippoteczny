@@ -12,5 +12,6 @@ import { BtnRemoveComponent } from '../btn-remove/btn-remove.component';
 export class CardComponent {
   readonly tag = input<string>('');
   readonly removable = input<boolean>(false);
+  readonly bare = input<boolean>(false);
   readonly remove = output<void>();
 }

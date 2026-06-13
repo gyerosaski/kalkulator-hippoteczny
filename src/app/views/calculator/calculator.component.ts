@@ -76,17 +76,18 @@ export class CalculatorComponent {
   }
 
   private recalculate() {
-    this.uiStateService.clearSelectedMonth();
     if (this.form.valid) {
       const inputs = buildMortgageInputs(this.form.getRawValue());
       const computedResults = this.calc.compute(inputs);
       this.results.set(computedResults);
       this.yearlyGroups.set(groupByYear(computedResults.schedule));
       this.calculatorState.results.set(computedResults);
+      this.uiStateService.clampSelectedMonth(computedResults.schedule.length);
     } else {
       this.results.set(null);
       this.yearlyGroups.set(null);
       this.calculatorState.results.set(null);
+      this.uiStateService.clearSelectedMonth();
     }
   }
 }

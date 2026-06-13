@@ -1,4 +1,4 @@
-﻿<div class="card">
+﻿<div class="card" [class.card--bare]="bare()">
   @if (tag() || removable()) {
     <div class="card-head">
       @if (tag()) {
