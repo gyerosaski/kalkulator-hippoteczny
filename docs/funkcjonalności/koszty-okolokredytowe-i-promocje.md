@@ -1,192 +1,187 @@
-# Specyfikacja techniczna sekcji „Koszty okołokredytowe i promocje”
+# Specyfikacja funkcjonalna sekcji „Koszty okołokredytowe i promocje”
 
 ## 1. Kontekst sekcji
 
-- Komponent: `OverheadCostsFormComponent` (`src/app/components/form/overhead-costs-form/`).
-- Selektor: `app-overhead-costs-form`.
-- Sekcja jest **opcjonalna** (`ui-section [toggleable]="true"`) — włączana przełącznikiem `included` w nagłówku. Gdy `included === false`, pola nie są uwzględniane w obliczeniach (`LayoutComponent.recalculate()` przekazuje neutralne wartości zerowe do `CalculatorService`).
-- Cel: konfiguracja wszystkich kosztów dodatkowych oraz reguł zmieniających efektywne oprocentowanie (ubezpieczenie pomostowe, niski wkład, promocja). Wpływa na:
-  - kafelek KPI „Koszty okołokredytowe” w `ResultsSummaryComponent`,
-  - wartość `r.totals.overheadCosts` używaną w `Suma wszystkich płatności`,
-  - kolumnę `Koszty` w tabeli harmonogramu (widoczna tylko gdy sekcja jest włączona),
-  - slice „Koszty okołokredytowe” na donucie `Struktura wszystkich płatności`.
+- Sekcja jest **opcjonalna** — włączana przełącznikiem w nagłówku. Gdy jest wyłączona, jej pola nie są
+  uwzględniane w obliczeniach.
+- Cel: konfiguracja wszystkich kosztów dodatkowych oraz reguł zmieniających efektywne oprocentowanie
+  (ubezpieczenie pomostowe, niski wkład, promocja). Wpływa na:
+  - wartość „Koszty okołokredytowe” używaną w „Suma wszystkich płatności”,
+  - kolumnę „Koszty okołokredytowe” w tabeli harmonogramu (widoczna tylko gdy sekcja jest włączona),
+  - udział „Koszty okołokredytowe” na donucie „Struktura wszystkich płatności”.
 
-## 2. Struktura formularza
+Domyślne wartości startowe są zerowe; wartości przykładowe pojawiają się dopiero po użyciu globalnego
+„Wstaw domyślne”.
 
-Pola znajdują się w grupie `OverheadCostsFormGroup` (`src/app/model/form.model.ts`). Każda sekcja prezentowana jest jako `ui-card` z odpowiednim tagiem nagłówka (uppercase). Domyślne wartości startowe (przy pierwszym renderze) są zerowe; wartości „przykładowe” pojawiają się dopiero po kliknięciu globalnego „Wstaw domyślne” (które wywołuje `FormService.setOverheadDefaults()`).
+## 2. Karty kosztów
 
-### 2.1. Karta `PROWIZJA ZA UDZIELENIE`
+Każde pole liczbowe przyjmuje wartości nieujemne (≥ 0).
 
-| Pole                   | Kontrolka             | Walidatory          | Domyślnie                            | Jednostka                     |
-| ---------------------- | --------------------- | ------------------- | ------------------------------------ | ----------------------------- |
-| `commissionValue`      | `ui-number-input`     | `Validators.min(0)` | `0`                                  | `%` lub `zł`                  |
-| `commissionCalcMethod` | `ui-segmented`        | —                   | `CommissionCalcMethod.PERCENTAGE`    | —                             |
-| `Przeliczenie`         | pole tylko do odczytu | —                   | `loanAmount × commissionValue / 100` | `zł` (tylko gdy `PERCENTAGE`) |
+### 2.1. Prowizja za udzielenie
 
-Użytkownik może wprowadzić prowizję jako procent kwoty kredytu (`CommissionCalcMethod.PERCENTAGE`) lub jako konkretną kwotę w złotych (`CommissionCalcMethod.FIXED_AMOUNT`). Przełącznik `%/zł` (`ui-segmented`) przy polu numerycznym kontroluje tryb.
+Prowizję można wprowadzić jako procent kwoty kredytu albo jako konkretną kwotę w złotych (przełącznik
+`% / zł` przy polu numerycznym). Domyślnie tryb procentowy, wartość `0`.
 
-- W trybie `PERCENTAGE`: `commissionAmount = Math.round(loanAmount × commissionValue) / 100`. Pole „Przeliczenie" pokazuje obliczoną kwotę PLN. Walidacja: `commissionValue ≤ 100` (sprawdzana przez `crossFieldValidator`, klucz błędu `commissionPctOverMax`).
-- W trybie `FIXED_AMOUNT`: `loanCommission = commissionValue` bezpośrednio. Pole „Przeliczenie" jest ukryte. Brak górnego limitu wartości.
+- Tryb procentowy: kwota prowizji = `kwota kredytu × wartość / 100`. Obok widać przeliczoną kwotę w zł.
+  Wartość procentowa nie może przekraczać 100.
+- Tryb kwotowy: prowizja równa wprowadzonej kwocie; przeliczenie jest ukryte; brak górnego limitu.
 
-**Automatyczna konwersja przy zmianie trybu:** przy każdej zmianie `commissionCalcMethod` komponent przelicza `commissionValue` na ekwiwalent w nowej jednostce:
+**Automatyczna konwersja przy zmianie trybu** — wartość jest przeliczana na ekwiwalent w nowej jednostce:
 
-| Kierunek                    | Formuła                                                                         |
-| --------------------------- | ------------------------------------------------------------------------------- |
-| `PERCENTAGE → FIXED_AMOUNT` | `Math.round(loanAmount × commissionValue / 100 × 100) / 100` (PLN, 2 miejsca)   |
-| `FIXED_AMOUNT → PERCENTAGE` | `Math.round(commissionValue / loanAmount × 100 × 10000) / 10000` (%, 4 miejsca) |
+| Kierunek        | Formuła                                         |
+| --------------- | ----------------------------------------------- |
+| procent → kwota | `kwota kredytu × wartość / 100` (zł, 2 miejsca) |
+| kwota → procent | `wartość / kwota kredytu × 100` (%, 4 miejsca)  |
 
-Jeśli `loanAmount ≤ 0` lub `commissionValue === 0`, wynik konwersji wynosi `0`. Konwersja nie wpływa na wartość prowizji płaconej przez kredytobiorcę — zmienia jedynie jednostkę reprezentacji w formularzu.
+Jeśli kwota kredytu ≤ 0 lub wartość = 0, wynik konwersji to 0. Konwersja nie zmienia kwoty prowizji
+płaconej przez kredytobiorcę — zmienia jedynie jednostkę reprezentacji.
 
-Wartość w obliczeniach (`CalculatorService`): `loanCommission = commissionCalcMethod === FIXED_AMOUNT ? commissionValue : loanAmount × commissionValue / 100` — dodawana do `insuranceCost` pierwszego wiersza harmonogramu, wlicza się do `overheadCosts` przez `Σ insuranceCost`.
+Prowizja za udzielenie wchodzi do kosztów okołokredytowych i jest księgowana w pierwszym miesiącu
+harmonogramu (widoczna w kolumnie „Koszty”).
 
-### 2.2. Karta `OPŁATA ZA WYCENĘ`
+### 2.2. Opłata za wycenę
 
-| Pole           | Kontrolka         | Walidatory          | Domyślnie po `setDefaults` | Jednostka |
-| -------------- | ----------------- | ------------------- | -------------------------- | --------- |
-| `appraisalFee` | `ui-number-input` | `Validators.min(0)` | `400`                      | `zł`      |
+Kwota stała (`zł`), domyślnie po „Wstaw domyślne” `400`. Wchodzi do kosztów okołokredytowych, księgowana
+w pierwszym miesiącu harmonogramu.
 
-Kwota stała dodawana do `insuranceCost` pierwszego wiersza harmonogramu, wlicza się do `overheadCosts` przez `Σ insuranceCost`.
+### 2.3. Ubezpieczenie pomostowe
 
-### 2.3. Karta `UBEZPIECZENIE POMOSTOWE`
+| Pole                    | Jednostka | Domyślnie po „Wstaw domyślne” |
+| ----------------------- | --------- | ----------------------------- |
+| Podwyżka oprocentowania | `%`       | `1,2`                         |
+| Liczba miesięcy         | `mies.`   | `6`                           |
 
-| Pole                 | Kontrolka         | Walidatory          | Domyślnie po `setDefaults` | Jednostka |
-| -------------------- | ----------------- | ------------------- | -------------------------- | --------- |
-| `bridgeRateIncrease` | `ui-number-input` | `Validators.min(0)` | `1,2`                      | `%`       |
-| `bridgeMonths`       | `ui-number-input` | `Validators.min(0)` | `6`                        | `mies.`   |
+Mechanizm: przez wskazaną liczbę pierwszych miesięcy spłaty bazowa stopa jest powiększana o podwyżkę
+pomostową. Skutek: wyższe odsetki w okresie pomostowym — nie tworzy osobnej pozycji kosztów (wpływa
+pośrednio przez ratę). Część odsetek z tej podwyżki jest wyodrębniona jako składnik „Ubezpieczenie
+pomostowe” w rozwijanej legendzie „Odsetki” (patrz §4 i `docs/funkcjonalności/wykresy.md`).
 
-Mechanizm: w `CalculatorService.getRateComponentsForMonth` dla miesięcy spełniających `monthIdx >= 1 && monthIdx <= bridgeMonths` (gdzie `monthIdx = monthDiff(startDate, date)`) bazowa stopa jest powiększana o `bridgeRateIncrease`. Skutek: wyższe odsetki w okresie „pomostowym”, brak osobnej pozycji w `overheadCosts` (wpływa pośrednio przez `totalRate`). Część odsetek wynikająca z tej podwyżki jest jednak wyodrębniona jako składnik `BRIDGE_INSURANCE` w `ScheduleRow.interestBreakdown` i prezentowana w rozwijanej legendzie „Odsetki” (patrz §4 oraz `docs/funkcjonalności/wykresy.md`).
+### 2.4. Ubezpieczenie nieruchomości
 
-### 2.4. Karta `UBEZPIECZENIE NIERUCHOMOŚCI`
+| Pole              | Opcje / format                                                                 | Domyślnie                          |
+| ----------------- | ------------------------------------------------------------------------------ | ---------------------------------- |
+| Częstotliwość     | `co rok`, `co miesiąc`                                                         | `co rok`                           |
+| Sposób naliczania | `% wartości nieruchomości`, `% kwoty kredytu`, `% salda kredytu`, `znam kwotę` | `% wartości nieruchomości`         |
+| Wartość           | `%` (4 miejsca) lub `zł` (2 miejsca dla „znam kwotę”)                          | `0` (po „Wstaw domyślne” `0,0008`) |
+| Od                | miesiąc i rok                                                                  | miesiąc po uruchomieniu            |
+| Do                | miesiąc i rok                                                                  | koniec okresu kredytu              |
 
-| Pole                | Kontrolka         | Opcje / format                                                                            | Domyślnie                               |
-| ------------------- | ----------------- | ----------------------------------------------------------------------------------------- | --------------------------------------- |
-| `propInsFrequency`  | `ui-select`       | `co rok`, `co miesiąc`                                                                    | `co rok`                                |
-| `propInsCalcMethod` | `ui-select`       | `% wartości nieruchomości`, `% kwoty kredytu`, `% salda kredytu`, `znam kwotę`            | `% wartości nieruchomości`              |
-| `propInsValue`      | `ui-number-input` | suffix dynamiczny (`%`/`zł`), decimals 4 dla `%`, 2 dla `znam kwotę`; `Validators.min(0)` | `0` (po `setOverheadDefaults` `0,0008`) |
-| `propInsFrom`       | `ui-month-picker` | `YYYY-MM`                                                                                 | `nextMonthStr()`                        |
-| `propInsTo`         | `ui-month-picker` | `YYYY-MM`                                                                                 | `endOfLoanDate()` (start + 240 mies.)   |
+Wyliczanie: składka naliczana, gdy data mieści się w zakresie `[od, do]` oraz w odpowiednim rytmie
+(`co rok` — co dwunasty miesiąc od daty „od”; `co miesiąc` — w każdym miesiącu). Baza zależy od sposobu
+naliczania (wartość nieruchomości / kwota kredytu / aktualne saldo / kwota). Wartość składki to wpisana
+kwota (tryb „znam kwotę”) lub `baza × wartość / 100`.
 
-Wyliczanie (`calcInsuranceCostForMonth`):
+### 2.5. Ubezpieczenie niskiego wkładu
 
-- składka naliczana, gdy `date ∈ [from, to]` oraz `monthDiff(from, date) % 12 === 0` (dla `co rok`) lub w każdym miesiącu (`co miesiąc`),
-- baza zależy od `calcMethod`: wartość nieruchomości / kwota kredytu / aktualne saldo / `value` jako kwota,
-- wartość = `value` (tryb `znam kwotę`) lub `base × value / 100`.
+| Pole                    | Jednostka | Domyślnie |
+| ----------------------- | --------- | --------- |
+| Podwyżka oprocentowania | `%`       | `0`       |
 
-### 2.5. Karta `UBEZPIECZENIE NISKIEGO WKŁADU`
+Mechanizm: stopa jest powiększana o podwyżkę niskiego wkładu tylko wtedy, gdy bieżące LTV przekracza 80%.
+LTV liczone jest w każdym miesiącu jako `aktualne saldo / wartość nieruchomości × 100`. Podwyżka przestaje
+być stosowana automatycznie w miesiącu, w którym saldo spadnie wystarczająco, by LTV osiągnęło lub
+przekroczyło próg 80% od góry. Nie ma konfigurowalnej daty granicznej — warunek jest sprawdzany co miesiąc.
+Wpływa pośrednio na odsetki, nie na koszty. Część odsetek z tej podwyżki jest wyodrębniona jako składnik
+„Ubezpieczenie niskiego wkładu” w rozwijanej legendzie „Odsetki” (§4).
 
-| Pole                    | Kontrolka         | Walidatory          | Domyślnie | Jednostka |
-| ----------------------- | ----------------- | ------------------- | --------- | --------- |
-| `lowEquityRateIncrease` | `ui-number-input` | `Validators.min(0)` | `0`       | `%`       |
+Przykład: kredyt 420 000 zł przy wartości nieruchomości 500 000 zł → LTV = 84% → podwyżka aktywna.
+Po nadpłatach redukujących saldo do 399 000 zł → LTV = 79,8% ≤ 80% → podwyżka wyłącza się automatycznie.
 
-Mechanizm: w `getRateComponentsForMonth` stopa jest powiększana o `lowEquityRateIncrease` tylko wtedy, gdy bieżące LTV przekracza 80%. LTV jest obliczane w każdym miesiącu jako:
+### 2.6. Ubezpieczenie na życie
 
-```
-currentLtv = (currentBalance / propertyValue) × 100
-```
+| Pole              | Opcje / format                                       | Domyślnie               |
+| ----------------- | ---------------------------------------------------- | ----------------------- |
+| Częstotliwość     | `co rok`, `co miesiąc`, `jednorazowo`                | `co rok`                |
+| Sposób naliczania | `% kwoty kredytu`, `% salda kredytu`, `znam kwotę`   | `% kwoty kredytu`       |
+| Wartość           | `%` (5 miejsc) lub `zł` (2 miejsca dla „znam kwotę”) | `0`                     |
+| Od                | miesiąc i rok                                        | miesiąc po uruchomieniu |
+| Do                | miesiąc i rok                                        | koniec okresu kredytu   |
 
-Podwyżka obowiązuje, gdy `currentLtv > 80` — automatycznie przestaje być stosowana w miesiącu, w którym saldo kredytu spadnie wystarczająco, by LTV osiągnęło lub przekroczyło próg 80% od góry (tj. `currentBalance / propertyValue ≤ 0,80`). Nie ma konfigurowalnej daty granicznej — warunek jest sprawdzany co miesiąc. Wpływa pośrednio na odsetki, nie na `overheadCosts`. Część odsetek z tej podwyżki jest wyodrębniona jako składnik `LOW_EQUITY_INSURANCE` w `ScheduleRow.interestBreakdown` (rozwijana legenda „Odsetki”, §4).
+Wyliczanie analogiczne do ubezpieczenia nieruchomości, jednak baza nigdy nie pochodzi z wartości
+nieruchomości (brak takiej opcji). Składka `jednorazowo` pobierana jest tylko w pierwszym miesiącu.
 
-Przykład: kredyt 420 000 zł przy wartości nieruchomości 500 000 zł → LTV = 84% → podwyżka aktywna. Po nadpłatach redukujących saldo do 399 000 zł → LTV = 79,8% ≤ 80% → podwyżka wyłącza się automatycznie.
+### 2.7. Ubezpieczenie od utraty pracy
 
-### 2.6. Karta `UBEZPIECZENIE NA ŻYCIE`
+| Pole              | Opcje / format                                     | Domyślnie               |
+| ----------------- | -------------------------------------------------- | ----------------------- |
+| Częstotliwość     | `co rok`, `co miesiąc`, `jednorazowo`              | `jednorazowo`           |
+| Sposób naliczania | `% kwoty kredytu`, `% salda kredytu`, `znam kwotę` | `% kwoty kredytu`       |
+| Wartość           | `%` lub `zł`                                       | `0`                     |
+| Od                | miesiąc i rok                                      | miesiąc po uruchomieniu |
 
-| Pole                | Kontrolka         | Opcje / format                                                                 | Domyślnie         |
-| ------------------- | ----------------- | ------------------------------------------------------------------------------ | ----------------- |
-| `lifeInsFrequency`  | `ui-select`       | `co rok`, `co miesiąc`, `jednorazowo`                                          | `co rok`          |
-| `lifeInsCalcMethod` | `ui-select`       | `% kwoty kredytu`, `% salda kredytu`, `znam kwotę`                             | `% kwoty kredytu` |
-| `lifeInsValue`      | `ui-number-input` | suffix dynamiczny, decimals 5 dla `%`, 2 dla `znam kwotę`; `Validators.min(0)` | `0`               |
-| `lifeInsFrom`       | `ui-month-picker` | —                                                                              | `nextMonthStr()`  |
-| `lifeInsTo`         | `ui-month-picker` | —                                                                              | `endOfLoanDate()` |
+Pola „do” brak — składka obowiązuje od daty „od” aż do końca harmonogramu.
 
-Wyliczanie analogicznie do ubezpieczenia nieruchomości, jednak baza nigdy nie pochodzi z `propertyValue` (lista `LifeInsuranceCalcMethod` nie zawiera tej opcji). Składka `jednorazowo` jest pobierana tylko w pierwszym miesiącu (`monthDiff(from, date) === 0`).
+### 2.8. Dodatkowe koszty
 
-### 2.7. Karta `UBEZPIECZENIE OD UTRATY PRACY`
+Opcjonalna lista `DODATKOWE KOSZTY n`. Każdy rekord:
 
-| Pole                   | Kontrolka         | Opcje / format                                     | Domyślnie         |
-| ---------------------- | ----------------- | -------------------------------------------------- | ----------------- |
-| `jobLossInsFrequency`  | `ui-select`       | `co rok`, `co miesiąc`, `jednorazowo`              | `jednorazowo`     |
-| `jobLossInsCalcMethod` | `ui-select`       | `% kwoty kredytu`, `% salda kredytu`, `znam kwotę` | `% kwoty kredytu` |
-| `jobLossInsValue`      | `ui-number-input` | suffix dynamiczny; `Validators.min(0)`             | `0`               |
-| `jobLossInsFrom`       | `ui-month-picker` | —                                                  | `nextMonthStr()`  |
+| Pole              | Opcje / format                                     | Domyślnie               |
+| ----------------- | -------------------------------------------------- | ----------------------- |
+| Nazwa             | tekst                                              | puste                   |
+| Częstotliwość     | `co rok`, `co miesiąc`, `jednorazowo`              | `jednorazowo`           |
+| Sposób naliczania | `% kwoty kredytu`, `% salda kredytu`, `znam kwotę` | `znam kwotę`            |
+| Wartość           | `%` lub `zł` (2 miejsca)                           | `0`                     |
+| Od                | miesiąc i rok                                      | miesiąc po uruchomieniu |
 
-Pole `to` nie istnieje — składka „od utraty pracy” obowiązuje od `from` aż do końca harmonogramu (lub do końca kredytu w przypadku `jednorazowo`/`co rok`/`co miesiąc`).
+Akcje: `+ Dodaj koszt` dodaje pustą kartę; przycisk usuwania (pierwsza karta nie jest usuwalna).
+Wyliczanie identyczne jak dla ubezpieczenia na życie/utraty pracy (baza zgodnie ze sposobem naliczania).
+Suma wszystkich miesięcznych pozycji wchodzi do kosztów okołokredytowych.
 
-### 2.8. Lista `DODATKOWE KOSZTY n` (`additionalCosts` — `FormArray`)
+### 2.9. Promocja oprocentowania
 
-Opcjonalny `FormArray<AdditionalCostFormGroup>` w `ui-cards-group`. Każdy rekord:
+| Pole                   | Jednostka | Domyślnie                 |
+| ---------------------- | --------- | ------------------------- |
+| Obniżka oprocentowania | `%`       | `0`                       |
+| Od                     | data      | miesiąc po uruchomieniu   |
+| Do                     | data      | 12 miesięcy po dacie „od” |
 
-| Pole         | Kontrolka             | Opcje / format                                           | Domyślnie        |
-| ------------ | --------------------- | -------------------------------------------------------- | ---------------- |
-| `name`       | `<input type="text">` | tekst                                                    | `''`             |
-| `frequency`  | `ui-select`           | `co rok`, `co miesiąc`, `jednorazowo`                    | `jednorazowo`    |
-| `calcMethod` | `ui-select`           | `% kwoty kredytu`, `% salda kredytu`, `znam kwotę`       | `znam kwotę`     |
-| `value`      | `ui-number-input`     | suffix dynamiczny; `Validators.min(0)`; `[decimals]="2"` | `0`              |
-| `from`       | `ui-month-picker`     | —                                                        | `nextMonthStr()` |
-
-Akcje:
-
-- przycisk `+ Dodaj koszt` (`addAdditionalCost()` w `FormService`) — dodaje pustą kartę,
-- przycisk usuwania w nagłówku karty (`$index > 0`) — pierwsza karta nie jest usuwalna.
-
-Wyliczanie (`calcInsuranceCostForMonth`): identyczna logika jak dla ubezpieczenia na życie/utraty pracy, baza zgodnie z `calcMethod`. Suma wszystkich miesięcznych pozycji trafia do `Σ insuranceCost`, które wlicza się do `overheadCosts`.
-
-### 2.9. Karta `PROMOCJA OPROCENTOWANIA`
-
-| Pole                | Kontrolka         | Walidatory          | Domyślnie                      | Jednostka |
-| ------------------- | ----------------- | ------------------- | ------------------------------ | --------- |
-| `promoRateDecrease` | `ui-number-input` | `Validators.min(0)` | `0`                            | `%`       |
-| `promoFrom`         | `ui-month-picker` | —                   | `nextMonthStr()`               | data      |
-| `promoTo`           | `ui-month-picker` | —                   | `nextMonthStr() + 12 miesięcy` | data      |
-
-Mechanizm: w `getEffectiveRateForMonth` dla miesięcy spełniających `date ∈ [promoFrom, promoTo]` stopa zostaje pomniejszona o `promoRateDecrease` (klampowane do `0` od dołu: `Math.max(0, rate - rateDecrease)`).
+Mechanizm: dla miesięcy w zakresie `[od, do]` stopa zostaje pomniejszona o obniżkę promocyjną
+(nie schodzi poniżej 0).
 
 ## 3. Akcje w sekcji
 
-W bieżącej implementacji sekcja nie ma własnego paska przycisków akcji. Operacje:
+Sekcja nie ma własnego paska akcji. Operacje:
 
-- przełącznik `included` w nagłówku `ui-section` — włącza/wyłącza wpływ sekcji na wynik,
-- `+ Dodaj koszt` w grupie `DODATKOWE KOSZTY` — patrz 2.8,
-- przycisk usuwania koszta dodatkowego (`$index > 0`).
+- przełącznik włączenia w nagłówku — włącza/wyłącza wpływ sekcji na wynik,
+- `+ Dodaj koszt` w grupie „Dodatkowe koszty”,
+- przycisk usuwania kosztu dodatkowego.
 
-Globalne „Wstaw domyślne” w topbarze wywołuje `FormService.setOverheadDefaults()`, który wstawia przykładowe wartości pokazane wcześniej w kolumnach „Domyślnie po `setDefaults`”.
-
-`FormService.clearOverheadCosts()` jest dostępne programistycznie (resetuje wszystkie pola do zer i jednego pustego rekordu w `additionalCosts`), ale nie ma przypisanego przycisku w UI.
+Globalne „Wstaw domyślne” wstawia przykładowe wartości pokazane w kolumnach „Domyślnie po »Wstaw domyślne«”.
 
 ## 4. Wpływ na wynik
 
-`CalculatorService.compute()` agreguje koszty w `overheadCosts`:
+Koszty okołokredytowe są sumą:
 
 ```
-overheadCosts = Σ insuranceCost                 // 2.1 + 2.2 (wiersz 1) + 2.4 + 2.6 + 2.7 + 2.8 (per miesiąc)
-              + Σ commission                    // prowizje za wcześniejszą spłatę (sekcja Nadpłaty)
-              + Σ trancheDisbursementFees       // opłaty z transz dodatkowych
+koszty okołokredytowe = prowizja za udzielenie + opłata za wycenę
+                      + ubezpieczenia (nieruchomości, na życie, utraty pracy, dodatkowe koszty)
+                      + prowizje za wcześniejszą spłatę (sekcja „Nadpłaty”)
+                      + opłaty za uruchomienie transz
 ```
 
-`loanCommission` (2.1) i `appraisalFee` (2.2) trafiają do `insuranceCost` **pierwszego wiersza** harmonogramu, dzięki czemu są widoczne w kolumnie „Koszty" harmonogramu spłat.
+Prowizja za udzielenie i opłata za wycenę są księgowane w pierwszym miesiącu harmonogramu (widoczne
+w kolumnie „Koszty”).
 
-**Rozbicie na składowe (donut „Struktura płatności”):** kalkulator zapisuje rozbicie kosztów na pozycje typu
-`OverheadCostItem { kind: OverheadCostKind; name?; value }`:
+**Rozbicie na składowe (donut „Struktura płatności”):** koszty są rozbijane na pojedyncze pozycje
+(prowizja za udzielenie, wycena, poszczególne ubezpieczenia z zachowaniem nazw dodatkowych kosztów,
+prowizja za wcześniejszą spłatę, opłaty za uruchomienie transz). Zasilają one rozwijalną pozycję „Koszty
+okołokredytowe” w legendzie donuta (patrz `docs/funkcjonalności/wykresy.md` §5.1–5.2). Uwaga: prowizja za
+wcześniejszą spłatę i opłaty transzowe pojęciowo należą do sekcji „Nadpłaty”/„Transze” — obecnie pozostają
+w kosztach okołokredytowych (przekategoryzowanie planowane osobnym zadaniem).
 
-- `ScheduleRow.costBreakdown` — składowe `insuranceCost` danego miesiąca (prowizja za udzielenie i wycena w
-  wierszu 1, ubezpieczenia 2.4/2.6/2.7, dodatkowe koszty 2.8 z zachowaniem `name`); suma `value` == `insuranceCost`.
-- `MortgageResults.totals.overheadCostsBreakdown` — agregat całego okresu: złożenie `costBreakdown` wszystkich
-  wierszy plus pozycje `EARLY_REPAYMENT_COMMISSION` (= Σ `commission`) i `TRANCHE_DISBURSEMENT_FEE`
-  (= Σ opłat z transz dodatkowych); suma `value` == `overheadCosts`.
+Ubezpieczenie pomostowe (2.3), niskiego wkładu (2.5) i promocja (2.9) zmieniają **efektywną stopę
+miesiąca** i wpływają pośrednio przez odsetki, a nie przez koszty okołokredytowe.
 
-Te pola zasilają rozwijalny slice „Koszty okołokredytowe” na wykresie (patrz `docs/funkcjonalności/wykresy.md`
-§5.1–5.2). Uwaga: prowizja za wcześniejszą spłatę i opłaty transzowe pojęciowo należą do sekcji „Nadpłaty”/
-„Transze” — obecnie pozostają w `overheadCosts` i w rozbiciu (przekategoryzowanie planowane osobnym zadaniem).
+Stąd wartości zbiorcze:
 
-Pola `bridgeInsurance` (2.3), `lowEquityInsurance` (2.5) i `promotionalRate` (2.9) zmieniają **efektywną stopę miesiąca** i wpływają pośrednio przez `interest`, a nie przez `overheadCosts`.
-
-Wartość `totalAllPayments = Σ rate + overheadCosts`, gdzie `rate` w schemacie `ScheduleRow.rate = baseRate + prepayment + commission`. Stąd KPI:
-
-- `Suma wszystkich płatności` = `totalAllPayments`,
-- `Koszty okołokredytowe` = `overheadCosts`,
-- `Odsetki` = `Σ schedule[i].interest`,
-- `bankReturnRatioPct = totalAllPayments / loanAmount × 100`.
+- „Suma wszystkich płatności” = suma rat + koszty okołokredytowe,
+- „Koszty okołokredytowe” = jak wyżej,
+- „Odsetki” = suma odsetek,
+- udział zwrotu do banku = suma wszystkich płatności / kwota kredytu × 100.
 
 ## 5. Walidacje
 
-- Każde pole liczbowe ma `Validators.min(0)`. `commissionValue` w trybie `PERCENTAGE` jest dodatkowo ograniczone do 100 przez `crossFieldValidator` (klucz `commissionPctOverMax`). Brak innych walidatorów lokalnych.
-- Sekcja nie ma własnych walidatorów krzyżowych — błędy okresów ubezpieczeń (`from > to`) nie są zgłaszane przez `crossFieldValidator` w `FormService`. Skrajne przypadki są neutralizowane przez `isMonthInRange` (zwraca `false` dla błędnego zakresu, więc składka po prostu nie jest naliczana).
+- Każde pole liczbowe przyjmuje wartości nieujemne. Procentowa prowizja za udzielenie dodatkowo nie może
+  przekraczać 100.
+- Sekcja nie ma własnych walidacji krzyżowych — błędny zakres okresu ubezpieczenia (data „od” późniejsza
+  niż „do”) nie zgłasza błędu; składka po prostu nie jest wtedy naliczana.

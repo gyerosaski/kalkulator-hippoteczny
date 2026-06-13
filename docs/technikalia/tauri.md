@@ -31,6 +31,8 @@ Po `tauri:build` artefakty znajdziesz w `src-tauri/target/release/bundle/`:
 
 Dostęp przez `CalculationsStoreService` (`src/app/services/calculations-store/`). Klucz `calculations` przechowuje `SavedCalculationRecord[]`. Eksport do pliku (np. dla backupu lub współdzielenia) używa `@tauri-apps/plugin-dialog` (`save` / `open`) i `@tauri-apps/plugin-fs` (`writeTextFile` / `readTextFile`).
 
+Pełny model rekordu, operacje serwisu, kształty importu/eksportu i logika listy kalkulacji — patrz `docs/technikalia/persystencja-kalkulacji.md`.
+
 ## Uprawnienia (`src-tauri/capabilities/default.json`)
 
 - `core:default`, `store:default`, `dialog:default`
