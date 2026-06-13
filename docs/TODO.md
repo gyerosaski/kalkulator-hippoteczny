@@ -63,6 +63,6 @@
 - [x] Przycisk "Eksportuj wszystkie do JSON" na widoku "Twoje kalkulację" zastąpić przyciskiem-dropdownem "Eksportuj wszystkie". Dropdown na początek powinien pokazywać jedną opcję "JSON" podpiętą do obecnie działającego eksportu
 - [x] Przycisk "Importuj" na widoku "Twoje kalkulacje" powinien umożliwiać zarówno import pojedynczej kalkulacji, jak i tablicy kalkulacji w formacie JSON
 - [x] po zaznaczeniu miesiąca w harmonogramie spłat rozwijać wiersz; w rozwinięciu prezentować 2 donuty: struktura płatności do... i struktura raty w miesiącu tak, żeby user nie musiał scrollować po te dane na góre kolumny
-- dokumentacja funkcjonalna powinna być agnostyczna względem faktycznej implementacji, przejrzeć i dostosować; dodać regułę do Claude.md
+- [x] dokumentacja funkcjonalna powinna być agnostyczna względem faktycznej implementacji, przejrzeć i dostosować; dodać regułę do Claude.md
 - przejrzeć dialogi w src/app/dialogs i stworzyć generyczne komponenty będące podstawą budowania tych i kolejnych dialogów, wykorzystać content projection
   314 pxx 218
