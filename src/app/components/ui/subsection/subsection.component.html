@@ -6,6 +6,9 @@
     (click)="openChange.emit(!open())"
   >
     <span class="subsec-num">{{ num() }}</span>
+    @if (context()) {
+      <ui-color-code-marker [variant]="context()!" />
+    }
     @if (title()) {
       <span class="subsec-title">{{ title() }}</span>
     }
