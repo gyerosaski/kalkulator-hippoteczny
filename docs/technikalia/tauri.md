@@ -18,8 +18,8 @@ npm run tauri:build   # Buduje frontend, kompiluje binarkę, pakuje MSI i NSIS
 
 Po `tauri:build` artefakty znajdziesz w `src-tauri/target/release/bundle/`:
 
-- `msi/Kalkulator Hipoteczny_<version>_x64_pl-PL.msi`
-- `nsis/Kalkulator Hipoteczny_<version>_x64-setup.exe`
+- `msi/Kalkulator Hippoteczny_<version>_x64_pl-PL.msi`
+- `nsis/Kalkulator Hippoteczny_<version>_x64-setup.exe`
 
 ## Persystencja kalkulacji
 

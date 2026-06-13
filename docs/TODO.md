@@ -62,3 +62,4 @@
 - [x] Dla poszczególnych wierszy w widoku "Twoje kalkulacje" w dots-menu akcję "Eksportuj CSV" zastąpić akcją "Eksportuj" z zagnieżdżoną listą formatów eksportu. Na początek powinna znaleźć się tam opcja "JSON" - oprogramować eksport do JSON
 - [x] Przycisk "Eksportuj wszystkie do JSON" na widoku "Twoje kalkulację" zastąpić przyciskiem-dropdownem "Eksportuj wszystkie". Dropdown na początek powinien pokazywać jedną opcję "JSON" podpiętą do obecnie działającego eksportu
 - [x] Przycisk "Importuj" na widoku "Twoje kalkulacje" powinien umożliwiać zarówno import pojedynczej kalkulacji, jak i tablicy kalkulacji w formacie JSON
+      314 pxx 218

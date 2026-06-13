@@ -11,22 +11,31 @@
 - **Rozwijalna pozycja „Koszty okołokredytowe”:** kliknięcie pozycji „Koszty okołokredytowe” w legendzie rozwija
   ją na poszczególne składowe — wcięte wiersze ze składnikami (marker w kolorze kosztów `--c-cost`). Łuk kosztów
   na donucie pozostaje jedną całością (bez podziału).
-- **Źródło rozbicia:** składowe pochodzą z kalkulatora (`MortgageResults.totals.overheadCostsBreakdown` dla
-  całego okresu; agregat `ScheduleRow.costBreakdown` wierszy do wybranego miesiąca w trybie narastającym) —
-  patrz `docs/funkcjonalności/koszty-okolokredytowe-i-promocje.md` §4. Etykiety składowych pochodzą z pipe'u
-  `overheadCostKindLabel`.
+- **Rozwijalna pozycja „Odsetki”:** analogicznie kliknięcie pozycji „Odsetki” rozwija ją na składniki efektywnej
+  stopy: „Odsetki bazowe” (z sekcji „Oprocentowanie”), „Ubezpieczenie pomostowe”, „Ubezpieczenie niskiego wkładu”
+  oraz „Promocja oprocentowania” (wiersz **ujemny** — promocja zmniejsza odsetki). Wcięte wiersze mają marker w
+  kolorze odsetek `--c-int`; łuk odsetek na donucie pozostaje jedną całością. Pozycja jest rozwijalna **tylko gdy
+  istnieje co najmniej jeden składnik poza bazą** (pomostowe / niski wkład / promocja) — w przeciwnym razie jest
+  zwykłym, nierozwijanym wierszem. Suma składników jest dokładnie równa wartości „Odsetki”.
+- **Źródło rozbicia:** składowe pochodzą z kalkulatora
+  (`MortgageResults.totals.overheadCostsBreakdown` / `totalInterestBreakdown` dla całego okresu; agregat
+  `ScheduleRow.costBreakdown` / `interestBreakdown` wierszy do wybranego miesiąca w trybie narastającym) —
+  patrz `docs/funkcjonalności/koszty-okolokredytowe-i-promocje.md` §4. Etykiety składowych pochodzą z pipe'ów
+  `overheadCostKindLabel` oraz `interestComponentKindLabel`. Dzieci odsetek buduje `InterestBreakdownService`.
 - **Nawigacja z legendy do formularza:** kliknięcie etykiety pozycji legendy powiązanej z sekcją formularza
-  (rozwinięte składowe kosztów okołokredytowych oraz pozycja „Nadpłaty”) otwiera odpowiednią sekcję
-  (i podsekcję) w lewej kolumnie i przewija do niej widok (`UiStateService.revealFormSection()`; mapowanie
-  koszt → sekcja w `form-navigation.helper.ts`). Etykiety nawigowalne renderowane są jako przyciski
-  (`.leg-lab--nav`) — wyróżnia je kursor pointer i podkreślenie na hover; dostępne też z klawiatury.
-  Pozycje „Kapitał” i „Odsetki” oraz wiersz-rodzic „Koszty okołokredytowe” (który klikiem rozwija składowe)
+  (rozwinięte składowe kosztów okołokredytowych, składniki odsetek oraz pozycja „Nadpłaty”) otwiera odpowiednią
+  sekcję (i podsekcję) w lewej kolumnie i przewija do niej widok (`UiStateService.revealFormSection()`; mapowanie
+  koszt → sekcja w `overheadCostNavigationTarget`, składnik odsetek → sekcja w `interestComponentNavigationTarget`,
+  oba w `form-navigation.helper.ts`). „Odsetki bazowe” przewijają do sekcji „Oprocentowanie” (`RATE_PERIODS`),
+  pozostałe składniki odsetek do właściwej podsekcji „Koszty okołokredytowe”. Etykiety nawigowalne renderowane są
+  jako przyciski (`.leg-lab--nav`) — wyróżnia je kursor pointer i podkreślenie na hover; dostępne też z klawiatury.
+  Pozycje „Kapitał” oraz wiersze-rodzice „Koszty okołokredytowe” i „Odsetki” (które klikiem rozwijają składowe)
   nie nawigują.
 
 ### 5.2. „Wysokość pierwszej raty” + „Struktura pierwszej raty”
 
 - Wysokość pierwszej raty: wartość liczbowa (np. 3 598,90 zł) wynikająca z bieżących ustawień i_m, trybu rat oraz n.
-- „Struktura pierwszej raty”: donut (`ui-donut-chart`) – udział Kapitał vs Odsetki (+ ewentualne koszty okołokredytowe przypisane do raty). Po wybraniu miesiąca w harmonogramie karta pokazuje strukturę raty wybranego miesiąca, a pozycja „Koszty okołokredytowe” w legendzie jest rozwijalna na składowe tego miesiąca (z `ScheduleRow.costBreakdown`) — analogicznie jak w §5.1. Nad legendą prezentowany jest wiersz „Razem” (suma składników raty) z separatorem.
+- „Struktura pierwszej raty”: donut (`ui-donut-chart`) – udział Kapitał vs Odsetki (+ ewentualne koszty okołokredytowe przypisane do raty). Pozycja „Odsetki” jest rozwijalna na składniki efektywnej stopy (z `ScheduleRow.interestBreakdown` / `firstInstallment.interestBreakdown`) — analogicznie jak w §5.1. Po wybraniu miesiąca w harmonogramie karta pokazuje strukturę raty wybranego miesiąca, a pozycje „Koszty okołokredytowe” i „Odsetki” w legendzie są rozwijalne na składowe tego miesiąca (z `ScheduleRow.costBreakdown` / `interestBreakdown`). Nad legendą prezentowany jest wiersz „Razem” (suma składników raty) z separatorem.
 - Dodatkowy przycisk „drukuj”: renderuje widok do wydruku (drukarka/PDF) zawierający podsumowania, wykresy i/lub harmonogram.
 
 ### 5.3. „Harmonogram spłaty kredytu …” (wykres trendu)

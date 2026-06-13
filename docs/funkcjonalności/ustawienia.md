@@ -1,6 +1,6 @@
 ### Dokumentacja techniczna – Ustawienia aplikacji
 
-Aplikacja: Kalkulator Hipoteczny (Angular 21, standalone components, Reactive Forms, Vitest)
+Aplikacja: Kalkulator Hippoteczny (Angular 21, standalone components, Reactive Forms, Vitest)
 Zakres: Specyfikacja okna ustawień aplikacji oraz dostępnych w nim opcji, odzwierciedlająca aktualny stan implementacji.
 Data aktualizacji: 2026-05-29
 

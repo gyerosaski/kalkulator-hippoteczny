@@ -14,6 +14,7 @@ function buildScheduleRow(overrides: Partial<ScheduleRow>): ScheduleRow {
     remaining: 0,
     insuranceCost: 0,
     costBreakdown: [],
+    interestBreakdown: [],
     ...overrides,
   };
 }

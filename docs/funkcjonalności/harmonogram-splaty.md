@@ -24,6 +24,21 @@
   - Nadpłaty (jeśli występują z innych zakładek) zmniejszają Saldo i modyfikują kolejne wyliczenia.
   - Koszty okołokredytowe przypisywane do miesięcy zgodnie z konfiguracją (domyślnie 0,00).
 
+### 1.0.1. Rozbicie odsetek na składniki (`interestBreakdown`)
+
+Każdy wiersz harmonogramu (`ScheduleRow.interestBreakdown`) przechowuje rozbicie kwoty `Odsetki` na addytywne
+składniki efektywnej stopy (`InterestComponentItem[]`, suma `value` == `interest`):
+
+- `BASE` — odsetki z bazowej stopy (WIBOR + marża albo oprocentowanie stałe z sekcji „Oprocentowanie”). Liczone
+  jako reszta (`interest − pomostowe − niski wkład + promocja`), aby suma składników była dokładnie równa odsetkom.
+- `BRIDGE_INSURANCE` — część odsetek wynikająca z podwyższenia stopy o ubezpieczenie pomostowe (`saldo × bridgeRateIncrease / 12 / 100`).
+- `LOW_EQUITY_INSURANCE` — część odsetek z podwyższenia o ubezpieczenie niskiego wkładu (gdy LTV > 80%).
+- `PROMOTIONAL_DISCOUNT` — **ujemna** kwota obniżenia odsetek przez promocyjne oprocentowanie (w oknie promocji).
+
+Składniki zerowe są pomijane; ujemny `PROMOTIONAL_DISCOUNT` jest zachowywany. Pole zasila rozwijaną pozycję
+„Odsetki” w legendzie donutów (patrz `docs/funkcjonalności/wykresy.md` §5.1–5.2). Agregat całego okresu to
+`MortgageResults.totals.totalInterestBreakdown`; pierwsza rata — `firstInstallment.interestBreakdown`.
+
 ## 1.1. Kolumna „Oprocentowanie” (warunkowa)
 
 Kolumna pojawia się **wyłącznie** wtedy, gdy w symulacji występuje zmiana oprocentowania w czasie. Warunki uruchamiające:

@@ -28,7 +28,7 @@ npx vitest run src/app/services/calculator/calculator.service.spec.ts
 
 ## Architecture
 
-**Kalkulator Hipoteczny** — a Polish mortgage calculator (Angular 21, standalone components, Reactive Forms, Angular Material, Vitest).
+**Kalkulator Hippoteczny** — a Polish mortgage calculator (Angular 21, standalone components, Reactive Forms, Angular Material, Vitest).
 
 ### Data flow pipeline
 

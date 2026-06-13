@@ -6,6 +6,7 @@ import {
   ChartSlice,
   LEGEND_TOTAL_ACTIVE,
   LegendId,
+  InterestComponentItem,
 } from '../../../model';
 import { UiStateService } from '../../../services/ui-state/ui-state.service';
 import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
@@ -16,6 +17,7 @@ import { LegendComponent } from '../../ui/legend/legend.component';
 import { FormService } from '../../../services/form/form';
 import { CardComponent } from '../../ui/card/card.component';
 import { OverheadCostBreakdownService } from '../../../services/overhead-cost-breakdown/overhead-cost-breakdown.service';
+import { InterestBreakdownService } from '../../../services/interest-breakdown/interest-breakdown.service';
 import { PREPAYMENTS_NAVIGATION_TARGET } from '../../../helpers/form-navigation.helper';
 
 @Component({
@@ -57,6 +59,21 @@ export class ResultsDonutChartTotalComponent {
   });
 
   private readonly overheadCostBreakdownService = inject(OverheadCostBreakdownService);
+  private readonly interestBreakdownService = inject(InterestBreakdownService);
+
+  /** Buduje slice „Odsetki"; dołącza rozwijane dzieci tylko gdy są dopłaty poza bazą. */
+  private buildInterestSlice(value: number, breakdown: InterestComponentItem[]): ChartSlice {
+    const slice: ChartSlice = {
+      label: 'Odsetki',
+      value,
+      color: 'var(--c-int)',
+      variant: ColorCodeArea.INTEREST,
+    };
+    if (this.interestBreakdownService.hasComponentBeyondBase(breakdown)) {
+      slice.children = this.interestBreakdownService.buildInterestChildren(breakdown);
+    }
+    return slice;
+  }
 
   selectedRow = computed<ScheduleRow | null>(() => {
     const selectedIndex = this.uiStateService.selectedMonthIndex();
@@ -79,6 +96,7 @@ export class ResultsDonutChartTotalComponent {
         0,
       ),
       costBreakdown: this.overheadCostBreakdownService.aggregateBreakdown(rowsUpToSelected),
+      interestBreakdown: this.interestBreakdownService.aggregateBreakdown(rowsUpToSelected),
     };
   });
 
@@ -92,12 +110,7 @@ export class ResultsDonutChartTotalComponent {
           color: 'var(--c-cap)',
           variant: ColorCodeArea.CAPITAL,
         },
-        {
-          label: 'Odsetki',
-          value: cumulative.interest,
-          color: 'var(--c-int)',
-          variant: ColorCodeArea.INTEREST,
-        },
+        this.buildInterestSlice(cumulative.interest, cumulative.interestBreakdown),
       ];
       if (this.formService.isOverheadCostsEnabled && cumulative.costs > 0) {
         slices.push({
@@ -128,12 +141,7 @@ export class ResultsDonutChartTotalComponent {
         color: 'var(--c-cap)',
         variant: ColorCodeArea.CAPITAL,
       },
-      {
-        label: 'Odsetki',
-        value: results.totals.totalInterest,
-        color: 'var(--c-int)',
-        variant: ColorCodeArea.INTEREST,
-      },
+      this.buildInterestSlice(results.totals.totalInterest, results.totals.totalInterestBreakdown),
     ];
     if (this.formService.isOverheadCostsEnabled && results.totals.overheadCosts > 0) {
       slices.push({

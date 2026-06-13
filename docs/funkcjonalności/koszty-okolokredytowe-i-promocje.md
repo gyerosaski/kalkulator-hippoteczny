@@ -54,7 +54,7 @@ Kwota stała dodawana do `insuranceCost` pierwszego wiersza harmonogramu, wlicza
 | `bridgeRateIncrease` | `ui-number-input` | `Validators.min(0)` | `1,2`                      | `%`       |
 | `bridgeMonths`       | `ui-number-input` | `Validators.min(0)` | `6`                        | `mies.`   |
 
-Mechanizm: w `CalculatorService.getEffectiveRateForMonth` dla miesięcy spełniających `monthIdx >= 1 && monthIdx <= bridgeMonths` (gdzie `monthIdx = monthDiff(startDate, date)`) bazowa stopa jest powiększana o `bridgeRateIncrease`. Skutek: wyższe odsetki w okresie „pomostowym”, brak osobnej pozycji w `overheadCosts` (wpływa pośrednio przez `totalRate`).
+Mechanizm: w `CalculatorService.getRateComponentsForMonth` dla miesięcy spełniających `monthIdx >= 1 && monthIdx <= bridgeMonths` (gdzie `monthIdx = monthDiff(startDate, date)`) bazowa stopa jest powiększana o `bridgeRateIncrease`. Skutek: wyższe odsetki w okresie „pomostowym”, brak osobnej pozycji w `overheadCosts` (wpływa pośrednio przez `totalRate`). Część odsetek wynikająca z tej podwyżki jest jednak wyodrębniona jako składnik `BRIDGE_INSURANCE` w `ScheduleRow.interestBreakdown` i prezentowana w rozwijanej legendzie „Odsetki” (patrz §4 oraz `docs/funkcjonalności/wykresy.md`).
 
 ### 2.4. Karta `UBEZPIECZENIE NIERUCHOMOŚCI`
 
@@ -78,13 +78,13 @@ Wyliczanie (`calcInsuranceCostForMonth`):
 | ----------------------- | ----------------- | ------------------- | --------- | --------- |
 | `lowEquityRateIncrease` | `ui-number-input` | `Validators.min(0)` | `0`       | `%`       |
 
-Mechanizm: w `getEffectiveRateForMonth` stopa jest powiększana o `lowEquityRateIncrease` tylko wtedy, gdy bieżące LTV przekracza 80%. LTV jest obliczane w każdym miesiącu jako:
+Mechanizm: w `getRateComponentsForMonth` stopa jest powiększana o `lowEquityRateIncrease` tylko wtedy, gdy bieżące LTV przekracza 80%. LTV jest obliczane w każdym miesiącu jako:
 
 ```
 currentLtv = (currentBalance / propertyValue) × 100
 ```
 
-Podwyżka obowiązuje, gdy `currentLtv > 80` — automatycznie przestaje być stosowana w miesiącu, w którym saldo kredytu spadnie wystarczająco, by LTV osiągnęło lub przekroczyło próg 80% od góry (tj. `currentBalance / propertyValue ≤ 0,80`). Nie ma konfigurowalnej daty granicznej — warunek jest sprawdzany co miesiąc. Wpływa pośrednio na odsetki, nie na `overheadCosts`.
+Podwyżka obowiązuje, gdy `currentLtv > 80` — automatycznie przestaje być stosowana w miesiącu, w którym saldo kredytu spadnie wystarczająco, by LTV osiągnęło lub przekroczyło próg 80% od góry (tj. `currentBalance / propertyValue ≤ 0,80`). Nie ma konfigurowalnej daty granicznej — warunek jest sprawdzany co miesiąc. Wpływa pośrednio na odsetki, nie na `overheadCosts`. Część odsetek z tej podwyżki jest wyodrębniona jako składnik `LOW_EQUITY_INSURANCE` w `ScheduleRow.interestBreakdown` (rozwijana legenda „Odsetki”, §4).
 
 Przykład: kredyt 420 000 zł przy wartości nieruchomości 500 000 zł → LTV = 84% → podwyżka aktywna. Po nadpłatach redukujących saldo do 399 000 zł → LTV = 79,8% ≤ 80% → podwyżka wyłącza się automatycznie.
 

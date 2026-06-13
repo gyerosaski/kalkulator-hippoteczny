@@ -26,6 +26,8 @@ import {
   MortgageResults,
   OverheadCostKind,
   OverheadCostItem,
+  InterestComponentKind,
+  InterestComponentItem,
   CashFlowEvent,
 } from '../../model/mortgage.model';
 import { computeRrso } from '../../helpers/rrso.helper';
@@ -40,6 +42,7 @@ export {
   InsuranceCalcMethod,
   LifeInsuranceCalcMethod,
   OverheadCostKind,
+  InterestComponentKind,
 };
 
 export type {
@@ -60,6 +63,7 @@ export type {
   ScheduleRow,
   MortgageResults,
   OverheadCostItem,
+  InterestComponentItem,
 };
 
 @Injectable({ providedIn: 'root' })
@@ -337,23 +341,28 @@ export class CalculatorService {
     }
   }
 
-  private getEffectiveRateForMonth(
+  /**
+   * Rozbija efektywną stopę danego miesiąca na addytywne składniki (w punktach proc.):
+   * baza + pomostowe + niski wkład − Promocja oprocentowania. Efektywna stopa to
+   * `base + bridge + lowEquity - promotionalDiscount` (zawsze ≥ 0 dzięki ograniczeniu promocji).
+   */
+  private getRateComponentsForMonth(
     baseRate: number,
     date: string,
     startDate: string,
     currentBalance: number,
     propertyValue: number,
     oc?: OverheadCostsInputs,
-  ): number {
-    let rate = baseRate;
-    if (!oc) return rate;
+  ): { base: number; bridge: number; lowEquity: number; promotionalDiscount: number } {
+    const components = { base: baseRate, bridge: 0, lowEquity: 0, promotionalDiscount: 0 };
+    if (!oc) return components;
 
     // 3. Ubezpieczenie pomostowe – podwyższenie oprocentowania
     const bi = oc.bridgeInsurance;
     if (bi && bi.rateIncrease > 0 && bi.months > 0) {
       const monthIdx = this.monthDiff(startDate, date);
       if (monthIdx >= 1 && monthIdx <= bi.months) {
-        rate += bi.rateIncrease;
+        components.bridge = bi.rateIncrease;
       }
     }
 
@@ -362,17 +371,32 @@ export class CalculatorService {
     if (lei && lei.rateIncrease > 0) {
       const currentLtv = propertyValue > 0 ? (currentBalance / propertyValue) * 100 : 100;
       if (currentLtv > 80) {
-        rate += lei.rateIncrease;
+        components.lowEquity = lei.rateIncrease;
       }
     }
 
-    // 9. Promocyjna wysokość oprocentowania – obniżenie
+    // 9. Promocyjna wysokość oprocentowania – obniżenie (ograniczone, by stopa nie spadła poniżej 0)
     const pr = oc.promotionalRate;
     if (pr && pr.rateDecrease > 0 && this.isMonthInRange(date, pr.from, pr.to)) {
-      rate = Math.max(0, rate - pr.rateDecrease);
+      const beforePromo = components.base + components.bridge + components.lowEquity;
+      components.promotionalDiscount = Math.min(pr.rateDecrease, Math.max(0, beforePromo));
     }
 
-    return rate;
+    return components;
+  }
+
+  /** Agreguje rozbicie odsetek wielu wierszy po rodzaju składnika (suma value == suma odsetek). */
+  private aggregateInterestBreakdown(rows: ScheduleRow[]): InterestComponentItem[] {
+    const sumByKind = new Map<InterestComponentKind, number>();
+    for (const row of rows) {
+      for (const item of row.interestBreakdown) {
+        sumByKind.set(item.kind, (sumByKind.get(item.kind) ?? 0) + item.value);
+      }
+    }
+    // Stała kolejność prezentacji składników
+    return Object.values(InterestComponentKind)
+      .filter((kind) => sumByKind.has(kind))
+      .map((kind) => ({ kind, value: sumByKind.get(kind)! }));
   }
 
   compute(inputs: MortgageInputs): MortgageResults {
@@ -499,7 +523,7 @@ export class CalculatorService {
       }
 
       // Dynamiczna stopa dla tego miesiąca (ubezpieczenie pomostowe, niski wkład, promocja)
-      const monthEffRate = this.getEffectiveRateForMonth(
+      const rateComponents = this.getRateComponentsForMonth(
         baseEffectiveRate,
         date,
         inputs.startDate,
@@ -507,8 +531,28 @@ export class CalculatorService {
         inputs.propertyValue,
         oc,
       );
+      const monthEffRate =
+        rateComponents.base +
+        rateComponents.bridge +
+        rateComponents.lowEquity -
+        rateComponents.promotionalDiscount;
       const iMonth = this.monthlyRate(monthEffRate);
       const interest = saldo * iMonth;
+
+      // Rozbicie odsetek na składowe stopy (suma value == interest).
+      // Bazę liczymy jako resztę, by suma była dokładnie równa odsetkom miesiąca.
+      const interestBridge = saldo * this.monthlyRate(rateComponents.bridge);
+      const interestLowEquity = saldo * this.monthlyRate(rateComponents.lowEquity);
+      const interestPromotionalDiscount =
+        saldo * this.monthlyRate(rateComponents.promotionalDiscount);
+      const interestBase =
+        interest - interestBridge - interestLowEquity + interestPromotionalDiscount;
+      const interestBreakdown: InterestComponentItem[] = [
+        { kind: InterestComponentKind.BASE, value: interestBase },
+        { kind: InterestComponentKind.BRIDGE_INSURANCE, value: interestBridge },
+        { kind: InterestComponentKind.LOW_EQUITY_INSURANCE, value: interestLowEquity },
+        { kind: InterestComponentKind.PROMOTIONAL_DISCOUNT, value: -interestPromotionalDiscount },
+      ].filter((item) => item.value !== 0);
 
       let capital = 0;
       let baseRate = 0;
@@ -619,6 +663,7 @@ export class CalculatorService {
         remaining: saldo,
         insuranceCost,
         costBreakdown,
+        interestBreakdown,
       });
 
       if (!inGrace && remainingAmortMonths > 0) {
@@ -678,6 +723,7 @@ export class CalculatorService {
     const totalRate = schedule.reduce((s, r) => s + r.rate, 0);
     const totalCapital = schedule.reduce((s, r) => s + r.capital, 0);
     const totalInterest = schedule.reduce((s, r) => s + r.interest, 0);
+    const totalInterestBreakdown = this.aggregateInterestBreakdown(schedule);
 
     const totalInsuranceCosts = schedule.reduce((s, r) => s + r.insuranceCost, 0);
     const earlyRepaymentCommissions = schedule.reduce((s, r) => s + r.commission, 0);
@@ -765,6 +811,7 @@ export class CalculatorService {
           rate: firstCapitalRow.rate,
           capital: firstCapitalRow.capital,
           interest: firstCapitalRow.interest,
+          interestBreakdown: firstCapitalRow.interestBreakdown,
         }
       : null;
 
@@ -779,6 +826,7 @@ export class CalculatorService {
         totalRate,
         totalCapital,
         totalInterest,
+        totalInterestBreakdown,
         overheadCosts,
         overheadCostsBreakdown,
         prepayments,

@@ -1,7 +1,7 @@
 [package]
 name = "kalkulator-hipoteczny"
 version = "0.1.0"
-description = "Kalkulator Hipoteczny — aplikacja desktopowa"
+description = "Kalkulator Hippoteczny — aplikacja desktopowa"
 authors = ["gyerosaski"]
 license = ""
 repository = ""

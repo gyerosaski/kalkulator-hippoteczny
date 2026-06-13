@@ -161,6 +161,19 @@ export interface OverheadCostItem {
   value: number; // PLN
 }
 
+/** Składnik odsetek danego miesiąca — rozbicie efektywnej stopy na czynniki. */
+export enum InterestComponentKind {
+  BASE = 'BASE', // odsetki z bazowej stopy (WIBOR + marża albo oprocentowanie stałe)
+  BRIDGE_INSURANCE = 'BRIDGE_INSURANCE', // podwyższenie z tytułu ubezpieczenia pomostowego
+  LOW_EQUITY_INSURANCE = 'LOW_EQUITY_INSURANCE', // podwyższenie z tytułu ubezpieczenia niskiego wkładu
+  PROMOTIONAL_DISCOUNT = 'PROMOTIONAL_DISCOUNT', // Promocja oprocentowania (wartość ujemna)
+}
+
+export interface InterestComponentItem {
+  kind: InterestComponentKind;
+  value: number; // PLN; PROMOTIONAL_DISCOUNT jest ujemny
+}
+
 export interface MortgageInputs {
   propertyValue: number; // Wartość nieruchomości (PLN)
   loanAmount: number; // Kwota kredytu (PLN)
@@ -189,6 +202,7 @@ export interface ScheduleRow {
   remaining: number; // Pozostało do spłaty po racie
   insuranceCost: number; // Koszt ubezpieczeń i dodatkowych kosztów w danym miesiącu
   costBreakdown: OverheadCostItem[]; // Rozbicie insuranceCost na składowe (suma value == insuranceCost)
+  interestBreakdown: InterestComponentItem[]; // Rozbicie interest na składowe (suma value == interest)
 }
 
 /** Pojedynczy przepływ pieniężny na osi czasu kredytu (do wyliczenia RRSO). */
@@ -202,12 +216,18 @@ export interface MortgageResults {
   rrso: number | null; // Rzeczywista Roczna Stopa Oprocentowania w %; null gdy nieobliczalna
   totalMonths: number; // n łącznie (lata*12+miesiące)
   amortizationMonths: number; // n po karencji
-  firstInstallment: { rate: number; capital: number; interest: number } | null;
+  firstInstallment: {
+    rate: number;
+    capital: number;
+    interest: number;
+    interestBreakdown: InterestComponentItem[]; // rozbicie interest pierwszej raty (suma value == interest)
+  } | null;
   hasRateChanges: boolean; // true jeśli jakakolwiek stopa różni się od pierwszego wiersza
   totals: {
     totalRate: number;
     totalCapital: number;
     totalInterest: number;
+    totalInterestBreakdown: InterestComponentItem[]; // rozbicie totalInterest na składowe (suma value == totalInterest)
     overheadCosts: number; // koszty okołokredytowe
     overheadCostsBreakdown: OverheadCostItem[]; // rozbicie overheadCosts na składowe (suma value == overheadCosts)
     prepayments: number;

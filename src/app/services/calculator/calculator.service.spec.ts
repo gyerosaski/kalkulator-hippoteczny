@@ -4,6 +4,7 @@ import {
   InstallmentType,
   InsuranceCalcMethod,
   InsuranceFrequency,
+  InterestComponentKind,
   LifeInsuranceCalcMethod,
   MortgageInputs,
   OverheadCostKind,
@@ -666,6 +667,89 @@ describe('MortgageCalcService (rozbicie kosztów okołokredytowych)', () => {
       const rowSum = row.costBreakdown.reduce((sum, item) => sum + item.value, 0);
       expect(rowSum).toBeCloseTo(row.insuranceCost, 2);
     }
+  });
+});
+
+describe('MortgageCalcService (rozbicie odsetek)', () => {
+  let service: CalculatorService;
+
+  beforeEach(() => {
+    service = new CalculatorService();
+  });
+
+  function interestBreakdownInputs(): MortgageInputs {
+    // LTV = 450_000 / 500_000 = 90% > 80% → ubezpieczenie niskiego wkładu aktywne
+    return {
+      propertyValue: 500_000,
+      loanAmount: 450_000,
+      ltv: 90,
+      loanPeriod: 20 * 12,
+      startDate: '2026-01',
+      capitalStartDate: '2026-02',
+      installmentType: InstallmentType.EQUAL,
+      ratePeriods: [
+        { from: '2026-01', rateType: RateType.FIXED, nominalRate: 6, wibor: 0, margin: 0 },
+      ],
+      prepaymentRules: [],
+      targetInstallmentRule: {
+        targetRate: 0,
+        from: '2026-01',
+        to: '2026-01',
+        effect: PrepaymentEffect.LOWER_INSTALLMENT,
+      },
+      overheadCosts: {
+        commissionCalcMethod: CommissionCalcMethod.FIXED_AMOUNT,
+        commissionValue: 0,
+        appraisalFee: 0,
+        bridgeInsurance: { rateIncrease: 1, months: 12 },
+        lowEquityInsurance: { rateIncrease: 2 },
+        promotionalRate: { rateDecrease: 0.5, from: '2026-02', to: '2026-12' },
+      },
+    };
+  }
+
+  it('suma składowych rozbicia odsetek odpowiada odsetkom wiersza i całości', () => {
+    const result = service.compute(interestBreakdownInputs());
+
+    // rozbicie pojedynczego wiersza sumuje się do jego odsetek
+    for (const row of result.schedule) {
+      const rowSum = row.interestBreakdown.reduce((sum, item) => sum + item.value, 0);
+      expect(rowSum).toBeCloseTo(row.interest, 6);
+    }
+
+    // rozbicie całego okresu sumuje się do totalInterest
+    const totalBreakdownSum = result.totals.totalInterestBreakdown.reduce(
+      (sum, item) => sum + item.value,
+      0,
+    );
+    expect(totalBreakdownSum).toBeCloseTo(result.totals.totalInterest, 2);
+  });
+
+  it('rozbicie zawiera bazę, dopłaty oraz ujemne Promocja oprocentowania', () => {
+    const result = service.compute(interestBreakdownInputs());
+
+    // Pierwszy miesiąc kapitałowy z aktywnym pomostowym, niskim wkładem i promocją
+    const row = result.schedule.find((r) => r.date === '2026-02');
+    expect(row).toBeTruthy();
+    const byKind = new Map(row!.interestBreakdown.map((item) => [item.kind, item.value]));
+
+    expect(byKind.get(InterestComponentKind.BASE)).toBeGreaterThan(0);
+    expect(byKind.get(InterestComponentKind.BRIDGE_INSURANCE)).toBeGreaterThan(0);
+    expect(byKind.get(InterestComponentKind.LOW_EQUITY_INSURANCE)).toBeGreaterThan(0);
+    expect(byKind.get(InterestComponentKind.PROMOTIONAL_DISCOUNT)).toBeLessThan(0);
+  });
+
+  it('bez dopłat i promocji rozbicie zawiera wyłącznie składnik bazowy', () => {
+    const inputs = interestBreakdownInputs();
+    inputs.overheadCosts = undefined;
+
+    const result = service.compute(inputs);
+    const row = result.schedule.find((r) => r.date === '2026-02');
+
+    expect(row).toBeTruthy();
+    expect(row!.interestBreakdown).toHaveLength(1);
+    expect(row!.interestBreakdown[0].kind).toBe(InterestComponentKind.BASE);
+    expect(row!.interestBreakdown[0].value).toBeCloseTo(row!.interest, 6);
   });
 });
 
