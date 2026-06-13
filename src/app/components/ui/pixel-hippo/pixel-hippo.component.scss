@@ -7,72 +7,29 @@
 }
 
 .sprite {
+  --sprite-w: 43px;
+  --sprite-h: 30px;
   position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 32px;
-  height: 24px;
-  animation:
-    sprite-run-across 14s linear infinite,
-    sprite-turn 14s steps(1) infinite;
-}
-
-svg {
-  display: block;
+  left: 50%;
+  top: 50%;
+  width: var(--sprite-w);
+  height: var(--sprite-h);
+  /* dom spoczynkowy: wyśrodkowany w pionie i poziomie, schowany za nawigacją.
+     Pozycja w poziomie jest sterowana z TS przez animację translateX. */
+  transform: translate(-50%, -50%);
+  background-image: url('/spritesheet-run.png');
+  background-repeat: no-repeat;
+  background-size: var(--sprite-w) calc(var(--sprite-h) * 6);
   image-rendering: pixelated;
+  animation: sprite-frames 0.9s steps(6) infinite;
 }
 
-.legs-frame-a {
-  animation: sprite-frame-a 0.32s steps(1) infinite;
-}
-
-.legs-frame-b {
-  animation: sprite-frame-b 0.32s steps(1) infinite;
-}
-
-/* dwuklatkowy cykl biegu */
-@keyframes sprite-frame-a {
-  0%,
-  49% {
-    visibility: visible;
+/* 6-klatkowy cykl biegu z pionowego spritesheetu */
+@keyframes sprite-frames {
+  from {
+    background-position-y: 0;
   }
-  50%,
-  100% {
-    visibility: hidden;
-  }
-}
-
-@keyframes sprite-frame-b {
-  0%,
-  49% {
-    visibility: hidden;
-  }
-  50%,
-  100% {
-    visibility: visible;
-  }
-}
-
-/* bieg tam i z powrotem po całej szerokości toru */
-@keyframes sprite-run-across {
-  0% {
-    left: 0;
-  }
-  50% {
-    left: calc(100% - 32px);
-  }
-  100% {
-    left: 0;
-  }
-}
-
-/* odwrócenie sprite'a w drodze powrotnej */
-@keyframes sprite-turn {
-  0%,
-  100% {
-    transform: scaleX(1);
-  }
-  50% {
-    transform: scaleX(-1);
+  to {
+    background-position-y: calc(var(--sprite-h) * -6);
   }
 }
