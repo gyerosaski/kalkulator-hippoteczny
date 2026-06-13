@@ -58,6 +58,7 @@
     (rename)="startRename($event)"
     (delete)="startDelete($event)"
     (duplicate)="duplicateCalculation($event)"
+    (exportRequested)="exportCalculation($event)"
     (clearFilters)="clearFilters()"
   />
 
@@ -67,7 +68,7 @@
       [filteredCount]="filteredCalculations().length"
       [totalCount]="calculations().length"
       [storePath]="storePathResource.value()"
-      (exportToFile)="exportAllToFile()"
+      (exportRequested)="exportAll($event)"
     />
   }
 

@@ -152,6 +152,12 @@ export enum SortDirection {
   DESCENDING = 'DESCENDING',
 }
 
+/** Kierunek otwierania menu komponentu `ui-dropdown` względem przycisku. */
+export enum DropdownPlacement {
+  DOWN = 'DOWN',
+  UP = 'UP',
+}
+
 /** Identyfikatory instancji legend wykresów — klucze stanu rozwinięcia pozycji legendy. */
 export enum LegendId {
   DONUT_TOTAL = 'DONUT_TOTAL',

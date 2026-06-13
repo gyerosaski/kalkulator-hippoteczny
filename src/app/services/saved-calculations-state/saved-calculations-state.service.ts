@@ -1,9 +1,15 @@
 import { inject, Injectable, signal } from '@angular/core';
 
 import { InstallmentType, RateType } from '../../model';
-import { CalculationImportStatus, SavedCalculation, SavedCalculationRecord } from '../../model';
+import {
+  CalculationImportResult,
+  CalculationImportStatus,
+  SavedCalculation,
+  SavedCalculationRecord,
+} from '../../model';
 import { CalculationsStoreService } from '../calculations-store/calculations-store.service';
 import { normalizeCalculationData } from '../../helpers/saved-calculation-data.helper';
+import { buildUniqueCalculationName } from '../../helpers/saved-calculation-import.helper';
 
 export function toSavedCalculation(record: SavedCalculationRecord): SavedCalculation {
   const rawData = (normalizeCalculationData(record.data) ?? {}) as unknown as Record<
@@ -108,19 +114,31 @@ export class SavedCalculationsStateService {
     await this.refreshRecords();
   }
 
-  async importFromFile(): Promise<CalculationImportStatus> {
-    const result = await this.calculationsStore.importFromFile();
-    if (!result) return CalculationImportStatus.CANCELED;
-    if (!result.record) return CalculationImportStatus.INVALID_FILE;
+  async importFromFile(): Promise<CalculationImportResult> {
+    const importedRecords = await this.calculationsStore.importFromFile();
+    if (importedRecords === null) {
+      return { status: CalculationImportStatus.CANCELED, importedCount: 0 };
+    }
+    if (importedRecords.length === 0) {
+      return { status: CalculationImportStatus.INVALID_FILE, importedCount: 0 };
+    }
 
+    // zapis każdego rekordu z rozwiązaniem kolizji nazw (import jako kopia)
     const now = new Date().toISOString();
-    const record: SavedCalculationRecord = {
-      ...result.record,
-      updatedAt: now,
-    };
-    await this.calculationsStore.saveCalculation(record);
+    const takenNames = new Set(this.recordsSignal().map((record) => record.name));
+    for (const importedRecord of importedRecords) {
+      const uniqueName = buildUniqueCalculationName(importedRecord.name, takenNames);
+      takenNames.add(uniqueName);
+      const record: SavedCalculationRecord = {
+        ...importedRecord,
+        name: uniqueName,
+        updatedAt: now,
+      };
+      await this.calculationsStore.saveCalculation(record);
+    }
+
     await this.refreshRecords();
-    return CalculationImportStatus.SUCCESS;
+    return { status: CalculationImportStatus.SUCCESS, importedCount: importedRecords.length };
   }
 
   public async refreshRecords(): Promise<void> {

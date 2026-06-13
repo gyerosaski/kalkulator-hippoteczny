@@ -17,6 +17,7 @@ import { ask as askDialog } from '@tauri-apps/plugin-dialog';
 import {
   AppRoute,
   CalculationImportStatus,
+  ExportFormat,
   OverheadCostKind,
   SavedCalculationMetadata,
   SavedCalculationRecord,
@@ -189,19 +190,39 @@ export class CalculationsManagerComponent implements OnInit {
   }
 
   async importFromFile(): Promise<void> {
-    const importStatus = await this.savedCalculationsStateService.importFromFile();
-    if (importStatus === CalculationImportStatus.SUCCESS) {
-      this.toastService.show('Zaimportowano kalkulację');
-    } else if (importStatus === CalculationImportStatus.INVALID_FILE) {
+    const { status, importedCount } = await this.savedCalculationsStateService.importFromFile();
+    if (status === CalculationImportStatus.SUCCESS) {
+      const message =
+        importedCount === 1
+          ? 'Zaimportowano kalkulację'
+          : `Zaimportowano ${importedCount} kalkulacji`;
+      this.toastService.show(message);
+    } else if (status === CalculationImportStatus.INVALID_FILE) {
       this.toastService.show('Nieprawidłowy plik kalkulacji', ToastVariant.ERROR);
     }
   }
 
-  async exportAllToFile(): Promise<void> {
+  async exportAll(format: ExportFormat): Promise<void> {
+    if (format !== ExportFormat.JSON) return;
     const records = this.savedCalculationsStateService.records();
     const savedPath = await this.calculationsStore.exportAllToFile(records);
     if (savedPath) {
       this.toastService.show(`Wyeksportowano ${records.length} kalkulacji`);
+    }
+  }
+
+  async exportCalculation(payload: {
+    calculation: SavedCalculation;
+    format: ExportFormat;
+  }): Promise<void> {
+    if (payload.format !== ExportFormat.JSON) return;
+    const record = this.savedCalculationsStateService
+      .records()
+      .find((existing) => existing.name === payload.calculation.name);
+    if (!record) return;
+    const savedPath = await this.calculationsStore.exportToFile(record);
+    if (savedPath) {
+      this.toastService.show(`Wyeksportowano kalkulację „${payload.calculation.name}"`);
     }
   }
 

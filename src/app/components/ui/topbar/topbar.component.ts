@@ -16,12 +16,18 @@ import { map } from 'rxjs';
 import { IconCalculatorComponent } from '../../icons/icon-calculator/icon-calculator.component';
 import { IconSettingsComponent } from '../../icons/icon-settings/icon-settings.component';
 import { SettingsDialogComponent } from '../../../dialogs/settings/settings-dialog.component';
+import { PixelHippoComponent } from '../pixel-hippo/pixel-hippo.component';
 import { AppRoute } from '../../../model';
 
 @Component({
   selector: 'ui-topbar',
   standalone: true,
-  imports: [IconCalculatorComponent, IconSettingsComponent, SettingsDialogComponent],
+  imports: [
+    IconCalculatorComponent,
+    IconSettingsComponent,
+    SettingsDialogComponent,
+    PixelHippoComponent,
+  ],
   templateUrl: './topbar.component.html',
   styleUrls: ['./topbar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

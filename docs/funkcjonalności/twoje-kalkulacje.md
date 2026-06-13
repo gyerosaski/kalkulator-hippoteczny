@@ -21,11 +21,11 @@ Czas względny wyznaczany na podstawie pola `updatedAt` — szczegóły w sekcji
 
 #### 2.2 Przyciski akcji globalnych
 
-| Przycisk           | Działanie                                                                |
-| ------------------ | ------------------------------------------------------------------------ |
-| `Nowa kalkulacja`  | Przejście do kalkulatora z pustym formularzem                            |
-| `Importuj`         | Import kalkulacji z pliku JSON (dialog systemowy Tauri — patrz sekcja 7) |
-| `Porównaj wybrane` | Placeholder UI — nie wdrożone w bieżącej wersji designu                  |
+| Przycisk           | Działanie                                                                                                        |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| `Nowa kalkulacja`  | Przejście do kalkulatora z pustym formularzem                                                                    |
+| `Importuj`         | Import kalkulacji z pliku JSON — pojedynczej lub tablicy kalkulacji (dialog systemowy Tauri — patrz sekcja 11.4) |
+| `Porównaj wybrane` | Placeholder UI — nie wdrożone w bieżącej wersji designu                                                          |
 
 ---
 
@@ -113,13 +113,13 @@ Wyświetlany gdy po zastosowaniu aktywnych filtrów i wyszukiwania nie pozostaje
 
 #### 6.2 Menu `⋯` (więcej akcji)
 
-| Pozycja menu    | Działanie                                                                                                                                                   |
-| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Zapisz zmiany` | Nadpisuje bieżący rekord aktualnym stanem formularza; widoczna tylko gdy kalkulacja jest wczytana **i** zmodyfikowana; toast: `Zapisano zmiany w „{nazwa}"` |
-| `Zmień nazwę`   | Otwiera modal zmiany nazwy (sekcja 7.1)                                                                                                                     |
-| `Duplikuj`      | Tworzy kopię kalkulacji z nową nazwą (z sufiksem); toast: `Utworzono kopię „{nazwa}"`                                                                       |
-| `Eksportuj CSV` | Placeholder — nie wdrożone w bieżącej wersji designu                                                                                                        |
-| `Usuń`          | Otwiera modal potwierdzenia usunięcia (sekcja 7.2)                                                                                                          |
+| Pozycja menu    | Działanie                                                                                                                                                                                 |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Zapisz zmiany` | Nadpisuje bieżący rekord aktualnym stanem formularza; widoczna tylko gdy kalkulacja jest wczytana **i** zmodyfikowana; toast: `Zapisano zmiany w „{nazwa}"`                               |
+| `Zmień nazwę`   | Otwiera modal zmiany nazwy (sekcja 7.1)                                                                                                                                                   |
+| `Duplikuj`      | Tworzy kopię kalkulacji z nową nazwą (z sufiksem); toast: `Utworzono kopię „{nazwa}"`                                                                                                     |
+| `Eksportuj`     | Rozwija wysuwane podmenu (flyout) z listą formatów eksportu (obecnie `JSON`); wybór formatu eksportuje rekord do pliku przez `exportToFile`; toast: `Wyeksportowano kalkulację „{nazwa}"` |
+| `Usuń`          | Otwiera modal potwierdzenia usunięcia (sekcja 7.2)                                                                                                                                        |
 
 Przy zapisaniu zmian: zachowywane jest oryginalne pole `createdAt`, aktualizowane `updatedAt` i `metadata` (dane z bieżącego wyniku kalkulatora). Po zapisie sygnał `isLoadedCalculationModified` wraca do `false` (odświeżony snapshot).
 
@@ -171,10 +171,10 @@ Przy zapisaniu zmian: zachowywane jest oryginalne pole `createdAt`, aktualizowan
 
 ### 9. Stopka
 
-| Element                               | Treść                                                                       |
-| ------------------------------------- | --------------------------------------------------------------------------- |
-| Licznik                               | `Wyświetlono X z Y kalkulacji · dane przechowywane lokalnie w przeglądarce` |
-| Przycisk `Eksportuj wszystkie do CSV` | Placeholder — nie wdrożone w bieżącej wersji designu                        |
+| Element                                 | Treść                                                                                                                                                           |
+| --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Licznik                                 | `Wyświetlono X z Y kalkulacji · dane przechowywane lokalnie` + ścieżka pliku store                                                                              |
+| Przycisk-dropdown `Eksportuj wszystkie` | Rozwija listę formatów eksportu (obecnie `JSON`); wybór formatu eksportuje wszystkie rekordy do jednego pliku (`exportAllToFile`); disabled gdy brak kalkulacji |
 
 ---
 
@@ -228,20 +228,20 @@ Zdefiniowany w `src/app/model/saved-calculation.model.ts`.
 
 #### 11.3 Operacje serwisu
 
-| Metoda                    | Działanie                                                                                                                                                              |
-| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `listCalculations()`      | Pobiera tablicę wszystkich rekordów ze store                                                                                                                           |
-| `hasCalculation(name)`    | Sprawdza czy rekord o danej nazwie już istnieje                                                                                                                        |
-| `saveCalculation(record)` | Upsert po `name`: zastępuje istniejący rekord lub dodaje nowy; wywołuje `store.save()`                                                                                 |
-| `deleteCalculation(name)` | Filtruje tablicę, usuwa rekord o danej nazwie i zapisuje zaktualizowaną tablicę                                                                                        |
-| `exportToFile(record)`    | Otwiera systemowy dialog zapisu pliku (Tauri `saveDialog`), zapisuje JSON; zwraca ścieżkę pliku lub `null` gdy anulowano                                               |
-| `importFromFile()`        | Otwiera systemowy dialog otwarcia pliku (`openDialog`), parsuje JSON, waliduje kształt `SavedCalculationRecord`; zwraca `{ record, rawData }` lub `null` gdy anulowano |
+| Metoda                    | Działanie                                                                                                                                                                                                                             |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `listCalculations()`      | Pobiera tablicę wszystkich rekordów ze store                                                                                                                                                                                          |
+| `hasCalculation(name)`    | Sprawdza czy rekord o danej nazwie już istnieje                                                                                                                                                                                       |
+| `saveCalculation(record)` | Upsert po `name`: zastępuje istniejący rekord lub dodaje nowy; wywołuje `store.save()`                                                                                                                                                |
+| `deleteCalculation(name)` | Filtruje tablicę, usuwa rekord o danej nazwie i zapisuje zaktualizowaną tablicę                                                                                                                                                       |
+| `exportToFile(record)`    | Otwiera systemowy dialog zapisu pliku (Tauri `saveDialog`), zapisuje JSON; zwraca ścieżkę pliku lub `null` gdy anulowano                                                                                                              |
+| `importFromFile()`        | Otwiera systemowy dialog otwarcia pliku (`openDialog`), parsuje JSON i wyłuskuje rekordy przez `extractImportableRecords`; zwraca tablicę poprawnych `SavedCalculationRecord` (pustą gdy plik nieprawidłowy) lub `null` gdy anulowano |
 
 #### 11.4 Import / eksport pliku
 
 - Format pliku: JSON z filtrem rozszerzeń `.json`
 - **Eksport** — domyślna nazwa pliku: `<sanitized-name>.json`; znaki niedozwolone w nazwie pliku (`\ / : * ? " < > |`) zastępowane są znakiem `_`
-- **Import** — po parsowaniu JSON weryfikowany jest kształt obiektu: musi zawierać pola `name` (string), `createdAt` i `data`; nieprawidłowa struktura skutkuje zwróceniem `{ record: null, rawData: <parsed> }`
+- **Import** — obsługiwane są trzy kształty pliku JSON: pojedynczy rekord, goła tablica rekordów oraz obiekt-opakowanie z eksportu „wszystkich" (`{ exportedAt, count, calculations: [...] }`). Każdy element musi zawierać pola `name` (string), `createdAt` i `data`; elementy o niepoprawnym kształcie są pomijane (`extractImportableRecords`). Przy kolizji nazwy z istniejącą kalkulacją rekord jest importowany jako kopia (sufiks „ — kopia", „ — kopia (2)", …) — nic nie jest nadpisywane (`buildUniqueCalculationName`)
 
 #### 11.5 Wymagane uprawnienia Tauri
 

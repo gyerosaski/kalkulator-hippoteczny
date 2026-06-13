@@ -12,11 +12,26 @@
   backdrop-filter: blur(8px);
 }
 
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  justify-self: stretch;
+  min-width: 0;
+}
+
 .brand {
   display: flex;
   align-items: center;
   gap: 12px;
-  justify-self: start;
+  flex-shrink: 0;
+}
+
+.sprite-track {
+  position: relative;
+  flex: 1;
+  height: 24px;
+  align-self: flex-end;
 }
 
 .brand-mark {

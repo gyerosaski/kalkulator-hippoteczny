@@ -5,6 +5,7 @@ import { readTextFile, writeTextFile } from '@tauri-apps/plugin-fs';
 import { appDataDir, join } from '@tauri-apps/api/path';
 
 import { SavedCalculationRecord } from '../../model';
+import { extractImportableRecords } from '../../helpers/saved-calculation-import.helper';
 
 @Injectable({ providedIn: 'root' })
 export class CalculationsStoreService {
@@ -75,10 +76,7 @@ export class CalculationsStoreService {
     return targetPath;
   }
 
-  async importFromFile(): Promise<{
-    record: SavedCalculationRecord | null;
-    rawData: unknown;
-  } | null> {
+  async importFromFile(): Promise<SavedCalculationRecord[] | null> {
     const selected = await openDialog({
       multiple: false,
       directory: false,
@@ -88,19 +86,14 @@ export class CalculationsStoreService {
     if (!selected) return null;
     try {
       const content = await readTextFile(selected);
-      const parsed = JSON.parse(content);
-      if (this.isSavedCalculationRecord(parsed)) {
-        return { record: parsed, rawData: parsed.data };
-      }
-      return { record: null, rawData: parsed };
+      return extractImportableRecords(JSON.parse(content));
     } catch {
-      return { record: null, rawData: null };
+      return [];
     }
   }
 
   async getStorePath(): Promise<string> {
     const dataDirectory = await appDataDir();
-    return await appDataDir();
     return await join(dataDirectory, CalculationsStoreService.STORE_FILE_NAME);
   }
 
@@ -117,16 +110,5 @@ export class CalculationsStoreService {
   private sanitizeFileName(name: string): string {
     const sanitized = (name || '').replace(/[\\/:*?"<>|]/g, '_').trim();
     return sanitized || 'kalkulacja';
-  }
-
-  private isSavedCalculationRecord(value: unknown): value is SavedCalculationRecord {
-    return (
-      typeof value === 'object' &&
-      value !== null &&
-      'name' in value &&
-      'createdAt' in value &&
-      'data' in value &&
-      typeof (value as { name: unknown }).name === 'string'
-    );
   }
 }

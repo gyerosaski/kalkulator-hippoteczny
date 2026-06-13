@@ -1,0 +1,78 @@
+:host {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.sprite {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 32px;
+  height: 24px;
+  animation:
+    sprite-run-across 14s linear infinite,
+    sprite-turn 14s steps(1) infinite;
+}
+
+svg {
+  display: block;
+  image-rendering: pixelated;
+}
+
+.legs-frame-a {
+  animation: sprite-frame-a 0.32s steps(1) infinite;
+}
+
+.legs-frame-b {
+  animation: sprite-frame-b 0.32s steps(1) infinite;
+}
+
+/* dwuklatkowy cykl biegu */
+@keyframes sprite-frame-a {
+  0%,
+  49% {
+    visibility: visible;
+  }
+  50%,
+  100% {
+    visibility: hidden;
+  }
+}
+
+@keyframes sprite-frame-b {
+  0%,
+  49% {
+    visibility: hidden;
+  }
+  50%,
+  100% {
+    visibility: visible;
+  }
+}
+
+/* bieg tam i z powrotem po całej szerokości toru */
+@keyframes sprite-run-across {
+  0% {
+    left: 0;
+  }
+  50% {
+    left: calc(100% - 32px);
+  }
+  100% {
+    left: 0;
+  }
+}
+
+/* odwrócenie sprite'a w drodze powrotnej */
+@keyframes sprite-turn {
+  0%,
+  100% {
+    transform: scaleX(1);
+  }
+  50% {
+    transform: scaleX(-1);
+  }
+}

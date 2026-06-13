@@ -1,0 +1,53 @@
+:host {
+  display: inline-block;
+}
+
+.dropdown-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-caret {
+  display: inline-flex;
+  margin-left: 2px;
+}
+
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 1000;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-lg);
+  min-width: 160px;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.dropdown-menu--up {
+  top: auto;
+  bottom: calc(100% + 4px);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  font-size: 13px;
+  color: var(--ink);
+  border: none;
+  background: none;
+  border-radius: calc(var(--r) - 4px);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+
+  &:hover {
+    background: var(--surface-2);
+  }
+}

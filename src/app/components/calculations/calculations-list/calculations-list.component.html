@@ -167,10 +167,23 @@
                   <icon-duplicate />
                   Duplikuj
                 </button>
-                <button class="menu-item" [disabled]="true">
+                <div class="menu-item menu-item--has-submenu" tabindex="0" role="menuitem">
                   <icon-export />
-                  Eksportuj CSV
-                </button>
+                  Eksportuj
+                  <icon-chevron-right class="submenu-caret" />
+                  <div class="submenu-flyout" role="menu">
+                    @for (format of exportFormats; track format) {
+                      <button
+                        class="menu-item"
+                        (click)="
+                          exportRequested.emit({ calculation, format }); openMenuName.set(null)
+                        "
+                      >
+                        {{ format | exportFormatLabel }}
+                      </button>
+                    }
+                  </div>
+                </div>
                 <div class="menu-separator"></div>
                 <button class="menu-item menu-item--danger" (click)="delete.emit(calculation)">
                   <icon-trash />

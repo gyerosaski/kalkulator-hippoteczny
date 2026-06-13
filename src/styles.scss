@@ -221,6 +221,13 @@ body {
   gap: 6px;
   transition: all 0.15s ease;
 }
+
+/* Ikony liniowe w przyciskach i pozycjach menu renderują się jako blok,
+   dzięki czemu centrują się wertykalnie względem labelki (brak luki bazowej tekstu). */
+.btn svg,
+.menu-item svg {
+  display: block;
+}
 .btn--primary {
   background: var(--ink);
   color: var(--surface);

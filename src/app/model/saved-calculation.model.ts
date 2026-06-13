@@ -60,3 +60,12 @@ export enum SavedCalculationSortOption {
   LOAN_AMOUNT = 'LOAN_AMOUNT',
   FIRST_INSTALLMENT = 'FIRST_INSTALLMENT',
 }
+
+export enum ExportFormat {
+  JSON = 'JSON',
+}
+
+export interface CalculationImportResult {
+  status: CalculationImportStatus;
+  importedCount: number;
+}
