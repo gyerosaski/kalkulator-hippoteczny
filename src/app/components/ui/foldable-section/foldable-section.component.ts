@@ -10,15 +10,14 @@ import {
   signal,
 } from '@angular/core';
 import { IconChevronRightComponent } from '../../icons/icon-chevron-right/icon-chevron-right.component';
-import { ColorCodeArea, FormSectionId } from '../../../model';
-import { ColorCodeMarkerComponent } from '../color-code-marker/color-code-marker.component';
+import { FormSectionId } from '../../../model';
 import { UiStateService } from '../../../services/ui-state/ui-state.service';
 import { formSectionAnchorId } from '../../../helpers/form-navigation.helper';
 
 @Component({
   selector: 'ui-foldable-section',
   standalone: true,
-  imports: [IconChevronRightComponent, ColorCodeMarkerComponent],
+  imports: [IconChevronRightComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './foldable-section.component.html',
   host: {
@@ -31,7 +30,6 @@ export class FoldableSectionComponent {
   title = input.required<string>();
   num = input<string>('');
   badge = input<string>('');
-  marker = input<ColorCodeArea | null>(null);
   defaultOpen = input<boolean>(true);
   toggleable = input<boolean>(false);
   enabled = input<boolean>(true);

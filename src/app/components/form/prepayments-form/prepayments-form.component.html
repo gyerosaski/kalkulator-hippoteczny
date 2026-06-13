@@ -1,7 +1,6 @@
 <ui-foldable-section
   title="Nadpłaty"
   [sectionId]="FormSectionId.PREPAYMENTS"
-  [marker]="colorCodeArea.PREPAYMENT"
   [badge]="badge()"
   [toggleable]="true"
   [defaultOpen]="false"
@@ -128,7 +127,7 @@
     <ui-divider />
 
     <ui-subsection
-      [context]="colorCodeArea.PREPAYMENT"
+      [context]="colorCodeArea.COST"
       [num]="3"
       title="Prowizja za wcześniejszą spłatę"
       [open]="openSubsection() === 'prowizjaWczesniejszaSplata'"
