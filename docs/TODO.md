@@ -65,7 +65,7 @@
 - [x] po zaznaczeniu miesiąca w harmonogramie spłat rozwijać wiersz; w rozwinięciu prezentować 2 donuty: struktura płatności do... i struktura raty w miesiącu tak, żeby user nie musiał scrollować po te dane na góre kolumny
 - [x] dokumentacja funkcjonalna powinna być agnostyczna względem faktycznej implementacji, przejrzeć i dostosować; dodać regułę do Claude.md
 - [x] przejrzeć dialogi w src/app/dialogs i stworzyć generyczne komponenty będące podstawą budowania tych i kolejnych dialogów, wykorzystać content projection
-- w docs/technikalia dodać dokument opisujący design system, dostępne kontrolki ui, zmienne kolorów, palety motywów
+- [x] w docs/technikalia dodać dokument opisujący design system, dostępne kontrolki ui, zmienne kolorów, palety motywów
 - dodaj eksport do .csv pojedynczej i wszystkich kalkulacji
 - dodać dokument walidację.md w docs/funkcjonalności, który będzie zawierał listę wszystkich walidacji formularza kalkulatora
   314 pxx 218
