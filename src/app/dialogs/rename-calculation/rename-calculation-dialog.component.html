@@ -1,31 +1,26 @@
-<dialog #dialogEl (close)="onClose()">
-  <div class="dialog-head">
-    <div>
-      <div class="dialog-tag">akcja</div>
-      <h2 class="dialog-title">Zmień nazwę kalkulacji</h2>
-    </div>
-    <button class="dialog-close" type="button" (click)="cancel()" aria-label="Zamknij">×</button>
-  </div>
-  <form class="dialog-body" (submit)="$event.preventDefault(); confirm()">
-    <label class="dialog-label" for="rename-calc-name">Nazwa</label>
-    <div class="inp inp--focus">
-      <input
-        id="rename-calc-name"
-        type="text"
-        autocomplete="off"
-        [value]="currentValue()"
-        (input)="onInput($any($event.target).value)"
-        (keydown.escape)="cancel()"
-      />
-    </div>
-    <div class="dialog-hint">
-      Nadaj kalkulacji nazwę, po której łatwo ją rozpoznasz — np. „Mieszkanie 65&nbsp;m² Wrocław".
+<ui-dialog tag="akcja" title="Zmień nazwę kalkulacji" (closed)="handleClosed()">
+  <form (submit)="$event.preventDefault(); confirm()">
+    <div class="dialog-body">
+      <label class="dialog-label" for="rename-calc-name">Nazwa</label>
+      <div class="inp inp--focus">
+        <input
+          id="rename-calc-name"
+          type="text"
+          autocomplete="off"
+          [value]="currentValue()"
+          (input)="onInput($any($event.target).value)"
+          (keydown.escape)="dismiss()"
+        />
+      </div>
+      <div class="dialog-hint">
+        Nadaj kalkulacji nazwę, po której łatwo ją rozpoznasz — np. „Mieszkanie 65&nbsp;m² Wrocław".
+      </div>
     </div>
     <div class="dialog-actions">
-      <button class="btn btn--ghost" type="button" (click)="cancel()">Anuluj</button>
+      <button class="btn btn--ghost" type="button" (click)="dismiss()">Anuluj</button>
       <button class="btn btn--primary" type="submit" [disabled]="isConfirmDisabled()">
         Zapisz
       </button>
     </div>
   </form>
-</dialog>
+</ui-dialog>

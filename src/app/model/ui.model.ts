@@ -100,6 +100,19 @@ export enum Theme {
   OCHRA = 'OCHRA',
 }
 
+/** Wariant kolorystyczny dialogu — neutralny lub ostrzegawczy (operacje nieodwracalne). */
+export enum DialogVariant {
+  DEFAULT = 'DEFAULT',
+  DANGER = 'DANGER',
+}
+
+/** Rozmiar (szerokość) dialogu. */
+export enum DialogSize {
+  SMALL = 'SMALL',
+  MEDIUM = 'MEDIUM',
+  LARGE = 'LARGE',
+}
+
 export interface Toast {
   message: string;
   variant: ToastVariant;

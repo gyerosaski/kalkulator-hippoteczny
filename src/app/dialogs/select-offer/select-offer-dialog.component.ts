@@ -1,18 +1,14 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  ElementRef,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal, viewChild } from '@angular/core';
 
 import {
   BadgeVariant,
   ComparableOffer,
   ComparableOfferKind,
+  DialogSize,
   SelectOfferDialogContext,
 } from '../../model';
+import { AbstractDialog } from '../../components/ui/dialog/abstract-dialog';
+import { DialogComponent } from '../../components/ui/dialog/dialog.component';
 import { BadgeComponent } from '../../components/ui/badge/badge.component';
 import { FormatAmountPipe } from '../../pipes/format-amount/format-amount.pipe';
 import { FormatLoanPeriodPipe } from '../../pipes/format-loan-period/format-loan-period.pipe';
@@ -26,6 +22,7 @@ import { RateTypeLabelPipe } from '../../pipes/rate-type-label/rate-type-label.p
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    DialogComponent,
     BadgeComponent,
     FormatAmountPipe,
     FormatLoanPeriodPipe,
@@ -37,12 +34,19 @@ import { RateTypeLabelPipe } from '../../pipes/rate-type-label/rate-type-label.p
   templateUrl: './select-offer-dialog.component.html',
   styleUrl: './select-offer-dialog.component.scss',
 })
-export class SelectOfferDialogComponent {
-  private readonly dialogRef = viewChild.required<ElementRef<HTMLDialogElement>>('dialogEl');
+export class SelectOfferDialogComponent extends AbstractDialog<string | null> {
+  protected readonly dialog = viewChild.required(DialogComponent);
 
   protected readonly context = signal<SelectOfferDialogContext | null>(null);
   protected readonly ComparableOfferKind = ComparableOfferKind;
   protected readonly BadgeVariant = BadgeVariant;
+  protected readonly DialogSize = DialogSize;
+
+  /** Etykieta tagu nagłówka — numer slotu, do którego wybierana jest oferta. */
+  protected readonly slotTag = computed<string>(() => {
+    const context = this.context();
+    return context ? `Slot ${context.slot}` : '';
+  });
 
   /** Oferty możliwe do wyboru: bez tej z przeciwnego slotu i bez ofert z błędami walidacji. */
   protected readonly selectableOffers = computed<ComparableOffer[]>(() => {
@@ -61,28 +65,12 @@ export class SelectOfferDialogComponent {
       .length;
   });
 
-  private resolvePromise?: (value: string | null) => void;
-  private resolvedValue: string | null = null;
-
   open(context: SelectOfferDialogContext): Promise<string | null> {
     this.context.set(context);
-    this.resolvedValue = null;
-    this.dialogRef().nativeElement.showModal();
-    return new Promise((resolve) => (this.resolvePromise = resolve));
+    return this.beginInteraction(null);
   }
 
   protected selectOffer(offerId: string): void {
-    this.resolvedValue = offerId;
-    this.dialogRef().nativeElement.close();
-  }
-
-  protected cancel(): void {
-    this.dialogRef().nativeElement.close();
-  }
-
-  protected onClose(): void {
-    this.resolvePromise?.(this.resolvedValue);
-    this.resolvePromise = undefined;
-    this.resolvedValue = null;
+    this.closeWith(offerId);
   }
 }

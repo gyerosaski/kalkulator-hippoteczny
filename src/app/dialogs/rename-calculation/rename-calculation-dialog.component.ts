@@ -1,28 +1,26 @@
-import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, viewChild } from '@angular/core';
+
+import { AbstractDialog } from '../../components/ui/dialog/abstract-dialog';
+import { DialogComponent } from '../../components/ui/dialog/dialog.component';
 
 @Component({
   selector: 'app-rename-calculation-dialog',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [],
+  imports: [DialogComponent],
   templateUrl: './rename-calculation-dialog.component.html',
   styleUrl: './rename-calculation-dialog.component.scss',
 })
-export class RenameCalculationDialogComponent {
-  private readonly dialogRef = viewChild.required<ElementRef<HTMLDialogElement>>('dialogEl');
+export class RenameCalculationDialogComponent extends AbstractDialog<string | null> {
+  protected readonly dialog = viewChild.required(DialogComponent);
 
   protected readonly originalName = signal('');
   protected readonly currentValue = signal('');
 
-  private resolvePromise?: (value: string | null) => void;
-  private resolvedValue: string | null = null;
-
   open(currentName: string): Promise<string | null> {
     this.originalName.set(currentName);
     this.currentValue.set(currentName);
-    this.resolvedValue = null;
-    this.dialogRef().nativeElement.showModal();
-    return new Promise((resolve) => (this.resolvePromise = resolve));
+    return this.beginInteraction(null);
   }
 
   protected onInput(value: string): void {
@@ -36,17 +34,6 @@ export class RenameCalculationDialogComponent {
 
   protected confirm(): void {
     if (this.isConfirmDisabled()) return;
-    this.resolvedValue = this.currentValue().trim();
-    this.dialogRef().nativeElement.close();
-  }
-
-  protected cancel(): void {
-    this.dialogRef().nativeElement.close();
-  }
-
-  protected onClose(): void {
-    this.resolvePromise?.(this.resolvedValue);
-    this.resolvePromise = undefined;
-    this.resolvedValue = null;
+    this.closeWith(this.currentValue().trim());
   }
 }

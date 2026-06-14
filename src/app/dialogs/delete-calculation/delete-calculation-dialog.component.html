@@ -1,12 +1,10 @@
-<dialog #dialogEl class="dialog--danger" (close)="onClose()">
+<ui-dialog
+  tag="usuwanie"
+  title="Usunąć kalkulację?"
+  [variant]="DialogVariant.DANGER"
+  (closed)="handleClosed()"
+>
   @if (target(); as calculation) {
-    <div class="dialog-head">
-      <div>
-        <div class="dialog-tag dialog-tag--danger">usuwanie</div>
-        <h2 class="dialog-title">Usunąć kalkulację?</h2>
-      </div>
-      <button class="dialog-close" type="button" (click)="cancel()" aria-label="Zamknij">×</button>
-    </div>
     <div class="dialog-body">
       <p class="dialog-text">
         Kalkulacja <b>„{{ calculation.name }}"</b> zostanie trwale usunięta. Tej operacji nie można
@@ -32,11 +30,11 @@
       </div>
     </div>
     <div class="dialog-actions">
-      <button class="btn btn--ghost" type="button" (click)="cancel()">Anuluj</button>
-      <button class="btn btn--danger" type="button" (click)="confirm()">
+      <button class="btn btn--ghost" type="button" (click)="dismiss()">Anuluj</button>
+      <button class="btn btn--danger" type="button" (click)="closeWith(true)">
         <icon-trash />
         Usuń kalkulację
       </button>
     </div>
   }
-</dialog>
+</ui-dialog>

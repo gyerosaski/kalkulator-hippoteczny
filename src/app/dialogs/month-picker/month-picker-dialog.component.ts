@@ -1,11 +1,7 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  signal,
-  computed,
-  viewChild,
-  ElementRef,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, viewChild } from '@angular/core';
+
+import { AbstractDialog } from '../../components/ui/dialog/abstract-dialog';
+import { DialogComponent } from '../../components/ui/dialog/dialog.component';
 import { IconChevronRightComponent } from '../../components/icons/icon-chevron-right/icon-chevron-right.component';
 
 // TODO: pozbyć się na rzecz FormatMonthPipe
@@ -27,13 +23,13 @@ const MONTH_NAMES_SHORT = [
 @Component({
   selector: 'ui-month-picker-dialog',
   standalone: true,
-  imports: [IconChevronRightComponent],
+  imports: [DialogComponent, IconChevronRightComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './month-picker-dialog.component.html',
   styleUrl: './month-picker-dialog.component.scss',
 })
-export class MonthPickerDialogComponent {
-  private readonly dialogRef = viewChild.required<ElementRef<HTMLDialogElement>>('dialogEl');
+export class MonthPickerDialogComponent extends AbstractDialog<string | null> {
+  protected readonly dialog = viewChild.required(DialogComponent);
 
   protected readonly monthNamesShort = MONTH_NAMES_SHORT;
   private readonly todayYear = new Date().getFullYear();
@@ -44,9 +40,6 @@ export class MonthPickerDialogComponent {
   protected readonly decadeStart = signal(Math.floor(this.todayYear / 10) * 10);
   private readonly committedYear = signal(this.todayYear);
   private readonly committedMonth = signal(this.todayMonth);
-
-  private resolvePromise?: (value: string | null) => void;
-  private resolvedValue: string | null = null;
 
   protected readonly years = computed(() => {
     const start = this.decadeStart();
@@ -68,9 +61,7 @@ export class MonthPickerDialogComponent {
     this.stagedYear.set(year);
     this.stagedMonth.set(month - 1);
     this.decadeStart.set(Math.floor(year / 10) * 10);
-    this.resolvedValue = null;
-    this.dialogRef().nativeElement.showModal();
-    return new Promise((resolve) => (this.resolvePromise = resolve));
+    return this.beginInteraction(null);
   }
 
   private parseYearMonth(value: string): [number, number] {
@@ -94,17 +85,6 @@ export class MonthPickerDialogComponent {
   protected confirm(): void {
     const year = this.stagedYear();
     const month = String(this.stagedMonth() + 1).padStart(2, '0');
-    this.resolvedValue = `${year}-${month}`;
-    this.dialogRef().nativeElement.close();
-  }
-
-  protected cancel(): void {
-    this.dialogRef().nativeElement.close();
-  }
-
-  protected onClose(): void {
-    this.resolvePromise?.(this.resolvedValue);
-    this.resolvePromise = undefined;
-    this.resolvedValue = null;
+    this.closeWith(`${year}-${month}`);
   }
 }

@@ -1,0 +1,33 @@
+dialog {
+  border: none;
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  color: var(--ink);
+  padding: 0;
+  max-width: calc(100vw - 32px);
+  box-shadow:
+    0 4px 6px oklch(0% 0 0 / 4%),
+    0 16px 48px oklch(0% 0 0 / 14%);
+  overflow: hidden;
+
+  &[data-size='SMALL'] {
+    width: 380px;
+  }
+
+  &[data-size='MEDIUM'] {
+    width: 420px;
+  }
+
+  &[data-size='LARGE'] {
+    width: 520px;
+  }
+
+  &[open] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &::backdrop {
+    background: oklch(0% 0 0 / 35%);
+  }
+}

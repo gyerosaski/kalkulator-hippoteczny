@@ -1,69 +1,10 @@
-dialog {
-  border: none;
-  border-radius: var(--r-lg);
-  background: var(--surface);
-  color: var(--ink);
-  padding: 0;
-  width: calc(100vw - 32px);
-  max-width: 400px;
-  box-shadow:
-    0 4px 6px oklch(0% 0 0 / 4%),
-    0 16px 48px oklch(0% 0 0 / 14%);
-  overflow: hidden;
-
-  &[open] {
-    display: flex;
-    flex-direction: column;
-  }
-
-  &::backdrop {
-    background: oklch(0% 0 0 / 35%);
-  }
-}
-
-/* Header */
-.mp-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 18px 20px 12px;
-
-  h3 {
-    margin: 0;
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: -0.015em;
-    color: var(--ink);
-  }
-}
-
-.mp-close {
-  border: 0;
-  background: transparent;
-  color: var(--muted);
-  font-size: 22px;
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  line-height: 1;
-
-  &:hover {
-    background: var(--surface-2);
-    color: var(--ink);
-  }
-}
-
 /* Decade nav */
 .mp-decade-nav {
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 10px;
-  padding: 0 20px 12px;
+  padding: 12px 20px;
 }
 
 .mp-nav-btn {

@@ -1,13 +1,10 @@
-<dialog #dialogEl (close)="onClose()">
+<ui-dialog
+  [tag]="slotTag()"
+  title="Wybierz ofertę"
+  [size]="DialogSize.LARGE"
+  (closed)="handleClosed()"
+>
   @if (context(); as ctx) {
-    <div class="dialog-head">
-      <div>
-        <div class="dialog-tag">Slot {{ ctx.slot }}</div>
-        <h2 class="dialog-title">Wybierz ofertę</h2>
-      </div>
-      <button class="dialog-close" type="button" (click)="cancel()" aria-label="Zamknij">×</button>
-    </div>
-
     <div class="dialog-body">
       @if (selectableOffers().length > 0) {
         <ul class="offer-list">
@@ -59,4 +56,4 @@
       }
     </div>
   }
-</dialog>
+</ui-dialog>

@@ -1,9 +1,4 @@
-<dialog #dialogEl (close)="onClose()">
-  <header class="mp-head">
-    <h3>Wybierz miesiąc</h3>
-    <button class="mp-close" type="button" (click)="cancel()" aria-label="Zamknij">×</button>
-  </header>
-
+<ui-dialog title="Wybierz miesiąc" (closed)="handleClosed()">
   <div class="mp-decade-nav">
     <button
       class="ico-btn mp-nav-btn"
@@ -53,4 +48,4 @@
       }
     </div>
   </div>
-</dialog>
+</ui-dialog>

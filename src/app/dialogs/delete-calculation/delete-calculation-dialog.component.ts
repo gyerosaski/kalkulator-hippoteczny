@@ -1,44 +1,31 @@
-import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, viewChild } from '@angular/core';
 
-import { SavedCalculation } from '../../model';
+import { DialogVariant, SavedCalculation } from '../../model';
+import { AbstractDialog } from '../../components/ui/dialog/abstract-dialog';
+import { DialogComponent } from '../../components/ui/dialog/dialog.component';
 import { IconTrashComponent } from '../../components/icons/icon-trash/icon-trash.component';
 
 @Component({
   selector: 'app-delete-calculation-dialog',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IconTrashComponent],
+  imports: [DialogComponent, IconTrashComponent],
   templateUrl: './delete-calculation-dialog.component.html',
   styleUrl: './delete-calculation-dialog.component.scss',
 })
-export class DeleteCalculationDialogComponent {
-  private readonly dialogRef = viewChild.required<ElementRef<HTMLDialogElement>>('dialogEl');
+export class DeleteCalculationDialogComponent extends AbstractDialog<boolean> {
+  protected readonly dialog = viewChild.required(DialogComponent);
+  protected readonly DialogVariant = DialogVariant;
 
   protected readonly target = signal<SavedCalculation | null>(null);
 
-  private resolvePromise?: (value: boolean) => void;
-  private resolvedValue = false;
-
   open(calculation: SavedCalculation): Promise<boolean> {
     this.target.set(calculation);
-    this.resolvedValue = false;
-    this.dialogRef().nativeElement.showModal();
-    return new Promise((resolve) => (this.resolvePromise = resolve));
+    return this.beginInteraction(false);
   }
 
-  protected confirm(): void {
-    this.resolvedValue = true;
-    this.dialogRef().nativeElement.close();
-  }
-
-  protected cancel(): void {
-    this.dialogRef().nativeElement.close();
-  }
-
-  protected onClose(): void {
-    this.resolvePromise?.(this.resolvedValue);
-    this.resolvePromise = undefined;
-    this.resolvedValue = false;
+  protected override handleClosed(): void {
+    super.handleClosed();
     this.target.set(null);
   }
 

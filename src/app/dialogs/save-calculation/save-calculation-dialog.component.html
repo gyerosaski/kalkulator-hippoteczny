@@ -1,23 +1,29 @@
-<dialog #dialogEl (close)="onClose()">
-  <h2 class="dialog-title">Zapisz kalkulację</h2>
+<ui-dialog
+  title="Zapisz kalkulację"
+  [size]="DialogSize.SMALL"
+  [showClose]="false"
+  (closed)="handleClosed()"
+>
   <form (submit)="$event.preventDefault(); onSave()">
-    <div class="field">
-      <label class="field-label" for="save-calc-name">Nazwa kalkulacji</label>
-      <div class="inp">
-        <input
-          id="save-calc-name"
-          [formControl]="nameCtrl"
-          placeholder="np. Moja kalkulacja"
-          autocomplete="off"
-        />
+    <div class="dialog-body">
+      <div class="field">
+        <label class="field-label" for="save-calc-name">Nazwa kalkulacji</label>
+        <div class="inp">
+          <input
+            id="save-calc-name"
+            [formControl]="nameCtrl"
+            placeholder="np. Moja kalkulacja"
+            autocomplete="off"
+          />
+        </div>
+        @if (nameCtrl.hasError('required') && nameCtrl.touched) {
+          <span class="field-hint field-hint--error">Nazwa jest wymagana.</span>
+        }
       </div>
-      @if (nameCtrl.hasError('required') && nameCtrl.touched) {
-        <span class="field-hint field-hint--error">Nazwa jest wymagana.</span>
-      }
     </div>
     <div class="dialog-actions">
-      <button class="btn btn--ghost" type="button" (click)="onCancel()">Anuluj</button>
+      <button class="btn btn--ghost" type="button" (click)="dismiss()">Anuluj</button>
       <button class="btn btn--primary" type="submit" [disabled]="nameCtrl.invalid">Zapisz</button>
     </div>
   </form>
-</dialog>
+</ui-dialog>

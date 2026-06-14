@@ -903,6 +903,10 @@ ui-cards-group + ui-card {
   color: var(--ink);
 }
 
+.dialog-tag--danger {
+  color: var(--c-int);
+}
+
 .dialog-close {
   border: none;
   background: none;
@@ -921,4 +925,31 @@ ui-cards-group + ui-card {
   font-size: 12px;
   color: var(--muted);
   line-height: 1.5;
+}
+
+/* Treść okien dialog jest wstrzykiwana przez content projection do `ui-dialog`, więc poza
+   enkapsulacją stylów tej powłoki — wspólne kontenery body/actions muszą być globalne. */
+.dialog-body {
+  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 20px;
+  border-top: 1px solid var(--line);
+}
+
+.dialog--danger .dialog-actions .btn--danger {
+  background: var(--c-int);
+  color: #fff;
+  border-color: var(--c-int);
+
+  &:hover {
+    background: oklch(from var(--c-int) calc(l - 0.05) c h);
+  }
 }
