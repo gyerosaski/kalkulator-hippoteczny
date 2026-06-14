@@ -1,19 +1,19 @@
 .toast-notification {
   position: fixed;
-  bottom: 24px;
+  bottom: var(--space-6);
   left: 50%;
   transform: translateX(-50%);
-  z-index: 300;
+  z-index: var(--z-toast);
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
+  gap: var(--space-2);
+  padding: var(--space-2-5) var(--space-4);
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: var(--border-width) solid var(--line);
   border-radius: var(--r);
   box-shadow: var(--shadow-lg);
-  font-size: 13px;
-  font-weight: 500;
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-medium);
   color: var(--ink);
   white-space: nowrap;
 

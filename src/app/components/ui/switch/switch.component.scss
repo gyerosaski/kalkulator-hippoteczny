@@ -4,11 +4,11 @@
 
 .sec-switch.is-disabled {
   cursor: not-allowed;
-  opacity: 0.55;
+  opacity: var(--opacity-disabled);
 }
 
 .switch-label {
-  font-weight: 500;
-  font-size: 12px;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--text-sm);
   color: var(--ink-2);
 }

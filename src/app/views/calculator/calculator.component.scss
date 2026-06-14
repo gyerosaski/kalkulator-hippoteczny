@@ -8,8 +8,8 @@
   display: flex;
   flex: 1;
   min-height: 0;
-  gap: 20px;
-  padding: 16px 24px;
+  gap: var(--space-5);
+  padding: var(--space-4) var(--space-6);
 }
 
 .column {
@@ -18,8 +18,8 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding-bottom: 32px;
+  gap: var(--space-3-5);
+  padding-bottom: var(--space-8);
 
   scrollbar-width: none;
 

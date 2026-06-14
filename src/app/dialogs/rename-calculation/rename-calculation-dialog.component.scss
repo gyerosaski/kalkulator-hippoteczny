@@ -1,11 +1,11 @@
 .dialog-label {
-  font-size: 12px;
-  font-weight: 500;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
   color: var(--ink-2);
 }
 
 .inp:focus-within {
   background: var(--surface);
   border-color: var(--accent-deep);
-  box-shadow: 0 0 0 3px color-mix(in oklch, var(--accent) 30%, transparent);
+  box-shadow: var(--focus-ring);
 }

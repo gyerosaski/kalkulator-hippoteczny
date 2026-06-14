@@ -5,14 +5,14 @@
 .subsec-head {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .subsec-toggle {
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   background: transparent;
   border: 0;
   padding: 0;
@@ -25,20 +25,20 @@
 .subsec-num {
   display: inline-grid;
   place-items: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 6px;
+  width: var(--space-5);
+  height: var(--space-5);
+  border-radius: var(--r-xs);
   background: var(--num-bg, color-mix(in oklch, var(--accent) 25%, var(--surface-2)));
   color: var(--num-color, var(--accent-deep));
   box-shadow: 0 0 0 1px var(--num-ring, transparent);
-  font-size: 10px;
-  font-weight: 700;
+  font-size: var(--text-2xs);
+  font-weight: var(--font-weight-bold);
   flex-shrink: 0;
 }
 
 .subsec-title {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
   color: var(--ink);
   letter-spacing: -0.005em;
 }
@@ -47,7 +47,7 @@
   margin-left: auto;
   display: inline-flex;
   color: var(--muted);
-  transition: transform 0.2s;
+  transition: transform var(--duration-base);
   flex-shrink: 0;
 }
 
@@ -56,5 +56,5 @@
 }
 
 .subsec-body {
-  margin-top: 20px;
+  margin-top: var(--space-5);
 }

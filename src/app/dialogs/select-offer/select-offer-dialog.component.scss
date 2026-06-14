@@ -4,7 +4,7 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--space-1-5);
   max-height: min(60vh, 440px);
   overflow-y: auto;
 }
@@ -13,10 +13,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--space-4);
   width: 100%;
-  padding: 10px 12px;
-  border: 1px solid var(--line);
+  padding: var(--space-2-5) var(--space-3);
+  border: var(--border-width) solid var(--line);
   border-radius: var(--r-sm);
   background: var(--surface);
   color: var(--ink);
@@ -36,15 +36,15 @@
 .offer-row-main {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space-0-5);
   min-width: 0;
 }
 
 .offer-row-name {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-weight: 600;
+  gap: var(--space-2);
+  font-weight: var(--font-weight-semibold);
 }
 
 .offer-row-meta {
@@ -59,6 +59,6 @@
 }
 
 .offer-empty {
-  padding: 24px 4px;
+  padding: var(--space-6) var(--space-1);
   text-align: center;
 }

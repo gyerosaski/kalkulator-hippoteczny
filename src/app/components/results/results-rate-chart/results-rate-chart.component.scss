@@ -18,18 +18,18 @@
 }
 
 .rate-chart-axis-label {
-  font-size: 14px;
+  font-size: var(--text-base);
   fill: var(--muted);
-  font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  font-family: var(--font-mono);
   font-feature-settings: 'tnum';
   font-variant-numeric: tabular-nums;
 }
 
 .rate-chart-axis-title {
-  font-size: 14px;
+  font-size: var(--text-base);
   fill: var(--ink-2);
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-wide);
 }
 
 .rate-chart-area {
@@ -58,27 +58,27 @@
 }
 
 .rate-chart-tooltip-header {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-semibold);
   fill: var(--ink);
 }
 
 .rate-chart-tooltip-row-label {
-  font-size: 13px;
+  font-size: var(--text-md);
   fill: var(--ink-2);
 }
 
 .rate-chart-tooltip-row-value {
-  font-size: 13px;
+  font-size: var(--text-md);
   fill: var(--ink);
-  font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  font-family: var(--font-mono);
   font-feature-settings: 'tnum';
   font-variant-numeric: tabular-nums;
 }
 
 .rate-chart-empty {
-  padding: 32px;
+  padding: var(--space-8);
   text-align: center;
   color: var(--muted);
-  font-size: 13px;
+  font-size: var(--text-md);
 }

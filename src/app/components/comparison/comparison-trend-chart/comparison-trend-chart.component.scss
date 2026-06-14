@@ -3,29 +3,29 @@
 }
 
 .trend-compare-section {
-  border: 1px solid var(--line);
+  border: var(--border-width) solid var(--line);
   border-radius: var(--r-xl);
   background: var(--surface);
   overflow: hidden;
 }
 
 .trend-compare-header {
-  padding: 20px 24px 16px;
-  border-bottom: 1px solid var(--line);
+  padding: var(--space-5) var(--space-6) var(--space-4);
+  border-bottom: var(--border-width) solid var(--line);
 }
 
 .trend-compare-tag {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-size: var(--text-2xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-widest);
   color: var(--muted);
   text-transform: uppercase;
 }
 
 .trend-compare-title {
-  margin: 6px 0 0;
-  font-size: 17px;
-  font-weight: 700;
+  margin: var(--space-1-5) 0 0;
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-bold);
   color: var(--ink);
 }
 
@@ -34,17 +34,17 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 20px;
-  padding: 14px 24px 0;
-  font-size: 12px;
+  gap: var(--space-5);
+  padding: var(--space-3-5) var(--space-6) 0;
+  font-size: var(--text-sm);
   color: var(--ink-2);
 }
 
 .trend-compare-legend-item {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-weight: 600;
+  gap: var(--space-1-5);
+  font-weight: var(--font-weight-semibold);
 }
 
 .trend-compare-swatch {
@@ -59,7 +59,7 @@
   display: block;
   width: 100%;
   height: auto;
-  padding: 8px 16px 16px;
+  padding: var(--space-2) var(--space-4) var(--space-4);
   box-sizing: border-box;
 }
 
@@ -73,18 +73,18 @@
 }
 
 .trend-compare-axis-label {
-  font-size: 14px;
+  font-size: var(--text-base);
   fill: var(--muted);
-  font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  font-family: var(--font-mono);
   font-feature-settings: 'tnum';
   font-variant-numeric: tabular-nums;
 }
 
 .trend-compare-axis-title {
-  font-size: 14px;
+  font-size: var(--text-base);
   fill: var(--ink-2);
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-wide);
 }
 
 .trend-compare-line,
@@ -110,27 +110,27 @@
 }
 
 .trend-compare-tooltip-header {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-semibold);
   fill: var(--ink);
 }
 
 .trend-compare-tooltip-row-label {
-  font-size: 13px;
+  font-size: var(--text-md);
   fill: var(--ink-2);
 }
 
 .trend-compare-tooltip-row-value {
-  font-size: 13px;
+  font-size: var(--text-md);
   fill: var(--ink);
-  font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  font-family: var(--font-mono);
   font-feature-settings: 'tnum';
   font-variant-numeric: tabular-nums;
 }
 
 .trend-compare-empty {
-  padding: 32px;
+  padding: var(--space-8);
   text-align: center;
   color: var(--muted);
-  font-size: 13px;
+  font-size: var(--text-md);
 }

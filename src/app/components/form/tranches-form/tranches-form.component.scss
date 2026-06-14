@@ -1,7 +1,7 @@
 .row-ctrl {
   display: flex;
   align-items: flex-end;
-  gap: 12px;
+  gap: var(--space-3);
 
   > .row {
     flex: 1;
@@ -15,5 +15,5 @@
 }
 
 ui-card + ui-card {
-  margin-top: 8px;
+  margin-top: var(--space-2);
 }

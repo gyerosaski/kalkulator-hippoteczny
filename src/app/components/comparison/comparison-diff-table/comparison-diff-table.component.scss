@@ -1,27 +1,27 @@
 .diff-table-section {
-  border: 1px solid var(--line);
+  border: var(--border-width) solid var(--line);
   border-radius: var(--r-xl);
   background: var(--surface);
   overflow: hidden;
 }
 
 .diff-table-header {
-  padding: 20px 24px 16px;
-  border-bottom: 1px solid var(--line);
+  padding: var(--space-5) var(--space-6) var(--space-4);
+  border-bottom: var(--border-width) solid var(--line);
 }
 
 .diff-table-tag {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-size: var(--text-2xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-widest);
   color: var(--muted);
   text-transform: uppercase;
 }
 
 .diff-table-title {
-  margin: 6px 0 0;
-  font-size: 17px;
-  font-weight: 700;
+  margin: var(--space-1-5) 0 0;
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-bold);
   color: var(--ink);
 }
 
@@ -35,7 +35,7 @@
   display: grid;
   grid-template-columns: 1fr 180px 180px 140px;
   align-items: center;
-  border-bottom: 1px solid var(--line);
+  border-bottom: var(--border-width) solid var(--line);
 
   &:last-child {
     border-bottom: none;
@@ -44,20 +44,20 @@
 
 .diff-table-head {
   background: var(--surface-2);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-wider);
   color: var(--muted);
   text-transform: uppercase;
 }
 
 .diff-table-head-sub {
-  font-weight: 400;
+  font-weight: var(--font-weight-regular);
   text-transform: none;
 }
 
 .diff-table-cell {
-  padding: 10px 16px;
+  padding: var(--space-2-5) var(--space-4);
 }
 
 .diff-table-cell--label {
@@ -70,22 +70,22 @@
 }
 
 .diff-table-cell--a {
-  border-left: 1px solid var(--line);
+  border-left: var(--border-width) solid var(--line);
 }
 
 .diff-table-cell--b {
-  border-left: 1px solid var(--line);
+  border-left: var(--border-width) solid var(--line);
 }
 
 .diff-table-cell--delta {
-  border-left: 1px solid var(--line);
+  border-left: var(--border-width) solid var(--line);
   text-align: right;
   color: var(--muted);
 }
 
 /* ---------- Row states ---------- */
 .diff-table-row--emphasized {
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   background: var(--surface-2);
 
   .diff-table-cell--label {
@@ -104,8 +104,8 @@
 
 .leader-marker {
   color: var(--accent-sage-deep);
-  margin-right: 4px;
-  font-size: 11px;
+  margin-right: var(--space-1);
+  font-size: var(--text-xs);
   line-height: 1;
 }
 
@@ -130,10 +130,10 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  font-size: 10px;
-  font-weight: 700;
+  font-size: var(--text-2xs);
+  font-weight: var(--font-weight-bold);
   color: var(--surface);
-  margin-right: 6px;
+  margin-right: var(--space-1-5);
   vertical-align: middle;
 }
 

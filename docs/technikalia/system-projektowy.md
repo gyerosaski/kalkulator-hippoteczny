@@ -18,10 +18,14 @@ w `src/app/components/ui/`.
   a nie `.tranche-fee-row`); ikony liniowe to osobne komponenty
   (`src/app/components/icons/<nazwa>/`), nie inline-SVG; szablony w osobnych plikach
   `.html`; wszystkie komponenty `standalone` + `OnPush`.
+- **Bez surowych wartości** — nowe style konsumują tokeny zamiast literałów dla
+  typografii (rozmiar/waga/interlinia/tracking/rodzina), odstępów i rozmiarów,
+  promieni, ruchu (czas/krzywa) oraz z-index. Surowy `px`/`ms` dopuszczalny tylko dla
+  wartości spoza skali (wymiary jednorazowe, mikrokorekty ≤ 3 px, geometria sprite'ów).
 
 ## Tokeny (zmienne CSS)
 
-Definiowane w bloku `.app` (`src/styles.scss:17-84`), nadpisywane w blokach motywów.
+Definiowane w bloku `.app` (`src/styles.scss`), nadpisywane w blokach motywów.
 
 ### Powierzchnie i tekst
 
@@ -66,13 +70,61 @@ Te same zmienne zasilają donuty, legendy i wykresy (zob. `docs/technikalia/wykr
 `--offer-a`, `--offer-b` — identyfikują oferty A/B w widoku „Porównanie ofert”
 (niezależne od palety).
 
-### Promienie, cienie, odstępy
+### Typografia
 
-| Grupa     | Tokeny                                                          |
-| --------- | --------------------------------------------------------------- |
-| Promienie | `--r-sm` (8px), `--r` (12px), `--r-lg` (18px), `--r-xl` (22px)  |
-| Cienie    | `--shadow-sm`, `--shadow`, `--shadow-lg`                        |
-| Odstępy   | `--pad` (padding sekcji), `--gap` (odstęp w kolumnach/sekcjach) |
+| Grupa         | Tokeny                                                                                                                                                                                                                            |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Rodziny       | `--font-sans` (Inter Tight), `--font-display` (Söhne — wariant `data-font='fraunces'`), `--font-mono` (IBM Plex Mono, cyfry tabelaryczne)                                                                                         |
+| Rozmiary      | `--text-2xs` (10px), `--text-xs` (11px), `--text-sm` (12px), `--text-md` (13px), `--text-base` (14px), `--text-lg` (15px), `--text-xl` (17px), `--text-2xl` (18px), `--text-3xl` (20px), `--text-4xl` (22px), `--text-5xl` (26px) |
+| Wagi          | `--font-weight-regular` (400), `--font-weight-medium` (500), `--font-weight-semibold` (600), `--font-weight-bold` (700)                                                                                                           |
+| Interlinia    | `--leading-tight` (1.1), `--leading-base` (1.45), `--leading-relaxed` (1.5)                                                                                                                                                       |
+| Światło liter | `--tracking-tighter` (−0.02em), `--tracking-tight` (−0.01em), `--tracking-normal` (0), `--tracking-wide` (0.02em), `--tracking-wider` (0.04em), `--tracking-widest` (0.08em)                                                      |
+
+Skala rozmiarów odwzorowuje wartości faktycznie używane w UI (snap 16↔17 px do
+`--text-xl`). Bazowa typografia `body` pozostaje literałem — element `body` jest
+przodkiem `.app`, w którym zdefiniowane są tokeny, więc nie może ich odczytać.
+
+### Odstępy i rozmiary
+
+| Grupa              | Tokeny                                                                                                                                                                                                                                                                  |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Skala odstępów     | `--space-0-5` (2px), `--space-1` (4px), `--space-1-5` (6px), `--space-2` (8px), `--space-2-5` (10px), `--space-3` (12px), `--space-3-5` (14px), `--space-4` (16px), `--space-5` (20px), `--space-6` (24px), `--space-7` (28px), `--space-8` (32px), `--space-14` (56px) |
+| Aliasy semantyczne | `--pad` = `--space-4` (padding sekcji), `--gap` = `--space-3-5` (odstęp w kolumnach/sekcjach) — nadpisywane przez tryby gęstości                                                                                                                                        |
+| Rozmiary kontrolek | `--control-height` (38px), `--control-height-sm` (28px), `--icon-btn-size` (32px), `--switch-track-h` (18px)                                                                                                                                                            |
+
+Baza skali to 4 px. Wartości spoza skali (np. 5 px, 18 px gapu w trybie „roomy”,
+wymiary specyficzne) pozostają literałami.
+
+### Promienie i cienie
+
+| Grupa     | Tokeny                                                                                                                                                                                           |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Promienie | `--r-2xs` (4px), `--r-xs` (6px), `--r-sm` (8px), `--r-control` (10px — inputy/segmenty/przyciski), `--r` (12px), `--r-lg` (18px), `--r-xl` (22px), `--r-pill` (999px — badge, switch, plakietki) |
+| Cienie    | `--shadow-sm`, `--shadow`, `--shadow-lg`                                                                                                                                                         |
+
+### Ruch
+
+| Token               | Wartość / rola                                          |
+| ------------------- | ------------------------------------------------------- |
+| `--duration-fast`   | 0.15s — hover/focus inputów, drobne przejścia           |
+| `--duration-base`   | 0.2s — chevrony, przełączniki                           |
+| `--duration-slow`   | 0.3s — rozwijanie sekcji/legend                         |
+| `--duration-slower` | 0.5s — animacja segmentów donutów                       |
+| `--ease-standard`   | `cubic-bezier(0.4, 0, 0.2, 1)` — wspólna krzywa przejść |
+
+### Z-index, focus i różne
+
+| Token                | Wartość / rola                                          |
+| -------------------- | ------------------------------------------------------- |
+| `--z-base`           | 1 — warstwa wewnątrz komponentu                         |
+| `--z-raised`         | 10 — przyklejony pasek górny                            |
+| `--z-toast`          | 300 — powiadomienia toast                               |
+| `--z-dropdown`       | 1000 — menu rozwijane, panele                           |
+| `--z-modal`          | 1001 — nakładki nad menu                                |
+| `--focus-ring`       | pierścień focus (`0 0 0 3px` z `color-mix` na akcencie) |
+| `--border-width`     | 1px — domyślna grubość obrysów                          |
+| `--opacity-disabled` | 0.55 — stan wyłączony                                   |
+| `--opacity-muted`    | 0.4 — przyciski-ikony `:disabled`                       |
 
 ## Palety motywów
 
@@ -93,19 +145,19 @@ Enum `Theme` (`src/app/model/ui.model.ts:97`): `LIGHT` / `DARK` / `OCHRA`.
 
 ### Dostępne motywy
 
-| Motyw  | `data-theme`      | Charakter                                         | Co nadpisuje                                                                                                                                                        |
-| ------ | ----------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Jasny  | _(brak atrybutu)_ | bazowy, ciepła biel                               | blok `.app` (`styles.scss:17`) — wartości domyślne                                                                                                                  |
-| Ciemny | `dark`            | chłodny ciemny                                    | powierzchnie, tekst, linie, cienie, palety akcentu + `.btn--primary:hover` (`styles.scss:104`)                                                                      |
-| Ochra  | `ochra`           | ciepły wariant ciemny (ugier / oliwka / terakota) | powierzchnie i akcenty na stałych hex, przemapowane kolory semantyczne, `color-scheme: dark`, nadpisania `.btn--primary` oraz `.tbl-row--month` (`styles.scss:141`) |
+| Motyw  | `data-theme`      | Charakter                                         | Co nadpisuje                                                                                                                                                                      |
+| ------ | ----------------- | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Jasny  | _(brak atrybutu)_ | bazowy, ciepła biel                               | blok bazowy `.app` — wartości domyślne tokenów                                                                                                                                    |
+| Ciemny | `dark`            | chłodny ciemny                                    | powierzchnie, tekst, linie, cienie, palety akcentu + `.btn--primary:hover` (blok `.app[data-theme='dark']`)                                                                       |
+| Ochra  | `ochra`           | ciepły wariant ciemny (ugier / oliwka / terakota) | powierzchnie i akcenty na stałych hex, przemapowane kolory semantyczne, `color-scheme: dark`, nadpisania `.btn--primary` oraz `.tbl-row--month` (blok `.app[data-theme='ochra']`) |
 
 ### Gęstość i czcionka (obecnie niepodpięte)
 
-W `src/styles.scss` istnieją bloki `data-density='cozy'|'roomy'` (`:86`, sterujące
-`--pad`/`--gap`/`font-size`) oraz `data-font='fraunces'|'system'` (`:97`, zmiana
-rodziny czcionek). **Żaden serwis ani ustawienie obecnie ich nie ustawia** — to
-pozostałość z projektu wzorcowego (`design/angular`). Style są gotowe, lecz brak im
-kontrolki w UI; wystarczy ustawić odpowiedni atrybut na `.app`, aby je aktywować.
+W `src/styles.scss` istnieją bloki `.app[data-density='cozy'|'roomy']` (sterujące
+`--pad`/`--gap`/`font-size`) oraz `.app[data-font='fraunces'|'system']` (zmiana rodziny
+czcionek — `fraunces` → `--font-display`). **Żaden serwis ani ustawienie obecnie ich nie
+ustawia** — to pozostałość z projektu wzorcowego (`design/angular`). Style są gotowe,
+lecz brak im kontrolki w UI; wystarczy ustawić odpowiedni atrybut na `.app`, aby je aktywować.
 
 ## Katalog kontrolek UI (`src/app/components/ui/`)
 

@@ -1,13 +1,13 @@
 .donut-slice {
   cursor: pointer;
   transition:
-    stroke-dasharray 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-    stroke-dashoffset 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-    stroke-width 0.2s ease;
+    stroke-dasharray var(--duration-slower) var(--ease-standard),
+    stroke-dashoffset var(--duration-slower) var(--ease-standard),
+    stroke-width var(--duration-base) ease;
 }
 
 .donut-value {
-  animation: donut-value-change 280ms cubic-bezier(0.4, 0, 0.2, 1);
+  animation: donut-value-change 280ms var(--ease-standard);
 }
 
 @keyframes donut-value-change {

@@ -3,13 +3,13 @@
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 10px;
-  padding: 12px 20px;
+  gap: var(--space-2-5);
+  padding: var(--space-3) var(--space-5);
 }
 
 .mp-nav-btn {
-  width: 32px;
-  height: 32px;
+  width: var(--icon-btn-size);
+  height: var(--icon-btn-size);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -31,8 +31,8 @@
 }
 
 .mp-decade-range {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
   letter-spacing: -0.005em;
   color: var(--ink);
   font-variant-numeric: tabular-nums;
@@ -43,18 +43,18 @@
 .mp-years {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 6px;
-  padding: 0 20px 12px;
+  gap: var(--space-1-5);
+  padding: 0 var(--space-5) var(--space-3);
 }
 
 .mp-year {
-  border: 1px solid transparent;
+  border: var(--border-width) solid transparent;
   background: var(--surface-2);
   font: inherit;
-  font-size: 13px;
+  font-size: var(--text-md);
   color: var(--ink-2);
   padding: 9px 0;
-  border-radius: 10px;
+  border-radius: var(--r-control);
   cursor: pointer;
   transition:
     background 0.12s,
@@ -81,10 +81,10 @@
 
 /* Months panel */
 .mp-months {
-  margin: 0 14px 14px;
-  padding: 12px 14px 14px;
+  margin: 0 var(--space-3-5) var(--space-3-5);
+  padding: var(--space-3) var(--space-3-5) var(--space-3-5);
   background: var(--surface-2);
-  border: 1px solid var(--line);
+  border: var(--border-width) solid var(--line);
   border-radius: var(--r);
   overflow: hidden;
 }
@@ -92,17 +92,17 @@
 .mp-months-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  gap: var(--space-1-5);
 }
 
 .mp-month {
-  border: 1px solid transparent;
+  border: var(--border-width) solid transparent;
   background: var(--surface);
   font: inherit;
   font-size: 12.5px;
   color: var(--ink-2);
-  padding: 10px 0;
-  border-radius: 8px;
+  padding: var(--space-2-5) 0;
+  border-radius: var(--r-sm);
   cursor: pointer;
   transition:
     background 0.12s,
@@ -123,13 +123,13 @@
   &.is-selected {
     background: color-mix(in oklch, var(--accent) 22%, var(--surface));
     color: var(--accent-deep);
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
   }
 
   &.is-focused {
     background: var(--accent-deep);
     color: var(--surface);
     border-color: var(--accent-deep);
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
   }
 }

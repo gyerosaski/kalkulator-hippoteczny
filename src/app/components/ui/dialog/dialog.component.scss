@@ -4,7 +4,7 @@ dialog {
   background: var(--surface);
   color: var(--ink);
   padding: 0;
-  max-width: calc(100vw - 32px);
+  max-width: calc(100vw - var(--space-8));
   box-shadow:
     0 4px 6px oklch(0% 0 0 / 4%),
     0 16px 48px oklch(0% 0 0 / 14%);

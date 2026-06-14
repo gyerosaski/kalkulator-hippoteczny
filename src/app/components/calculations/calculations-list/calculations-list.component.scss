@@ -6,7 +6,7 @@
 
 .data-table {
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: var(--border-width) solid var(--line);
   border-radius: var(--r);
   overflow: hidden;
 }
@@ -14,8 +14,8 @@
 .table-header-row {
   display: grid;
   grid-template-columns: var(--table-cols);
-  padding: 0 16px;
-  border-bottom: 1px solid var(--line);
+  padding: 0 var(--space-4);
+  border-bottom: var(--border-width) solid var(--line);
   background: var(--surface-2);
 }
 
@@ -31,9 +31,9 @@
   padding: 0;
 
   .cell {
-    padding: 10px 12px;
-    font-size: 11px;
-    font-weight: 600;
+    padding: var(--space-2-5) var(--space-3);
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-semibold);
     color: var(--muted);
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -42,7 +42,7 @@
 
 .table-data-row {
   position: relative;
-  border-bottom: 1px solid var(--line);
+  border-bottom: var(--border-width) solid var(--line);
 
   &:last-child {
     border-bottom: none;
@@ -70,7 +70,7 @@
 }
 
 .cell {
-  padding: 12px 12px;
+  padding: var(--space-3) var(--space-3);
   min-width: 0;
 }
 
@@ -84,13 +84,13 @@
 .name-row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-1-5);
   flex-wrap: wrap;
 }
 
 .calc-name {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-medium);
   color: var(--ink);
   white-space: nowrap;
   overflow: hidden;
@@ -98,31 +98,31 @@
 }
 
 .money-amount {
-  font-size: 13px;
+  font-size: var(--text-md);
   display: flex;
   align-items: baseline;
-  gap: 2px;
+  gap: var(--space-0-5);
 }
 
 .money-sub {
   display: flex;
-  gap: 6px;
+  gap: var(--space-1-5);
   align-items: center;
-  font-size: 11px;
-  margin-top: 2px;
+  font-size: var(--text-xs);
+  margin-top: var(--space-0-5);
 }
 
 .unit {
-  font-size: 11px;
+  font-size: var(--text-xs);
   color: var(--muted);
-  margin-left: 2px;
+  margin-left: var(--space-0-5);
 }
 
 .ltv-badge {
-  font-size: 10px;
-  font-weight: 600;
+  font-size: var(--text-2xs);
+  font-weight: var(--font-weight-semibold);
   padding: 1px 5px;
-  border-radius: 4px;
+  border-radius: var(--r-2xs);
   background: var(--surface-2);
   color: var(--muted);
 }
@@ -133,8 +133,8 @@
 }
 
 .period-value {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-medium);
 }
 
 .period-sub {
@@ -142,10 +142,10 @@
 }
 
 .installment-pill {
-  font-size: 10px;
-  font-weight: 500;
-  padding: 2px 6px;
-  border-radius: 4px;
+  font-size: var(--text-2xs);
+  font-weight: var(--font-weight-medium);
+  padding: var(--space-0-5) var(--space-1-5);
+  border-radius: var(--r-2xs);
   background: var(--surface-2);
   color: var(--muted);
 }
@@ -163,43 +163,43 @@
 .rate-value,
 .installment-value,
 .interest-value {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-medium);
 }
 
 .rate-sub {
-  font-size: 11px;
-  margin-top: 2px;
+  font-size: var(--text-xs);
+  margin-top: var(--space-0-5);
 }
 
 .date-relative {
-  font-size: 12px;
-  font-weight: 500;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
   color: var(--ink);
 }
 
 .date-exact {
-  font-size: 11px;
-  margin-top: 2px;
+  font-size: var(--text-xs);
+  margin-top: var(--space-0-5);
 }
 
 .cell--actions {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: var(--space-1-5);
 }
 
 .action-btn {
   display: flex;
   align-items: center;
   gap: 5px;
-  padding: 5px 10px;
+  padding: 5px var(--space-2-5);
   border-radius: var(--r-sm);
-  font-size: 12px;
-  font-weight: 500;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
-  border: 1px solid transparent;
+  border: var(--border-width) solid transparent;
   transition:
     background 0.12s,
     border-color 0.12s;
@@ -231,13 +231,13 @@
 
 .actions-menu {
   position: fixed;
-  z-index: 1000;
+  z-index: var(--z-dropdown);
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: var(--border-width) solid var(--line);
   border-radius: var(--r);
   box-shadow: var(--shadow-lg);
   min-width: 160px;
-  padding: 4px;
+  padding: var(--space-1);
   display: flex;
   flex-direction: column;
   gap: 1px;
@@ -246,9 +246,9 @@
 .menu-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 7px 10px;
-  font-size: 13px;
+  gap: var(--space-2);
+  padding: 7px var(--space-2-5);
+  font-size: var(--text-md);
   color: var(--ink);
   border: none;
   background: none;
@@ -298,7 +298,7 @@
   position: absolute;
   left: calc(100% + 5px);
   top: -1px;
-  z-index: 1001;
+  z-index: var(--z-modal);
   display: none;
   flex-direction: column;
   gap: 1px;
@@ -306,7 +306,7 @@
   padding: 0;
   overflow: hidden;
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: var(--border-width) solid var(--line);
   border-radius: var(--r);
   box-shadow: var(--shadow-lg);
 
@@ -332,20 +332,20 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  padding: 56px 32px;
+  gap: var(--space-3);
+  padding: var(--space-14) var(--space-8);
   color: var(--muted);
   text-align: center;
 }
 
 .empty-title {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-semibold);
   color: var(--ink);
 }
 
 .empty-sub {
-  font-size: 13px;
+  font-size: var(--text-md);
   max-width: 360px;
-  line-height: 1.5;
+  line-height: var(--leading-relaxed);
 }
