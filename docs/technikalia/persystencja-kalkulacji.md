@@ -18,7 +18,6 @@ Aplikacja działa jako desktopowa (Tauri V2). Kalkulacje przechowuje `Calculatio
 | Metoda                    | Działanie                                                                                                                                                       |
 | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `listCalculations()`      | pobiera tablicę wszystkich rekordów ze store                                                                                                                    |
-| `hasCalculation(name)`    | sprawdza, czy rekord o danej nazwie istnieje                                                                                                                    |
 | `saveCalculation(record)` | upsert po `name` (zastępuje lub dodaje); wywołuje `store.save()`                                                                                                |
 | `deleteCalculation(name)` | usuwa rekord o danej nazwie i zapisuje tablicę                                                                                                                  |
 | `exportToFile(record)`    | systemowy dialog zapisu (Tauri `saveDialog`), zapis JSON; zwraca ścieżkę lub `null`                                                                             |

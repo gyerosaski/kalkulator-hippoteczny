@@ -20,11 +20,6 @@ export class CalculationsStoreService {
     return (await store.get<SavedCalculationRecord[]>(CalculationsStoreService.RECORDS_KEY)) ?? [];
   }
 
-  async hasCalculation(name: string): Promise<boolean> {
-    const records = await this.listCalculations();
-    return records.some((record) => record.name === name);
-  }
-
   async saveCalculation(record: SavedCalculationRecord): Promise<void> {
     const store = await this.getStore();
     const records = await this.listCalculations();
