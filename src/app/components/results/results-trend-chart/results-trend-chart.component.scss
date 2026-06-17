@@ -47,9 +47,9 @@
 .trend-chart-axis-label {
   font-size: var(--text-base);
   fill: var(--muted);
-  font-family: var(--font-mono);
   font-feature-settings: 'tnum';
   font-variant-numeric: tabular-nums;
+  font-weight: var(--font-weight-semibold);
 }
 
 .trend-chart-axis-title {
