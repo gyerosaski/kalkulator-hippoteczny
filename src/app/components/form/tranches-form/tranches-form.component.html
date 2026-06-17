@@ -7,43 +7,45 @@
   [enabled]="isSectionEnabled()"
   (enabledChange)="sectionEnabledControl.setValue($event)"
 >
-  @for (tranche of tranchesArray.controls; track $index) {
-    @let trancheAmountId = 'tranche-' + $index + '-amount';
-    @let trancheDateId = 'tranche-' + $index + '-date';
-    @let trancheFeeId = 'tranche-' + $index + '-disbursement-fee';
-    @let trancheControls = tranche.controls;
-    <ui-card>
-      <div class="row-ctrl">
-        <span class="tranche-num">{{ $index + 1 }}</span>
-        <div class="row row--3">
-          <ui-field label="Kwota" [inputId]="trancheAmountId">
-            <ui-number-input
-              [inputId]="trancheAmountId"
-              [formControl]="trancheControls.amount"
-              suffix="zł"
-              [decimals]="2"
-            />
-          </ui-field>
-          <ui-field label="Data uruchomienia" [inputId]="trancheDateId">
-            <ui-month-picker [inputId]="trancheDateId" [formControl]="trancheControls.date" />
-          </ui-field>
-          @if ($index > 0) {
-            <ui-field label="Opłata za uruchomienie transzy" [inputId]="trancheFeeId">
+  <div>
+    @for (tranche of tranchesArray.controls; track $index) {
+      @let trancheAmountId = 'tranche-' + $index + '-amount';
+      @let trancheDateId = 'tranche-' + $index + '-date';
+      @let trancheFeeId = 'tranche-' + $index + '-disbursement-fee';
+      @let trancheControls = tranche.controls;
+      <ui-card>
+        <div class="row-ctrl">
+          <span class="tranche-num">{{ $index + 1 }}</span>
+          <div class="row row--3">
+            <ui-field label="Kwota" [inputId]="trancheAmountId">
               <ui-number-input
-                [inputId]="trancheFeeId"
-                [formControl]="trancheControls.disbursementFee"
+                [inputId]="trancheAmountId"
+                [formControl]="trancheControls.amount"
                 suffix="zł"
                 [decimals]="2"
               />
             </ui-field>
+            <ui-field label="Data uruchomienia" [inputId]="trancheDateId">
+              <ui-month-picker [inputId]="trancheDateId" [formControl]="trancheControls.date" />
+            </ui-field>
+            @if ($index > 0) {
+              <ui-field label="Opłata za uruchomienie transzy" [inputId]="trancheFeeId">
+                <ui-number-input
+                  [inputId]="trancheFeeId"
+                  [formControl]="trancheControls.disbursementFee"
+                  suffix="zł"
+                  [decimals]="2"
+                />
+              </ui-field>
+            }
+          </div>
+          @if ($index > 0) {
+            <ui-btn-remove (remove)="removeTranche($index)" />
           }
         </div>
-        @if ($index > 0) {
-          <ui-btn-remove (remove)="removeTranche($index)" />
-        }
-      </div>
-    </ui-card>
-  }
+      </ui-card>
+    }
+  </div>
 
   <ui-btn-add label="Dodaj transzę" (add)="addTranche()" />
 

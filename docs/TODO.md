@@ -68,4 +68,5 @@
 - [x] w docs/technikalia dodać dokument opisujący design system, dostępne kontrolki ui, zmienne kolorów, palety motywów
 - dodaj eksport do .csv pojedynczej i wszystkich kalkulacji
 - dodać dokument walidację.md w docs/funkcjonalności, który będzie zawierał listę wszystkich walidacji formularza kalkulatora
+- podczas otwierania MonthPickerDialogComponent przez moment miga miesiąc i rok zaznaczony podczas poprzedniego otwarcia okna dialog
   314 pxx 218
