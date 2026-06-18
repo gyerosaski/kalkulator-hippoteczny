@@ -89,21 +89,22 @@
   border-bottom: var(--border-width) solid var(--line);
 }
 
+/* Animowane rozwijanie pozycji potomnych: grid-template-rows 0fr → 1fr nie wymaga znanej wysokości */
 .legend li.children-row {
-  display: block;
-  max-height: 0;
-  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 0fr;
   opacity: 0;
   cursor: default;
   margin-top: calc(-1 * var(--space-2));
   transition:
-    max-height var(--duration-slow) ease,
+    grid-template-rows var(--duration-slow) ease,
     opacity 0.25s ease,
     margin-top var(--duration-slow) ease;
 }
 
 .legend li.children-row--open {
-  max-height: 400px;
+  grid-template-rows: 1fr;
   opacity: 1;
   margin-top: 0;
 }
@@ -112,6 +113,8 @@
   list-style: none;
   margin: 0;
   padding: 0;
+  overflow: hidden;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-2);

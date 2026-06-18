@@ -70,7 +70,7 @@
 - dodać dokument walidację.md w docs/funkcjonalności, który będzie zawierał listę wszystkich walidacji formularza kalkulatora
 - podczas otwierania MonthPickerDialogComponent przez moment miga miesiąc i rok zaznaczony podczas poprzedniego otwarcia okna dialog
 - [x] animuj zmianę wysokości słupków w ResultsTrendChartComponent analogicznie jak w DonutComponent; animuj również zmianę wysokości salda kredytu
-- rozwijanie sekcji w LegendComponent nie wygląda płynnie
+- [x] rozwijanie sekcji w LegendComponent nie wygląda płynnie
 - deklaracje zmiennych wynieść z src/styles.scss do oddzielnego pliku
 - resetuj UiStateService po wczytaniu nowej kalkulacji
 - w CalculationsListComponent po najechaniu myszką prezentuj pełną nazwę kalkulacji; jeśli jest za długa ucinaj ją trzykropkiem
