@@ -70,17 +70,27 @@
         [attr.y2]="geometry.paddingTop + geometry.innerHeight"
       />
 
-      <path class="rate-chart-area" [attr.d]="geometry.areaPath" />
-
       <path
         class="rate-chart-line"
         [attr.d]="geometry.stepPath"
         fill="none"
-        stroke="var(--c-int)"
+        stroke="var(--ink)"
         stroke-width="2"
         stroke-linejoin="round"
         stroke-linecap="round"
       />
+
+      @for (point of geometry.changePoints; track $index) {
+        <circle
+          class="rate-chart-line-point"
+          [attr.cx]="point.x"
+          [attr.cy]="point.y"
+          r="4"
+          fill="var(--ink)"
+          stroke="var(--surface)"
+          stroke-width="1.5"
+        />
+      }
 
       @for (point of geometry.points; track $index) {
         <rect

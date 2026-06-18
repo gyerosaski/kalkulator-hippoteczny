@@ -32,12 +32,11 @@
   letter-spacing: var(--tracking-wide);
 }
 
-.rate-chart-area {
-  fill: var(--c-int-soft);
-  stroke: none;
+.rate-chart-line {
+  pointer-events: none;
 }
 
-.rate-chart-line {
+.rate-chart-line-point {
   pointer-events: none;
 }
 

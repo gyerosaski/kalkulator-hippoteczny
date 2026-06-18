@@ -141,8 +141,8 @@ export interface RateChartGeometry {
   readonly innerWidth: number;
   readonly innerHeight: number;
   readonly stepPath: string;
-  readonly areaPath: string;
   readonly points: RateChartPoint[];
+  readonly changePoints: RateChartPoint[];
   readonly yTicks: RateChartAxisTick[];
   readonly xTicks: RateChartAxisTick[];
   readonly columnWidth: number;

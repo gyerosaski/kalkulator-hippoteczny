@@ -90,10 +90,12 @@ export class ResultsRateChartComponent {
     }));
 
     const rightEdgeX = paddingLeft + innerWidth;
-    const bottomY = paddingTop + innerHeight;
 
     const stepPath = buildStepPath(points, rightEdgeX);
-    const areaPath = `${stepPath} L ${rightEdgeX.toFixed(1)} ${bottomY.toFixed(1)} L ${points[0].x.toFixed(1)} ${bottomY.toFixed(1)} Z`;
+
+    const changePoints: RateChartPoint[] = points.filter(
+      (point, index) => index === 0 || point.interestRate !== points[index - 1].interestRate,
+    );
 
     const yTicks: RateChartAxisTick[] = [];
     for (
@@ -128,8 +130,8 @@ export class ResultsRateChartComponent {
       innerWidth,
       innerHeight,
       stepPath,
-      areaPath,
       points,
+      changePoints,
       yTicks,
       xTicks,
       columnWidth,

@@ -78,5 +78,5 @@
 - wzbogacić DividerComponent o możliwość prezentacji ciągłej linii, przejrzeć kod pod kątem miejsc, w których można by go zastosować
 - w DialogComponent zamień tag w title, a title usuń
 - użyj SwitchComponent w FoldableSectionComponent, przejrzyj kod w poszukiwaniu miejsc, w których można by zastosować SwitchComponent
-- w ResultsRateChartComponent nie koloruj pola pod linią wykresu
-  314 pxx 218
+- [x] w ResultsRateChartComponent nie koloruj pola pod linią wykresu
+      314 pxx 218
