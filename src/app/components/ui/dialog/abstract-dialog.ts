@@ -1,4 +1,4 @@
-import { Signal } from '@angular/core';
+import { ChangeDetectorRef, inject, Signal } from '@angular/core';
 
 import { DialogComponent } from './dialog.component';
 
@@ -17,12 +17,18 @@ export abstract class AbstractDialog<TResult> {
   /** Referencja do prezentacyjnej powłoki `ui-dialog` (dostarczana przez podklasę). */
   protected abstract readonly dialog: Signal<DialogComponent>;
 
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
+
   private resolvePending?: (result: TResult) => void;
   private pendingResult!: TResult;
 
   /** otwiera modal i zwraca obietnicę rozwiązywaną przy zamknięciu (domyślnie wartością `defaultResult`) */
   protected beginInteraction(defaultResult: TResult): Promise<TResult> {
     this.pendingResult = defaultResult;
+    // Spłukanie detekcji zmian przed pokazaniem modala — przy OnPush ustawienie sygnałów w `open(...)`
+    // jedynie planuje detekcję, więc bez tego natywny <dialog> wyświetliłby DOM z poprzedniego otwarcia
+    // (stare zaznaczenie miga przez moment).
+    this.changeDetectorRef.detectChanges();
     this.dialog().showModal();
     return new Promise((resolve) => (this.resolvePending = resolve));
   }
