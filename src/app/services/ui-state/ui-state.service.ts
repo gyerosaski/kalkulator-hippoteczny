@@ -18,6 +18,7 @@ import { DEFAULT_SORT_DIRECTIONS } from '../../helpers/saved-calculation-sort.he
 @Injectable({ providedIn: 'root' })
 export class UiStateService {
   private readonly sectionOpenStates = new Map<FormSectionId, WritableSignal<boolean>>();
+  private readonly sectionDefaultOpen = new Map<FormSectionId, boolean>();
   private readonly openSubsections = new Map<FormSectionId, WritableSignal<string | null>>();
   private readonly expandedLegendLabels = new Map<LegendId, WritableSignal<string | null>>();
 
@@ -43,6 +44,9 @@ export class UiStateService {
   readonly savedCalculationsSortDirection = this._savedCalculationsSortDirection.asReadonly();
 
   sectionOpen(sectionId: FormSectionId, defaultOpen = true): Signal<boolean> {
+    if (!this.sectionDefaultOpen.has(sectionId)) {
+      this.sectionDefaultOpen.set(sectionId, defaultOpen);
+    }
     return this.sectionOpenState(sectionId, defaultOpen).asReadonly();
   }
 
@@ -120,6 +124,23 @@ export class UiStateService {
   clampSelectedMonth(scheduleLength: number): void {
     this._selectedMonthIndex.update((current) =>
       current !== null && (current < 1 || current > scheduleLength) ? null : current,
+    );
+  }
+
+  /**
+   * Czyści stan UI związany z konkretną kalkulacją: zaznaczenia w wynikach, rozwinięte podsekcje,
+   * pozycje legendy oraz stan rozwinięcia sekcji wraca do wartości domyślnych. Preferencje sortowania
+   * listy kalkulacji pozostają nietknięte. Mutuje istniejące sygnały (nie podmienia ich), aby nie
+   * zerwać powiązań trzymanych w komponentach.
+   */
+  resetCalculationViewState(): void {
+    this._selectedMonthIndex.set(null);
+    this._expandedScheduleYear.set(null);
+    this._selectedTrendYearIndex.set(null);
+    this.openSubsections.forEach((state) => state.set(null));
+    this.expandedLegendLabels.forEach((state) => state.set(null));
+    this.sectionOpenStates.forEach((state, sectionId) =>
+      state.set(this.sectionDefaultOpen.get(sectionId) ?? true),
     );
   }
 

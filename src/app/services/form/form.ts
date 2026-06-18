@@ -36,6 +36,7 @@ import {
 } from '../../model';
 import { addMonthsStr, nextMonthStr, ym } from '../../helpers/date.helper';
 import { normalizeCalculationData } from '../../helpers/saved-calculation-data.helper';
+import { UiStateService } from '../ui-state/ui-state.service';
 
 function endOfLoanDate(): string {
   return addMonthsStr(nextMonthStr(), 20 * 12 - 1);
@@ -145,6 +146,7 @@ function crossFieldValidator(control: AbstractControl) {
 })
 export class FormService {
   private fb = inject(NonNullableFormBuilder);
+  private readonly uiStateService = inject(UiStateService);
 
   readonly form: FormGroup<MortgageFormGroup> = this.createForm();
   /** Bieżąca, w pełni rozpakowana wartość formularza jako sygnał — dla konsumentów reaktywnych. */
@@ -516,12 +518,14 @@ export class FormService {
     this.form.reset();
     this.loadedCalculationName.set(null);
     this.loadedCalculationSnapshot.set(null);
+    this.uiStateService.resetCalculationViewState();
   }
 
   loadFromSavedCalculation(data: unknown, name: string): void {
     this.loadFromFile(data);
     this.loadedCalculationName.set(name);
     this.loadedCalculationSnapshot.set(JSON.stringify(this.form.getRawValue()));
+    this.uiStateService.resetCalculationViewState();
   }
 
   refreshLoadedCalculationSnapshot(): void {

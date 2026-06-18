@@ -1,4 +1,4 @@
-import { FormSectionId, LegendId } from '../../model';
+import { FormSectionId, LegendId, SavedCalculationSortOption } from '../../model';
 import { UiStateService } from './ui-state.service';
 
 describe('UiStateService', () => {
@@ -107,6 +107,54 @@ describe('UiStateService', () => {
     it('powinien pozostawić brak zaznaczenia bez zmian', () => {
       service.clampSelectedMonth(180);
       expect(service.selectedMonthIndex()).toBeNull();
+    });
+  });
+
+  describe('reset stanu kalkulacji', () => {
+    it('powinien wyczyścić zaznaczenia w wynikach do null', () => {
+      service.toggleSelectedMonth(42);
+      service.toggleScheduleYear(2030);
+      service.toggleTrendYear(5);
+
+      service.resetCalculationViewState();
+
+      expect(service.selectedMonthIndex()).toBeNull();
+      expect(service.expandedScheduleYear()).toBeNull();
+      expect(service.selectedTrendYearIndex()).toBeNull();
+    });
+
+    it('powinien zamknąć otwarte podsekcje i rozwinięte pozycje legendy', () => {
+      service.setOpenSubsection(FormSectionId.OVERHEAD_COSTS, 'commission');
+      service.toggleLegendLabel(LegendId.DONUT_TOTAL, 'Koszty okołokredytowe');
+
+      service.resetCalculationViewState();
+
+      expect(service.openSubsection(FormSectionId.OVERHEAD_COSTS)()).toBeNull();
+      expect(service.expandedLegendLabel(LegendId.DONUT_TOTAL)()).toBeNull();
+    });
+
+    it('powinien przywrócić sekcje do ich pierwotnego stanu domyślnego', () => {
+      // utrwalenie defaultów przez pierwszy odczyt (jak przy renderze sekcji)
+      service.sectionOpen(FormSectionId.BASIC_DATA, true);
+      service.sectionOpen(FormSectionId.TRANCHES, false);
+
+      service.setSectionOpen(FormSectionId.BASIC_DATA, false);
+      service.setSectionOpen(FormSectionId.TRANCHES, true);
+
+      service.resetCalculationViewState();
+
+      expect(service.sectionOpen(FormSectionId.BASIC_DATA)()).toBe(true);
+      expect(service.sectionOpen(FormSectionId.TRANCHES)()).toBe(false);
+    });
+
+    it('nie powinien zmieniać preferencji sortowania listy kalkulacji', () => {
+      service.setSavedCalculationsSortOption(SavedCalculationSortOption.NAME);
+      const directionBeforeReset = service.savedCalculationsSortDirection();
+
+      service.resetCalculationViewState();
+
+      expect(service.savedCalculationsSortOption()).toBe(SavedCalculationSortOption.NAME);
+      expect(service.savedCalculationsSortDirection()).toBe(directionBeforeReset);
     });
   });
 });
