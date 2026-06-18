@@ -10,6 +10,7 @@ import {
   signal,
 } from '@angular/core';
 import { IconChevronRightComponent } from '../../icons/icon-chevron-right/icon-chevron-right.component';
+import { SwitchComponent } from '../switch/switch.component';
 import { FormSectionId } from '../../../model';
 import { UiStateService } from '../../../services/ui-state/ui-state.service';
 import { formSectionAnchorId } from '../../../helpers/form-navigation.helper';
@@ -17,7 +18,7 @@ import { formSectionAnchorId } from '../../../helpers/form-navigation.helper';
 @Component({
   selector: 'ui-foldable-section',
   standalone: true,
-  imports: [IconChevronRightComponent],
+  imports: [IconChevronRightComponent, SwitchComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './foldable-section.component.html',
   host: {

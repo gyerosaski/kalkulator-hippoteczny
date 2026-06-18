@@ -77,6 +77,6 @@
 - [x] w RatePeriodFormGroup i SavedCalculation zmienić nazwę pola `wibor` na `referenceIndex`, zmienić także nazwę metody `wiborMarginText()`, przeszukać kod pod kątem wystąpień wibor i zamienić w pozostałych miejscach
 - wzbogacić DividerComponent o możliwość prezentacji ciągłej linii, przejrzeć kod pod kątem miejsc, w których można by go zastosować
 - w DialogComponent zamień tag w title, a title usuń
-- użyj SwitchComponent w FoldableSectionComponent, przejrzyj kod w poszukiwaniu miejsc, w których można by zastosować SwitchComponent
+- [x] użyj SwitchComponent w FoldableSectionComponent, przejrzyj kod w poszukiwaniu miejsc, w których można by zastosować SwitchComponent
 - [x] w ResultsRateChartComponent nie koloruj pola pod linią wykresu
       314 pxx 218

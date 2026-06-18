@@ -13,19 +13,13 @@
       }
     </button>
     @if (toggleable()) {
-      <label
-        class="sec-switch"
+      <ui-switch
+        [checked]="enabled()"
+        (checkedChange)="enabledChange.emit($event)"
+        [label]="enabled() ? 'wł.' : 'wył.'"
         [title]="enabled() ? 'Wyłącz sekcję' : 'Włącz sekcję'"
         (click)="$event.stopPropagation()"
-      >
-        <input
-          type="checkbox"
-          [checked]="enabled()"
-          (change)="enabledChange.emit($any($event.target).checked)"
-        />
-        <span class="switch-track"><span class="switch-thumb"></span></span>
-        <span class="switch-lab">{{ enabled() ? 'wł.' : 'wył.' }}</span>
-      </label>
+      />
     }
   </div>
   <div

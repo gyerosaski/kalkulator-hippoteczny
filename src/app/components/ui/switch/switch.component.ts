@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, forwardRef, input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  forwardRef,
+  input,
+  model,
+  signal,
+} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
@@ -18,7 +25,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 export class SwitchComponent implements ControlValueAccessor {
   readonly label = input<string>('');
 
-  protected readonly checked = signal(false);
+  readonly checked = model<boolean>(false);
   protected readonly disabled = signal(false);
 
   private onChange?: (value: boolean) => void;

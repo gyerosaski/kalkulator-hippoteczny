@@ -691,10 +691,6 @@ body {
 .sec-switch input:checked + .switch-track .switch-thumb {
   left: 16px;
 }
-.switch-lab {
-  font-weight: var(--font-weight-medium);
-  min-width: 22px;
-}
 
 /* Period composite input */
 .period-input {
