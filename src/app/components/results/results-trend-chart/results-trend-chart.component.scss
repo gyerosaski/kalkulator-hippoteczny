@@ -64,7 +64,10 @@
 }
 
 .trend-chart-bar-group rect {
-  transition: opacity var(--duration-fast) ease;
+  transition:
+    opacity var(--duration-fast) ease,
+    y var(--duration-slower) var(--ease-standard),
+    height var(--duration-slower) var(--ease-standard);
 }
 
 .trend-chart-bar-group.is-selected .trend-chart-bar-segment {
@@ -77,10 +80,12 @@
 
 .trend-chart-line {
   pointer-events: none;
+  transition: d var(--duration-slower) var(--ease-standard);
 }
 
 .trend-chart-line-point {
   pointer-events: none;
+  transition: cy var(--duration-slower) var(--ease-standard);
 }
 
 .trend-chart-hover-target {

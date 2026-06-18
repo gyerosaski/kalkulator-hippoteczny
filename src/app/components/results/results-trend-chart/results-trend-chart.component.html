@@ -132,6 +132,7 @@
       <path
         class="trend-chart-line"
         [attr.d]="geometry.linePath"
+        [style.d]="'path(\'' + geometry.linePath + '\')'"
         fill="none"
         stroke="var(--ink)"
         stroke-width="2"
