@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, input, signal } f
 import {
   ChartSlice,
   ColorCodeArea,
+  DividerVariant,
   LEGEND_TOTAL_ACTIVE,
   LegendId,
   MortgageResults,
@@ -17,6 +18,7 @@ import {
 } from '../../../model';
 import { CardComponent } from '../../ui/card/card.component';
 import { ColorCodeMarkerComponent } from '../../ui/color-code-marker/color-code-marker.component';
+import { DividerComponent } from '../../ui/divider/divider.component';
 import { LegendComponent } from '../../ui/legend/legend.component';
 import { OverheadCostBreakdownService } from '../../../services/overhead-cost-breakdown/overhead-cost-breakdown.service';
 import { UiStateService } from '../../../services/ui-state/ui-state.service';
@@ -68,7 +70,7 @@ function formatAxisAmount(value: number): string {
 @Component({
   selector: 'app-results-trend-chart',
   standalone: true,
-  imports: [CardComponent, ColorCodeMarkerComponent, LegendComponent],
+  imports: [CardComponent, ColorCodeMarkerComponent, DividerComponent, LegendComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './results-trend-chart.component.html',
   styleUrl: './results-trend-chart.component.scss',
@@ -88,6 +90,7 @@ export class ResultsTrendChartComponent {
   rememberUiState = input<boolean>(false);
 
   protected readonly ColorCodeMarkerVariant = ColorCodeArea;
+  protected readonly DividerVariant = DividerVariant;
   protected readonly LegendId = LegendId;
   protected readonly activeLabel = signal<string | null>(null);
 

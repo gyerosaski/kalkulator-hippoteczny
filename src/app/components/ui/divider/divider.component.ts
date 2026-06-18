@@ -1,4 +1,5 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input } from '@angular/core';
+import { DividerVariant } from '../../../model';
 
 @Component({
   selector: 'ui-divider',
@@ -7,4 +8,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
   templateUrl: './divider.component.html',
   styleUrl: './divider.component.scss',
 })
-export class DividerComponent {}
+export class DividerComponent {
+  readonly variant = input<DividerVariant>(DividerVariant.DASHED);
+  protected readonly DividerVariant = DividerVariant;
+}

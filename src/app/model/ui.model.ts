@@ -6,6 +6,11 @@ export enum BadgeVariant {
   NEUTRAL = 'NEUTRAL',
 }
 
+export enum DividerVariant {
+  DASHED = 'DASHED',
+  SOLID = 'SOLID',
+}
+
 export interface DonutSlice {
   label: string;
   value: number;

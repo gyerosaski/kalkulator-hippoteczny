@@ -174,7 +174,7 @@ Wszystkie komponenty są `standalone` + `OnPush`. Kontrolki formularzowe oznaczo
 | `ui-card`                   | karta z opcjonalnym tagiem/usuwaniem                                                                      | `tag`, `removable`, `bare`, `@remove`                                                                                           |
 | `ui-cards-group`            | grupa kart (zarządza odstępami)                                                                           | — (kontener `ng-content`)                                                                                                       |
 | `ui-color-code-marker`      | znacznik barwy semantycznej grupy                                                                         | `variant: ColorCodeArea`                                                                                                        |
-| `ui-divider`                | separator poziomy                                                                                         | —                                                                                                                               |
+| `ui-divider`                | separator poziomy (linia przerywana lub ciągła)                                                           | `variant: DividerVariant` (`DASHED`/`SOLID`, domyślnie `DASHED`)                                                                |
 | `ui-subsection`             | numerowana podsekcja zwijana                                                                              | `num`, `title`, `open`, `@openChange`, `context: ColorCodeArea \| null`                                                         |
 | `ui-donut`                  | generyczny wykres pierścieniowy (SVG)                                                                     | `data: DonutSlice[]`, `size`, `thickness`, `centerLabel`, `centerValue`, `activeLabel`, `@sliceHover`                           |
 | `ui-dropdown`               | menu rozwijane (akcje)                                                                                    | `options`, `labels`, `disabled`, `placement: DropdownPlacement`, `@select`                                                      |
@@ -191,7 +191,7 @@ Wszystkie komponenty są `standalone` + `OnPush`. Kontrolki formularzowe oznaczo
 | `ui-pixel-hippo`            | dekoracyjny logotyp (pixel-art)                                                                           | —                                                                                                                               |
 
 Typy pomocnicze (`DonutSlice`, `ChartSlice`, `BadgeVariant`, `BannerVariant`,
-`ToastVariant`, `DropdownPlacement`, `LegendId`, `FormSectionId`) deklarowane w
+`DividerVariant`, `ToastVariant`, `DropdownPlacement`, `LegendId`, `FormSectionId`) deklarowane w
 `src/app/model/` (`ColorCodeArea` w `mortgage.model.ts`, reszta w `ui.model.ts`).
 
 ## Globalne klasy strukturalne / utility (`src/styles.scss`)

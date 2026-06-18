@@ -8,3 +8,8 @@
   border-top: var(--border-width) dashed var(--line-2);
   margin: 0;
 }
+
+.divider-line--solid {
+  border-top-style: solid;
+  border-top-color: var(--line);
+}
