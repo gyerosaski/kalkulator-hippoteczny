@@ -51,12 +51,12 @@
     },
     "RatePeriod": {
       "type": "object",
-      "required": ["from", "rateType", "nominalRate", "wibor", "margin"],
+      "required": ["from", "rateType", "nominalRate", "referenceIndex", "margin"],
       "properties": {
         "from": { "$ref": "#/$defs/YyyyMm" },
         "rateType": { "$ref": "#/$defs/RateType" },
         "nominalRate": { "type": "number", "minimum": 0 },
-        "wibor": { "type": "number", "minimum": 0 },
+        "referenceIndex": { "type": "number", "minimum": 0 },
         "margin": { "type": "number", "minimum": 0 }
       }
     },

@@ -25,7 +25,9 @@ describe('buildMortgageInputs', () => {
     expect(inputs.capitalStartDate).toBe(formValue.basicData.capitalStartDate);
     expect(inputs.installmentType).toBe(formValue.basicData.installmentType);
     expect(inputs.ratePeriods).toHaveLength(formValue.ratePeriods.items.length);
-    expect(inputs.ratePeriods[0].wibor).toBe(formValue.ratePeriods.items[0].wibor);
+    expect(inputs.ratePeriods[0].referenceIndex).toBe(
+      formValue.ratePeriods.items[0].referenceIndex,
+    );
     expect(inputs.ratePeriods[0].margin).toBe(formValue.ratePeriods.items[0].margin);
   });
 
@@ -45,7 +47,9 @@ describe('buildMortgageInputs', () => {
 
     const inputs = buildMortgageInputs(normalized!);
     expect(inputs.ratePeriods).toHaveLength(formValue.ratePeriods.items.length);
-    expect(inputs.ratePeriods[0].wibor).toBe(formValue.ratePeriods.items[0].wibor);
+    expect(inputs.ratePeriods[0].referenceIndex).toBe(
+      formValue.ratePeriods.items[0].referenceIndex,
+    );
   });
 
   it('powinien wyzerować sekcje wyłączone (koszty, transze, nadpłaty)', () => {

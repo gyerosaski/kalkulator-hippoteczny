@@ -249,7 +249,10 @@ export class FormService {
         Validators.min(0),
         Validators.max(50),
       ]),
-      wibor: this.fb.control(initial?.wibor ?? 7.0, [Validators.min(0), Validators.max(50)]),
+      referenceIndex: this.fb.control(initial?.referenceIndex ?? 7.0, [
+        Validators.min(0),
+        Validators.max(50),
+      ]),
       margin: this.fb.control(initial?.margin ?? 2.0, [Validators.min(0), Validators.max(50)]),
     });
   }
@@ -422,7 +425,7 @@ export class FormService {
         from: newFrom,
         rateType: lastValues?.rateType,
         nominalRate: lastValues?.nominalRate,
-        wibor: lastValues?.wibor,
+        referenceIndex: lastValues?.referenceIndex,
         margin: lastValues?.margin,
       }),
     );

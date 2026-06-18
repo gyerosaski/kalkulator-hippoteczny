@@ -59,7 +59,7 @@ export class ComparisonStateService {
     const rateType = firstRatePeriod?.rateType ?? RateType.VARIABLE;
     const nominalRate =
       rateType === RateType.VARIABLE
-        ? (firstRatePeriod?.wibor ?? 0) + (firstRatePeriod?.margin ?? 0)
+        ? (firstRatePeriod?.referenceIndex ?? 0) + (firstRatePeriod?.margin ?? 0)
         : (firstRatePeriod?.nominalRate ?? 0);
     const loanPeriodMonths = basicData.loanPeriod;
     const results = this.draftComputation()?.results ?? null;

@@ -6,7 +6,7 @@
   <ui-cards-group>
     <div>
       @for (period of ratePeriodControls(); track $index) {
-        @let wiborId = 'rate-period-' + $index + '-wibor';
+        @let referenceIndexId = 'rate-period-' + $index + '-reference-index';
         @let marginId = 'rate-period-' + $index + '-margin';
         @let rateId = 'rate-period-' + $index + '-rate';
         <ui-card
@@ -33,10 +33,10 @@
               />
             </ui-field>
             @if (period.controls.rateType.value === RateType.VARIABLE) {
-              <ui-field num="9a" label="Wskaźnik referencyjny" [inputId]="wiborId">
+              <ui-field num="9a" label="Wskaźnik referencyjny" [inputId]="referenceIndexId">
                 <ui-number-input
-                  [inputId]="wiborId"
-                  [formControl]="period.controls.wibor"
+                  [inputId]="referenceIndexId"
+                  [formControl]="period.controls.referenceIndex"
                   suffix="%"
                   [decimals]="2"
                 />
@@ -70,7 +70,10 @@
                     type="text"
                     class="mono"
                     [value]="
-                      ((period.controls.wibor.value || 0) + (period.controls.margin.value || 0))
+                      (
+                        (period.controls.referenceIndex.value || 0) +
+                        (period.controls.margin.value || 0)
+                      )
                         .toFixed(2)
                         .replace('.', ',')
                     "

@@ -45,7 +45,7 @@ Deklarowane w `src-tauri/capabilities/default.json`:
 
 Model widokowy `SavedCalculation` (warstwa prezentacji listy) rozszerza to o skalary wyliczone przy
 zapisie: `id` (UUID), `note`, `propertyValue`, `loanAmount`, `years`, `months`, `installmentType`,
-`rateType`, `wibor`, `margin`, `rate`, `firstInstallment`, `totalInterest`, `totalCosts`,
+`rateType`, `referenceIndex`, `margin`, `rate`, `firstInstallment`, `totalInterest`, `totalCosts`,
 `overpaymentsEnabled`, `tranches`, `updatedAt`, `createdAt`. Metadane służą wyłącznie liście i chipom;
 po wczytaniu oferty jej skalary są nadpisywane wartościami z przeliczenia na żywo.
 
@@ -92,5 +92,7 @@ Snapshot resetowany do `null` przy `setDefaults()` i odświeżany po zapisaniu p
 Starsze zapisane kalkulacje trzymały okresy w `basicData.ratePeriods` (płaska tablica). Przy wczytywaniu
 (`FormService.loadFromFile`), w porównywarce ofert i na liście kalkulacji migawka jest normalizowana
 przez `normalizeCalculationData()` (`src/app/helpers/saved-calculation-data.helper.ts`) — stare pliki
-wczytują się bez zmian. Schemat zapisu (`src/app/schemas/calculation.schema.json`) opisuje wyłącznie
-bieżący kształt (`ratePeriods.items` w korzeniu, `minItems: 1`).
+wczytują się bez zmian. Ta sama normalizacja mapuje też legacy nazwę pola wskaźnika referencyjnego
+`wibor` → `referenceIndex` w każdym okresie oprocentowania, więc kalkulacje zapisane przed zmianą
+nazwy wczytują się z zachowaniem wartości. Schemat zapisu (`src/app/schemas/calculation.schema.json`)
+opisuje wyłącznie bieżący kształt (`ratePeriods.items` w korzeniu, `referenceIndex`, `minItems: 1`).

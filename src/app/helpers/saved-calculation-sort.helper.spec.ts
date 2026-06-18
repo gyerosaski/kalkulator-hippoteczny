@@ -17,7 +17,7 @@ function buildCalculation(overrides: Partial<SavedCalculation>): SavedCalculatio
     loanPeriodExtraMonths: 0,
     installmentType: InstallmentType.EQUAL,
     rateType: RateType.VARIABLE,
-    wibor: 5.8,
+    referenceIndex: 5.8,
     margin: 2,
     nominalRate: 7.8,
     firstInstallment: 3000,

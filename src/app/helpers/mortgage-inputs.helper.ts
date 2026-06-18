@@ -143,7 +143,7 @@ export function buildMortgageInputs(formValue: MortgageFormRawValue): MortgageIn
     from: ratePeriod.from || basicData.startDate,
     rateType: ratePeriod.rateType,
     nominalRate: Number(ratePeriod.nominalRate) || 0,
-    wibor: Number(ratePeriod.wibor) || 0,
+    referenceIndex: Number(ratePeriod.referenceIndex) || 0,
     margin: Number(ratePeriod.margin) || 0,
   }));
 

@@ -12,7 +12,7 @@ export interface RatePeriod {
   from: string; // 'YYYY-MM' - start date for this rate period
   rateType: RateType;
   nominalRate: number; // % (used when rateType === RateType.FIXED)
-  wibor: number; // % (used when rateType === RateType.VARIABLE)
+  referenceIndex: number; // % (used when rateType === RateType.VARIABLE)
   margin: number; // % (used when rateType === RateType.VARIABLE)
 }
 

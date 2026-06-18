@@ -15,7 +15,7 @@ export interface RatePeriodFormGroup {
   from: FormControl<string>;
   rateType: FormControl<RateType>;
   nominalRate: FormControl<number>;
-  wibor: FormControl<number>;
+  referenceIndex: FormControl<number>;
   margin: FormControl<number>;
 }
 

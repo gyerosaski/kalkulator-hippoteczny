@@ -414,7 +414,7 @@ export class CalculatorService {
       from: inputs.startDate,
       rateType: RateType.VARIABLE,
       nominalRate: 9,
-      wibor: 7,
+      referenceIndex: 7,
       margin: 2,
     };
 
@@ -430,7 +430,7 @@ export class CalculatorService {
 
     const getBaseEffectiveRate = (period: RatePeriod): number =>
       period.rateType === RateType.VARIABLE
-        ? (Number(period.wibor) || 0) + (Number(period.margin) || 0)
+        ? (Number(period.referenceIndex) || 0) + (Number(period.margin) || 0)
         : Number(period.nominalRate) || 0;
 
     // Okres oprocentowania dla pierwszej raty

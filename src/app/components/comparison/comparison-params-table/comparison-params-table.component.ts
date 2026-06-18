@@ -340,8 +340,8 @@ export class ComparisonParamsTableComponent {
       ),
       buildChoiceParamRow(
         'Wskaźnik referencyjny / marża',
-        this.wiborMarginText(ratePeriodsA),
-        this.wiborMarginText(ratePeriodsB),
+        this.referenceIndexMarginText(ratePeriodsA),
+        this.referenceIndexMarginText(ratePeriodsB),
       ),
       buildNumericParamRow(
         'Liczba okresów oprocentowania',
@@ -393,17 +393,19 @@ export class ComparisonParamsTableComponent {
     const firstRatePeriod = ratePeriods?.[0];
     if (!firstRatePeriod) return null;
     return firstRatePeriod.rateType === RateType.VARIABLE
-      ? (Number(firstRatePeriod.wibor) || 0) + (Number(firstRatePeriod.margin) || 0)
+      ? (Number(firstRatePeriod.referenceIndex) || 0) + (Number(firstRatePeriod.margin) || 0)
       : Number(firstRatePeriod.nominalRate) || 0;
   }
 
-  private wiborMarginText(ratePeriods: RatePeriodsRawValue['items'] | null): string | null {
+  private referenceIndexMarginText(
+    ratePeriods: RatePeriodsRawValue['items'] | null,
+  ): string | null {
     const firstRatePeriod = ratePeriods?.[0];
     if (!firstRatePeriod) return null;
     if (firstRatePeriod.rateType !== RateType.VARIABLE) return NO_VALUE_TEXT;
-    const wibor = Number(firstRatePeriod.wibor) || 0;
+    const referenceIndex = Number(firstRatePeriod.referenceIndex) || 0;
     const margin = Number(firstRatePeriod.margin) || 0;
-    return `${formatPercent(wibor)}% + ${formatPercent(margin)}%`;
+    return `${formatPercent(referenceIndex)}% + ${formatPercent(margin)}%`;
   }
 
   /* ---------- Koszty okołokredytowe i promocje ---------- */

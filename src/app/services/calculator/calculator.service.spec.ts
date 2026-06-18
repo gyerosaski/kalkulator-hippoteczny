@@ -28,7 +28,7 @@ function baseInputs(effect: PrepaymentEffect = PrepaymentEffect.SHORTEN_PERIOD):
         from: '2026-01',
         rateType: RateType.FIXED,
         nominalRate: 8,
-        wibor: 0,
+        referenceIndex: 0,
         margin: 0,
       },
     ],
@@ -273,8 +273,8 @@ describe('MortgageCalcService (nadpłaty)', () => {
     const inputs = baseInputs();
     inputs.prepaymentRules = [];
     inputs.ratePeriods = [
-      { from: '2026-01', rateType: RateType.FIXED, nominalRate: 8, wibor: 0, margin: 0 },
-      { from: '2027-01', rateType: RateType.FIXED, nominalRate: 4, wibor: 0, margin: 0 },
+      { from: '2026-01', rateType: RateType.FIXED, nominalRate: 8, referenceIndex: 0, margin: 0 },
+      { from: '2027-01', rateType: RateType.FIXED, nominalRate: 4, referenceIndex: 0, margin: 0 },
     ];
 
     const result = service.compute(inputs);
@@ -297,7 +297,7 @@ function trancheInputs(): MortgageInputs {
     capitalStartDate: '2026-02',
     installmentType: InstallmentType.EQUAL,
     ratePeriods: [
-      { from: '2026-01', rateType: RateType.FIXED, nominalRate: 8, wibor: 0, margin: 0 },
+      { from: '2026-01', rateType: RateType.FIXED, nominalRate: 8, referenceIndex: 0, margin: 0 },
     ],
     prepaymentRules: [],
     targetInstallmentRule: {
@@ -372,7 +372,7 @@ describe('MortgageCalcService (ubezpieczenia % salda)', () => {
       capitalStartDate: '2026-02',
       installmentType: InstallmentType.EQUAL,
       ratePeriods: [
-        { from: '2026-01', rateType: RateType.FIXED, nominalRate: 8, wibor: 0, margin: 0 },
+        { from: '2026-01', rateType: RateType.FIXED, nominalRate: 8, referenceIndex: 0, margin: 0 },
       ],
       prepaymentRules: [],
       targetInstallmentRule: {
@@ -416,7 +416,7 @@ describe('MortgageCalcService (ubezpieczenia % salda)', () => {
       capitalStartDate: '2026-02',
       installmentType: InstallmentType.EQUAL,
       ratePeriods: [
-        { from: '2026-01', rateType: RateType.FIXED, nominalRate: 8, wibor: 0, margin: 0 },
+        { from: '2026-01', rateType: RateType.FIXED, nominalRate: 8, referenceIndex: 0, margin: 0 },
       ],
       prepaymentRules: [],
       targetInstallmentRule: {
@@ -478,7 +478,7 @@ describe('MortgageCalcService (ubezpieczenie niskiego wkładu)', () => {
           from: '2026-01',
           rateType: RateType.FIXED,
           nominalRate: 6,
-          wibor: 0,
+          referenceIndex: 0,
           margin: 0,
         },
       ],
@@ -543,7 +543,7 @@ describe('MortgageCalcService (ubezpieczenie niskiego wkładu)', () => {
           from: '2026-01',
           rateType: RateType.FIXED,
           nominalRate: 6,
-          wibor: 0,
+          referenceIndex: 0,
           margin: 0,
         },
       ],
@@ -606,7 +606,7 @@ describe('MortgageCalcService (rozbicie kosztów okołokredytowych)', () => {
       capitalStartDate: '2026-02',
       installmentType: InstallmentType.EQUAL,
       ratePeriods: [
-        { from: '2026-01', rateType: RateType.FIXED, nominalRate: 8, wibor: 0, margin: 0 },
+        { from: '2026-01', rateType: RateType.FIXED, nominalRate: 8, referenceIndex: 0, margin: 0 },
       ],
       prepaymentRules: [
         {
@@ -688,7 +688,7 @@ describe('MortgageCalcService (rozbicie odsetek)', () => {
       capitalStartDate: '2026-02',
       installmentType: InstallmentType.EQUAL,
       ratePeriods: [
-        { from: '2026-01', rateType: RateType.FIXED, nominalRate: 6, wibor: 0, margin: 0 },
+        { from: '2026-01', rateType: RateType.FIXED, nominalRate: 6, referenceIndex: 0, margin: 0 },
       ],
       prepaymentRules: [],
       targetInstallmentRule: {
@@ -770,7 +770,7 @@ describe('MortgageCalcService (RRSO)', () => {
       capitalStartDate: '2026-02',
       installmentType: InstallmentType.EQUAL,
       ratePeriods: [
-        { from: '2026-01', rateType: RateType.FIXED, nominalRate, wibor: 0, margin: 0 },
+        { from: '2026-01', rateType: RateType.FIXED, nominalRate, referenceIndex: 0, margin: 0 },
       ],
     };
   }

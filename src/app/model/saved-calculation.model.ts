@@ -30,7 +30,7 @@ export interface SavedCalculation {
   loanPeriodExtraMonths: number;
   installmentType: InstallmentType;
   rateType: RateType;
-  wibor: number;
+  referenceIndex: number;
   margin: number;
   nominalRate: number;
   firstInstallment: number;

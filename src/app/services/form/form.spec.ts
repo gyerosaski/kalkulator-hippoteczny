@@ -19,15 +19,27 @@ describe('FormService', () => {
     it('wczytuje okresy oprocentowania z bieżącego kształtu (`ratePeriods.items`)', () => {
       const data = service.form.getRawValue();
       data.ratePeriods.items = [
-        { from: '2026-06', rateType: RateType.FIXED, nominalRate: 7.5, wibor: 0, margin: 0 },
-        { from: '2028-06', rateType: RateType.VARIABLE, nominalRate: 0, wibor: 5.5, margin: 2 },
+        {
+          from: '2026-06',
+          rateType: RateType.FIXED,
+          nominalRate: 7.5,
+          referenceIndex: 0,
+          margin: 0,
+        },
+        {
+          from: '2028-06',
+          rateType: RateType.VARIABLE,
+          nominalRate: 0,
+          referenceIndex: 5.5,
+          margin: 2,
+        },
       ];
 
       service.loadFromFile(data);
 
       expect(service.ratePeriodsArray.length).toBe(2);
       expect(service.ratePeriodsArray.at(0).getRawValue().nominalRate).toBe(7.5);
-      expect(service.ratePeriodsArray.at(1).getRawValue().wibor).toBe(5.5);
+      expect(service.ratePeriodsArray.at(1).getRawValue().referenceIndex).toBe(5.5);
     });
 
     it('wczytuje okresy oprocentowania ze starego kształtu (`basicData.ratePeriods`)', () => {
@@ -38,7 +50,13 @@ describe('FormService', () => {
         basicData: {
           ...current.basicData,
           ratePeriods: [
-            { from: '2026-06', rateType: RateType.FIXED, nominalRate: 6.8, wibor: 0, margin: 0 },
+            {
+              from: '2026-06',
+              rateType: RateType.FIXED,
+              nominalRate: 6.8,
+              referenceIndex: 0,
+              margin: 0,
+            },
           ],
         },
       };

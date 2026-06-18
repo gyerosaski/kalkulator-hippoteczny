@@ -23,10 +23,12 @@ export function toSavedCalculation(record: SavedCalculationRecord): SavedCalcula
 
   const loanPeriodMonths = Number(basicData?.['loanPeriod'] ?? 0);
   const rateType = (firstRate?.['rateType'] as RateType) ?? RateType.VARIABLE;
-  const wibor = Number(firstRate?.['wibor'] ?? 0);
+  const referenceIndex = Number(firstRate?.['referenceIndex'] ?? 0);
   const margin = Number(firstRate?.['margin'] ?? 0);
   const nominalRate =
-    rateType === RateType.VARIABLE ? wibor + margin : Number(firstRate?.['nominalRate'] ?? 0);
+    rateType === RateType.VARIABLE
+      ? referenceIndex + margin
+      : Number(firstRate?.['nominalRate'] ?? 0);
 
   const createdAt = new Date(record.createdAt);
   const updatedAt = record.updatedAt ? new Date(record.updatedAt) : createdAt;
@@ -40,7 +42,7 @@ export function toSavedCalculation(record: SavedCalculationRecord): SavedCalcula
     loanPeriodExtraMonths: loanPeriodMonths % 12,
     installmentType: (basicData?.['installmentType'] as InstallmentType) ?? InstallmentType.EQUAL,
     rateType,
-    wibor,
+    referenceIndex,
     margin,
     nominalRate,
     firstInstallment: record.metadata?.firstInstallment ?? 0,
