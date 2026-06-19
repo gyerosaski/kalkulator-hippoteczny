@@ -1,5 +1,5 @@
 <div class="two-column-layout">
-  <div class="column">
+  <div class="column" #formColumn (scroll)="onFormColumnScroll(formColumn.scrollTop)">
     <app-basic-data-form />
     <app-rate-periods-form />
     <app-tranches-form />
@@ -7,7 +7,7 @@
     <app-prepayments-form />
   </div>
 
-  <div class="column">
+  <div class="column" #resultsColumn (scroll)="onResultsColumnScroll(resultsColumn.scrollTop)">
     @if (results(); as resultsValue) {
       @if (yearlyGroups()?.length) {
         <app-results-donut-chart-total [results]="resultsValue" [followsMonthSelection]="false" />

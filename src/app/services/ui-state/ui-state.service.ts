@@ -31,6 +31,12 @@ export class UiStateService {
   private readonly _selectedMonthIndex = signal<number | null>(null);
   readonly selectedMonthIndex = this._selectedMonthIndex.asReadonly();
 
+  private readonly _calculatorFormColumnScrollTop = signal(0);
+  readonly calculatorFormColumnScrollTop = this._calculatorFormColumnScrollTop.asReadonly();
+
+  private readonly _calculatorResultsColumnScrollTop = signal(0);
+  readonly calculatorResultsColumnScrollTop = this._calculatorResultsColumnScrollTop.asReadonly();
+
   private readonly _savedCalculationsSortOption = signal<SavedCalculationSortOption>(
     SavedCalculationSortOption.UPDATED,
   );
@@ -115,6 +121,14 @@ export class UiStateService {
     this._selectedMonthIndex.set(null);
   }
 
+  setCalculatorFormColumnScrollTop(scrollTop: number): void {
+    this._calculatorFormColumnScrollTop.set(scrollTop);
+  }
+
+  setCalculatorResultsColumnScrollTop(scrollTop: number): void {
+    this._calculatorResultsColumnScrollTop.set(scrollTop);
+  }
+
   /**
    * Zachowuje zaznaczony miesiąc przy przeliczeniu/powrocie do widoku, czyszcząc go tylko gdy
    * indeks (1-based) wykracza poza nowy harmonogram. Dzięki temu zaznaczenie i rozwinięte
@@ -137,6 +151,8 @@ export class UiStateService {
     this._selectedMonthIndex.set(null);
     this._expandedScheduleYear.set(null);
     this._selectedTrendYearIndex.set(null);
+    this._calculatorFormColumnScrollTop.set(0);
+    this._calculatorResultsColumnScrollTop.set(0);
     this.openSubsections.forEach((state) => state.set(null));
     this.expandedLegendLabels.forEach((state) => state.set(null));
     this.sectionOpenStates.forEach((state, sectionId) =>

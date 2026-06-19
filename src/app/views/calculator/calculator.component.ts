@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import {
+  afterNextRender,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 
 import { ReactiveFormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -56,6 +64,9 @@ export class CalculatorComponent {
   readonly results = signal<MortgageResults | null>(null);
   readonly yearlyGroups = signal<YearGroup[] | null>(null);
 
+  private readonly formColumn = viewChild<ElementRef<HTMLElement>>('formColumn');
+  private readonly resultsColumn = viewChild<ElementRef<HTMLElement>>('resultsColumn');
+
   get loanAmount(): number | null {
     return this.formService.form.controls.basicData.controls.loanAmount.value ?? null;
   }
@@ -73,6 +84,25 @@ export class CalculatorComponent {
     this.form.valueChanges
       .pipe(startWith(this.form.getRawValue()), takeUntilDestroyed())
       .subscribe(() => this.recalculate());
+
+    afterNextRender(() => {
+      const formElement = this.formColumn()?.nativeElement;
+      if (formElement) {
+        formElement.scrollTop = this.uiStateService.calculatorFormColumnScrollTop();
+      }
+      const resultsElement = this.resultsColumn()?.nativeElement;
+      if (resultsElement) {
+        resultsElement.scrollTop = this.uiStateService.calculatorResultsColumnScrollTop();
+      }
+    });
+  }
+
+  protected onFormColumnScroll(scrollTop: number): void {
+    this.uiStateService.setCalculatorFormColumnScrollTop(scrollTop);
+  }
+
+  protected onResultsColumnScroll(scrollTop: number): void {
+    this.uiStateService.setCalculatorResultsColumnScrollTop(scrollTop);
   }
 
   private recalculate() {

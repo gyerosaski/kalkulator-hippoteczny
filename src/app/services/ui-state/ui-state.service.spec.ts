@@ -110,6 +110,21 @@ describe('UiStateService', () => {
     });
   });
 
+  describe('pozycja scrolla kolumn kalkulatora', () => {
+    it('powinien domyślnie zwracać zerową pozycję scrolla dla obu kolumn', () => {
+      expect(service.calculatorFormColumnScrollTop()).toBe(0);
+      expect(service.calculatorResultsColumnScrollTop()).toBe(0);
+    });
+
+    it('powinien zapamiętywać pozycję scrolla każdej kolumny niezależnie', () => {
+      service.setCalculatorFormColumnScrollTop(120);
+      service.setCalculatorResultsColumnScrollTop(340);
+
+      expect(service.calculatorFormColumnScrollTop()).toBe(120);
+      expect(service.calculatorResultsColumnScrollTop()).toBe(340);
+    });
+  });
+
   describe('reset stanu kalkulacji', () => {
     it('powinien wyczyścić zaznaczenia w wynikach do null', () => {
       service.toggleSelectedMonth(42);
@@ -121,6 +136,16 @@ describe('UiStateService', () => {
       expect(service.selectedMonthIndex()).toBeNull();
       expect(service.expandedScheduleYear()).toBeNull();
       expect(service.selectedTrendYearIndex()).toBeNull();
+    });
+
+    it('powinien wyzerować pozycję scrolla obu kolumn', () => {
+      service.setCalculatorFormColumnScrollTop(200);
+      service.setCalculatorResultsColumnScrollTop(450);
+
+      service.resetCalculationViewState();
+
+      expect(service.calculatorFormColumnScrollTop()).toBe(0);
+      expect(service.calculatorResultsColumnScrollTop()).toBe(0);
     });
 
     it('powinien zamknąć otwarte podsekcje i rozwinięte pozycje legendy', () => {
