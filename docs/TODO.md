@@ -67,7 +67,7 @@
 - [x] przejrzeć dialogi w src/app/dialogs i stworzyć generyczne komponenty będące podstawą budowania tych i kolejnych dialogów, wykorzystać content projection
 - [x] w docs/technikalia dodać dokument opisujący design system, dostępne kontrolki ui, zmienne kolorów, palety motywów
 - dodaj eksport do .csv pojedynczej i wszystkich kalkulacji
-- dodać dokument walidację.md w docs/funkcjonalności, który będzie zawierał listę wszystkich walidacji formularza kalkulatora
+- dodać dokument walidacje.md w docs/funkcjonalności, który będzie zawierał listę wszystkich walidacji formularza kalkulatora
 - [x] podczas otwierania MonthPickerDialogComponent przez moment miga miesiąc i rok zaznaczony podczas poprzedniego otwarcia okna dialog
 - [x] animuj zmianę wysokości słupków w ResultsTrendChartComponent analogicznie jak w DonutComponent; animuj również zmianę wysokości salda kredytu
 - [x] rozwijanie sekcji w LegendComponent nie wygląda płynnie
@@ -75,8 +75,9 @@
 - [x] resetuj UiStateService po wczytaniu nowej kalkulacji
 - w CalculationsListComponent po najechaniu myszką prezentuj pełną nazwę kalkulacji; jeśli jest za długa ucinaj ją trzykropkiem
 - [x] w RatePeriodFormGroup i SavedCalculation zmienić nazwę pola `wibor` na `referenceIndex`, zmienić także nazwę metody `wiborMarginText()`, przeszukać kod pod kątem wystąpień wibor i zamienić w pozostałych miejscach
-- wzbogacić DividerComponent o możliwość prezentacji ciągłej linii, przejrzeć kod pod kątem miejsc, w których można by go zastosować
+- [x] wzbogacić DividerComponent o możliwość prezentacji ciągłej linii, przejrzeć kod pod kątem miejsc, w których można by go zastosować
 - w DialogComponent zamień tag w title, a title usuń
 - [x] użyj SwitchComponent w FoldableSectionComponent, przejrzyj kod w poszukiwaniu miejsc, w których można by zastosować SwitchComponent
 - [x] w ResultsRateChartComponent nie koloruj pola pod linią wykresu
-      314 pxx 218
+- animacja na chevronie sekcji aktywuje się przy przechodzeniu pomiędzy zakładkami
+  314 pxx 218
