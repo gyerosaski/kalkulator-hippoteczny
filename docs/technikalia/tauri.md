@@ -21,15 +21,18 @@ Po `tauri:build` artefakty znajdziesz w `src-tauri/target/release/bundle/`:
 - `msi/Kalkulator Hippoteczny_<version>_x64_pl-PL.msi`
 - `nsis/Kalkulator Hippoteczny_<version>_x64-setup.exe`
 
-## Persystencja kalkulacji
+## Persystencja kalkulacji i ustawień
 
-`@tauri-apps/plugin-store` trzyma listę kalkulacji w pojedynczym pliku JSON:
+`@tauri-apps/plugin-store` trzyma dane w plikach JSON w katalogu danych aplikacji:
 
 ```
 %APPDATA%/com.gyerosaski.kalkulator-hipoteczny/calculations.json
+%APPDATA%/com.gyerosaski.kalkulator-hipoteczny/settings.json
 ```
 
-Dostęp przez `CalculationsStoreService` (`src/app/services/calculations-store/`). Klucz `calculations` przechowuje `SavedCalculationRecord[]`. Eksport do pliku (np. dla backupu lub współdzielenia) używa `@tauri-apps/plugin-dialog` (`save` / `open`) i `@tauri-apps/plugin-fs` (`writeTextFile` / `readTextFile`).
+Dostęp do kalkulacji przez `CalculationsStoreService` (`src/app/services/calculations-store/`). Klucz `calculations` przechowuje `SavedCalculationRecord[]`. Eksport do pliku (np. dla backupu lub współdzielenia) używa `@tauri-apps/plugin-dialog` (`save` / `open`) i `@tauri-apps/plugin-fs` (`writeTextFile` / `readTextFile`).
+
+Ustawienia aplikacji (obecnie motyw) obsługuje `AppSettingsStoreService` (`src/app/services/app-settings-store/`) — klucz `settings` przechowuje obiekt `AppSettings`. To samo uprawnienie `store:default` obejmuje oba pliki.
 
 Pełny model rekordu, operacje serwisu, kształty importu/eksportu i logika listy kalkulacji — patrz `docs/technikalia/persystencja-kalkulacji.md`.
 

@@ -105,6 +105,11 @@ export enum Theme {
   OCHRA = 'OCHRA',
 }
 
+/** Ustawienia aplikacji persystowane w `settings.json`. Obecnie wyłącznie motyw. */
+export interface AppSettings {
+  theme: Theme;
+}
+
 /** Wariant kolorystyczny dialogu — neutralny lub ostrzegawczy (operacje nieodwracalne). */
 export enum DialogVariant {
   DEFAULT = 'DEFAULT',

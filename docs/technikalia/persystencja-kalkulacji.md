@@ -33,6 +33,39 @@ Deklarowane w `src-tauri/capabilities/default.json`:
 | `dialog` | systemowe dialogi otwarcia i zapisu pliku                                         |
 | `fs`     | odczyt/zapis JSON; scope: `$DOCUMENT`, `$DOWNLOAD`, `$DESKTOP`, `$HOME/**/*.json` |
 
+## Ustawienia aplikacji — `settings.json`
+
+Ustawienia aplikacji (obecnie wyłącznie motyw) przechowuje `AppSettingsStoreService`
+(`src/app/services/app-settings-store/app-settings-store.service.ts`) — analogiczny wzorzec do
+`CalculationsStoreService`, oparty o ten sam `@tauri-apps/plugin-store` i uprawnienie `store`.
+
+- Plik danych: `settings.json` w `%APPDATA%/com.gyerosaski.kalkulator-hipoteczny/`.
+- Klucz obiektu ustawień w store: `"settings"` (typ `AppSettings` z `src/app/model/ui.model.ts`).
+- Instancja Store tworzona jednorazowo przy pierwszym dostępie, opcja `autoSave: true`. Bez `defaults`
+  na poziomie store — dzięki temu `getRawSettings()` zwraca `undefined`, gdy plik nie zawiera jeszcze
+  wpisu (rozróżnienie pierwszego uruchomienia od zapisanego ustawienia).
+
+| Metoda                    | Działanie                                                                                 |
+| ------------------------- | ----------------------------------------------------------------------------------------- |
+| `getSettings()`           | zwraca ustawienia zmergowane z wartościami domyślnymi (`DEFAULT_APP_SETTINGS`)            |
+| `getRawSettings()`        | zwraca surowe zapisane ustawienia lub `undefined`, gdy brak wpisu                         |
+| `updateSettings(partial)` | read-merge-write — scala podane pola z bieżącymi ustawieniami i zapisuje (`store.save()`) |
+
+### Motyw — kanoniczny `settings.json` + cache `localStorage`
+
+`ThemeService` (`src/app/services/theme/theme.service.ts`) trzyma motyw w sygnale, którego źródłem
+prawdy jest `settings.json`. `localStorage` (klucz `theme`) pełni rolę **szybkiego cache'u** do
+natychmiastowego pomalowania motywu przy starcie (zero migotania), zanim asynchroniczny store się wczyta.
+
+- Sygnał inicjalizowany synchronicznie z `localStorage` (z kompatybilnością wsteczną dla `'dark'`/`'light'`
+  i fallbackiem na `prefers-color-scheme`).
+- W konstruktorze następuje reconcile: `getRawSettings()` → jeśli wpis istnieje, jego wartość nadpisuje
+  sygnał (jest nadrzędna); jeśli nie (pierwsze uruchomienie), `settings.json` jest seedowany bieżącą
+  wartością (migracja z `localStorage`).
+- `setTheme()` zapisuje motyw kanonicznie przez `updateSettings({ theme })`; zapis do `localStorage`
+  realizuje istniejący efekt sygnału. Reconcile używa bezpośredniego ustawienia sygnału (bez ponownego
+  zapisu do store), więc nie powstaje echo-write.
+
 ## Model rekordu — `SavedCalculationRecord`
 
 `src/app/model/saved-calculation.model.ts`:
