@@ -67,7 +67,7 @@
 - [x] przejrzeć dialogi w src/app/dialogs i stworzyć generyczne komponenty będące podstawą budowania tych i kolejnych dialogów, wykorzystać content projection
 - [x] w docs/technikalia dodać dokument opisujący design system, dostępne kontrolki ui, zmienne kolorów, palety motywów
 - dodaj eksport do .csv pojedynczej i wszystkich kalkulacji
-- dodać dokument walidacje.md w docs/funkcjonalności, który będzie zawierał listę wszystkich walidacji formularza kalkulatora
+- [x] dodać dokument walidacje.md w docs/funkcjonalności, który będzie zawierał listę wszystkich walidacji formularza kalkulatora
 - [x] podczas otwierania MonthPickerDialogComponent przez moment miga miesiąc i rok zaznaczony podczas poprzedniego otwarcia okna dialog
 - [x] animuj zmianę wysokości słupków w ResultsTrendChartComponent analogicznie jak w DonutComponent; animuj również zmianę wysokości salda kredytu
 - [x] rozwijanie sekcji w LegendComponent nie wygląda płynnie
