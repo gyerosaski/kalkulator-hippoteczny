@@ -61,6 +61,30 @@ ui-card {
   min-height: 0;
 }
 
+/* Animowane rozwijanie panelu szczegółów miesiąca: ten sam wzorzec co .rows-reveal,
+   transition (a nie keyframe) nie odpala się przy ponownym utworzeniu komponentu */
+.month-reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+
+.month-reveal--animate {
+  transition:
+    grid-template-rows 0.25s ease,
+    opacity 0.25s ease;
+}
+
+.month-reveal--open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.month-reveal-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
 /* Panel ze szczegółami zaznaczonego miesiąca (dwa donuty), pokazywany inline pod wierszem */
 .month-detail {
   padding: var(--space-3-5) var(--space-5);
@@ -69,16 +93,4 @@ ui-card {
   display: flex;
   flex-direction: column;
   gap: var(--space-3-5);
-  animation: month-detail-in 0.25s ease;
-}
-
-@keyframes month-detail-in {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
 }

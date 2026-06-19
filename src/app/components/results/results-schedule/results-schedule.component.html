@@ -106,13 +106,22 @@
               }
               <div class="mono">{{ row.remaining | formatAmount }}</div>
             </button>
-            @if (selectedMonthIndex() === row.index) {
-              <div class="month-detail">
-                <app-results-donut-chart-total [results]="results()" [embedded]="true" />
-                <ui-divider />
-                <app-results-donut-chart-installment [results]="results()" [embedded]="true" />
+            <div
+              class="month-reveal"
+              [class.month-reveal--open]="selectedMonthIndex() === row.index"
+              [class.month-reveal--animate]="isAnimatable()"
+              [attr.inert]="selectedMonthIndex() === row.index ? null : ''"
+            >
+              <div class="month-reveal-inner">
+                @if (selectedMonthIndex() === row.index) {
+                  <div class="month-detail">
+                    <app-results-donut-chart-total [results]="results()" [embedded]="true" />
+                    <ui-divider />
+                    <app-results-donut-chart-installment [results]="results()" [embedded]="true" />
+                  </div>
+                }
               </div>
-            }
+            </div>
           }
         </div>
       </div>
