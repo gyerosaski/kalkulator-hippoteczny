@@ -80,4 +80,6 @@
 - [x] użyj SwitchComponent w FoldableSectionComponent, przejrzyj kod w poszukiwaniu miejsc, w których można by zastosować SwitchComponent
 - [x] w ResultsRateChartComponent nie koloruj pola pod linią wykresu
 - [x] animacja na chevronie sekcji aktywuje się przy przechodzeniu pomiędzy zakładkami
-      314 pxx 218
+- zamień kolejność wykresów prezentowanych po rozwinięciu miesiąca w harmonogramie spłaty kredytu; zmień styl dividera oddzielającego wykresy na linie ciągłą
+- przechowuj ustawienia aplikacji (obecnie tylko bieżący motyw) w pliku settings.json, analogicznie jak ma to miejsce z kalkulacjami
+- dodaj plik LICENSE (AGPLv3)
