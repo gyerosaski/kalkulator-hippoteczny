@@ -71,7 +71,7 @@
 - [x] podczas otwierania MonthPickerDialogComponent przez moment miga miesiąc i rok zaznaczony podczas poprzedniego otwarcia okna dialog
 - [x] animuj zmianę wysokości słupków w ResultsTrendChartComponent analogicznie jak w DonutComponent; animuj również zmianę wysokości salda kredytu
 - [x] rozwijanie sekcji w LegendComponent nie wygląda płynnie
-- deklaracje zmiennych wynieść z src/styles.scss do oddzielnego pliku
+- [x] deklaracje zmiennych wynieść z src/styles.scss do oddzielnego pliku variables
 - [x] resetuj UiStateService po wczytaniu nowej kalkulacji
 - w CalculationsListComponent po najechaniu myszką prezentuj pełną nazwę kalkulacji; jeśli jest za długa ucinaj ją trzykropkiem
 - [x] w RatePeriodFormGroup i SavedCalculation zmienić nazwę pola `wibor` na `referenceIndex`, zmienić także nazwę metody `wiborMarginText()`, przeszukać kod pod kątem wystąpień wibor i zamienić w pozostałych miejscach

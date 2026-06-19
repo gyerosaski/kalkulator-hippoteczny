@@ -1,0 +1,282 @@
+/* Tokens i motywy */
+.app {
+  --bg: oklch(98% 0.012 95);
+  --surface: oklch(99.5% 0.006 95);
+  --surface-2: oklch(96.5% 0.014 95);
+  --ink: oklch(24% 0.018 250);
+  --ink-2: oklch(45% 0.018 250);
+  --muted: oklch(60% 0.014 250);
+  --line: oklch(91% 0.012 95);
+  --line-2: oklch(86% 0.014 95);
+  --grid: oklch(90% 0.012 95);
+  --track: oklch(94% 0.012 95);
+  --surface-stripe: oklch(98% 0.014 95);
+
+  background: var(--bg);
+  color: var(--ink);
+
+  --accent: var(--accent-sage);
+  --accent-deep: var(--accent-sage-deep);
+
+  --accent-sage: oklch(82% 0.06 150);
+  --accent-sage-deep: oklch(58% 0.09 155);
+  --accent-peach: oklch(86% 0.07 50);
+  --accent-peach-deep: oklch(66% 0.12 45);
+  --accent-lav: oklch(85% 0.06 290);
+  --accent-lav-deep: oklch(60% 0.11 285);
+  --accent-mist: oklch(85% 0.04 230);
+  --accent-mist-deep: oklch(58% 0.08 235);
+
+  /* === SEMANTIC GROUP COLORS ============================================
+     Niezależne od palety. Zawsze:
+       kapitał  → zielony,
+       odsetki  → czerwony,
+       nadpłaty → niebieski,
+       koszty   → żółty/amber.
+  */
+  --c-cap: oklch(56% 0.13 150);
+  --c-cap-mid: oklch(72% 0.11 150);
+  --c-cap-soft: oklch(94% 0.05 150);
+
+  --c-int: oklch(58% 0.17 28);
+  --c-int-mid: oklch(74% 0.13 28);
+  --c-int-soft: oklch(95% 0.05 28);
+
+  --c-over: oklch(56% 0.14 250);
+  --c-over-mid: oklch(74% 0.1 250);
+  --c-over-soft: oklch(95% 0.04 250);
+
+  --c-cost: oklch(67% 0.15 82);
+  --c-cost-mid: oklch(82% 0.12 85);
+  --c-cost-soft: oklch(95% 0.06 85);
+
+  /* Kolory identyfikujące oferty A/B w widoku „Porównanie ofert” (niezależne od palety). */
+  --offer-a: oklch(56% 0.13 230);
+  --offer-b: oklch(56% 0.16 320);
+
+  /* === PROMIENIE =======================================================
+     Skala zaokrągleń narożników. --r-control dla inputów/segmentów/przycisków,
+     --r-pill dla kształtów kapsułkowych (badge, switch, sec-badge). */
+  --r-2xs: 4px;
+  --r-xs: 6px;
+  --r-sm: 8px;
+  --r-control: 10px;
+  --r: 12px;
+  --r-lg: 18px;
+  --r-xl: 22px;
+  --r-pill: 999px;
+
+  --shadow-sm: 0 1px 0 oklch(85% 0.012 95 / 0.4);
+  --shadow: 0 1px 2px oklch(40% 0.02 250 / 0.04), 0 4px 16px oklch(40% 0.02 250 / 0.04);
+  --shadow-lg: 0 2px 4px oklch(40% 0.02 250 / 0.05), 0 12px 32px oklch(40% 0.02 250 / 0.06);
+
+  /* === TYPOGRAFIA ======================================================
+     Rodziny czcionek, skala rozmiarów (odwzorowuje wartości używane w UI),
+     wagi, interlinia i światło liter. */
+  --font-sans: 'Inter Tight', system-ui, sans-serif;
+  --font-display: 'Söhne', 'Inter Tight', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --text-2xs: 10px;
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-md: 13px;
+  --text-base: 14px;
+  --text-lg: 15px;
+  --text-xl: 17px;
+  --text-2xl: 18px;
+  --text-3xl: 20px;
+  --text-4xl: 22px;
+  --text-5xl: 26px;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --leading-tight: 1.1;
+  --leading-base: 1.45;
+  --leading-relaxed: 1.5;
+
+  --tracking-tighter: -0.02em;
+  --tracking-tight: -0.01em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.02em;
+  --tracking-wider: 0.04em;
+  --tracking-widest: 0.08em;
+
+  /* === ODSTĘPY I ROZMIARY ==============================================
+     Skala odstępów z bazą 4px (paddingi, marginesy, gap). --pad/--gap to
+     aliasy semantyczne nadpisywane przez tryby gęstości (data-density). */
+  --space-0-5: 2px;
+  --space-1: 4px;
+  --space-1-5: 6px;
+  --space-2: 8px;
+  --space-2-5: 10px;
+  --space-3: 12px;
+  --space-3-5: 14px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-14: 56px;
+
+  --control-height: 38px;
+  --control-height-sm: 28px;
+  --icon-btn-size: 32px;
+  --switch-track-h: 18px;
+
+  /* === RUCH ============================================================ */
+  --duration-fast: 0.15s;
+  --duration-base: 0.2s;
+  --duration-slow: 0.3s;
+  --duration-slower: 0.5s;
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* === WARSTWY (z-index) =============================================== */
+  --z-base: 1;
+  --z-raised: 10;
+  --z-toast: 300;
+  --z-dropdown: 1000;
+  --z-modal: 1001;
+
+  /* === FOCUS I RÓŻNE =================================================== */
+  --focus-ring: 0 0 0 3px color-mix(in oklch, var(--accent) 30%, transparent);
+  --border-width: 1px;
+  --opacity-disabled: 0.55;
+  --opacity-muted: 0.4;
+
+  --pad: var(--space-4);
+  --gap: var(--space-3-5);
+
+  min-height: 100vh;
+}
+
+.app[data-density='cozy'] {
+  --pad: var(--space-3);
+  --gap: var(--space-2-5);
+  font-size: var(--text-md);
+}
+.app[data-density='roomy'] {
+  --pad: 22px;
+  --gap: 18px;
+  font-size: var(--text-base);
+}
+
+.app[data-font='fraunces'] {
+  font-family: var(--font-display);
+}
+.app[data-font='system'] {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+.app[data-theme='dark'] {
+  --bg: oklch(13% 0.01 250);
+  --surface: oklch(17% 0.012 250);
+  --surface-2: oklch(21% 0.014 250);
+  --surface-stripe: oklch(15% 0.01 250);
+  --ink: oklch(93% 0.006 95);
+  --ink-2: oklch(68% 0.01 250);
+  --muted: oklch(48% 0.01 250);
+  --line: oklch(25% 0.012 250);
+  --line-2: oklch(30% 0.014 250);
+  --grid: oklch(23% 0.012 250);
+  --track: oklch(22% 0.012 250);
+  --shadow-sm: 0 1px 0 oklch(5% 0.005 250 / 0.6);
+  --shadow: 0 1px 2px oklch(5% 0.005 250 / 0.2), 0 4px 16px oklch(5% 0.005 250 / 0.2);
+  --shadow-lg: 0 2px 4px oklch(5% 0.005 250 / 0.25), 0 12px 32px oklch(5% 0.005 250 / 0.3);
+
+  --accent-sage: oklch(62% 0.09 150);
+  --accent-sage-deep: oklch(73% 0.11 155);
+  --accent-peach: oklch(65% 0.1 50);
+  --accent-peach-deep: oklch(76% 0.13 45);
+  --accent-lav: oklch(65% 0.09 290);
+  --accent-lav-deep: oklch(74% 0.13 285);
+  --accent-mist: oklch(64% 0.07 230);
+  --accent-mist-deep: oklch(73% 0.11 235);
+
+  .btn--primary:hover {
+    background: oklch(80% 0.006 95);
+  }
+}
+
+/* Nadpisania powierzchni wierszy miesięcy wpisane na sztywno w trybie ciemnym
+   (analogicznie do bloku data-theme='ochra'). */
+.app[data-theme='dark'] .tbl-row--month:hover {
+  background: color-mix(in oklch, var(--accent) 18%, oklch(17% 0.01 250));
+}
+.app[data-theme='dark'] .tbl-row--month.is-selected {
+  background: color-mix(in oklch, var(--accent) 30%, oklch(17% 0.01 250));
+}
+
+/* === MOTYW „OCHRA" =====================================================
+   Ciepły, ziemisty wariant motywu ciemnego (ugier / oliwka / terakota).
+   Akcent wiodący: pomarańcz ugru; kolory semantyczne przemapowane na
+   barwy z palety terminala (kapitał→oliwka, odsetki→ceglany,
+   nadpłaty→morski, koszty→bursztyn). Wzorowane na designie
+   (design/angular/src/styles.scss, blok data-skin='ochre').
+*/
+.app[data-theme='ochra'] {
+  --bg: #1c1714;
+  --surface: #241d17;
+  --surface-2: #2f251c;
+  --surface-stripe: #211a14;
+  --ink: #e6cfa8;
+  --ink-2: #cbb084;
+  --muted: #9b8665;
+  --line: #3a2d22;
+  --line-2: #4a3a2e;
+  --grid: #332820;
+  --track: #2c2218;
+
+  /* cienie jak w motywie ciemnym */
+  --shadow-sm: 0 1px 0 oklch(5% 0.005 250 / 0.6);
+  --shadow: 0 1px 2px oklch(5% 0.005 250 / 0.2), 0 4px 16px oklch(5% 0.005 250 / 0.2);
+  --shadow-lg: 0 2px 4px oklch(5% 0.005 250 / 0.25), 0 12px 32px oklch(5% 0.005 250 / 0.3);
+
+  /* palety akcentu — ciepłe odcienie z terminala */
+  --accent-sage: #aab656;
+  --accent-sage-deep: #c4ba6e;
+  --accent-peach: #e07a3c;
+  --accent-peach-deep: #ef8b4e;
+  --accent-lav: #d48472;
+  --accent-lav-deep: #e09a88;
+  --accent-mist: #82a4a8;
+  --accent-mist-deep: #98bbbf;
+
+  /* kolory semantyczne (żywe + ciemne „soft") */
+  --c-cap: #aab656;
+  --c-cap-mid: #8a9a47;
+  --c-cap-soft: #2c3019;
+
+  --c-int: #e6552e;
+  --c-int-mid: #c2412a;
+  --c-int-soft: #3a221a;
+
+  --c-over: #82a4a8;
+  --c-over-mid: #6a8a8e;
+  --c-over-soft: #223032;
+
+  --c-cost: #f0b95a;
+  --c-cost-mid: #d99a3a;
+  --c-cost-soft: #382b18;
+
+  color-scheme: dark;
+
+  .btn--primary {
+    color: #1c1714;
+  }
+  .btn--primary:hover {
+    background: var(--ink);
+  }
+}
+
+/* ciepłe nadpisania powierzchni wpisanych na sztywno w trybie ciemnym
+   (analogicznie do bloku data-theme='dark') */
+.app[data-theme='ochra'] .tbl-row--month:hover {
+  background: color-mix(in oklch, var(--accent) 18%, #211a14);
+}
+.app[data-theme='ochra'] .tbl-row--month.is-selected {
+  background: color-mix(in oklch, var(--accent) 30%, #211a14);
+}
