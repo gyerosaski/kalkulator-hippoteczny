@@ -420,6 +420,9 @@ body {
 .sec.is-open .sec-chev {
   transform: rotate(90deg);
 }
+.sec:not(.sec--animate) .sec-chev {
+  transition: none;
+}
 .sec-num {
   color: var(--muted);
   font-size: var(--text-sm);

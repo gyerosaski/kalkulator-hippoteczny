@@ -79,5 +79,5 @@
 - w DialogComponent zamień tag w title, a title usuń
 - [x] użyj SwitchComponent w FoldableSectionComponent, przejrzyj kod w poszukiwaniu miejsc, w których można by zastosować SwitchComponent
 - [x] w ResultsRateChartComponent nie koloruj pola pod linią wykresu
-- animacja na chevronie sekcji aktywuje się przy przechodzeniu pomiędzy zakładkami
-  314 pxx 218
+- [x] animacja na chevronie sekcji aktywuje się przy przechodzeniu pomiędzy zakładkami
+      314 pxx 218

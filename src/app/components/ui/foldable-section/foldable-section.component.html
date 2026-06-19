@@ -1,4 +1,9 @@
-<section class="sec" [class.is-open]="open() && !isOff()" [class.sec--off]="isOff()">
+<section
+  class="sec"
+  [class.is-open]="open() && !isOff()"
+  [class.sec--off]="isOff()"
+  [class.sec--animate]="isAnimatable()"
+>
   <div class="sec-head-wrap">
     <button class="sec-head" (click)="toggleOpen()" [disabled]="isOff()">
       <span class="sec-chev">
