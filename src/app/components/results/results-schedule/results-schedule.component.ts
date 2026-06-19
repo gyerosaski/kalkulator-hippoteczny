@@ -15,7 +15,7 @@ import { FormatRatePipe } from '../../../pipes/format-rate/format-rate.pipe';
 import { FormService } from '../../../services/form/form';
 import { IconChevronRightComponent } from '../../icons/icon-chevron-right/icon-chevron-right.component';
 import { IconArrowRightComponent } from '../../icons/icon-arrow-right/icon-arrow-right.component';
-import { ColorCodeArea } from '../../../model';
+import { ColorCodeArea, DividerVariant } from '../../../model';
 import { ColorCodeMarkerComponent } from '../../ui/color-code-marker/color-code-marker.component';
 import { CardComponent } from '../../ui/card/card.component';
 import { ResultsDonutChartTotalComponent } from '../results-donut-chart-total/results-donut-chart-total.component';
@@ -57,6 +57,7 @@ export class ResultsScheduleComponent {
   results = input.required<MortgageResults>();
 
   protected readonly ColorCodeMarkerVariant = ColorCodeArea;
+  protected readonly DividerVariant = DividerVariant;
 
   private readonly formService = inject(FormService);
   private readonly uiStateService = inject(UiStateService);

@@ -115,9 +115,9 @@
               <div class="month-reveal-inner">
                 @if (selectedMonthIndex() === row.index) {
                   <div class="month-detail">
-                    <app-results-donut-chart-total [results]="results()" [embedded]="true" />
-                    <ui-divider />
                     <app-results-donut-chart-installment [results]="results()" [embedded]="true" />
+                    <ui-divider [variant]="DividerVariant.SOLID" />
+                    <app-results-donut-chart-total [results]="results()" [embedded]="true" />
                   </div>
                 }
               </div>
