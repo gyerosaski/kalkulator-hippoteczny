@@ -3,6 +3,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 @Component({
   selector: 'icon-save',
   standalone: true,
+  host: { class: 'icon' },
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './icon-save.component.html',
 })

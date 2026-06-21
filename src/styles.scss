@@ -39,11 +39,14 @@ body {
   transition: all var(--duration-fast) ease;
 }
 
-/* Ikony liniowe w przyciskach i pozycjach menu renderują się jako blok,
-   dzięki czemu centrują się wertykalnie względem labelki (brak luki bazowej tekstu). */
-.btn svg,
-.menu-item svg {
-  display: block;
+/* Wszystkie ikony liniowe (komponenty <icon-*>) renderują host jako inline-flex,
+   przez co osadzony SVG jest zawsze wyśrodkowany w pionie względem sąsiedniego tekstu
+   (brak luki linii bazowej) — niezależnie od kontekstu (flex, grid czy tekst inline).
+   Każdy komponent ikony dokłada klasę `icon` na swój host (host: { class: 'icon' }),
+   więc miejsca użycia nie muszą już korygować wyrównania ręcznie. */
+.icon {
+  display: inline-flex;
+  vertical-align: middle;
 }
 .btn--primary {
   background: var(--ink);

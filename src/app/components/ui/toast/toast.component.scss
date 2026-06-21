@@ -17,13 +17,6 @@
   color: var(--ink);
   white-space: nowrap;
 
-  icon-check-circle,
-  icon-warning-sm,
-  icon-info {
-    display: inline-flex;
-    line-height: 0;
-  }
-
   icon-check-circle {
     color: var(--c-cap);
   }

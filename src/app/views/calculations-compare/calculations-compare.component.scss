@@ -47,8 +47,6 @@
 }
 
 .inline-delta {
-  display: inline-flex;
-  vertical-align: middle;
   color: var(--accent-deep);
 }
 
@@ -72,12 +70,6 @@
   color: var(--ink-2);
   cursor: pointer;
   transition: all var(--duration-fast);
-
-  icon-swap {
-    display: grid;
-    place-items: center;
-    line-height: 0;
-  }
 
   &:not(:disabled):hover {
     border-color: var(--accent-deep);

@@ -84,9 +84,8 @@
 - [x] przechowuj ustawienia aplikacji (obecnie tylko bieżący motyw) w pliku settings.json, analogicznie jak ma to miejsce z kalkulacjami
 - [x] dodaj plik LICENSE (AGPLv3)
 - [x] przechowuj pozycję scrolla dla obu kolumn widoku "Kalkulator"
-- wyśrodkuj ikone wertykalnie:
-  - CalculationsManagerComponent - wyszukiwarka kalkulacji
-  - CalculationsListComponent - przycisk wczytaj
-- przeanalizuj plusy i minusy zastąpienia całej/części funkcjonalności UiStateService przez custom RouteReuseStrategy
+- [x] wypracuj rozwiązanie, żeby wszystkie ikony były wyśrodkowane wertykalnie by default
 - [x] zmień flow eksportu pojedynczej kalkulacji; zamiast zagnieżdżonej listy na dropdownie po kliknięciu "Eksportuj" otwieraj okno dialog, konfigurator eksportu; dostępne opcje: Zakres: "Parametry kalkulacji/Harmonogram spłaty", Format "JSON/CSV"; Ograniczenia: Parametry powinny być eksportowalne tylko do formatu .json, harmonogram zarówno do json jak i do .csv
 - [x] dropdown "Eksportuj wszystkie" zamień w zwykły przycisk "Eksportuj wszystkie do JSON", usuń funkcjonalność eksportu wszystkich kalkulacji do .csv
+- analogicznie jak w widoku "Kalkulacje", zapamiętuj pozycję scrolla na pozostałych widokach w UiStateService
+- analogicznie jak w widoku "Kalkulacje", ukryj scrolla na pozostałych widokach
