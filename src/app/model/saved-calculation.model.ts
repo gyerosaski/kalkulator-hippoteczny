@@ -63,6 +63,7 @@ export enum SavedCalculationSortOption {
 
 export enum ExportFormat {
   JSON = 'JSON',
+  CSV = 'CSV',
 }
 
 export interface CalculationImportResult {

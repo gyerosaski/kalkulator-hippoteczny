@@ -12,6 +12,7 @@ export class CalculationsStoreService {
   private static readonly STORE_FILE_NAME = 'calculations.json';
   private static readonly RECORDS_KEY = 'calculations';
   private static readonly FILE_FILTERS = [{ name: 'Kalkulacja JSON', extensions: ['json'] }];
+  private static readonly CSV_FILE_FILTERS = [{ name: 'Plik CSV', extensions: ['csv'] }];
 
   private storePromise: Promise<Store> | null = null;
 
@@ -68,6 +69,21 @@ export class CalculationsStoreService {
       calculations: records,
     };
     await writeTextFile(targetPath, JSON.stringify(exportPayload, null, 2));
+    return targetPath;
+  }
+
+  async exportCsvToFile(
+    defaultFileName: string,
+    csvContent: string,
+    title: string,
+  ): Promise<string | null> {
+    const targetPath = await saveDialog({
+      defaultPath: this.sanitizeFileName(defaultFileName),
+      filters: CalculationsStoreService.CSV_FILE_FILTERS,
+      title,
+    });
+    if (!targetPath) return null;
+    await writeTextFile(targetPath, csvContent);
     return targetPath;
   }
 

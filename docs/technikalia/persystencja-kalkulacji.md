@@ -15,23 +15,24 @@ Aplikacja działa jako desktopowa (Tauri V2). Kalkulacje przechowuje `Calculatio
 
 ### Operacje serwisu
 
-| Metoda                    | Działanie                                                                                                                                                       |
-| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `listCalculations()`      | pobiera tablicę wszystkich rekordów ze store                                                                                                                    |
-| `saveCalculation(record)` | upsert po `name` (zastępuje lub dodaje); wywołuje `store.save()`                                                                                                |
-| `deleteCalculation(name)` | usuwa rekord o danej nazwie i zapisuje tablicę                                                                                                                  |
-| `exportToFile(record)`    | systemowy dialog zapisu (Tauri `saveDialog`), zapis JSON; zwraca ścieżkę lub `null`                                                                             |
-| `importFromFile()`        | systemowy dialog otwarcia (`openDialog`), parsowanie JSON i wyłuskanie rekordów przez `extractImportableRecords`; zwraca tablicę poprawnych rekordów lub `null` |
+| Metoda                                     | Działanie                                                                                                                                                       |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `listCalculations()`                       | pobiera tablicę wszystkich rekordów ze store                                                                                                                    |
+| `saveCalculation(record)`                  | upsert po `name` (zastępuje lub dodaje); wywołuje `store.save()`                                                                                                |
+| `deleteCalculation(name)`                  | usuwa rekord o danej nazwie i zapisuje tablicę                                                                                                                  |
+| `exportToFile(record)`                     | systemowy dialog zapisu (Tauri `saveDialog`), zapis JSON; zwraca ścieżkę lub `null`                                                                             |
+| `exportCsvToFile(name, csvContent, title)` | systemowy dialog zapisu z filtrem `.csv`, sanityzacja nazwy pliku i zapis gotowej treści CSV; zwraca ścieżkę lub `null`                                         |
+| `importFromFile()`                         | systemowy dialog otwarcia (`openDialog`), parsowanie JSON i wyłuskanie rekordów przez `extractImportableRecords`; zwraca tablicę poprawnych rekordów lub `null` |
 
 ### Uprawnienia Tauri
 
 Deklarowane w `src-tauri/capabilities/default.json`:
 
-| Plugin   | Zakres                                                                            |
-| -------- | --------------------------------------------------------------------------------- |
-| `store`  | zapis i odczyt lokalnego store                                                    |
-| `dialog` | systemowe dialogi otwarcia i zapisu pliku                                         |
-| `fs`     | odczyt/zapis JSON; scope: `$DOCUMENT`, `$DOWNLOAD`, `$DESKTOP`, `$HOME/**/*.json` |
+| Plugin   | Zakres                                                                                                                                                        |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `store`  | zapis i odczyt lokalnego store                                                                                                                                |
+| `dialog` | systemowe dialogi otwarcia i zapisu pliku                                                                                                                     |
+| `fs`     | odczyt/zapis JSON oraz zapis CSV; scope zapisu: `$DOCUMENT`, `$DOWNLOAD`, `$DESKTOP`, `$HOME` dla wzorców `**/*.json` i `**/*.csv` (odczyt tylko `**/*.json`) |
 
 ## Ustawienia aplikacji — `settings.json`
 
@@ -84,9 +85,16 @@ po wczytaniu oferty jej skalary są nadpisywane wartościami z przeliczenia na �
 
 ## Import / eksport
 
-- Format: JSON (filtr `.json`).
+- Formaty: JSON (filtr `.json`) oraz CSV (filtr `.csv`, tylko eksport).
 - Eksport — domyślna nazwa `<sanitized-name>.json`; znaki niedozwolone (`\ / : * ? " < > |`) → `_`.
   Eksport wszystkich: obiekt-opakowanie `{ exportedAt, count, calculations: [...] }`.
+- Eksport CSV — czyste funkcje w `src/app/helpers/csv-export.helper.ts` (`buildScheduleCsv`,
+  `buildSummaryCsv`, `toCsv`, `formatCsvNumber`) budują treść, a `exportCsvToFile` zapisuje ją do pliku.
+  Wariant „polski Excel”: separator kolumn `;`, separator dziesiętny `,`, końce linii CRLF, prefiks BOM
+  UTF-8; pola zawierające `;`, `"` lub znak nowej linii są cytowane (podwojony cudzysłów). Eksport
+  pojedynczej kalkulacji przelicza harmonogram na nowo (`normalizeCalculationData` → `buildMortgageInputs`
+  → `CalculatorService.compute`) i zapisuje wiersze `ScheduleRow`; eksport wszystkich zapisuje skalary
+  z modelu widokowego `SavedCalculation` (jeden wiersz na kalkulację).
 - Import — `extractImportableRecords` obsługuje trzy kształty: pojedynczy rekord, gołą tablicę,
   obiekt-opakowanie. Każdy element musi mieć `name` (string), `createdAt` i `data`; elementy
   o niepoprawnym kształcie są pomijane. Przy kolizji nazwy rekord importowany jest jako kopia

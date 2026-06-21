@@ -29,6 +29,10 @@ import { sortSavedCalculations } from '../../helpers/saved-calculation-sort.help
 import { UiStateService } from '../../services/ui-state/ui-state.service';
 import { CalculationsStoreService } from '../../services/calculations-store/calculations-store.service';
 import { CalculatorStateService } from '../../services/calculator-state/calculator-state.service';
+import { CalculatorService } from '../../services/calculator/calculator.service';
+import { buildMortgageInputs } from '../../helpers/mortgage-inputs.helper';
+import { normalizeCalculationData } from '../../helpers/saved-calculation-data.helper';
+import { buildScheduleCsv, buildSummaryCsv } from '../../helpers/csv-export.helper';
 import { SaveCalculationDialogComponent } from '../../dialogs/save-calculation/save-calculation-dialog.component';
 import { RenameCalculationDialogComponent } from '../../dialogs/rename-calculation/rename-calculation-dialog.component';
 import { DeleteCalculationDialogComponent } from '../../dialogs/delete-calculation/delete-calculation-dialog.component';
@@ -71,6 +75,7 @@ export class CalculationsManagerComponent implements OnInit {
   private readonly uiStateService = inject(UiStateService);
   private readonly calculationsStore = inject(CalculationsStoreService);
   private readonly calculatorState = inject(CalculatorStateService);
+  private readonly calculatorService = inject(CalculatorService);
   private readonly formService = inject(FormService);
   private readonly router = inject(Router);
   private readonly ngZone = inject(NgZone);
@@ -203,8 +208,23 @@ export class CalculationsManagerComponent implements OnInit {
   }
 
   async exportAll(format: ExportFormat): Promise<void> {
-    if (format !== ExportFormat.JSON) return;
     const records = this.savedCalculationsStateService.records();
+
+    if (format === ExportFormat.CSV) {
+      const dateString = new Date().toISOString().slice(0, 10);
+      const csvContent = buildSummaryCsv(this.calculations());
+      const savedPath = await this.calculationsStore.exportCsvToFile(
+        `kalkulacje-${dateString}.csv`,
+        csvContent,
+        'Eksportuj wszystkie kalkulacje do pliku CSV',
+      );
+      if (savedPath) {
+        this.toastService.show(`Wyeksportowano ${records.length} kalkulacji`);
+      }
+      return;
+    }
+
+    if (format !== ExportFormat.JSON) return;
     const savedPath = await this.calculationsStore.exportAllToFile(records);
     if (savedPath) {
       this.toastService.show(`Wyeksportowano ${records.length} kalkulacji`);
@@ -215,11 +235,31 @@ export class CalculationsManagerComponent implements OnInit {
     calculation: SavedCalculation;
     format: ExportFormat;
   }): Promise<void> {
-    if (payload.format !== ExportFormat.JSON) return;
     const record = this.savedCalculationsStateService
       .records()
       .find((existing) => existing.name === payload.calculation.name);
     if (!record) return;
+
+    if (payload.format === ExportFormat.CSV) {
+      const formValue = normalizeCalculationData(record.data);
+      if (!formValue) {
+        this.toastService.show('Nie udało się przeliczyć harmonogramu', ToastVariant.ERROR);
+        return;
+      }
+      const results = this.calculatorService.compute(buildMortgageInputs(formValue));
+      const csvContent = buildScheduleCsv(results.schedule);
+      const savedPath = await this.calculationsStore.exportCsvToFile(
+        `${payload.calculation.name}.csv`,
+        csvContent,
+        'Zapisz harmonogram do pliku CSV',
+      );
+      if (savedPath) {
+        this.toastService.show(`Wyeksportowano kalkulację „${payload.calculation.name}"`);
+      }
+      return;
+    }
+
+    if (payload.format !== ExportFormat.JSON) return;
     const savedPath = await this.calculationsStore.exportToFile(record);
     if (savedPath) {
       this.toastService.show(`Wyeksportowano kalkulację „${payload.calculation.name}"`);

@@ -3,6 +3,7 @@ import { ExportFormat } from '../../model';
 
 const LABELS: Record<ExportFormat, string> = {
   [ExportFormat.JSON]: 'JSON',
+  [ExportFormat.CSV]: 'CSV',
 };
 
 @Pipe({ name: 'exportFormatLabel', standalone: true })

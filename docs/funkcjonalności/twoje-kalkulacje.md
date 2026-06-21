@@ -113,13 +113,13 @@ Wyświetlany, gdy po zastosowaniu filtrów i wyszukiwania nie pozostaje żaden r
 
 #### 6.2 Menu `⋯` (więcej akcji)
 
-| Pozycja         | Działanie                                                                                                                                           |
-| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Zapisz zmiany` | nadpisuje rekord aktualnym stanem formularza; widoczna tylko gdy kalkulacja jest wczytana **i** zmodyfikowana; toast: `Zapisano zmiany w „{nazwa}"` |
-| `Zmień nazwę`   | otwiera modal zmiany nazwy (sekcja 7.1)                                                                                                             |
-| `Duplikuj`      | tworzy kopię z nową nazwą (z sufiksem); toast: `Utworzono kopię „{nazwa}"`                                                                          |
-| `Eksportuj`     | rozwija podmenu z formatami eksportu (obecnie `JSON`); eksportuje rekord do pliku; toast: `Wyeksportowano kalkulację „{nazwa}"`                     |
-| `Usuń`          | otwiera modal potwierdzenia usunięcia (sekcja 7.2)                                                                                                  |
+| Pozycja         | Działanie                                                                                                                                                                               |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Zapisz zmiany` | nadpisuje rekord aktualnym stanem formularza; widoczna tylko gdy kalkulacja jest wczytana **i** zmodyfikowana; toast: `Zapisano zmiany w „{nazwa}"`                                     |
+| `Zmień nazwę`   | otwiera modal zmiany nazwy (sekcja 7.1)                                                                                                                                                 |
+| `Duplikuj`      | tworzy kopię z nową nazwą (z sufiksem); toast: `Utworzono kopię „{nazwa}"`                                                                                                              |
+| `Eksportuj`     | rozwija podmenu z formatami eksportu (`JSON`, `CSV`); `JSON` zapisuje rekord do pliku, `CSV` zapisuje pełny harmonogram spłaty kalkulacji; toast: `Wyeksportowano kalkulację „{nazwa}"` |
+| `Usuń`          | otwiera modal potwierdzenia usunięcia (sekcja 7.2)                                                                                                                                      |
 
 Przy zapisaniu zmian zachowywana jest oryginalna data utworzenia, a aktualizowana data modyfikacji.
 
@@ -170,13 +170,17 @@ Przy zapisaniu zmian zachowywana jest oryginalna data utworzenia, a aktualizowan
 
 ### 9. Stopka i import/eksport
 
-| Element                                 | Treść                                                                                                                  |
-| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| Licznik                                 | `Wyświetlono X z Y kalkulacji · dane przechowywane lokalnie` + ścieżka pliku                                           |
-| Przycisk-dropdown `Eksportuj wszystkie` | rozwija listę formatów (obecnie `JSON`); eksportuje wszystkie rekordy do jednego pliku; nieaktywny gdy brak kalkulacji |
+| Element                                 | Treść                                                                                                                                                                                       |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Licznik                                 | `Wyświetlono X z Y kalkulacji · dane przechowywane lokalnie` + ścieżka pliku                                                                                                                |
+| Przycisk-dropdown `Eksportuj wszystkie` | rozwija listę formatów (`JSON`, `CSV`); `JSON` eksportuje wszystkie rekordy do jednego pliku, `CSV` zapisuje tabelę podsumowań (jeden wiersz na kalkulację); nieaktywny gdy brak kalkulacji |
 
 - **Eksport** — domyślna nazwa pliku to nazwa kalkulacji; znaki niedozwolone w nazwie pliku zastępowane
-  są znakiem `_`.
+  są znakiem `_`. Pliki `CSV` zapisywane są w wariancie zgodnym z polskim Excelem: separator kolumn to
+  średnik, separator dziesiętny to przecinek. Eksport `CSV` pojedynczej kalkulacji zawiera pełny
+  harmonogram spłaty (miesiąc, rata, kapitał, odsetki, oprocentowanie, nadpłata, prowizja, pozostało do
+  spłaty, koszty dodatkowe); eksport `CSV` wszystkich zawiera tabelę podsumowań (jeden wiersz na
+  kalkulację z kolumnami widocznymi na liście).
 - **Import** — obsługiwane są trzy kształty pliku JSON: pojedynczy rekord, tablica rekordów oraz plik
   z eksportu „wszystkich”. Przy kolizji nazwy z istniejącą kalkulacją rekord jest importowany jako kopia
   (sufiks „ — kopia”, „ — kopia (2)”, …) — nic nie jest nadpisywane.

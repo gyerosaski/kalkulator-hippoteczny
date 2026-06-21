@@ -22,7 +22,11 @@
         { "path": "$DOCUMENT/**/*.json" },
         { "path": "$DOWNLOAD/**/*.json" },
         { "path": "$DESKTOP/**/*.json" },
-        { "path": "$HOME/**/*.json" }
+        { "path": "$HOME/**/*.json" },
+        { "path": "$DOCUMENT/**/*.csv" },
+        { "path": "$DOWNLOAD/**/*.csv" },
+        { "path": "$DESKTOP/**/*.csv" },
+        { "path": "$HOME/**/*.csv" }
       ]
     }
   ]
