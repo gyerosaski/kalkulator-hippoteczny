@@ -11,6 +11,7 @@
     "prettier": "prettier --write .",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
+    "scan:unused-css": "node scripts/scan-unused-css.mjs",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build"

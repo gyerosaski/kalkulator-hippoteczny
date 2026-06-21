@@ -109,22 +109,6 @@ body {
   cursor: not-allowed;
 }
 
-/* Layout */
-.grid {
-  display: grid;
-  grid-template-columns: minmax(520px, 580px) 1fr;
-  gap: var(--space-5);
-  padding: var(--space-5) var(--space-7) var(--space-14);
-  max-width: 1640px;
-  margin: 0 auto;
-}
-.col {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3-5);
-  min-width: 0;
-}
-
 /* Sections */
 .sec {
   background: var(--surface);
@@ -432,13 +416,6 @@ body {
   left: 16px;
 }
 
-/* Period composite input */
-.period-input {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: var(--space-1-5);
-  align-items: stretch;
-}
 .seg--compact {
   width: auto;
   padding: 2px;
@@ -479,48 +456,6 @@ ui-cards-group + ui-card {
   font-size: var(--text-md);
 }
 /* KPI */
-.kpi-strip {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
-  gap: var(--space-3);
-}
-.kpi {
-  background: var(--surface);
-  border-radius: var(--r-lg);
-  border: var(--border-width) solid var(--line);
-  padding: var(--space-4) 18px;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  position: relative;
-  overflow: hidden;
-}
-.kpi:first-child {
-  background: linear-gradient(
-    135deg,
-    color-mix(in oklch, var(--accent) 35%, var(--surface)),
-    var(--surface)
-  );
-}
-.kpi-lab {
-  font-size: var(--text-xs);
-  color: var(--ink-2);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-}
-.kpi-val {
-  font-size: var(--text-5xl);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: var(--tracking-tighter);
-  line-height: var(--leading-tight);
-  margin-top: 2px;
-}
-.kpi-unit {
-  font-size: var(--text-md);
-  color: var(--muted);
-  margin-left: var(--space-1);
-  font-weight: var(--font-weight-regular);
-}
 .kpi-meta {
   font-size: var(--text-xs);
   color: var(--muted);
@@ -571,21 +506,6 @@ ui-cards-group + ui-card {
   font-weight: var(--font-weight-semibold);
   letter-spacing: var(--tracking-tighter);
 }
-.legend-inline {
-  display: flex;
-  gap: var(--space-3-5);
-  font-size: var(--text-xs);
-  color: var(--ink-2);
-}
-.legend-inline .dot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-  margin-right: var(--space-1-5);
-  vertical-align: middle;
-}
-
 /* Table */
 .tbl {
   font-size: var(--text-md);
@@ -658,26 +578,7 @@ ui-cards-group + ui-card {
   color: var(--muted);
   font-size: var(--text-sm);
 }
-.tbl-foot {
-  padding: var(--space-3-5) var(--space-5);
-  text-align: center;
-}
-
 /* Misc */
-.link-btn {
-  background: transparent;
-  border: 0;
-  color: var(--accent-deep);
-  font: inherit;
-  font-size: var(--text-xs);
-  cursor: pointer;
-  padding: 0;
-  margin-left: var(--space-1);
-  text-decoration: underline;
-}
-.link-btn:hover {
-  color: var(--ink);
-}
 .card-head-suffix {
   font-weight: var(--font-weight-medium);
   color: var(--ink-2);
@@ -688,11 +589,6 @@ ui-cards-group + ui-card {
 }
 .small {
   font-size: var(--text-xs);
-}
-
-/* Tweaks panel positioning */
-.tw-panel {
-  z-index: var(--z-dropdown);
 }
 
 /* Współdzielona „chrome" okien dialog (nagłówek, tag, tytuł, przycisk zamknięcia).
