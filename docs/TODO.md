@@ -89,3 +89,5 @@
 - [x] dropdown "Eksportuj wszystkie" zamień w zwykły przycisk "Eksportuj wszystkie do JSON", usuń funkcjonalność eksportu wszystkich kalkulacji do .csv
 - [x] analogicznie jak w widoku "Kalkulacje", zapamiętuj pozycję scrolla na pozostałych widokach w UiStateService
 - analogicznie jak w widoku "Kalkulacje", ukryj scrolla na pozostałych widokach
+- na legendzie donuta "Struktura płatności" pod wierszem "RRSO", dodaj wiersz "Całkowity koszt kredyt" który zsumuje odsetki i koszty okołokredytowe
+- dodatkowe koszty na formularzu są ucinane powyżej 2-giego kosztu

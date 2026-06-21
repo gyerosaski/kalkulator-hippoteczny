@@ -96,6 +96,9 @@
   grid-template-rows: 0fr;
   opacity: 0;
   cursor: default;
+  /* Zwinięty wiersz jest niewidoczny (opacity: 0), ale przez ujemny margines nakłada się na
+     etykietę rodzica — bez tego jego przyciski nawigacyjne przechwytywałyby klik rozwijający. */
+  pointer-events: none;
   margin-top: calc(-1 * var(--space-2));
   transition:
     grid-template-rows var(--duration-slow) ease,
@@ -106,6 +109,7 @@
 .legend li.children-row--open {
   grid-template-rows: 1fr;
   opacity: 1;
+  pointer-events: auto;
   margin-top: 0;
 }
 
