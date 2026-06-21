@@ -6,13 +6,13 @@
       · <span class="mono path-label" [title]="path">{{ path }}</span>
     }
   </div>
-  <ui-dropdown
-    [options]="exportFormatValues"
-    [labels]="exportFormatValues | exportFormatLabel"
+  <button
+    class="btn btn--ghost"
+    type="button"
     [disabled]="totalCount() === 0"
-    (select)="exportRequested.emit($any($event))"
+    (click)="exportRequested.emit()"
   >
     <icon-download />
-    Eksportuj wszystkie
-  </ui-dropdown>
+    Eksportuj wszystkie do JSON
+  </button>
 </div>

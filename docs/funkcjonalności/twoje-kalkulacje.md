@@ -189,16 +189,16 @@ Zawartość zapisywanych plików:
 
 ### 9. Stopka i import/eksport
 
-| Element                                 | Treść                                                                                                                                                                                       |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Licznik                                 | `Wyświetlono X z Y kalkulacji · dane przechowywane lokalnie` + ścieżka pliku                                                                                                                |
-| Przycisk-dropdown `Eksportuj wszystkie` | rozwija listę formatów (`JSON`, `CSV`); `JSON` eksportuje wszystkie rekordy do jednego pliku, `CSV` zapisuje tabelę podsumowań (jeden wiersz na kalkulację); nieaktywny gdy brak kalkulacji |
+| Element                                | Treść                                                                              |
+| -------------------------------------- | ---------------------------------------------------------------------------------- |
+| Licznik                                | `Wyświetlono X z Y kalkulacji · dane przechowywane lokalnie` + ścieżka pliku       |
+| Przycisk `Eksportuj wszystkie do JSON` | eksportuje wszystkie rekordy do jednego pliku JSON; nieaktywny gdy brak kalkulacji |
 
 - **Eksport** — domyślna nazwa pliku to nazwa kalkulacji; znaki niedozwolone w nazwie pliku zastępowane
   są znakiem `_`. Pliki `CSV` zapisywane są w wariancie zgodnym z polskim Excelem: separator kolumn to
   średnik, separator dziesiętny to przecinek. Eksport pojedynczej kalkulacji konfiguruje się w osobnym
-  oknie (zakres i format — sekcja 7.3); eksport `CSV` wszystkich zawiera tabelę podsumowań (jeden wiersz
-  na kalkulację z kolumnami widocznymi na liście).
+  oknie (zakres i format — sekcja 7.3); eksport wszystkich zapisuje wszystkie rekordy do jednego
+  pliku JSON.
 - **Import** — obsługiwane są trzy kształty pliku JSON: pojedynczy rekord, tablica rekordów oraz plik
   z eksportu „wszystkich”. Przy kolizji nazwy z istniejącą kalkulacją rekord jest importowany jako kopia
   (sufiks „ — kopia”, „ — kopia (2)”, …) — nic nie jest nadpisywane.

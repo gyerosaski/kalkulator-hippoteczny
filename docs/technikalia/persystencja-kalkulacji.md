@@ -89,12 +89,12 @@ po wczytaniu oferty jej skalary są nadpisywane wartościami z przeliczenia na �
 - Eksport — domyślna nazwa `<sanitized-name>.json`; znaki niedozwolone (`\ / : * ? " < > |`) → `_`.
   Eksport wszystkich: obiekt-opakowanie `{ exportedAt, count, calculations: [...] }`.
 - Eksport CSV — czyste funkcje w `src/app/helpers/csv-export.helper.ts` (`buildScheduleCsv`,
-  `buildSummaryCsv`, `toCsv`, `formatCsvNumber`) budują treść, a `exportCsvToFile` zapisuje ją do pliku.
+  `toCsv`, `formatCsvNumber`) budują treść, a `exportCsvToFile` zapisuje ją do pliku.
   Wariant „polski Excel”: separator kolumn `;`, separator dziesiętny `,`, końce linii CRLF, prefiks BOM
-  UTF-8; pola zawierające `;`, `"` lub znak nowej linii są cytowane (podwojony cudzysłów). Eksport
-  pojedynczej kalkulacji przelicza harmonogram na nowo (`normalizeCalculationData` → `buildMortgageInputs`
-  → `CalculatorService.compute`) i zapisuje wiersze `ScheduleRow`; eksport wszystkich zapisuje skalary
-  z modelu widokowego `SavedCalculation` (jeden wiersz na kalkulację).
+  UTF-8; pola zawierające `;`, `"` lub znak nowej linii są cytowane (podwojony cudzysłów). CSV dotyczy
+  wyłącznie eksportu pojedynczej kalkulacji (harmonogram spłaty), który przelicza harmonogram na nowo
+  (`normalizeCalculationData` → `buildMortgageInputs` → `CalculatorService.compute`) i zapisuje wiersze
+  `ScheduleRow`. Eksport wszystkich kalkulacji odbywa się wyłącznie do JSON.
 - Import — `extractImportableRecords` obsługuje trzy kształty: pojedynczy rekord, gołą tablicę,
   obiekt-opakowanie. Każdy element musi mieć `name` (string), `createdAt` i `data`; elementy
   o niepoprawnym kształcie są pomijane. Przy kolizji nazwy rekord importowany jest jako kopia

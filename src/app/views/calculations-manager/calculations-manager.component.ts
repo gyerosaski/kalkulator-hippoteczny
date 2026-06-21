@@ -33,7 +33,7 @@ import { CalculatorStateService } from '../../services/calculator-state/calculat
 import { CalculatorService } from '../../services/calculator/calculator.service';
 import { buildMortgageInputs } from '../../helpers/mortgage-inputs.helper';
 import { normalizeCalculationData } from '../../helpers/saved-calculation-data.helper';
-import { buildScheduleCsv, buildSummaryCsv } from '../../helpers/csv-export.helper';
+import { buildScheduleCsv } from '../../helpers/csv-export.helper';
 import { SaveCalculationDialogComponent } from '../../dialogs/save-calculation/save-calculation-dialog.component';
 import { RenameCalculationDialogComponent } from '../../dialogs/rename-calculation/rename-calculation-dialog.component';
 import { DeleteCalculationDialogComponent } from '../../dialogs/delete-calculation/delete-calculation-dialog.component';
@@ -211,24 +211,8 @@ export class CalculationsManagerComponent implements OnInit {
     }
   }
 
-  async exportAll(format: ExportFormat): Promise<void> {
+  async exportAll(): Promise<void> {
     const records = this.savedCalculationsStateService.records();
-
-    if (format === ExportFormat.CSV) {
-      const dateString = new Date().toISOString().slice(0, 10);
-      const csvContent = buildSummaryCsv(this.calculations());
-      const savedPath = await this.calculationsStore.exportCsvToFile(
-        `kalkulacje-${dateString}.csv`,
-        csvContent,
-        'Eksportuj wszystkie kalkulacje do pliku CSV',
-      );
-      if (savedPath) {
-        this.toastService.show(`Wyeksportowano ${records.length} kalkulacji`);
-      }
-      return;
-    }
-
-    if (format !== ExportFormat.JSON) return;
     const savedPath = await this.calculationsStore.exportAllToFile(records);
     if (savedPath) {
       this.toastService.show(`Wyeksportowano ${records.length} kalkulacji`);
