@@ -263,7 +263,7 @@ export class CalculatorService {
 
     // 7. Ubezpieczenie od utraty pracy
     const jl = oc.jobLossInsurance;
-    if (jl && jl.value > 0 && date >= (jl.from || '')) {
+    if (jl && jl.value > 0 && this.isMonthInRange(date, jl.from, jl.to)) {
       const diffFromStart = this.monthDiff(jl.from, date);
       if (diffFromStart >= 0) {
         const shouldCharge =
@@ -286,7 +286,7 @@ export class CalculatorService {
     // 8. Dodatkowe koszty
     for (const ac of oc.additionalCosts ?? []) {
       if (!ac.value || ac.value <= 0 || !ac.from) continue;
-      if (date < ac.from) continue;
+      if (!this.isMonthInRange(date, ac.from, ac.to)) continue;
       const diffFromStart = this.monthDiff(ac.from, date);
       if (diffFromStart < 0) continue;
       const shouldCharge =

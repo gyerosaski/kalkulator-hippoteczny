@@ -108,8 +108,11 @@ nieruchomości (brak takiej opcji). Składka `jednorazowo` pobierana jest tylko 
 | Sposób naliczania | `% kwoty kredytu`, `% salda kredytu`, `znam kwotę` | `% kwoty kredytu`       |
 | Wartość           | `%` lub `zł`                                       | `0`                     |
 | Od                | miesiąc i rok                                      | miesiąc po uruchomieniu |
+| Do                | miesiąc i rok                                      | koniec okresu kredytu   |
 
-Pola „do” brak — składka obowiązuje od daty „od” aż do końca harmonogramu.
+Wyliczanie: dla płatności cyklicznych (`co rok`, `co miesiąc`) składka naliczana jest tylko gdy
+data mieści się w zakresie `[od, do]` oraz w odpowiednim rytmie. Dla płatności `jednorazowo`
+liczy się wyłącznie miesiąc „od” (pole „do” jest wtedy ukryte).
 
 ### 2.8. Dodatkowe koszty
 
@@ -122,9 +125,13 @@ Opcjonalna lista `DODATKOWE KOSZTY n`. Każdy rekord:
 | Sposób naliczania | `% kwoty kredytu`, `% salda kredytu`, `znam kwotę` | `znam kwotę`            |
 | Wartość           | `%` lub `zł` (2 miejsca)                           | `0`                     |
 | Od                | miesiąc i rok                                      | miesiąc po uruchomieniu |
+| Do                | miesiąc i rok                                      | koniec okresu kredytu   |
 
 Akcje: `+ Dodaj koszt` dodaje pustą kartę; przycisk usuwania (pierwsza karta nie jest usuwalna).
-Wyliczanie identyczne jak dla ubezpieczenia na życie/utraty pracy (baza zgodnie ze sposobem naliczania).
+Wyliczanie identyczne jak dla ubezpieczenia na życie/utraty pracy (baza zgodnie ze sposobem
+naliczania): dla płatności cyklicznych (`co rok`, `co miesiąc`) pozycja naliczana jest tylko gdy
+data mieści się w zakresie `[od, do]`; dla płatności `jednorazowo` liczy się wyłącznie miesiąc
+„od” (pole „do” jest wtedy ukryte).
 Suma wszystkich miesięcznych pozycji wchodzi do kosztów okołokredytowych.
 
 ### 2.9. Promocja oprocentowania

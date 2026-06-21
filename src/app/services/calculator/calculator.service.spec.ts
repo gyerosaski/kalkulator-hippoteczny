@@ -670,6 +670,94 @@ describe('MortgageCalcService (rozbicie kosztów okołokredytowych)', () => {
   });
 });
 
+describe('MortgageCalcService (zakres "do" kosztów cyklicznych)', () => {
+  let service: CalculatorService;
+
+  beforeEach(() => {
+    service = new CalculatorService();
+  });
+
+  function inputsWithOverhead(overheadCosts: OverheadCostsInputs): MortgageInputs {
+    return { ...baseInputs(), prepaymentRules: [], overheadCosts };
+  }
+
+  /** Miesiące, w których w rozbiciu wiersza pojawia się pozycja danego rodzaju. */
+  function monthsWithCostKind(
+    result: ReturnType<CalculatorService['compute']>,
+    kind: OverheadCostKind,
+  ): string[] {
+    return result.schedule
+      .filter((row) => row.costBreakdown.some((item) => item.kind === kind))
+      .map((row) => row.date);
+  }
+
+  it('koszt dodatkowy "co miesiąc" nalicza się tylko w zakresie [od, do]', () => {
+    const result = service.compute(
+      inputsWithOverhead({
+        commissionCalcMethod: CommissionCalcMethod.FIXED_AMOUNT,
+        commissionValue: 0,
+        appraisalFee: 0,
+        additionalCosts: [
+          {
+            name: 'Opłata administracyjna',
+            calcMethod: LifeInsuranceCalcMethod.FIXED_AMOUNT,
+            frequency: InsuranceFrequency.MONTHLY,
+            value: 25,
+            from: '2026-02',
+            to: '2026-05',
+          },
+        ],
+      }),
+    );
+
+    const months = monthsWithCostKind(result, OverheadCostKind.ADDITIONAL_COST);
+    expect(months).toEqual(['2026-02', '2026-03', '2026-04', '2026-05']);
+  });
+
+  it('ubezpieczenie od utraty pracy "co miesiąc" nalicza się tylko w zakresie [od, do]', () => {
+    const result = service.compute(
+      inputsWithOverhead({
+        commissionCalcMethod: CommissionCalcMethod.FIXED_AMOUNT,
+        commissionValue: 0,
+        appraisalFee: 0,
+        jobLossInsurance: {
+          calcMethod: LifeInsuranceCalcMethod.FIXED_AMOUNT,
+          frequency: InsuranceFrequency.MONTHLY,
+          value: 30,
+          from: '2026-02',
+          to: '2026-04',
+        },
+      }),
+    );
+
+    const months = monthsWithCostKind(result, OverheadCostKind.JOB_LOSS_INSURANCE);
+    expect(months).toEqual(['2026-02', '2026-03', '2026-04']);
+  });
+
+  it('koszt dodatkowy "jednorazowo" nalicza się raz, w miesiącu "od"', () => {
+    const result = service.compute(
+      inputsWithOverhead({
+        commissionCalcMethod: CommissionCalcMethod.FIXED_AMOUNT,
+        commissionValue: 0,
+        appraisalFee: 0,
+        additionalCosts: [
+          {
+            name: 'Opłata jednorazowa',
+            calcMethod: LifeInsuranceCalcMethod.FIXED_AMOUNT,
+            frequency: InsuranceFrequency.ONE_TIME,
+            value: 100,
+            from: '2026-03',
+            to: '2030-01',
+          },
+        ],
+      }),
+    );
+
+    const months = monthsWithCostKind(result, OverheadCostKind.ADDITIONAL_COST);
+    expect(months).toEqual(['2026-03']);
+  });
+});
+
 describe('MortgageCalcService (rozbicie odsetek)', () => {
   let service: CalculatorService;
 
