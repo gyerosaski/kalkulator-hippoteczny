@@ -1,0 +1,24 @@
+<ui-dialog title="Eksportuj kalkulację" [size]="DialogSize.SMALL" (closed)="handleClosed()">
+  <form (submit)="$event.preventDefault(); onConfirm()">
+    <div class="dialog-body">
+      <ui-field label="Zakres">
+        <ui-segmented
+          [options]="exportScopes"
+          [labels]="exportScopes | exportScopeLabel"
+          [formControl]="scopeControl"
+        />
+      </ui-field>
+      <ui-field label="Format">
+        <ui-segmented
+          [options]="formatOptions()"
+          [labels]="formatOptions() | exportFormatLabel"
+          [formControl]="formatControl"
+        />
+      </ui-field>
+    </div>
+    <div class="dialog-actions">
+      <button class="btn btn--ghost" type="button" (click)="dismiss()">Anuluj</button>
+      <button class="btn btn--primary" type="submit">Eksportuj</button>
+    </div>
+  </form>
+</ui-dialog>

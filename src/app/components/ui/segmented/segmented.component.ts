@@ -1,10 +1,13 @@
 import {
+  afterNextRender,
   afterRenderEffect,
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   ElementRef,
   forwardRef,
+  inject,
   input,
   signal,
   viewChildren,
@@ -41,19 +44,34 @@ export class SegmentedComponent implements ControlValueAccessor {
   private _onChange?: (v: string) => void;
   private _onTouched?: () => void;
 
+  private readonly hostElement = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly destroyRef = inject(DestroyRef);
+
   constructor() {
-    afterRenderEffect(() => {
-      const buttons = this.segBtnElements();
-      const activeButton = buttons[this.activeIndex()]?.nativeElement;
-      if (!activeButton) return;
-      const parentRect = activeButton.parentElement!.getBoundingClientRect();
-      const buttonRect = activeButton.getBoundingClientRect();
-      this.indicatorStyle.set({
-        left: `${buttonRect.left - parentRect.left}px`,
-        width: `${buttonRect.width}px`,
-      });
-      this.isIndicatorVisible.set(true);
+    afterRenderEffect(() => this.updateIndicator());
+
+    // Gdy kontrolka pojawia się dopiero po pierwszym renderze (np. wewnątrz okna dialogowego),
+    // nie ma jeszcze layoutu i wskaźnik nie może zostać umiejscowiony. ResizeObserver przelicza
+    // go, gdy element uzyska wymiary (oraz przy każdej zmianie rozmiaru).
+    afterNextRender(() => {
+      const observer = new ResizeObserver(() => this.updateIndicator());
+      observer.observe(this.hostElement.nativeElement);
+      this.destroyRef.onDestroy(() => observer.disconnect());
     });
+  }
+
+  private updateIndicator(): void {
+    const buttons = this.segBtnElements();
+    const activeButton = buttons[this.activeIndex()]?.nativeElement;
+    if (!activeButton) return;
+    const parentRect = activeButton.parentElement!.getBoundingClientRect();
+    const buttonRect = activeButton.getBoundingClientRect();
+    if (buttonRect.width === 0) return;
+    this.indicatorStyle.set({
+      left: `${buttonRect.left - parentRect.left}px`,
+      width: `${buttonRect.width}px`,
+    });
+    this.isIndicatorVisible.set(true);
   }
 
   writeValue(v: string): void {

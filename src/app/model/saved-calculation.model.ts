@@ -66,6 +66,16 @@ export enum ExportFormat {
   CSV = 'CSV',
 }
 
+export enum ExportScope {
+  PARAMETERS = 'PARAMETERS',
+  SCHEDULE = 'SCHEDULE',
+}
+
+export interface ExportSelection {
+  scope: ExportScope;
+  format: ExportFormat;
+}
+
 export interface CalculationImportResult {
   status: CalculationImportStatus;
   importedCount: number;

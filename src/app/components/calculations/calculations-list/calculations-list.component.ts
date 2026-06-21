@@ -8,15 +8,8 @@ import {
 } from '@angular/core';
 import { SlicePipe } from '@angular/common';
 
-import {
-  BadgeVariant,
-  ExportFormat,
-  InstallmentType,
-  RateType,
-  SavedCalculation,
-} from '../../../model';
+import { BadgeVariant, InstallmentType, RateType, SavedCalculation } from '../../../model';
 import { BadgeComponent } from '../../ui/badge/badge.component';
-import { ExportFormatLabelPipe } from '../../../pipes/export-format-label/export-format-label.pipe';
 import { FormatAmountPipe } from '../../../pipes/format-amount/format-amount.pipe';
 import { FormatExactDatePipe } from '../../../pipes/format-exact-date/format-exact-date.pipe';
 import { FormatLoanPeriodPipe } from '../../../pipes/format-loan-period/format-loan-period.pipe';
@@ -25,7 +18,6 @@ import { FormatWholeAmountPipe } from '../../../pipes/format-whole-amount/format
 import { RelativeTimePipe } from '../../../pipes/relative-time/relative-time.pipe';
 import { IconArrowRightComponent } from '../../icons/icon-arrow-right/icon-arrow-right.component';
 import { IconCalendarListComponent } from '../../icons/icon-calendar-list/icon-calendar-list.component';
-import { IconChevronRightComponent } from '../../icons/icon-chevron-right/icon-chevron-right.component';
 import { IconDotsComponent } from '../../icons/icon-dots/icon-dots.component';
 import { IconDuplicateComponent } from '../../icons/icon-duplicate/icon-duplicate.component';
 import { IconEditComponent } from '../../icons/icon-edit/icon-edit.component';
@@ -49,7 +41,6 @@ import { IconTrashComponent } from '../../icons/icon-trash/icon-trash.component'
     FormatExactDatePipe,
     IconArrowRightComponent,
     IconCalendarListComponent,
-    IconChevronRightComponent,
     IconDotsComponent,
     IconEditComponent,
     IconDuplicateComponent,
@@ -57,7 +48,6 @@ import { IconTrashComponent } from '../../icons/icon-trash/icon-trash.component'
     IconSaveComponent,
     IconTrashComponent,
     BadgeComponent,
-    ExportFormatLabelPipe,
   ],
 })
 export class CalculationsListComponent {
@@ -71,14 +61,12 @@ export class CalculationsListComponent {
   readonly rename = output<SavedCalculation>();
   readonly delete = output<SavedCalculation>();
   readonly duplicate = output<SavedCalculation>();
-  readonly exportRequested = output<{ calculation: SavedCalculation; format: ExportFormat }>();
+  readonly exportRequested = output<SavedCalculation>();
   readonly clearFilters = output<void>();
 
   protected readonly InstallmentType = InstallmentType;
   protected readonly RateType = RateType;
   protected readonly BadgeVariant = BadgeVariant;
-  protected readonly ExportFormat = ExportFormat;
-  protected readonly exportFormats = Object.values(ExportFormat);
 
   readonly openMenuName = signal<string | null>(null);
 

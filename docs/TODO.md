@@ -88,3 +88,4 @@
   - CalculationsManagerComponent - wyszukiwarka kalkulacji
   - CalculationsListComponent - przycisk wczytaj
 - przeanalizuj plusy i minusy zastąpienia całej/części funkcjonalności UiStateService przez custom RouteReuseStrategy
+- [x] zmień flow eksportu pojedynczej kalkulacji; zamiast zagnieżdżonej listy na dropdownie po kliknięciu "Eksportuj" otwieraj okno dialog, konfigurator eksportu; dostępne opcje: Zakres: "Parametry kalkulacji/Harmonogram spłaty", Format "JSON/CSV"; Ograniczenia: Parametry powinny być eksportowalne tylko do formatu .json, harmonogram zarówno do json jak i do .csv

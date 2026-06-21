@@ -87,6 +87,21 @@ export class CalculationsStoreService {
     return targetPath;
   }
 
+  async exportJsonToFile(
+    defaultFileName: string,
+    jsonContent: string,
+    title: string,
+  ): Promise<string | null> {
+    const targetPath = await saveDialog({
+      defaultPath: this.sanitizeFileName(defaultFileName),
+      filters: CalculationsStoreService.FILE_FILTERS,
+      title,
+    });
+    if (!targetPath) return null;
+    await writeTextFile(targetPath, jsonContent);
+    return targetPath;
+  }
+
   async importFromFile(): Promise<SavedCalculationRecord[] | null> {
     const selected = await openDialog({
       multiple: false,

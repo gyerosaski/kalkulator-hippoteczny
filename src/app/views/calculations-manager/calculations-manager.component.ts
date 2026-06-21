@@ -18,6 +18,7 @@ import {
   AppRoute,
   CalculationImportStatus,
   ExportFormat,
+  ExportScope,
   OverheadCostKind,
   SavedCalculationMetadata,
   SavedCalculationRecord,
@@ -36,6 +37,7 @@ import { buildScheduleCsv, buildSummaryCsv } from '../../helpers/csv-export.help
 import { SaveCalculationDialogComponent } from '../../dialogs/save-calculation/save-calculation-dialog.component';
 import { RenameCalculationDialogComponent } from '../../dialogs/rename-calculation/rename-calculation-dialog.component';
 import { DeleteCalculationDialogComponent } from '../../dialogs/delete-calculation/delete-calculation-dialog.component';
+import { ExportCalculationDialogComponent } from '../../dialogs/export-calculation/export-calculation-dialog.component';
 import { FormService } from '../../services/form/form';
 import {
   SavedCalculationsStateService,
@@ -63,6 +65,7 @@ import { ToastService } from '../../services/toast/toast.service';
     SaveCalculationDialogComponent,
     RenameCalculationDialogComponent,
     DeleteCalculationDialogComponent,
+    ExportCalculationDialogComponent,
     IconPlusComponent,
     IconDownloadComponent,
     IconSearchComponent,
@@ -83,6 +86,7 @@ export class CalculationsManagerComponent implements OnInit {
   private readonly saveDialog = viewChild.required(SaveCalculationDialogComponent);
   private readonly renameDialog = viewChild.required(RenameCalculationDialogComponent);
   private readonly deleteDialog = viewChild.required(DeleteCalculationDialogComponent);
+  private readonly exportDialog = viewChild.required(ExportCalculationDialogComponent);
 
   private readonly sortOptions: { value: SavedCalculationSortOption; label: string }[] = [
     { value: SavedCalculationSortOption.UPDATED, label: 'ostatnio zmodyfikowane' },
@@ -231,38 +235,44 @@ export class CalculationsManagerComponent implements OnInit {
     }
   }
 
-  async exportCalculation(payload: {
-    calculation: SavedCalculation;
-    format: ExportFormat;
-  }): Promise<void> {
+  async exportCalculation(calculation: SavedCalculation): Promise<void> {
     const record = this.savedCalculationsStateService
       .records()
-      .find((existing) => existing.name === payload.calculation.name);
+      .find((existing) => existing.name === calculation.name);
     if (!record) return;
 
-    if (payload.format === ExportFormat.CSV) {
-      const formValue = normalizeCalculationData(record.data);
-      if (!formValue) {
-        this.toastService.show('Nie udało się przeliczyć harmonogramu', ToastVariant.ERROR);
-        return;
-      }
-      const results = this.calculatorService.compute(buildMortgageInputs(formValue));
-      const csvContent = buildScheduleCsv(results.schedule);
-      const savedPath = await this.calculationsStore.exportCsvToFile(
-        `${payload.calculation.name}.csv`,
-        csvContent,
-        'Zapisz harmonogram do pliku CSV',
-      );
+    const selection = await this.exportDialog().open();
+    if (!selection) return;
+
+    if (selection.scope === ExportScope.PARAMETERS) {
+      const savedPath = await this.calculationsStore.exportToFile(record);
       if (savedPath) {
-        this.toastService.show(`Wyeksportowano kalkulację „${payload.calculation.name}"`);
+        this.toastService.show(`Wyeksportowano kalkulację „${calculation.name}"`);
       }
       return;
     }
 
-    if (payload.format !== ExportFormat.JSON) return;
-    const savedPath = await this.calculationsStore.exportToFile(record);
+    const formValue = normalizeCalculationData(record.data);
+    if (!formValue) {
+      this.toastService.show('Nie udało się przeliczyć harmonogramu', ToastVariant.ERROR);
+      return;
+    }
+    const results = this.calculatorService.compute(buildMortgageInputs(formValue));
+
+    const savedPath =
+      selection.format === ExportFormat.CSV
+        ? await this.calculationsStore.exportCsvToFile(
+            `${calculation.name}.csv`,
+            buildScheduleCsv(results.schedule),
+            'Zapisz harmonogram do pliku CSV',
+          )
+        : await this.calculationsStore.exportJsonToFile(
+            `${calculation.name}.json`,
+            JSON.stringify(results.schedule, null, 2),
+            'Zapisz harmonogram do pliku JSON',
+          );
     if (savedPath) {
-      this.toastService.show(`Wyeksportowano kalkulację „${payload.calculation.name}"`);
+      this.toastService.show(`Wyeksportowano kalkulację „${calculation.name}"`);
     }
   }
 

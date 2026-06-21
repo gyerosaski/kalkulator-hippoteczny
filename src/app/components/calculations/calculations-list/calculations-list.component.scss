@@ -273,53 +273,6 @@
   }
 }
 
-.menu-item--has-submenu {
-  position: relative;
-  justify-content: flex-start;
-}
-
-/* niewidzialny mostek wypełniający odstęp (padding + border menu) między pozycją
-   a submenu, dzięki czemu hover nie gaśnie podczas przesuwania kursora */
-.menu-item--has-submenu::after {
-  content: '';
-  position: absolute;
-  left: 100%;
-  top: 0;
-  width: 6px;
-  height: 100%;
-}
-
-.submenu-caret {
-  margin-left: auto;
-  display: inline-flex;
-}
-
-.submenu-flyout {
-  position: absolute;
-  left: calc(100% + 5px);
-  top: -1px;
-  z-index: var(--z-modal);
-  display: none;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 140px;
-  padding: 0;
-  overflow: hidden;
-  background: var(--surface);
-  border: var(--border-width) solid var(--line);
-  border-radius: var(--r);
-  box-shadow: var(--shadow-lg);
-
-  .menu-item {
-    border-radius: 0;
-  }
-}
-
-.menu-item--has-submenu:hover .submenu-flyout,
-.menu-item--has-submenu:focus-within .submenu-flyout {
-  display: flex;
-}
-
 .menu-separator {
   height: 1px;
   background: var(--line);
