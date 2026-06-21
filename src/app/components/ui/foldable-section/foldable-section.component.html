@@ -32,6 +32,8 @@
     [class.sec-body--open]="open() && !isOff()"
     [class.sec-body--animate]="isAnimatable()"
   >
-    <div class="sec-body-inner"><ng-content /></div>
+    <div class="sec-body-inner">
+      <div class="sec-body-content"><ng-content /></div>
+    </div>
   </div>
 </section>

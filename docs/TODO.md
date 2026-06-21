@@ -90,4 +90,4 @@
 - [x] analogicznie jak w widoku "Kalkulacje", zapamiętuj pozycję scrolla na pozostałych widokach w UiStateService
 - analogicznie jak w widoku "Kalkulacje", ukryj scrolla na pozostałych widokach
 - na legendzie donuta "Struktura płatności" pod wierszem "RRSO", dodaj wiersz "Całkowity koszt kredyt" który zsumuje odsetki i koszty okołokredytowe
-- dodatkowe koszty na formularzu są ucinane powyżej 2-giego kosztu
+- [x] dodatkowe koszty na formularzu w sekcji "Koszty okołokredytowe i promocję" są ucinane powyżej 2-giego kosztu

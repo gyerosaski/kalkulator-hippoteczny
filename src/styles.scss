@@ -174,23 +174,28 @@ body {
   letter-spacing: 0.01em;
 }
 .sec-body {
-  max-height: 0;
-  overflow: hidden;
+  display: grid;
+  grid-template-rows: 0fr;
   opacity: 0;
 }
 
 .sec-body.sec-body--animate {
   transition:
-    max-height var(--duration-slow) ease,
+    grid-template-rows var(--duration-slow) ease,
     opacity 0.25s ease;
 }
 
 .sec-body--open {
-  max-height: 1200px;
+  grid-template-rows: 1fr;
   opacity: 1;
 }
 
 .sec-body-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.sec-body-content {
   padding: var(--space-5);
   display: flex;
   flex-direction: column;
