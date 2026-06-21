@@ -1,7 +1,9 @@
 import {
+  afterNextRender,
   ChangeDetectionStrategy,
   Component,
   computed,
+  ElementRef,
   inject,
   NgZone,
   OnInit,
@@ -29,6 +31,7 @@ import {
 } from '../../model';
 import { roundUpToStep } from '../../helpers/chart-scale.helper';
 import { ComparisonStateService } from '../../services/comparison-state/comparison-state.service';
+import { UiStateService } from '../../services/ui-state/ui-state.service';
 import { SavedCalculationsStateService } from '../../services/saved-calculations-state/saved-calculations-state.service';
 import { FormService } from '../../services/form/form';
 import { ToastService } from '../../services/toast/toast.service';
@@ -94,6 +97,7 @@ const TREND_STACK_TICK_STEP = 5_000;
   templateUrl: './calculations-compare.component.html',
   styleUrls: ['./calculations-compare.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '(scroll)': 'onScroll()' },
 })
 export class CalculationsCompareComponent implements OnInit {
   protected readonly comparisonState = inject(ComparisonStateService);
@@ -102,7 +106,19 @@ export class CalculationsCompareComponent implements OnInit {
   private readonly toastService = inject(ToastService);
   private readonly router = inject(Router);
   private readonly ngZone = inject(NgZone);
+  private readonly uiStateService = inject(UiStateService);
+  private readonly hostElement = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly selectOfferDialog = viewChild.required(SelectOfferDialogComponent);
+
+  constructor() {
+    afterNextRender(() => {
+      this.hostElement.nativeElement.scrollTop = this.uiStateService.calculationsCompareScrollTop();
+    });
+  }
+
+  protected onScroll(): void {
+    this.uiStateService.setCalculationsCompareScrollTop(this.hostElement.nativeElement.scrollTop);
+  }
 
   protected readonly ComparisonSlot = ComparisonSlot;
   protected readonly ComparableOfferKind = ComparableOfferKind;

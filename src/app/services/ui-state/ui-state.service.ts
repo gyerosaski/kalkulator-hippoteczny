@@ -37,6 +37,12 @@ export class UiStateService {
   private readonly _calculatorResultsColumnScrollTop = signal(0);
   readonly calculatorResultsColumnScrollTop = this._calculatorResultsColumnScrollTop.asReadonly();
 
+  private readonly _calculationsManagerScrollTop = signal(0);
+  readonly calculationsManagerScrollTop = this._calculationsManagerScrollTop.asReadonly();
+
+  private readonly _calculationsCompareScrollTop = signal(0);
+  readonly calculationsCompareScrollTop = this._calculationsCompareScrollTop.asReadonly();
+
   private readonly _savedCalculationsSortOption = signal<SavedCalculationSortOption>(
     SavedCalculationSortOption.UPDATED,
   );
@@ -127,6 +133,14 @@ export class UiStateService {
 
   setCalculatorResultsColumnScrollTop(scrollTop: number): void {
     this._calculatorResultsColumnScrollTop.set(scrollTop);
+  }
+
+  setCalculationsManagerScrollTop(scrollTop: number): void {
+    this._calculationsManagerScrollTop.set(scrollTop);
+  }
+
+  setCalculationsCompareScrollTop(scrollTop: number): void {
+    this._calculationsCompareScrollTop.set(scrollTop);
   }
 
   /**

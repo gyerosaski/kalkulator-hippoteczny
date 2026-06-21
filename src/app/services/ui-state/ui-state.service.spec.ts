@@ -125,6 +125,21 @@ describe('UiStateService', () => {
     });
   });
 
+  describe('pozycja scrolla pozostałych widoków', () => {
+    it('powinien domyślnie zwracać zerową pozycję scrolla obu widoków', () => {
+      expect(service.calculationsManagerScrollTop()).toBe(0);
+      expect(service.calculationsCompareScrollTop()).toBe(0);
+    });
+
+    it('powinien zapamiętywać pozycję scrolla każdego widoku niezależnie', () => {
+      service.setCalculationsManagerScrollTop(180);
+      service.setCalculationsCompareScrollTop(420);
+
+      expect(service.calculationsManagerScrollTop()).toBe(180);
+      expect(service.calculationsCompareScrollTop()).toBe(420);
+    });
+  });
+
   describe('reset stanu kalkulacji', () => {
     it('powinien wyczyścić zaznaczenia w wynikach do null', () => {
       service.toggleSelectedMonth(42);
@@ -170,6 +185,16 @@ describe('UiStateService', () => {
 
       expect(service.sectionOpen(FormSectionId.BASIC_DATA)()).toBe(true);
       expect(service.sectionOpen(FormSectionId.TRANCHES)()).toBe(false);
+    });
+
+    it('nie powinien zmieniać pozycji scrolla listy kalkulacji i porównania', () => {
+      service.setCalculationsManagerScrollTop(180);
+      service.setCalculationsCompareScrollTop(420);
+
+      service.resetCalculationViewState();
+
+      expect(service.calculationsManagerScrollTop()).toBe(180);
+      expect(service.calculationsCompareScrollTop()).toBe(420);
     });
 
     it('nie powinien zmieniać preferencji sortowania listy kalkulacji', () => {

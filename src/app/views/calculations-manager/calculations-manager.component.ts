@@ -1,7 +1,9 @@
 import {
+  afterNextRender,
   ChangeDetectionStrategy,
   Component,
   computed,
+  ElementRef,
   inject,
   NgZone,
   OnInit,
@@ -58,6 +60,7 @@ import { ToastService } from '../../services/toast/toast.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './calculations-manager.component.html',
   styleUrl: './calculations-manager.component.scss',
+  host: { '(scroll)': 'onScroll()' },
   imports: [
     ReactiveFormsModule,
     CalculationsListComponent,
@@ -83,6 +86,7 @@ export class CalculationsManagerComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly ngZone = inject(NgZone);
   private readonly toastService = inject(ToastService);
+  private readonly hostElement = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly saveDialog = viewChild.required(SaveCalculationDialogComponent);
   private readonly renameDialog = viewChild.required(RenameCalculationDialogComponent);
   private readonly deleteDialog = viewChild.required(DeleteCalculationDialogComponent);
@@ -112,6 +116,14 @@ export class CalculationsManagerComponent implements OnInit {
     this.activeSortControl.valueChanges
       .pipe(takeUntilDestroyed())
       .subscribe((sortOption) => this.uiStateService.setSavedCalculationsSortOption(sortOption));
+
+    afterNextRender(() => {
+      this.hostElement.nativeElement.scrollTop = this.uiStateService.calculationsManagerScrollTop();
+    });
+  }
+
+  protected onScroll(): void {
+    this.uiStateService.setCalculationsManagerScrollTop(this.hostElement.nativeElement.scrollTop);
   }
 
   protected readonly storePathResource = resource({
