@@ -88,6 +88,6 @@
 - [x] zmień flow eksportu pojedynczej kalkulacji; zamiast zagnieżdżonej listy na dropdownie po kliknięciu "Eksportuj" otwieraj okno dialog, konfigurator eksportu; dostępne opcje: Zakres: "Parametry kalkulacji/Harmonogram spłaty", Format "JSON/CSV"; Ograniczenia: Parametry powinny być eksportowalne tylko do formatu .json, harmonogram zarówno do json jak i do .csv
 - [x] dropdown "Eksportuj wszystkie" zamień w zwykły przycisk "Eksportuj wszystkie do JSON", usuń funkcjonalność eksportu wszystkich kalkulacji do .csv
 - [x] analogicznie jak w widoku "Kalkulacje", zapamiętuj pozycję scrolla na pozostałych widokach w UiStateService
-- analogicznie jak w widoku "Kalkulacje", ukryj scrolla na pozostałych widokach
+- [x] analogicznie jak w widoku "Kalkulacje", ukryj scrolla na pozostałych widokach
 - na legendzie donuta "Struktura płatności" pod wierszem "RRSO", dodaj wiersz "Całkowity koszt kredyt" który zsumuje odsetki i koszty okołokredytowe
 - [x] dodatkowe koszty na formularzu w sekcji "Koszty okołokredytowe i promocję" są ucinane powyżej 2-giego kosztu

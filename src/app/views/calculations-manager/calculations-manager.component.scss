@@ -4,6 +4,12 @@
   min-height: 0;
   overflow-y: auto;
   background: var(--bg);
+
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .saved-view {
