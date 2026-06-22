@@ -28,12 +28,10 @@
   width: var(--space-5);
   height: var(--space-5);
   border-radius: var(--r-xs);
-  background: var(--num-bg, color-mix(in oklch, var(--accent) 25%, var(--surface-2)));
-  color: var(--num-color, var(--accent-deep));
-  box-shadow: 0 0 0 1px var(--num-ring, transparent);
+  background: var(--surface-2);
+  color: var(--muted);
   font-size: var(--text-2xs);
-  font-weight: var(--font-weight-bold);
-  flex-shrink: 0;
+  font-weight: var(--font-weight-semibold);
 }
 
 .subsec-title {

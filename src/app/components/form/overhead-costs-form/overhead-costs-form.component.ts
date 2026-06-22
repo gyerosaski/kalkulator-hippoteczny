@@ -25,6 +25,7 @@ import { CardComponent } from '../../ui/card/card.component';
 import { SubsectionComponent } from '../../ui/subsection/subsection.component';
 import { DividerComponent } from '../../ui/divider/divider.component';
 import { SegmentedComponent } from '../../ui/segmented/segmented.component';
+import { DividerVariant } from '../../../model';
 
 @Component({
   selector: 'app-overhead-costs-form',
@@ -53,6 +54,7 @@ export class OverheadCostsFormComponent {
   protected readonly colorCodeArea = ColorCodeArea;
   protected readonly InsuranceFrequency = InsuranceFrequency;
   protected readonly FormSectionId = FormSectionId;
+  protected readonly dividerVariant = DividerVariant;
 
   private formService = inject(FormService);
   private readonly uiStateService = inject(UiStateService);

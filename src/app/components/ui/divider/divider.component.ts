@@ -10,5 +10,5 @@ import { DividerVariant } from '../../../model';
 })
 export class DividerComponent {
   readonly variant = input<DividerVariant>(DividerVariant.DASHED);
-  protected readonly DividerVariant = DividerVariant;
+  protected readonly dividerVariant = DividerVariant;
 }

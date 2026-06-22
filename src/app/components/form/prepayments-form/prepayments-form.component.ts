@@ -4,7 +4,7 @@ import { map } from 'rxjs';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FormService } from '../../../services/form/form';
 import { UiStateService } from '../../../services/ui-state/ui-state.service';
-import { PrepaymentFrequency, PrepaymentEffect } from '../../../model';
+import { PrepaymentFrequency, PrepaymentEffect, DividerVariant } from '../../../model';
 import { PrepaymentFrequencyLabelPipe } from '../../../pipes/prepayment-frequency-label/prepayment-frequency-label.pipe';
 import { PrepaymentEffectLabelPipe } from '../../../pipes/prepayment-effect-label/prepayment-effect-label.pipe';
 import { FoldableSectionComponent } from '../../ui/foldable-section/foldable-section.component';
@@ -45,6 +45,7 @@ export class PrepaymentsFormComponent {
   protected readonly colorCodeArea = ColorCodeArea;
   protected readonly PrepaymentFrequency = PrepaymentFrequency;
   protected readonly FormSectionId = FormSectionId;
+  protected readonly dividerVariant = DividerVariant;
 
   readonly prepaymentFrequencyOptions = Object.values(PrepaymentFrequency);
   readonly prepaymentEffectOptions = Object.values(PrepaymentEffect);

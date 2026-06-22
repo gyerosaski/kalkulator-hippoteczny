@@ -85,7 +85,7 @@
       <ui-btn-add label="Dodaj regułę nadpłaty" (add)="addPrepaymentRule()" />
     </ui-subsection>
 
-    <ui-divider />
+    <ui-divider [variant]="dividerVariant.SOLID" />
 
     <ui-subsection
       [context]="colorCodeArea.PREPAYMENT"
@@ -132,7 +132,7 @@
       </div>
     </ui-subsection>
 
-    <ui-divider />
+    <ui-divider [variant]="dividerVariant.SOLID" />
 
     <ui-subsection
       [context]="colorCodeArea.COST"
