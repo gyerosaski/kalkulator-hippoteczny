@@ -48,7 +48,7 @@ export class MonthPickerDialogComponent extends AbstractDialog<string | null> {
   private readonly todayMonth = new Date().getMonth();
 
   protected readonly stagedYear = signal(this.todayYear);
-  protected readonly stagedMonth = signal(this.todayMonth);
+  protected readonly stagedMonth = signal<number | null>(this.todayMonth);
   protected readonly decadeStart = signal(Math.floor(this.todayYear / 10) * 10);
   private readonly committedYear = signal(this.todayYear);
   private readonly committedMonth = signal(this.todayMonth);
@@ -94,6 +94,11 @@ export class MonthPickerDialogComponent extends AbstractDialog<string | null> {
     this.decadeStart.update((current) => current + delta);
   }
 
+  protected pickYear(year: number): void {
+    this.stagedYear.set(year);
+    this.stagedMonth.set(null);
+  }
+
   protected pickMonth(monthIndex: number): void {
     this.stagedMonth.set(monthIndex);
     this.confirm();
@@ -104,8 +109,12 @@ export class MonthPickerDialogComponent extends AbstractDialog<string | null> {
   }
 
   protected confirm(): void {
+    const stagedMonth = this.stagedMonth();
+    if (stagedMonth === null) {
+      return;
+    }
     const year = this.stagedYear();
-    const month = String(this.stagedMonth() + 1).padStart(2, '0');
+    const month = String(stagedMonth + 1).padStart(2, '0');
     this.closeWith(`${year}-${month}`);
   }
 }

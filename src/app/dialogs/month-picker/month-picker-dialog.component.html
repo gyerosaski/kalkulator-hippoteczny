@@ -37,7 +37,7 @@
         type="button"
         [class.is-focused]="year === stagedYear()"
         [class.is-selected]="isYearSelected(year)"
-        (click)="stagedYear.set(year)"
+        (click)="pickYear(year)"
       >
         {{ year }}
       </button>
