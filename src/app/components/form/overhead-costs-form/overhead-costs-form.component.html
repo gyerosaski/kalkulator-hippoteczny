@@ -118,10 +118,18 @@
       </div>
       <div class="row row--2">
         <ui-field label="Od" inputId="prop-ins-from">
-          <ui-month-picker inputId="prop-ins-from" [formControl]="propInsFromControl" />
+          <ui-month-picker
+            inputId="prop-ins-from"
+            [formControl]="propInsFromControl"
+            [showShortcuts]="true"
+          />
         </ui-field>
         <ui-field label="Do" inputId="prop-ins-to">
-          <ui-month-picker inputId="prop-ins-to" [formControl]="propInsToControl" />
+          <ui-month-picker
+            inputId="prop-ins-to"
+            [formControl]="propInsToControl"
+            [showShortcuts]="true"
+          />
         </ui-field>
       </div>
     </ui-subsection>
@@ -189,16 +197,28 @@
       @if (lifeInsFrequency() === InsuranceFrequency.ONE_TIME) {
         <div class="row row--2">
           <ui-field label="Miesiąc płatności" inputId="life-ins-from">
-            <ui-month-picker inputId="life-ins-from" [formControl]="lifeInsFromControl" />
+            <ui-month-picker
+              inputId="life-ins-from"
+              [formControl]="lifeInsFromControl"
+              [showShortcuts]="true"
+            />
           </ui-field>
         </div>
       } @else {
         <div class="row row--2">
           <ui-field label="Od" inputId="life-ins-from">
-            <ui-month-picker inputId="life-ins-from" [formControl]="lifeInsFromControl" />
+            <ui-month-picker
+              inputId="life-ins-from"
+              [formControl]="lifeInsFromControl"
+              [showShortcuts]="true"
+            />
           </ui-field>
           <ui-field label="Do" inputId="life-ins-to">
-            <ui-month-picker inputId="life-ins-to" [formControl]="lifeInsToControl" />
+            <ui-month-picker
+              inputId="life-ins-to"
+              [formControl]="lifeInsToControl"
+              [showShortcuts]="true"
+            />
           </ui-field>
         </div>
       }
@@ -242,16 +262,28 @@
       @if (jobLossInsFrequency() === InsuranceFrequency.ONE_TIME) {
         <div class="row row--2">
           <ui-field label="Miesiąc płatności" inputId="job-loss-ins-from">
-            <ui-month-picker inputId="job-loss-ins-from" [formControl]="jobLossInsFromControl" />
+            <ui-month-picker
+              inputId="job-loss-ins-from"
+              [formControl]="jobLossInsFromControl"
+              [showShortcuts]="true"
+            />
           </ui-field>
         </div>
       } @else {
         <div class="row row--2">
           <ui-field label="Od" inputId="job-loss-ins-from">
-            <ui-month-picker inputId="job-loss-ins-from" [formControl]="jobLossInsFromControl" />
+            <ui-month-picker
+              inputId="job-loss-ins-from"
+              [formControl]="jobLossInsFromControl"
+              [showShortcuts]="true"
+            />
           </ui-field>
           <ui-field label="Do" inputId="job-loss-ins-to">
-            <ui-month-picker inputId="job-loss-ins-to" [formControl]="jobLossInsToControl" />
+            <ui-month-picker
+              inputId="job-loss-ins-to"
+              [formControl]="jobLossInsToControl"
+              [showShortcuts]="true"
+            />
           </ui-field>
         </div>
       }
@@ -319,17 +351,29 @@
             @if (additionalCostFrequencies()[$index] === InsuranceFrequency.ONE_TIME) {
               <div class="row row--2">
                 <ui-field label="Miesiąc płatności" [inputId]="costFromId">
-                  <ui-month-picker [inputId]="costFromId" [formControl]="cost.controls.from" />
+                  <ui-month-picker
+                    [inputId]="costFromId"
+                    [formControl]="cost.controls.from"
+                    [showShortcuts]="true"
+                  />
                 </ui-field>
               </div>
             } @else {
               @let costToId = 'additional-cost-' + $index + '-to';
               <div class="row row--2">
                 <ui-field label="Od" [inputId]="costFromId">
-                  <ui-month-picker [inputId]="costFromId" [formControl]="cost.controls.from" />
+                  <ui-month-picker
+                    [inputId]="costFromId"
+                    [formControl]="cost.controls.from"
+                    [showShortcuts]="true"
+                  />
                 </ui-field>
                 <ui-field label="Do" [inputId]="costToId">
-                  <ui-month-picker [inputId]="costToId" [formControl]="cost.controls.to" />
+                  <ui-month-picker
+                    [inputId]="costToId"
+                    [formControl]="cost.controls.to"
+                    [showShortcuts]="true"
+                  />
                 </ui-field>
               </div>
             }
@@ -358,10 +402,18 @@
           />
         </ui-field>
         <ui-field label="Od" num="9b" inputId="promo-from">
-          <ui-month-picker inputId="promo-from" [formControl]="promoFromControl" />
+          <ui-month-picker
+            inputId="promo-from"
+            [formControl]="promoFromControl"
+            [showShortcuts]="true"
+          />
         </ui-field>
         <ui-field label="Do" num="9c" inputId="promo-to">
-          <ui-month-picker inputId="promo-to" [formControl]="promoToControl" />
+          <ui-month-picker
+            inputId="promo-to"
+            [formControl]="promoToControl"
+            [showShortcuts]="true"
+          />
         </ui-field>
       </div>
     </ui-subsection>

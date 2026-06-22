@@ -188,6 +188,12 @@ export enum LegendId {
   TREND_CHART = 'TREND_CHART',
 }
 
+/** Pojedynczy skrót daty w oknie wyboru miesiąca (`ui-month-picker`). */
+export interface MonthPickerShortcut {
+  readonly label: string; // polska etykieta, np. „Data uruchomienia kredytu"
+  readonly value: string; // YYYY-MM
+}
+
 export interface RateChartTooltipModel {
   readonly tooltipX: number;
   readonly tooltipY: number;

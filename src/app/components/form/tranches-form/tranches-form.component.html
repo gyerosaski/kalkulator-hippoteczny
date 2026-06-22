@@ -26,7 +26,11 @@
               />
             </ui-field>
             <ui-field label="Data uruchomienia" [inputId]="trancheDateId">
-              <ui-month-picker [inputId]="trancheDateId" [formControl]="trancheControls.date" />
+              <ui-month-picker
+                [inputId]="trancheDateId"
+                [formControl]="trancheControls.date"
+                [showShortcuts]="true"
+              />
             </ui-field>
             @if ($index > 0) {
               <ui-field label="Opłata za uruchomienie transzy" [inputId]="trancheFeeId">

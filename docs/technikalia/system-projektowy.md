@@ -181,7 +181,7 @@ Wszystkie komponenty są `standalone` + `OnPush`. Kontrolki formularzowe oznaczo
 | `ui-field`                  | opakowanie pola: etykieta + numer + hint                                                                  | `label`, `num`, `hint`, `inputId`                                                                                               |
 | `ui-foldable-section`       | zwijana sekcja formularza (z opcją włącz/wyłącz)                                                          | `title`, `num`, `badge`, `defaultOpen`, `toggleable`, `enabled`, `sectionId: FormSectionId \| null`, `@enabledChange`           |
 | `ui-legend`                 | legenda wykresu (pozycje + suma + stopka)                                                                 | `slices: ChartSlice[]`, `legendId`, `totalLabel`, `footerLabel`, `footerValue`, `footerValueText`, `activeLabel`, `@sliceHover` |
-| `ui-month-picker` **(CVA)** | wybór miesiąca (`YYYY-MM`)                                                                                | `inputId`, `@valueChange`                                                                                                       |
+| `ui-month-picker` **(CVA)** | wybór miesiąca (`YYYY-MM`)                                                                                | `inputId`, `showShortcuts`, `@valueChange`                                                                                      |
 | `ui-number-input` **(CVA)** | pole liczbowe z sufiksem i formatowaniem                                                                  | `value`, `inputId`, `suffix`, `hint`, `decimals`, `@valueChange`                                                                |
 | `ui-segmented` **(CVA)**    | przełącznik segmentowy (2–3 opcje)                                                                        | `options`, `labels`, `compact`                                                                                                  |
 | `ui-select` **(CVA)**       | lista wyboru                                                                                              | `options`, `labels`, `inputId`, `@valueChange`                                                                                  |
@@ -220,5 +220,16 @@ poniżej skrótowy przegląd grup:
   `.dialog-body` / `.dialog-actions` (+ `.dialog--danger .btn--danger`) są globalne, bo treść
   projektowana z komponentów-funkcji jest poza enkapsulacją stylów `ui-dialog`; sam `dialog{}`
   i warianty szerokości żyją w stylach `ui-dialog`.
+- **Skróty dat w pickerze:** `ui-month-picker` przyjmuje prosty input boolean `showShortcuts` i przekazuje
+  go do `MonthPickerDialogComponent` przez rozszerzone `open(currentValue, showShortcuts?)`. Skróty buduje
+  bezpośrednio dialog — przy `showShortcuts === true` woła czystą funkcję `buildMonthPickerShortcuts`
+  (`helpers/month-picker-shortcuts.helper.ts`) na podstawie wartości referencyjnych z
+  `FormService.monthPickerReferenceDates` (bieżący miesiąc, data uruchomienia, początek spłat kapitału,
+  wyliczony ostatni miesiąc kredytu = uruchomienie + liczba rat, bo pierwsza rata przypada miesiąc po
+  uruchomieniu) i zapisuje wynik do sygnału `shortcuts`. Funkcja pomija
+  jedynie pozycje o pustej wartości; brak dodatkowego filtrowania kontekstowego. Dialog renderuje skróty
+  jako przyciski (klasy `.mp-shortcuts` / `.mp-shortcut`); kliknięcie zamyka okno z wybraną datą.
+  Komponenty formularza ustawiają `[showShortcuts]="true"` na polach dat — z wyjątkiem pól
+  „Data uruchomienia kredytu” i „Początek spłat kapitału”, które skrótów nie pokazują.
 - **Typografia / pomocnicze:** `.mono` (cyfry tabelaryczne, IBM Plex Mono),
   `.muted`, `.small`.

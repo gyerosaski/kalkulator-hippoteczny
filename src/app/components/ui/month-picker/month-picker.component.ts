@@ -28,6 +28,7 @@ import { MonthPickerDialogComponent } from '../../../dialogs/month-picker/month-
 export class MonthPickerComponent implements ControlValueAccessor {
   valueChange = output<string>();
   inputId = input<string>('');
+  showShortcuts = input<boolean>(false);
 
   focused = signal(false);
   disabled = signal(false);
@@ -37,7 +38,7 @@ export class MonthPickerComponent implements ControlValueAccessor {
 
   async openPicker(): Promise<void> {
     if (this.disabled()) return;
-    const result = await this.monthPickerDialog().open(this._value());
+    const result = await this.monthPickerDialog().open(this._value(), this.showShortcuts());
     if (result !== null) {
       this.onNativeChange(result);
     }

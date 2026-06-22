@@ -1,8 +1,19 @@
-import { Component, ChangeDetectionStrategy, signal, computed, viewChild } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  signal,
+  computed,
+  viewChild,
+  inject,
+} from '@angular/core';
 
 import { AbstractDialog } from '../../components/ui/dialog/abstract-dialog';
 import { DialogComponent } from '../../components/ui/dialog/dialog.component';
 import { IconChevronRightComponent } from '../../components/icons/icon-chevron-right/icon-chevron-right.component';
+import { FormatMonthPipe } from '../../pipes/format-month/format-month.pipe';
+import { FormService } from '../../services/form/form';
+import { buildMonthPickerShortcuts } from '../../helpers/month-picker-shortcuts.helper';
+import { MonthPickerShortcut } from '../../model';
 
 // TODO: pozbyć się na rzecz FormatMonthPipe
 const MONTH_NAMES_SHORT = [
@@ -23,13 +34,14 @@ const MONTH_NAMES_SHORT = [
 @Component({
   selector: 'ui-month-picker-dialog',
   standalone: true,
-  imports: [DialogComponent, IconChevronRightComponent],
+  imports: [DialogComponent, IconChevronRightComponent, FormatMonthPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './month-picker-dialog.component.html',
   styleUrl: './month-picker-dialog.component.scss',
 })
 export class MonthPickerDialogComponent extends AbstractDialog<string | null> {
   protected readonly dialog = viewChild.required(DialogComponent);
+  private readonly formService = inject(FormService);
 
   protected readonly monthNamesShort = MONTH_NAMES_SHORT;
   private readonly todayYear = new Date().getFullYear();
@@ -40,6 +52,8 @@ export class MonthPickerDialogComponent extends AbstractDialog<string | null> {
   protected readonly decadeStart = signal(Math.floor(this.todayYear / 10) * 10);
   private readonly committedYear = signal(this.todayYear);
   private readonly committedMonth = signal(this.todayMonth);
+
+  protected readonly shortcuts = signal<MonthPickerShortcut[]>([]);
 
   protected readonly years = computed(() => {
     const start = this.decadeStart();
@@ -54,13 +68,16 @@ export class MonthPickerDialogComponent extends AbstractDialog<string | null> {
     return monthIndex === this.committedMonth() && this.stagedYear() === this.committedYear();
   }
 
-  open(currentValue: string): Promise<string | null> {
+  open(currentValue: string, showShortcuts = false): Promise<string | null> {
     const [year, month] = this.parseYearMonth(currentValue);
     this.committedYear.set(year);
     this.committedMonth.set(month - 1);
     this.stagedYear.set(year);
     this.stagedMonth.set(month - 1);
     this.decadeStart.set(Math.floor(year / 10) * 10);
+    this.shortcuts.set(
+      showShortcuts ? buildMonthPickerShortcuts(this.formService.monthPickerReferenceDates) : [],
+    );
     return this.beginInteraction(null);
   }
 
@@ -80,6 +97,10 @@ export class MonthPickerDialogComponent extends AbstractDialog<string | null> {
   protected pickMonth(monthIndex: number): void {
     this.stagedMonth.set(monthIndex);
     this.confirm();
+  }
+
+  protected pickShortcut(value: string): void {
+    this.closeWith(value);
   }
 
   protected confirm(): void {

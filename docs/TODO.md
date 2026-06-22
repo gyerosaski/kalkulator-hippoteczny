@@ -91,3 +91,7 @@
 - [x] analogicznie jak w widoku "Kalkulacje", ukryj scrolla na pozostałych widokach
 - na legendzie donuta "Struktura płatności" pod wierszem "RRSO", dodaj wiersz "Całkowity koszt kredyt" który zsumuje odsetki i koszty okołokredytowe
 - [x] dodatkowe koszty na formularzu w sekcji "Koszty okołokredytowe i promocję" są ucinane powyżej 2-giego kosztu
+- w MonthPickerDialogComponent po zmianie roku odznaczać wybrany miesiąc
+- [x] w MonthPickerDialogComponent dodać przyciski skrótów, "data uruchomienia kredytu", "początek spłat kapitału", "data zakończenia kredytu", zadbaj o to, żeby skróty pojawiały się warunkowo i miały sens w danym kontekście formularza
+- w DialogComponent on hoover podświetlaj pole pod przyciskiem "x";stwórz ikonę "x";zadbaj żeby każdy dialog w aplikacji miał ten przycisk
+- pomimo wyłączenia sekcji "Transze" formularza prezentowany jest błąd walidacji "Kwota każdej transzy musi być większa od zera."

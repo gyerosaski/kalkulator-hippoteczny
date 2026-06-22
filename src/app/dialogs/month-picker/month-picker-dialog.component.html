@@ -1,4 +1,15 @@
 <ui-dialog title="Wybierz miesiąc" (closed)="handleClosed()">
+  @if (shortcuts().length) {
+    <div class="mp-shortcuts">
+      @for (shortcut of shortcuts(); track shortcut.label) {
+        <button class="mp-shortcut" type="button" (click)="pickShortcut(shortcut.value)">
+          <span class="mp-shortcut-label">{{ shortcut.label }}</span>
+          <span class="mp-shortcut-date mono">{{ shortcut.value | formatMonth }}</span>
+        </button>
+      }
+    </div>
+  }
+
   <div class="mp-decade-nav">
     <button
       class="ico-btn mp-nav-btn"

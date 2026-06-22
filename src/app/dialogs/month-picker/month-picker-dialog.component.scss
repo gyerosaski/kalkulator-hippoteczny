@@ -33,6 +33,57 @@
   text-align: center;
 }
 
+/* Shortcuts */
+.mp-shortcuts {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: var(--space-1-5);
+  padding: var(--space-3) var(--space-5) 0;
+}
+
+.mp-shortcut {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+  border: var(--border-width) solid var(--line);
+  background: var(--surface-2);
+  font: inherit;
+  text-align: left;
+  padding: var(--space-2) var(--space-2-5);
+  border-radius: var(--r-control);
+  cursor: pointer;
+  transition:
+    background 0.12s,
+    border-color 0.12s,
+    transform 0.06s;
+
+  &:hover {
+    background: color-mix(in oklch, var(--accent) 8%, var(--surface-2));
+    border-color: color-mix(in oklch, var(--accent) 40%, var(--line));
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+.mp-shortcut-label {
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  color: var(--muted);
+}
+
+.mp-shortcut-date {
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
 /* Years grid */
 .mp-years {
   display: grid;

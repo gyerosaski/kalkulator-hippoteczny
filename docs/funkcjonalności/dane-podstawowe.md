@@ -25,6 +25,29 @@ domyślnie rozwiniętą i niewyłączalną — pozostałe sekcje („Koszty oko�
 Wszystkie pola walutowe i procentowe formatują wartość według lokalizacji `pl-PL` (separator tysięcy:
 spacja, separator dziesiętny: przecinek). Pola dat operują na miesiącu i roku.
 
+### 2.0. Skróty dat w oknie wyboru miesiąca
+
+Każde pole daty otwiera okno wyboru miesiąca, w którym — oprócz wyboru roku i miesiąca — mogą pojawić się
+przyciski-skróty:
+
+- **Bieżący miesiąc** — aktualny miesiąc kalendarzowy,
+- **Data uruchomienia** — bieżąca wartość pola „Data uruchomienia kredytu”,
+- **Początek spłat kapitału** — bieżąca wartość pola „Początek spłat kapitału”,
+- **Ostatni miesiąc kredytu** — wyliczony jako miesiąc ostatniej raty (data uruchomienia powiększona
+  o liczbę rat; pierwsza rata przypada miesiąc po uruchomieniu, więc ostatnia z `n` rat wypada `n`
+  miesięcy po dacie uruchomienia).
+
+Każdy przycisk-skrót pokazuje swoją etykietę (wielkimi literami) oraz konkretny miesiąc i rok, który
+zostanie wprowadzony po jego wciśnięciu. Kliknięcie skrótu ustawia daną datę i zamyka okno.
+
+Skróty są dostępne dla wszystkich pól dat **z wyjątkiem** pól „Data uruchomienia kredytu” oraz
+„Początek spłat kapitału” — przy nich okno wyboru miesiąca nie pokazuje żadnych skrótów. Przy
+pozostałych polach dat (np. okresy oprocentowania, daty transz, daty nadpłat, daty obowiązywania
+ubezpieczeń, kosztów i promocji) dostępne są wszystkie skróty.
+
+Pojedynczy skrót jest pomijany tylko wtedy, gdy jego wartość nie jest określona (np. brak okresu
+kredytowania ukrywa „Ostatni miesiąc kredytu”).
+
 ### 2.1. Wartość nieruchomości
 
 - Jednostka: `zł`, bez miejsc dziesiętnych.

@@ -35,6 +35,7 @@ import {
   TranchesFieldsFormGroup,
 } from '../../model';
 import { addMonthsStr, nextMonthStr, ym } from '../../helpers/date.helper';
+import { MonthPickerReferenceDates } from '../../helpers/month-picker-shortcuts.helper';
 import { normalizeCalculationData } from '../../helpers/saved-calculation-data.helper';
 import { UiStateService } from '../ui-state/ui-state.service';
 
@@ -203,6 +204,22 @@ export class FormService {
 
   get additionalCostsArray(): FormArray<FormGroup<AdditionalCostFormGroup>> {
     return this.overheadCostsGroup.controls.additionalCosts.controls.items;
+  }
+
+  /**
+   * Aktualne wartości kluczowych dat kredytu używane jako skróty w oknie wyboru miesiąca.
+   * Czyta z sygnału `formValue`, więc wywołana wewnątrz `computed` jest reaktywna na zmiany formularza.
+   */
+  get monthPickerReferenceDates(): MonthPickerReferenceDates {
+    const basicData = this.formValue().basicData;
+    const loanStart = basicData.startDate;
+    const loanPeriod = basicData.loanPeriod;
+    return {
+      currentMonth: ym(),
+      loanStart,
+      capitalStart: basicData.capitalStartDate,
+      loanEnd: loanStart && loanPeriod > 0 ? addMonthsStr(loanStart, loanPeriod) : '',
+    };
   }
 
   get trancheSum(): number {
