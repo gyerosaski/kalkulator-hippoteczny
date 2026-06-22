@@ -622,15 +622,21 @@ ui-cards-group + ui-card {
 }
 
 .dialog-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--icon-btn-size);
+  height: var(--icon-btn-size);
   border: none;
+  border-radius: var(--r-sm);
   background: none;
   color: var(--muted);
-  font-size: var(--text-3xl);
   cursor: pointer;
-  padding: 0 var(--space-1);
-  line-height: 1;
+  padding: 0;
+  transition: all var(--duration-fast) ease;
 
   &:hover {
+    background: var(--surface-2);
     color: var(--ink);
   }
 }

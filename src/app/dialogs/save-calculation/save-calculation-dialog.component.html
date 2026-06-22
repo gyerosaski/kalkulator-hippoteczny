@@ -1,9 +1,4 @@
-<ui-dialog
-  title="Zapisz kalkulację"
-  [size]="DialogSize.SMALL"
-  [showClose]="false"
-  (closed)="handleClosed()"
->
+<ui-dialog title="Zapisz kalkulację" [size]="DialogSize.SMALL" (closed)="handleClosed()">
   <form (submit)="$event.preventDefault(); onSave()">
     <div class="dialog-body">
       <div class="field">

@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 
 import { DialogSize, DialogVariant } from '../../../model';
+import { IconXComponent } from '../../icons/icon-x/icon-x.component';
 
 /**
  * Generyczna powłoka okna dialogowego oparta na natywnym elemencie `<dialog>`.
@@ -23,7 +24,7 @@ import { DialogSize, DialogVariant } from '../../../model';
   selector: 'ui-dialog',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [],
+  imports: [IconXComponent],
   templateUrl: './dialog.component.html',
   styleUrl: './dialog.component.scss',
 })
