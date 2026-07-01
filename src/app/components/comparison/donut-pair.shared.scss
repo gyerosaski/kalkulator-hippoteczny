@@ -8,7 +8,7 @@
 }
 
 .donut-pair-header {
-  padding: var(--space-5) var(--space-6) var(--space-4);
+  padding: var(--panel-pad-y) var(--panel-pad-x) var(--panel-gap);
   border-bottom: var(--border-width) solid var(--line);
 }
 
@@ -32,8 +32,8 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: var(--space-4);
-  padding: var(--space-3) var(--space-6) 0;
+  gap: var(--panel-gap);
+  padding: var(--card-gap) var(--panel-pad-x) 0;
   font-size: var(--text-sm);
   color: var(--ink-2);
 }
@@ -49,8 +49,8 @@
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  gap: var(--space-5);
-  padding: var(--space-4) var(--space-6) var(--space-6);
+  gap: var(--panel-pad-y);
+  padding: var(--panel-gap) var(--panel-pad-x) var(--panel-pad-x);
 }
 
 .donut-pair-chart {

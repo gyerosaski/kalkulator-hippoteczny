@@ -6,7 +6,7 @@
 }
 
 .kpi-header {
-  padding: var(--space-5) var(--space-6) var(--space-4);
+  padding: var(--panel-pad-y) var(--panel-pad-x) var(--panel-gap);
   border-bottom: var(--border-width) solid var(--line);
 }
 
@@ -27,15 +27,15 @@
 
 .kpi-grid {
   display: grid;
-  gap: var(--space-3);
-  padding: var(--space-4) var(--space-6) var(--space-5);
+  gap: var(--card-gap);
+  padding: var(--panel-gap) var(--panel-pad-x) var(--panel-pad-y);
 }
 
 .kpi-row {
   display: grid;
   grid-template-columns: 1fr 170px 1fr;
   align-items: stretch;
-  gap: var(--space-3);
+  gap: var(--card-gap);
 }
 
 /* ---------- Kafelek oferty ---------- */

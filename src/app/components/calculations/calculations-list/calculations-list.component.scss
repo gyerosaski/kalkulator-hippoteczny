@@ -31,7 +31,7 @@
   padding: 0;
 
   .cell {
-    padding: var(--space-2) var(--space-3);
+    padding: var(--space-2) var(--list-row-pad);
     font-size: var(--text-sm);
     font-weight: var(--font-weight-semibold);
     color: var(--muted);
@@ -70,7 +70,7 @@
 }
 
 .cell {
-  padding: var(--space-3) var(--space-3);
+  padding: var(--list-row-pad) var(--list-row-pad);
   min-width: 0;
 }
 

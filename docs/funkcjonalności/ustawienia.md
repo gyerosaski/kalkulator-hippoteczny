@@ -32,8 +32,17 @@ Kliknięcie ikony otwiera modalne okno **„Ustawienia”** z listą dostępnych
 
 - Kontrolka: lista rozwijana.
 - Wartości:
-  - „kompaktowa” — mniejsze odstępy między elementami formularza i wyników,
-  - „standardowa” — domyślne odstępy,
-  - „przestronna” — większe odstępy.
+  - „kompaktowa” — mniejsze odstępy między elementami formularza, kartami wyników,
+    wierszami tabeli harmonogramu spłat, wierszami listy „Twoje kalkulacje” oraz
+    sekcjami widoku „Porównanie ofert”; dodatkowo tekst tabeli harmonogramu
+    oraz etykiety nagłówków są nieznacznie mniejsze,
+  - „standardowa” — domyślne odstępy i rozmiar tekstu,
+  - „przestronna” — większe odstępy między elementami formularza, kartami wyników,
+    wierszami tabeli harmonogramu spłat, wierszami listy „Twoje kalkulacje” oraz
+    sekcjami widoku „Porównanie ofert” (rozmiar tekstu nie zmienia się względem
+    trybu standardowego).
+- Wysokość pól formularza i przycisków pozostaje taka sama we wszystkich trybach —
+  gęstość wpływa wyłącznie na odstępy i (w trybie kompaktowym) na rozmiar tekstu
+  w wybranych miejscach.
 - Wybór jest utrwalany między sesjami. Przy starcie aplikacji odczytywana jest zapisana gęstość; w razie
   jej braku stosowana jest gęstość standardowa (brak odpowiednika preferencji systemowej).

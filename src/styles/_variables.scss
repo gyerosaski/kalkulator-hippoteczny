@@ -100,8 +100,9 @@
   --tracking-widest: 0.08em;
 
   /* === ODSTĘPY I ROZMIARY ==============================================
-     Skala odstępów z bazą 4px (paddingi, marginesy, gap). --pad/--gap to
-     aliasy semantyczne nadpisywane przez tryby gęstości (data-density). */
+     Skala odstępów z bazą 4px (paddingi, marginesy, gap). Poniższe aliasy
+     semantyczne (--sec-*, --row-*, --card-*, --tbl-*) są nadpisywane przez
+     tryby gęstości (data-density). */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -136,21 +137,71 @@
   --opacity-disabled: 0.55;
   --opacity-muted: 0.4;
 
-  --pad: var(--space-4);
-  --gap: var(--space-3);
+  /* Aliasy semantyczne gęstości — wartości bazowe (STANDARD), nadpisywane
+     przez .app[data-density='compact'|'roomy'] poniżej. */
+  --sec-pad: var(--space-5);
+  --sec-gap: var(--space-3);
+  --row-gap: var(--space-3);
+  --row-margin: var(--space-6);
+  --card-pad: var(--space-3);
+  --card-gap: var(--space-3);
+  --tbl-row-pad-y: var(--space-2);
+  --tbl-row-pad-x: var(--space-5);
+  --tbl-row-gap: var(--space-2);
+  --tbl-text: var(--text-base);
+  --tbl-text-sm: var(--text-sm);
+  --panel-pad-y: var(--space-5);
+  --panel-pad-x: var(--space-6);
+  --panel-gap: var(--space-4);
+  --panel-cell-pad-y: var(--space-2);
+  --panel-cell-pad-x: var(--space-4);
+  --view-pad: var(--space-6);
+  --view-gap: var(--space-5);
+  --list-row-pad: var(--space-3);
 
   min-height: 100vh;
 }
 
 .app[data-density='compact'] {
-  --pad: var(--space-3);
-  --gap: var(--space-2);
-  font-size: var(--text-base);
+  --sec-pad: var(--space-4);
+  --sec-gap: var(--space-2);
+  --row-gap: var(--space-2);
+  --row-margin: var(--space-5);
+  --card-pad: var(--space-2);
+  --card-gap: var(--space-2);
+  --tbl-row-pad-y: var(--space-1);
+  --tbl-row-pad-x: var(--space-4);
+  --tbl-row-gap: var(--space-1);
+  --tbl-text: var(--text-sm);
+  --tbl-text-sm: var(--text-xs);
+  --panel-pad-y: var(--space-4);
+  --panel-pad-x: var(--space-5);
+  --panel-gap: var(--space-3);
+  --panel-cell-pad-y: var(--space-1);
+  --panel-cell-pad-x: var(--space-3);
+  --view-pad: var(--space-5);
+  --view-gap: var(--space-4);
+  --list-row-pad: var(--space-2);
 }
 .app[data-density='roomy'] {
-  --pad: 22px;
-  --gap: 18px;
-  font-size: var(--text-base);
+  --sec-pad: var(--space-6);
+  --sec-gap: var(--space-4);
+  --row-gap: var(--space-4);
+  --row-margin: var(--space-7);
+  --card-pad: var(--space-4);
+  --card-gap: var(--space-4);
+  --tbl-row-pad-y: var(--space-3);
+  --tbl-row-pad-x: var(--space-6);
+  --tbl-row-gap: var(--space-3);
+  /* --tbl-text / --tbl-text-sm celowo bez nadpisania: roomy nie powiększa czcionki */
+  --panel-pad-y: var(--space-6);
+  --panel-pad-x: var(--space-7);
+  --panel-gap: var(--space-5);
+  --panel-cell-pad-y: var(--space-3);
+  --panel-cell-pad-x: var(--space-5);
+  --view-pad: var(--space-7);
+  --view-gap: var(--space-6);
+  --list-row-pad: var(--space-4);
 }
 
 .app[data-font='fraunces'] {

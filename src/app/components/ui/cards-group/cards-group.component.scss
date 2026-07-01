@@ -1,8 +1,8 @@
 :host {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--card-gap);
   background: var(--surface-2);
   border-radius: var(--r);
-  padding: var(--space-3);
+  padding: var(--card-pad);
 }

@@ -10,10 +10,10 @@
   --card-tag-bg: color-mix(in oklch, var(--accent) 25%, var(--surface-2));
   border: var(--border-width) solid var(--line);
   border-radius: var(--r);
-  padding: var(--ui-card-padding, var(--space-3));
+  padding: var(--ui-card-padding, var(--card-pad));
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--card-gap);
   background: var(--surface);
 }
 

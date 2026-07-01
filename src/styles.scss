@@ -180,20 +180,20 @@ body {
 }
 
 .sec-body-content {
-  padding: var(--space-5);
+  padding: var(--sec-pad);
   display: flex;
   flex-direction: column;
-  gap: var(--gap);
+  gap: var(--sec-gap);
   border-top: var(--border-width) solid var(--line);
 }
 
 /* Fields */
 .row {
   display: grid;
-  gap: var(--space-3);
+  gap: var(--row-gap);
 }
 .row + .row {
-  margin-top: var(--space-6);
+  margin-top: var(--row-margin);
 }
 .row--2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -430,7 +430,7 @@ body {
 }
 
 .row + ui-cards-group {
-  margin-top: var(--space-6);
+  margin-top: var(--row-margin);
 }
 
 .rate-period-from {
@@ -441,7 +441,7 @@ body {
 ui-card + ui-card,
 ui-card + ui-cards-group,
 ui-cards-group + ui-card {
-  margin-top: var(--space-3);
+  margin-top: var(--card-gap);
 }
 
 /* Tranche */
@@ -467,10 +467,10 @@ ui-cards-group + ui-card {
   background: var(--surface);
   border-radius: var(--r-xl);
   border: var(--border-width) solid var(--line);
-  padding: 18px var(--space-5);
+  padding: var(--card-pad) var(--sec-pad);
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--card-gap);
 }
 .card-head {
   display: flex;
@@ -508,20 +508,20 @@ ui-cards-group + ui-card {
 }
 /* Table */
 .tbl {
-  font-size: var(--text-base);
+  font-size: var(--tbl-text);
 }
 .tbl-head,
 .tbl-row {
   display: grid;
   grid-template-columns: var(--tbl-cols, 1.4fr 1fr 1fr 1fr 1.2fr);
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-5);
+  gap: var(--tbl-row-gap);
+  padding: var(--tbl-row-pad-y) var(--tbl-row-pad-x);
   align-items: center;
 }
 .tbl-head {
   background: var(--surface-2);
   color: var(--ink-2);
-  font-size: var(--text-sm);
+  font-size: var(--tbl-text-sm);
   text-transform: uppercase;
   letter-spacing: var(--tracking-wider);
   font-weight: var(--font-weight-medium);
@@ -576,7 +576,7 @@ ui-cards-group + ui-card {
 .tbl-row--month .cell-month {
   padding-left: var(--space-4);
   color: var(--muted);
-  font-size: var(--text-sm);
+  font-size: var(--tbl-text-sm);
 }
 /* Misc */
 .card-head-suffix {

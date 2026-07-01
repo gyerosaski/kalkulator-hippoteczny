@@ -87,10 +87,10 @@ ui-card {
 
 /* Panel ze szczegółami zaznaczonego miesiąca (dwa donuty), pokazywany inline pod wierszem */
 .month-detail {
-  padding: var(--space-3) var(--space-5);
+  padding: var(--card-gap) var(--tbl-row-pad-x);
   background: var(--surface-2);
   border-top: var(--border-width) solid var(--line);
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--card-gap);
 }

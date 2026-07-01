@@ -87,15 +87,14 @@ tokeny, więc nie może ich odczytać.
 
 ### Odstępy i rozmiary
 
-| Grupa              | Tokeny                                                                                                                                                       |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Skala odstępów     | `--space-1` (4px), `--space-2` (8px), `--space-3` (12px), `--space-4` (16px), `--space-5` (20px), `--space-6` (24px), `--space-7` (28px), `--space-8` (32px) |
-| Aliasy semantyczne | `--pad` = `--space-4` (padding sekcji), `--gap` = `--space-3` (odstęp w kolumnach/sekcjach) — nadpisywane przez tryby gęstości                               |
-| Rozmiary kontrolek | `--control-height` (38px), `--control-height-sm` (28px), `--icon-btn-size` (32px), `--switch-track-h` (18px)                                                 |
+| Grupa              | Tokeny                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Skala odstępów     | `--space-1` (4px), `--space-2` (8px), `--space-3` (12px), `--space-4` (16px), `--space-5` (20px), `--space-6` (24px), `--space-7` (28px), `--space-8` (32px)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Aliasy semantyczne | `--sec-pad`/`--sec-gap` (padding/gap treści sekcji), `--row-gap`/`--row-margin` (gap w `.row` / odstęp między wierszami formularza), `--card-pad`/`--card-gap` (padding karty / gap wewnątrz i między kartami), `--tbl-row-pad-x`/`--tbl-row-pad-y`/`--tbl-row-gap` (padding/gap wiersza tabeli harmonogramu), `--tbl-text`/`--tbl-text-sm` (rozmiar tekstu tabeli/nagłówka), `--panel-pad-y`/`--panel-pad-x`/`--panel-gap` (padding nagłówka/treści sekcji „panelowych” w Porównaniu ofert — KPI, tabela parametrów, tabela różnic, pary donutów, wykres trendu), `--panel-cell-pad-y`/`--panel-cell-pad-x` (padding komórki w tych tabelach), `--view-pad`/`--view-gap` (padding/gap widoku najwyższego poziomu — „Twoje kalkulacje”, „Porównanie ofert”), `--list-row-pad` (padding wiersza listy zapisanych kalkulacji) — wszystkie nadpisywane przez tryby gęstości |
+| Rozmiary kontrolek | `--control-height` (38px), `--control-height-sm` (28px), `--icon-btn-size` (32px), `--switch-track-h` (18px)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
-Baza skali to 4 px. Wartości spoza skali (np. 5 px, 18/22 px paddingu/gapu w trybie
-„roomy”, 56 px paddingu pustego stanu listy kalkulacji, wymiary specyficzne) pozostają
-literałami.
+Baza skali to 4 px. Wartości spoza skali (np. 5 px, 56 px paddingu pustego stanu listy
+kalkulacji, wymiary specyficzne) pozostają literałami.
 
 ### Promienie i cienie
 
@@ -168,8 +167,16 @@ Analogicznie do motywu, przełączaniem steruje `DensityService`
   `ui-select` z etykietami z `DensityLabelPipe`.
 
 Enum `Density` (`src/app/model/ui.model.ts`): `COMPACT` / `STANDARD` / `ROOMY`. Style w
-`src/styles.scss` — bloki `.app[data-density='compact'|'roomy']` nadpisują `--pad`/`--gap`/
-`font-size`; `STANDARD` to blok bazowy `.app` bez atrybutu (wartości domyślne tokenów).
+`src/styles/_variables.scss` — bloki `.app[data-density='compact'|'roomy']` nadpisują
+pełny zestaw aliasów semantycznych gęstości (`--sec-*`, `--row-*`, `--card-*`, `--tbl-*`,
+`--panel-*`, `--view-*`, `--list-row-pad`, patrz sekcja „Odstępy i rozmiary”); `STANDARD`
+to blok bazowy `.app` bez atrybutu (wartości domyślne tokenów). Tryb „roomy” świadomie nie
+nadpisuje `--tbl-text`/`--tbl-text-sm` — gęstość „przestronna” powiększa tylko odstępy, nie
+rozmiar tekstu. Komponenty widoków „Twoje kalkulacje” i „Porównanie ofert” (lista zapisanych
+kalkulacji, siatka KPI, tabela parametrów, tabela różnic, para donutów, wykres trendu)
+mają własne, lokalne klasy CSS niezależne od globalnych `.card`/`.tbl*` — ich padding/gap
+konsumuje te same aliasy gęstości bezpośrednio, żeby uniknąć duplikowania logiki gęstości
+w każdym pliku.
 
 ### Czcionka (obecnie niepodpięta)
 
