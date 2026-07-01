@@ -99,7 +99,7 @@
   min-width: 180px;
 }
 
-.sort-control .ico-btn icon-arrow-up {
+.sort-control .ico-btn.is-animatable icon-arrow-up {
   transition: transform var(--duration-fast) ease;
 }
 

@@ -95,4 +95,5 @@
 - [x] w MonthPickerDialogComponent dodać przyciski skrótów, "data uruchomienia kredytu", "początek spłat kapitału", "data zakończenia kredytu", zadbaj o to, żeby skróty pojawiały się warunkowo i miały sens w danym kontekście formularza
 - [x] w DialogComponent on hoover podświetlaj pole pod przyciskiem "x";stwórz ikonę "x";zadbaj żeby każdy dialog w aplikacji miał ten przycisk
 - [x] przy więcej niż jednej transzy, pomimo wyłączenia sekcji "Transze" formularza prezentowany jest błąd walidacji "Kwota każdej transzy musi być większa od zera.", jeśli sekcja jest wyłączona nie powinna być brana pod uwagę NIGDZIE
-- przy przechodzeniu pomiędzy widokami animuje się przycisk zmiany kierunku sortowania na widoku "Twoje kalkulacje", zastosuj ten sam pattern co m.in. w foldable-section
+- [x] przy przechodzeniu pomiędzy widokami animuje się przycisk zmiany kierunku sortowania na widoku "Twoje kalkulacje", zastosuj ten sam pattern co m.in. w foldable-section
+- z widoku "Porównanie ofert" wyciąć korporacyjny bullshit w treściach, skupić się na prezentacji konkretnych danych i funkcjonalności

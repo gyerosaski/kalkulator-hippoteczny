@@ -111,6 +111,7 @@ export class CalculationsManagerComponent implements OnInit {
 
   protected readonly sortDirection = this.uiStateService.savedCalculationsSortDirection;
   protected readonly SortDirection = SortDirection;
+  protected readonly isAnimatable = signal(false);
 
   constructor() {
     this.activeSortControl.valueChanges
@@ -120,6 +121,8 @@ export class CalculationsManagerComponent implements OnInit {
     afterNextRender(() => {
       this.hostElement.nativeElement.scrollTop = this.uiStateService.calculationsManagerScrollTop();
     });
+
+    afterNextRender(() => this.isAnimatable.set(true));
   }
 
   protected onScroll(): void {

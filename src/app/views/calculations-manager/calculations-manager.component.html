@@ -39,6 +39,7 @@
         class="ico-btn"
         type="button"
         [class.is-flipped]="sortDirection() === SortDirection.DESCENDING"
+        [class.is-animatable]="isAnimatable()"
         (click)="toggleSortDirection()"
         title="Odwróć kierunek sortowania"
         aria-label="Odwróć kierunek sortowania"
