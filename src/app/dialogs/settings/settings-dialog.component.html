@@ -9,6 +9,15 @@
         [formControl]="themeControl"
       />
     </div>
+    <div class="setting-row">
+      <label class="setting-label" for="settings-density">Gęstość</label>
+      <ui-select
+        inputId="settings-density"
+        [options]="densityOptions"
+        [labels]="densityOptions | densityLabel"
+        [formControl]="densityControl"
+      />
+    </div>
   </div>
   <div class="dialog-actions">
     <button class="btn btn--primary" type="button" (click)="dismiss()">Gotowe</button>

@@ -1,4 +1,8 @@
-<div class="app" [attr.data-theme]="themeService.dataTheme()">
+<div
+  class="app"
+  [attr.data-theme]="themeService.dataTheme()"
+  [attr.data-density]="densityService.dataDensity()"
+>
   <ui-topbar />
   <router-outlet />
   <ui-toast />

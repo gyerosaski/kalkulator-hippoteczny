@@ -36,7 +36,7 @@ Deklarowane w `src-tauri/capabilities/default.json`:
 
 ## Ustawienia aplikacji — `settings.json`
 
-Ustawienia aplikacji (obecnie wyłącznie motyw) przechowuje `AppSettingsStoreService`
+Ustawienia aplikacji (motyw i gęstość interfejsu) przechowuje `AppSettingsStoreService`
 (`src/app/services/app-settings-store/app-settings-store.service.ts`) — analogiczny wzorzec do
 `CalculationsStoreService`, oparty o ten sam `@tauri-apps/plugin-store` i uprawnienie `store`.
 
@@ -66,6 +66,19 @@ natychmiastowego pomalowania motywu przy starcie (zero migotania), zanim asynchr
 - `setTheme()` zapisuje motyw kanonicznie przez `updateSettings({ theme })`; zapis do `localStorage`
   realizuje istniejący efekt sygnału. Reconcile używa bezpośredniego ustawienia sygnału (bez ponownego
   zapisu do store), więc nie powstaje echo-write.
+
+### Gęstość — kanoniczny `settings.json` + cache `localStorage`
+
+`DensityService` (`src/app/services/density/density.service.ts`) trzyma gęstość w sygnale wg tego
+samego wzorca co `ThemeService` — źródłem prawdy jest `settings.json`, `localStorage` (klucz
+`density`) pełni rolę szybkiego cache'u przy starcie.
+
+- Reconcile sprawdza konkretnie `stored?.density` (nie samo `stored`), ponieważ pliki `settings.json`
+  zapisane przed wprowadzeniem gęstości zawierają tylko pole `theme` — brak pola `density` jest więc
+  traktowany tak samo jak brak całego pliku (pierwsze uruchomienie): sygnał zostaje przy wartości z
+  `localStorage`/domyślnej, a `settings.json` jest nią uzupełniany (migracja istniejących plików).
+- `setDensity()` zapisuje gęstość kanonicznie przez `updateSettings({ density })`, analogicznie do
+  `setTheme()`.
 
 ## Model rekordu — `SavedCalculationRecord`
 

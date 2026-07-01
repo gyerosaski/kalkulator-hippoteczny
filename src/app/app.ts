@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 import { ThemeService } from './services/theme/theme.service';
+import { DensityService } from './services/density/density.service';
 import { TopbarComponent } from './components/ui/topbar/topbar.component';
 import { ToastComponent } from './components/ui/toast/toast.component';
 
@@ -14,4 +15,5 @@ import { ToastComponent } from './components/ui/toast/toast.component';
 })
 export class App {
   protected readonly themeService = inject(ThemeService);
+  protected readonly densityService = inject(DensityService);
 }

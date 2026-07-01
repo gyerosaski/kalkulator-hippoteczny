@@ -105,9 +105,17 @@ export enum Theme {
   OCHRA = 'OCHRA',
 }
 
-/** Ustawienia aplikacji persystowane w `settings.json`. Obecnie wyłącznie motyw. */
+/** Gęstość interfejsu — steruje odstępami (`--pad`/`--gap`) i rozmiarem czcionki. */
+export enum Density {
+  COZY = 'COZY',
+  COMFORTABLE = 'COMFORTABLE',
+  ROOMY = 'ROOMY',
+}
+
+/** Ustawienia aplikacji persystowane w `settings.json`. */
 export interface AppSettings {
   theme: Theme;
+  density: Density;
 }
 
 /** Wariant kolorystyczny dialogu — neutralny lub ostrzegawczy (operacje nieodwracalne). */

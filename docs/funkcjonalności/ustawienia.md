@@ -27,3 +27,13 @@ Kliknięcie ikony otwiera modalne okno **„Ustawienia”** z listą dostępnych
 - Wybór jest utrwalany między sesjami. Przy starcie aplikacji odczytywany jest zapisany motyw; w razie
   jego braku stosowana jest preferencja systemowa (jasny/ciemny), a w środowisku bez takiej informacji —
   motyw jasny.
+
+### 2.2. Gęstość interfejsu
+
+- Kontrolka: lista rozwijana.
+- Wartości:
+  - „kompaktowa” — mniejsze odstępy między elementami formularza i wyników,
+  - „standardowa” — domyślne odstępy,
+  - „przestronna” — większe odstępy.
+- Wybór jest utrwalany między sesjami. Przy starcie aplikacji odczytywana jest zapisana gęstość; w razie
+  jej braku stosowana jest gęstość standardowa (brak odpowiednika preferencji systemowej).

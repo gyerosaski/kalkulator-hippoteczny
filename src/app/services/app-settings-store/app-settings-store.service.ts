@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { load, type Store } from '@tauri-apps/plugin-store';
 
-import { AppSettings, Theme } from '../../model';
+import { AppSettings, Density, Theme } from '../../model';
 
 const DEFAULT_APP_SETTINGS: AppSettings = {
   theme: Theme.LIGHT,
+  density: Density.COMFORTABLE,
 };
 
 @Injectable({ providedIn: 'root' })

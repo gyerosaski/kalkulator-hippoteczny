@@ -153,13 +153,30 @@ Enum `Theme` (`src/app/model/ui.model.ts:97`): `LIGHT` / `DARK` / `OCHRA`.
 | Ciemny | `dark`            | chłodny ciemny                                    | powierzchnie, tekst, linie, cienie, palety akcentu + `.btn--primary:hover` (blok `.app[data-theme='dark']`)                                                                       |
 | Ochra  | `ochra`           | ciepły wariant ciemny (ugier / oliwka / terakota) | powierzchnie i akcenty na stałych hex, przemapowane kolory semantyczne, `color-scheme: dark`, nadpisania `.btn--primary` oraz `.tbl-row--month` (blok `.app[data-theme='ochra']`) |
 
-### Gęstość i czcionka (obecnie niepodpięte)
+### Gęstość
 
-W `src/styles.scss` istnieją bloki `.app[data-density='cozy'|'roomy']` (sterujące
-`--pad`/`--gap`/`font-size`) oraz `.app[data-font='fraunces'|'system']` (zmiana rodziny
-czcionek — `fraunces` → `--font-display`). **Żaden serwis ani ustawienie obecnie ich nie
-ustawia** — to pozostałość z projektu wzorcowego (`design/angular`). Style są gotowe,
-lecz brak im kontrolki w UI; wystarczy ustawić odpowiedni atrybut na `.app`, aby je aktywować.
+Analogicznie do motywu, przełączaniem steruje `DensityService`
+(`src/app/services/density/density.service.ts`):
+
+- sygnał `density: Density` + `computed dataDensity()` (mapuje gęstość na wartość atrybutu;
+  dla `COMFORTABLE` zwraca `null` — brak atrybutu),
+- preferencja zapisywana w `localStorage('density')`; brak odpowiednika
+  `prefers-color-scheme` (nie ma sensownego sygnału systemowego dla gęstości) — fallback to
+  zawsze `COMFORTABLE`,
+- atrybut `[attr.data-density]` ustawiany na kontenerze `.app` (`src/app/app.html`),
+- wybór z poziomu UI: `app-settings-dialog` (`src/app/dialogs/settings/`) →
+  `ui-select` z etykietami z `DensityLabelPipe`.
+
+Enum `Density` (`src/app/model/ui.model.ts`): `COZY` / `COMFORTABLE` / `ROOMY`. Style w
+`src/styles.scss` — bloki `.app[data-density='cozy'|'roomy']` nadpisują `--pad`/`--gap`/
+`font-size`; `COMFORTABLE` to blok bazowy `.app` bez atrybutu (wartości domyślne tokenów).
+
+### Czcionka (obecnie niepodpięta)
+
+W `src/styles.scss` istnieje blok `.app[data-font='fraunces'|'system']` (zmiana rodziny
+czcionek — `fraunces` → `--font-display`). **Żaden serwis ani ustawienie obecnie go nie
+ustawia** — to pozostałość z projektu wzorcowego (`design/angular`). Styl jest gotowy,
+lecz brak mu kontrolki w UI; wystarczy ustawić atrybut `data-font` na `.app`, aby go aktywować.
 
 ## Katalog kontrolek UI (`src/app/components/ui/`)
 
