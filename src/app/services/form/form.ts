@@ -168,6 +168,11 @@ export class FormService {
       this.tranchesArray.at(0)?.controls.date.setValue(newDate, { emitEvent: false });
     });
 
+    this.form.controls.tranches.controls.enabled.valueChanges.subscribe((enabled) =>
+      this.syncTranchesFieldsEnabledState(enabled),
+    );
+    this.syncTranchesFieldsEnabledState(this.form.controls.tranches.controls.enabled.value);
+
     const currentFormSnapshot = toSignal(
       this.form.valueChanges.pipe(
         startWith(null),
@@ -459,6 +464,7 @@ export class FormService {
     const startDate = this.form.controls.basicData.get('startDate')?.value || ym();
     const nextDate = addMonthsStr(startDate, this.tranchesArray.length);
     this.tranchesArray.push(this.createTrancheGroup(false, { date: nextDate }));
+    this.syncTranchesFieldsEnabledState(this.isTranchesEnabled);
     this.form.updateValueAndValidity();
   }
 
@@ -466,6 +472,18 @@ export class FormService {
     if (index === 0 || this.tranchesArray.length <= 1) return;
     this.tranchesArray.removeAt(index);
     this.form.updateValueAndValidity();
+  }
+
+  private syncTranchesFieldsEnabledState(enabled: boolean): void {
+    this.tranchesArray.controls.forEach((trancheGroup) => {
+      if (enabled) {
+        trancheGroup.controls.amount.enable({ emitEvent: false });
+        trancheGroup.controls.disbursementFee.enable({ emitEvent: false });
+      } else {
+        trancheGroup.controls.amount.disable({ emitEvent: false });
+        trancheGroup.controls.disbursementFee.disable({ emitEvent: false });
+      }
+    });
   }
 
   clearFormArrayExceptFirst(formArray: FormArray): void {
@@ -594,6 +612,7 @@ export class FormService {
     ).forEach((group) => this.additionalCostsArray.push(group));
 
     this.form.patchValue(data);
+    this.syncTranchesFieldsEnabledState(this.isTranchesEnabled);
     this.form.updateValueAndValidity();
   }
 }

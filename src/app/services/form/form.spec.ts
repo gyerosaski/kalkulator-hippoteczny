@@ -236,4 +236,49 @@ describe('FormService', () => {
       expect(service.form.errors?.['capitalBeforeLastTranche']).toBeUndefined();
     });
   });
+
+  describe('walidacja pola "Kwota" transzy — sekcja "Transze" wyłączona', () => {
+    function enableTranches(): void {
+      service.form.controls.tranches.controls.enabled.setValue(true);
+      service.form.updateValueAndValidity();
+    }
+
+    it('should make the form invalid when a second tranche has amount 0 and the section is enabled', () => {
+      enableTranches();
+      service.addTranche();
+
+      expect(service.form.invalid).toBe(true);
+    });
+
+    it('should make the form valid when the section is disabled after adding a second tranche with amount 0', () => {
+      enableTranches();
+      service.addTranche();
+      expect(service.form.invalid).toBe(true);
+
+      service.form.controls.tranches.controls.enabled.setValue(false);
+      service.form.updateValueAndValidity();
+
+      expect(service.form.valid).toBe(true);
+      expect(service.tranchesArray.at(1).controls.amount.disabled).toBe(true);
+    });
+
+    it('should keep tranche amount controls disabled when a tranche is added while the section is already disabled', () => {
+      service.form.controls.tranches.controls.enabled.setValue(false);
+      service.addTranche();
+
+      expect(service.tranchesArray.at(1).controls.amount.disabled).toBe(true);
+      expect(service.form.valid).toBe(true);
+    });
+
+    it('should make the form invalid again when the section is re-enabled with amount still 0', () => {
+      service.form.controls.tranches.controls.enabled.setValue(false);
+      service.addTranche();
+
+      service.form.controls.tranches.controls.enabled.setValue(true);
+      service.form.updateValueAndValidity();
+
+      expect(service.tranchesArray.at(1).controls.amount.disabled).toBe(false);
+      expect(service.form.invalid).toBe(true);
+    });
+  });
 });
