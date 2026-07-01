@@ -63,12 +63,12 @@
 }
 
 .rate-chart-tooltip-row-label {
-  font-size: var(--text-md);
+  font-size: var(--text-base);
   fill: var(--ink-2);
 }
 
 .rate-chart-tooltip-row-value {
-  font-size: var(--text-md);
+  font-size: var(--text-base);
   fill: var(--ink);
   font-family: var(--font-mono);
   font-feature-settings: 'tnum';
@@ -79,5 +79,5 @@
   padding: var(--space-8);
   text-align: center;
   color: var(--muted);
-  font-size: var(--text-md);
+  font-size: var(--text-base);
 }

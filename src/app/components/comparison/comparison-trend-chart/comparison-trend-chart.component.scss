@@ -15,7 +15,7 @@
 }
 
 .trend-compare-tag {
-  font-size: var(--text-2xs);
+  font-size: var(--text-xs);
   font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-widest);
   color: var(--muted);
@@ -24,7 +24,7 @@
 
 .trend-compare-title {
   margin: var(--space-1-5) 0 0;
-  font-size: var(--text-xl);
+  font-size: var(--text-lg);
   font-weight: var(--font-weight-bold);
   color: var(--ink);
 }
@@ -116,12 +116,12 @@
 }
 
 .trend-compare-tooltip-row-label {
-  font-size: var(--text-md);
+  font-size: var(--text-base);
   fill: var(--ink-2);
 }
 
 .trend-compare-tooltip-row-value {
-  font-size: var(--text-md);
+  font-size: var(--text-base);
   fill: var(--ink);
   font-family: var(--font-mono);
   font-feature-settings: 'tnum';
@@ -132,5 +132,5 @@
   padding: var(--space-8);
   text-align: center;
   color: var(--muted);
-  font-size: var(--text-md);
+  font-size: var(--text-base);
 }

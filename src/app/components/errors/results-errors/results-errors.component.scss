@@ -46,7 +46,7 @@
 }
 
 .err-hero-tag {
-  font-size: var(--text-2xs);
+  font-size: var(--text-xs);
   font-weight: var(--font-weight-bold);
   letter-spacing: 0.09em;
   color: var(--err-deep);
@@ -97,7 +97,7 @@
 
 .err-card-title {
   margin: 0;
-  font-size: var(--text-md);
+  font-size: var(--text-base);
   font-weight: var(--font-weight-semibold);
   color: var(--ink);
 }
@@ -134,13 +134,13 @@
 }
 
 .err-row-msg {
-  font-size: var(--text-md);
+  font-size: var(--text-base);
   color: var(--ink);
   line-height: var(--leading-base);
 }
 
 .err-row-detail {
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   color: var(--ink-2);
   background: var(--surface-2);
   padding: var(--space-1) var(--space-2);
@@ -158,12 +158,12 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   color: var(--muted);
 }
 
 .err-row-num {
-  font-size: var(--text-2xs);
+  font-size: var(--text-xs);
   font-weight: var(--font-weight-semibold);
   background: var(--surface-2);
   padding: 1px 5px;

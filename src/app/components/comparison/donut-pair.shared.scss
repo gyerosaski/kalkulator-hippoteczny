@@ -13,7 +13,7 @@
 }
 
 .donut-pair-tag {
-  font-size: var(--text-2xs);
+  font-size: var(--text-xs);
   font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-widest);
   color: var(--muted);
@@ -22,7 +22,7 @@
 
 .donut-pair-title {
   margin: var(--space-1-5) 0 0;
-  font-size: var(--text-xl);
+  font-size: var(--text-lg);
   font-weight: var(--font-weight-bold);
   color: var(--ink);
 }
@@ -67,7 +67,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  font-size: var(--text-md);
+  font-size: var(--text-base);
   color: var(--ink);
 }
 
@@ -103,7 +103,7 @@
 }
 
 .donut-pair-deltas-head {
-  font-size: var(--text-2xs);
+  font-size: var(--text-xs);
   font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-widest);
   color: var(--muted);
@@ -130,7 +130,7 @@
 }
 
 .donut-pair-delta-value--big {
-  font-size: var(--text-xl);
+  font-size: var(--text-lg);
   font-weight: var(--font-weight-bold);
 }
 
@@ -156,7 +156,7 @@
   height: 18px;
   flex-shrink: 0;
   border-radius: 50%;
-  font-size: var(--text-2xs);
+  font-size: var(--text-xs);
   font-weight: var(--font-weight-bold);
   color: var(--surface);
 }

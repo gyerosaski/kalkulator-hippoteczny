@@ -60,7 +60,7 @@
     border: none;
     outline: none;
     background: transparent;
-    font-size: var(--text-md);
+    font-size: var(--text-base);
     color: var(--ink);
 
     &::placeholder {
@@ -80,7 +80,7 @@
   color: var(--muted);
   cursor: pointer;
   padding: 0 var(--space-0-5);
-  font-size: var(--text-xl);
+  font-size: var(--text-lg);
   line-height: 1;
 
   &:hover {

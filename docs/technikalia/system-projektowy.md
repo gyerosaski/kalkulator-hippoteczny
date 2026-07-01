@@ -72,17 +72,18 @@ Te same zmienne zasilają donuty, legendy i wykresy (zob. `docs/technikalia/wykr
 
 ### Typografia
 
-| Grupa         | Tokeny                                                                                                                                                                                                                            |
-| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Rodziny       | `--font-sans` (Inter Tight), `--font-display` (Söhne — wariant `data-font='fraunces'`), `--font-mono` (IBM Plex Mono, cyfry tabelaryczne)                                                                                         |
-| Rozmiary      | `--text-2xs` (10px), `--text-xs` (11px), `--text-sm` (12px), `--text-md` (13px), `--text-base` (14px), `--text-lg` (15px), `--text-xl` (17px), `--text-2xl` (18px), `--text-3xl` (20px), `--text-4xl` (22px), `--text-5xl` (26px) |
-| Wagi          | `--font-weight-regular` (400), `--font-weight-medium` (500), `--font-weight-semibold` (600), `--font-weight-bold` (700)                                                                                                           |
-| Interlinia    | `--leading-tight` (1.1), `--leading-base` (1.45), `--leading-relaxed` (1.5)                                                                                                                                                       |
-| Światło liter | `--tracking-tighter` (−0.02em), `--tracking-tight` (−0.01em), `--tracking-normal` (0), `--tracking-wide` (0.02em), `--tracking-wider` (0.04em), `--tracking-widest` (0.08em)                                                      |
+| Grupa         | Tokeny                                                                                                                                                                       |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Rodziny       | `--font-sans` (Inter Tight), `--font-display` (Söhne — wariant `data-font='fraunces'`), `--font-mono` (IBM Plex Mono, cyfry tabelaryczne)                                    |
+| Rozmiary      | `--text-xs` (10px), `--text-sm` (12px), `--text-base` (14px), `--text-lg` (16px), `--text-xl` (20px)                                                                         |
+| Wagi          | `--font-weight-regular` (400), `--font-weight-medium` (500), `--font-weight-semibold` (600), `--font-weight-bold` (700)                                                      |
+| Interlinia    | `--leading-tight` (1.1), `--leading-base` (1.45), `--leading-relaxed` (1.5)                                                                                                  |
+| Światło liter | `--tracking-tighter` (−0.02em), `--tracking-tight` (−0.01em), `--tracking-normal` (0), `--tracking-wide` (0.02em), `--tracking-wider` (0.04em), `--tracking-widest` (0.08em) |
 
-Skala rozmiarów odwzorowuje wartości faktycznie używane w UI (snap 16↔17 px do
-`--text-xl`). Bazowa typografia `body` pozostaje literałem — element `body` jest
-przodkiem `.app`, w którym zdefiniowane są tokeny, więc nie może ich odczytać.
+Skala rozmiarów to 5 tokenów (mikro-etykiety → drobny tekst → domyślny tekst UI
+→ nagłówki sekcji → duże liczby KPI). Bazowa typografia `body` pozostaje
+literałem — element `body` jest przodkiem `.app`, w którym zdefiniowane są
+tokeny, więc nie może ich odczytać.
 
 ### Odstępy i rozmiary
 

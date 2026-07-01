@@ -97,4 +97,4 @@
 - [x] przy więcej niż jednej transzy, pomimo wyłączenia sekcji "Transze" formularza prezentowany jest błąd walidacji "Kwota każdej transzy musi być większa od zera.", jeśli sekcja jest wyłączona nie powinna być brana pod uwagę NIGDZIE
 - [x] przy przechodzeniu pomiędzy widokami animuje się przycisk zmiany kierunku sortowania na widoku "Twoje kalkulacje", zastosuj ten sam pattern co m.in. w foldable-section
 - [x] z widoku "Porównanie ofert" wyciąć korporacyjny bullshit w treściach, skupić się na prezentacji konkretnych danych i funkcjonalności
-- uwspólnij grubość donuta i pola roku na trend charcie
+- [x] w src/styles/\_variables.scss jest zdefiniowanych aż 10 różnych wielkości czcionek, zaproponuj plan na zmniejszenie ich liczby

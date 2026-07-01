@@ -32,7 +32,7 @@
 }
 
 .compare-hero-tag {
-  font-size: var(--text-2xs);
+  font-size: var(--text-xs);
   font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-widest);
   color: var(--muted);
@@ -237,7 +237,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  font-size: var(--text-md);
+  font-size: var(--text-base);
   font-weight: var(--font-weight-semibold);
   color: var(--ink);
 }
@@ -297,7 +297,7 @@
 }
 
 .step-label {
-  font-size: var(--text-md);
+  font-size: var(--text-base);
   font-weight: var(--font-weight-semibold);
 }
 
@@ -317,7 +317,7 @@
 
 .empty-hero-title {
   margin: var(--space-1-5) 0 0;
-  font-size: var(--text-2xl);
+  font-size: var(--text-xl);
   font-weight: var(--font-weight-bold);
   color: var(--ink);
 }
