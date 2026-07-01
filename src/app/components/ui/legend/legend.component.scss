@@ -7,7 +7,7 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  gap: var(--space-2-5);
+  gap: var(--space-2);
   font-size: var(--text-lg);
   padding-bottom: var(--space-2);
   margin-bottom: var(--space-2);
@@ -33,7 +33,7 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  gap: var(--space-2-5);
+  gap: var(--space-2);
   font-size: var(--text-base);
   padding-top: var(--space-2);
   margin-top: var(--space-2);
@@ -61,7 +61,7 @@
 .legend li {
   display: grid;
   grid-template-columns: 14px 1fr auto;
-  gap: var(--space-2-5);
+  gap: var(--space-2);
   align-items: center;
   font-size: var(--text-base);
   cursor: pointer;

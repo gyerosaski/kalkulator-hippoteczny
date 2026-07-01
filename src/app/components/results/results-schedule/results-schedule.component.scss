@@ -23,7 +23,7 @@ ui-card {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: var(--space-1-5);
+  gap: var(--space-2);
 }
 
 .rate-lower {
@@ -87,10 +87,10 @@ ui-card {
 
 /* Panel ze szczegółami zaznaczonego miesiąca (dwa donuty), pokazywany inline pod wierszem */
 .month-detail {
-  padding: var(--space-3-5) var(--space-5);
+  padding: var(--space-3) var(--space-5);
   background: var(--surface-2);
   border-top: var(--border-width) solid var(--line);
   display: flex;
   flex-direction: column;
-  gap: var(--space-3-5);
+  gap: var(--space-3);
 }

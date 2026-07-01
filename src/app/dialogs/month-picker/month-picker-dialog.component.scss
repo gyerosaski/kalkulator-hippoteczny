@@ -3,7 +3,7 @@
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: var(--space-2-5);
+  gap: var(--space-2);
   padding: var(--space-3) var(--space-5);
 }
 
@@ -38,7 +38,7 @@
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: minmax(0, 1fr);
-  gap: var(--space-1-5);
+  gap: var(--space-2);
   padding: var(--space-3) var(--space-5) 0;
 }
 
@@ -51,7 +51,7 @@
   background: var(--surface-2);
   font: inherit;
   text-align: left;
-  padding: var(--space-2) var(--space-2-5);
+  padding: var(--space-2) var(--space-2);
   border-radius: var(--r-control);
   cursor: pointer;
   transition:
@@ -88,7 +88,7 @@
 .mp-years {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: var(--space-1-5);
+  gap: var(--space-2);
   padding: 0 var(--space-5) var(--space-3);
 }
 
@@ -126,8 +126,8 @@
 
 /* Months panel */
 .mp-months {
-  margin: 0 var(--space-3-5) var(--space-3-5);
-  padding: var(--space-3) var(--space-3-5) var(--space-3-5);
+  margin: 0 var(--space-3) var(--space-3);
+  padding: var(--space-3) var(--space-3) var(--space-3);
   background: var(--surface-2);
   border: var(--border-width) solid var(--line);
   border-radius: var(--r);
@@ -137,7 +137,7 @@
 .mp-months-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-1-5);
+  gap: var(--space-2);
 }
 
 .mp-month {
@@ -146,7 +146,7 @@
   font: inherit;
   font-size: 12.5px;
   color: var(--ink-2);
-  padding: var(--space-2-5) 0;
+  padding: var(--space-2) 0;
   border-radius: var(--r-sm);
   cursor: pointer;
   transition:

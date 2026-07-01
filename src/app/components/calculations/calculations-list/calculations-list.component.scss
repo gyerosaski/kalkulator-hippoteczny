@@ -31,7 +31,7 @@
   padding: 0;
 
   .cell {
-    padding: var(--space-2-5) var(--space-3);
+    padding: var(--space-2) var(--space-3);
     font-size: var(--text-sm);
     font-weight: var(--font-weight-semibold);
     color: var(--muted);
@@ -84,7 +84,7 @@
 .name-row {
   display: flex;
   align-items: center;
-  gap: var(--space-1-5);
+  gap: var(--space-2);
   flex-wrap: wrap;
 }
 
@@ -101,21 +101,21 @@
   font-size: var(--text-base);
   display: flex;
   align-items: baseline;
-  gap: var(--space-0-5);
+  gap: var(--space-1);
 }
 
 .money-sub {
   display: flex;
-  gap: var(--space-1-5);
+  gap: var(--space-2);
   align-items: center;
   font-size: var(--text-sm);
-  margin-top: var(--space-0-5);
+  margin-top: var(--space-1);
 }
 
 .unit {
   font-size: var(--text-sm);
   color: var(--muted);
-  margin-left: var(--space-0-5);
+  margin-left: var(--space-1);
 }
 
 .ltv-badge {
@@ -144,7 +144,7 @@
 .installment-pill {
   font-size: var(--text-xs);
   font-weight: var(--font-weight-medium);
-  padding: var(--space-0-5) var(--space-1-5);
+  padding: var(--space-1) var(--space-2);
   border-radius: var(--r-2xs);
   background: var(--surface-2);
   color: var(--muted);
@@ -169,7 +169,7 @@
 
 .rate-sub {
   font-size: var(--text-sm);
-  margin-top: var(--space-0-5);
+  margin-top: var(--space-1);
 }
 
 .date-relative {
@@ -180,21 +180,21 @@
 
 .date-exact {
   font-size: var(--text-sm);
-  margin-top: var(--space-0-5);
+  margin-top: var(--space-1);
 }
 
 .cell--actions {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-1-5);
+  gap: var(--space-2);
 }
 
 .action-btn {
   display: flex;
   align-items: center;
   gap: 5px;
-  padding: 5px var(--space-2-5);
+  padding: 5px var(--space-2);
   border-radius: var(--r-sm);
   font-size: var(--text-sm);
   font-weight: var(--font-weight-medium);
@@ -247,7 +247,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  padding: 7px var(--space-2-5);
+  padding: 7px var(--space-2);
   font-size: var(--text-base);
   color: var(--ink);
   border: none;
@@ -286,7 +286,7 @@
   flex-direction: column;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-14) var(--space-8);
+  padding: 56px var(--space-8);
   color: var(--muted);
   text-align: center;
 }

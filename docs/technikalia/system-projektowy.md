@@ -87,14 +87,15 @@ tokeny, więc nie może ich odczytać.
 
 ### Odstępy i rozmiary
 
-| Grupa              | Tokeny                                                                                                                                                                                                                                                                  |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Skala odstępów     | `--space-0-5` (2px), `--space-1` (4px), `--space-1-5` (6px), `--space-2` (8px), `--space-2-5` (10px), `--space-3` (12px), `--space-3-5` (14px), `--space-4` (16px), `--space-5` (20px), `--space-6` (24px), `--space-7` (28px), `--space-8` (32px), `--space-14` (56px) |
-| Aliasy semantyczne | `--pad` = `--space-4` (padding sekcji), `--gap` = `--space-3-5` (odstęp w kolumnach/sekcjach) — nadpisywane przez tryby gęstości                                                                                                                                        |
-| Rozmiary kontrolek | `--control-height` (38px), `--control-height-sm` (28px), `--icon-btn-size` (32px), `--switch-track-h` (18px)                                                                                                                                                            |
+| Grupa              | Tokeny                                                                                                                                                       |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Skala odstępów     | `--space-1` (4px), `--space-2` (8px), `--space-3` (12px), `--space-4` (16px), `--space-5` (20px), `--space-6` (24px), `--space-7` (28px), `--space-8` (32px) |
+| Aliasy semantyczne | `--pad` = `--space-4` (padding sekcji), `--gap` = `--space-3` (odstęp w kolumnach/sekcjach) — nadpisywane przez tryby gęstości                               |
+| Rozmiary kontrolek | `--control-height` (38px), `--control-height-sm` (28px), `--icon-btn-size` (32px), `--switch-track-h` (18px)                                                 |
 
-Baza skali to 4 px. Wartości spoza skali (np. 5 px, 18 px gapu w trybie „roomy”,
-wymiary specyficzne) pozostają literałami.
+Baza skali to 4 px. Wartości spoza skali (np. 5 px, 18/22 px paddingu/gapu w trybie
+„roomy”, 56 px paddingu pustego stanu listy kalkulacji, wymiary specyficzne) pozostają
+literałami.
 
 ### Promienie i cienie
 

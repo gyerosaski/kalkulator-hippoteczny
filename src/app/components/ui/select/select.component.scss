@@ -82,7 +82,7 @@ option {
 .sel::after {
   content: '';
   position: absolute;
-  right: var(--space-2-5);
+  right: var(--space-2);
   top: 50%;
   transform: translateY(-50%);
   width: 12px;

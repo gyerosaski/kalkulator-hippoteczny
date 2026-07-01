@@ -28,14 +28,14 @@ body {
 /* Buttons */
 .btn {
   border: 0;
-  padding: var(--space-2) var(--space-3-5);
+  padding: var(--space-2) var(--space-3);
   border-radius: var(--r-control);
   font: inherit;
   font-weight: var(--font-weight-medium);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1-5);
+  gap: var(--space-2);
   transition: all var(--duration-fast) ease;
 }
 
@@ -64,7 +64,7 @@ body {
   color: var(--ink);
 }
 .btn--mini {
-  padding: var(--space-1) var(--space-2-5);
+  padding: var(--space-1) var(--space-2);
   font-size: var(--text-sm);
   background: var(--surface-2);
   color: var(--ink-2);
@@ -79,7 +79,7 @@ body {
   border: var(--border-width) dashed var(--line-2);
   width: 100%;
   justify-content: center;
-  padding: var(--space-2-5);
+  padding: var(--space-2);
   margin-top: var(--space-2);
   border-radius: var(--r);
 }
@@ -120,7 +120,7 @@ body {
   width: 100%;
   display: flex;
   align-items: center;
-  gap: var(--space-2-5);
+  gap: var(--space-2);
   padding: var(--space-4) var(--space-5);
   background: transparent;
   border: 0;
@@ -215,18 +215,18 @@ body {
   border-radius: var(--r-sm);
   font-weight: var(--font-weight-semibold);
   font-size: var(--text-base);
-  margin-bottom: var(--space-1-5);
+  margin-bottom: var(--space-2);
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1-5);
+  gap: var(--space-2);
   min-width: 0;
 }
 .field-label {
   display: flex;
-  gap: var(--space-1-5);
+  gap: var(--space-2);
   align-items: baseline;
   font-size: var(--text-sm);
   color: var(--ink-2);
@@ -288,7 +288,7 @@ body {
 .inp .suffix {
   color: var(--muted);
   font-size: var(--text-sm);
-  margin-left: var(--space-1-5);
+  margin-left: var(--space-2);
 }
 .inp .hint {
   color: var(--muted);
@@ -306,7 +306,7 @@ body {
 
 .inline {
   display: flex;
-  gap: var(--space-1-5);
+  gap: var(--space-2);
   align-items: stretch;
 }
 .inline > ui-number-input {
@@ -347,7 +347,7 @@ body {
   z-index: var(--z-base);
   border: 0;
   background: transparent;
-  padding: var(--space-1-5) var(--space-3);
+  padding: var(--space-2) var(--space-3);
   font: inherit;
   border-radius: var(--r-sm);
   cursor: pointer;
@@ -425,7 +425,7 @@ body {
   bottom: 2px;
 }
 .seg--compact .seg-btn {
-  padding: var(--space-1-5) var(--space-2-5);
+  padding: var(--space-2) var(--space-2);
   font-size: var(--text-sm);
 }
 
@@ -449,7 +449,7 @@ ui-cards-group + ui-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-3) var(--space-3-5);
+  padding: var(--space-3) var(--space-3);
   margin-top: var(--space-2);
   background: color-mix(in oklch, var(--accent) 18%, var(--surface));
   border-radius: var(--r);
@@ -470,7 +470,7 @@ ui-cards-group + ui-card {
   padding: 18px var(--space-5);
   display: flex;
   flex-direction: column;
-  gap: var(--space-3-5);
+  gap: var(--space-3);
 }
 .card-head {
   display: flex;
@@ -515,7 +515,7 @@ ui-cards-group + ui-card {
   display: grid;
   grid-template-columns: var(--tbl-cols, 1.4fr 1fr 1fr 1fr 1.2fr);
   gap: var(--space-2);
-  padding: var(--space-2-5) var(--space-5);
+  padding: var(--space-2) var(--space-5);
   align-items: center;
 }
 .tbl-head {

@@ -98,3 +98,4 @@
 - [x] przy przechodzeniu pomiędzy widokami animuje się przycisk zmiany kierunku sortowania na widoku "Twoje kalkulacje", zastosuj ten sam pattern co m.in. w foldable-section
 - [x] z widoku "Porównanie ofert" wyciąć korporacyjny bullshit w treściach, skupić się na prezentacji konkretnych danych i funkcjonalności
 - [x] w src/styles/\_variables.scss jest zdefiniowanych aż 10 różnych wielkości czcionek, zaproponuj plan na zmniejszenie ich liczby
+- [x] w src/styles/\_variables.scss jest zdefiniowanych aż 12 różnych spacingów, zaproponuj plan na zmniejszenie ich liczby

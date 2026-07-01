@@ -23,7 +23,7 @@
 }
 
 .trend-compare-title {
-  margin: var(--space-1-5) 0 0;
+  margin: var(--space-2) 0 0;
   font-size: var(--text-lg);
   font-weight: var(--font-weight-bold);
   color: var(--ink);
@@ -35,7 +35,7 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: var(--space-5);
-  padding: var(--space-3-5) var(--space-6) 0;
+  padding: var(--space-3) var(--space-6) 0;
   font-size: var(--text-sm);
   color: var(--ink-2);
 }
@@ -43,7 +43,7 @@
 .trend-compare-legend-item {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1-5);
+  gap: var(--space-2);
   font-weight: var(--font-weight-semibold);
 }
 
