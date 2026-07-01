@@ -107,8 +107,8 @@ export enum Theme {
 
 /** Gęstość interfejsu — steruje odstępami (`--pad`/`--gap`) i rozmiarem czcionki. */
 export enum Density {
-  COZY = 'COZY',
-  COMFORTABLE = 'COMFORTABLE',
+  COMPACT = 'COMPACT',
+  STANDARD = 'STANDARD',
   ROOMY = 'ROOMY',
 }
 

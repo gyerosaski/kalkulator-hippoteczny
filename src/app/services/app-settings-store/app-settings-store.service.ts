@@ -5,7 +5,7 @@ import { AppSettings, Density, Theme } from '../../model';
 
 const DEFAULT_APP_SETTINGS: AppSettings = {
   theme: Theme.LIGHT,
-  density: Density.COMFORTABLE,
+  density: Density.STANDARD,
 };
 
 @Injectable({ providedIn: 'root' })

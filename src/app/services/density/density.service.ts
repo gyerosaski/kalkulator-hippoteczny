@@ -13,7 +13,7 @@ export class DensityService {
 
   readonly dataDensity = computed<string | null>(() => {
     const density = this.density();
-    return density === Density.COMFORTABLE ? null : density.toLowerCase();
+    return density === Density.STANDARD ? null : density.toLowerCase();
   });
 
   constructor() {
@@ -50,6 +50,6 @@ export class DensityService {
       const stored = localStorage.getItem('density');
       if (stored && (Object.values(Density) as string[]).includes(stored)) return stored as Density;
     }
-    return Density.COMFORTABLE;
+    return Density.STANDARD;
   }
 }

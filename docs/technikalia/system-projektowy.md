@@ -159,17 +159,17 @@ Analogicznie do motywu, przełączaniem steruje `DensityService`
 (`src/app/services/density/density.service.ts`):
 
 - sygnał `density: Density` + `computed dataDensity()` (mapuje gęstość na wartość atrybutu;
-  dla `COMFORTABLE` zwraca `null` — brak atrybutu),
+  dla `STANDARD` zwraca `null` — brak atrybutu),
 - preferencja zapisywana w `localStorage('density')`; brak odpowiednika
   `prefers-color-scheme` (nie ma sensownego sygnału systemowego dla gęstości) — fallback to
-  zawsze `COMFORTABLE`,
+  zawsze `STANDARD`,
 - atrybut `[attr.data-density]` ustawiany na kontenerze `.app` (`src/app/app.html`),
 - wybór z poziomu UI: `app-settings-dialog` (`src/app/dialogs/settings/`) →
   `ui-select` z etykietami z `DensityLabelPipe`.
 
-Enum `Density` (`src/app/model/ui.model.ts`): `COZY` / `COMFORTABLE` / `ROOMY`. Style w
-`src/styles.scss` — bloki `.app[data-density='cozy'|'roomy']` nadpisują `--pad`/`--gap`/
-`font-size`; `COMFORTABLE` to blok bazowy `.app` bez atrybutu (wartości domyślne tokenów).
+Enum `Density` (`src/app/model/ui.model.ts`): `COMPACT` / `STANDARD` / `ROOMY`. Style w
+`src/styles.scss` — bloki `.app[data-density='compact'|'roomy']` nadpisują `--pad`/`--gap`/
+`font-size`; `STANDARD` to blok bazowy `.app` bez atrybutu (wartości domyślne tokenów).
 
 ### Czcionka (obecnie niepodpięta)
 

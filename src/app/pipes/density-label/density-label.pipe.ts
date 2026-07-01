@@ -2,8 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { Density } from '../../model';
 
 const LABELS: Record<Density, string> = {
-  [Density.COZY]: 'kompaktowa',
-  [Density.COMFORTABLE]: 'standardowa',
+  [Density.COMPACT]: 'kompaktowa',
+  [Density.STANDARD]: 'standardowa',
   [Density.ROOMY]: 'przestronna',
 };
 
