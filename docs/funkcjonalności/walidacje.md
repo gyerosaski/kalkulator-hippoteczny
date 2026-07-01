@@ -126,8 +126,8 @@ Walidacje obejmujące wiele pól lub sekcji prezentowane są jako lista błędó
 | Początek spłat kapitału wcześniejszy niż data uruchomienia kredytu                               | błąd: początek spłat kapitału nie może być wcześniejszy niż data uruchomienia            |
 | Transze włączone, liczba transz > 1, początek spłat kapitału nie późniejszy niż ostatnia transza | błąd: początek spłat kapitału musi przypadać po dacie uruchomienia ostatniej transzy     |
 | Transze włączone i suma transz ≠ kwocie kredytu (tolerancja 0,01 zł)                             | błąd: suma transz musi być równa kwocie kredytu (z podaniem kwoty oczekiwanej i różnicy) |
-| Kwota dowolnej transzy niepoprawna (≤ 0)                                                         | błąd: kwota każdej transzy musi być większa od zera                                      |
-| Opłata za uruchomienie dowolnej transzy większa niż 1 000 zł                                     | błąd: wysokość opłaty za uruchomienie transzy nie może być wyższa niż 1 000 zł           |
+| Transze włączone i kwota dowolnej transzy niepoprawna (≤ 0)                                      | błąd: kwota każdej transzy musi być większa od zera                                      |
+| Transze włączone i opłata za uruchomienie dowolnej transzy większa niż 1 000 zł                  | błąd: wysokość opłaty za uruchomienie transzy nie może być wyższa niż 1 000 zł           |
 | Reguła nadpłaty (nie „jednorazowo") z datą „do" wcześniejszą niż „od"                            | błąd: w regule nadpłaty data „do" nie może być wcześniejsza niż data „od"                |
 | Ujemna kwota nadpłaty                                                                            | błąd: kwota nadpłaty nie może być ujemna                                                 |
 | Reguła docelowej raty z datą „do" wcześniejszą niż „od"                                          | błąd: w regule docelowej raty data „do" nie może być wcześniejsza niż data „od"          |

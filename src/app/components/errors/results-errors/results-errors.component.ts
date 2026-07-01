@@ -118,7 +118,10 @@ export class ResultsErrorsComponent {
     }
 
     const tranches = this.formService.tranchesArray;
-    if (tranches.controls.some((c) => c.get('amount')?.invalid)) {
+    if (
+      this.formService.isTranchesEnabled &&
+      tranches.controls.some((c) => c.get('amount')?.invalid)
+    ) {
       errs.push({
         section: FormErrorSection.TRANCHES,
         message: 'Kwota każdej transzy musi być większa od zera.',
@@ -126,7 +129,10 @@ export class ResultsErrorsComponent {
         fieldId: 'trancheAmount',
       });
     }
-    if (tranches.controls.some((c) => c.get('disbursementFee')?.errors?.['max'])) {
+    if (
+      this.formService.isTranchesEnabled &&
+      tranches.controls.some((c) => c.get('disbursementFee')?.errors?.['max'])
+    ) {
       errs.push({
         section: FormErrorSection.TRANCHES,
         message: 'Wysokość opłaty za uruchomienie transzy nie może być wyższa niż 1 000 zł.',

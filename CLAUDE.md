@@ -98,6 +98,7 @@ Dialogs (`src/app/dialogs/`): `save-calculation`, `rename-calculation`, `delete-
 
 ### Key conventions
 
+- **Plany do realizacji zapisuj w języku polskim**
 - **All components are standalone** with `OnPush` change detection.
 - **Component templates always live in a separate `.html` file** (`templateUrl`) — never use inline `template: \`...\``in the`@Component` decorator.
 - **SVG icons are always separate components** placed in `src/app/components/icons/<icon-name>/`. Never inline SVG markup directly in templates — always use the corresponding icon component (e.g. `<icon-calculator />`). Exception: data-driven chart SVGs (like donut charts with Angular bindings) stay in their own chart components. Every icon component MUST declare `host: { class: 'icon' }` in its `@Component` decorator — the global `.icon` rule in `src/styles.scss` renders the host as `inline-flex` with `vertical-align: middle`, which keeps the icon vertically centred against adjacent text in any context (flex, grid, inline). Because of Angular's emulated view encapsulation, a consumer's stylesheet cannot reach the inner `<svg>` (it carries the icon component's scope attribute, not the consumer's), so never try to fix icon alignment with `svg { display: … }` rules in feature components — rely on the `icon` host class instead.
