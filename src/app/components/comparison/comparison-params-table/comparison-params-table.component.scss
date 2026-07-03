@@ -1,3 +1,5 @@
+@use 'variables' as *;
+
 .params-table-section {
   border: var(--border-width) solid var(--line);
   border-radius: var(--r-xl);
@@ -163,7 +165,7 @@
 }
 
 /* ---------- Responsive ---------- */
-@media (max-width: 860px) {
+@media (max-width: $breakpoint-tablet-narrow) {
   .params-table-head,
   .params-table-row {
     grid-template-columns: 1fr 140px 140px 90px;

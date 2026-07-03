@@ -259,3 +259,74 @@ poniżej skrótowy przegląd grup:
   „Data uruchomienia kredytu” i „Początek spłat kapitału”, które skrótów nie pokazują.
 - **Typografia / pomocnicze:** `.mono` (cyfry tabelaryczne, IBM Plex Mono),
   `.muted`, `.small`.
+
+## Responsywność (RWD)
+
+Aplikacja adaptuje układ do szerokości okna przez media queries `max-width`
+(desktop-first — style bazowe opisują pełny układ, węższe ekrany je nadpisują).
+Progi żyją jako zmienne SCSS w `src/styles/_variables.scss` (media queries nie
+potrafią czytać CSS custom properties); katalog `src/styles` jest dodany do
+`stylePreprocessorOptions.includePaths` w `angular.json`, więc SCSS komponentu
+importuje je przez `@use 'variables' as *;`. Zawartość tokenów/motywów w
+`_variables.scss` jest opakowana w mixin `design-tokens` (dołączany wyłącznie
+w `src/styles.scss`), dzięki czemu `@use` z komponentów nie duplikuje CSS.
+
+Zmienne progów i ich efekty:
+
+- **`$breakpoint-desktop-wide` (1280px)** — `.row--4` zwija się do 2 kolumn
+  (w układzie dwukolumnowym kolumna formularza robi się za ciasna na 4 pola).
+- **`$breakpoint-desktop` (1100px)** — lista „Twoje kalkulacje”
+  (`calculations-list`): znikają kolumny „Odsetki” i „Zmodyfikowano”.
+- **`$breakpoint-tablet-wide` (1024px)** — widok kalkulatora:
+  `.two-column-layout` przechodzi z dwóch niezależnie przewijanych kolumn na
+  układ jednokolumnowy (formularz nad wynikami), a przewijanie przejmuje host
+  widoku; widok porównania: wykresy trendu „obok siebie” układają się pionowo.
+- **`$breakpoint-tablet` (900px)** — `ui-topbar`: siatka `1fr auto 1fr` zmienia
+  się w dwa rzędy (marka + akcje, pod spodem zakładki pełną szerokością z
+  poziomym przewijaniem; wskaźnik aktywnej zakładki jest przeliczany także na
+  `window:resize`); lista kalkulacji chowa dodatkowo kolumny „Oproc.”
+  i „Pierwsza rata”.
+- **`$breakpoint-tablet-narrow` (860px) / `$breakpoint-phone-wide` (720px)** —
+  komponenty porównania ofert (tabele parametrów/różnic, pary donutów, KPI,
+  sloty A/B + hero, kroki empty state) przechodzą na układy jednokolumnowe;
+  przycisk zamiany ofert obraca strzałki w pion.
+- **`$breakpoint-phone` (600px)** — siatki pól `.row--2/3/4` zwijają się do
+  jednej kolumny; `.rate-period-from` przestaje mieć sztywną szerokość; donuty
+  wyników układają legendę pod wykresem (donut wyśrodkowany, maks. 260px);
+  tabela harmonogramu (`results-schedule`) dostaje poziome przewijanie
+  (`min-width` na wierszach i wrapperach animacji rozwijania); wiersz listy
+  kalkulacji zamienia się w kartę (nagłówek tabeli ukryty, nazwa i akcje pełną
+  szerokością); toolbar menedżera kalkulacji układa się pionowo.
+
+Nowe media queries piszemy per komponent (w SCSS komponentu) z użyciem powyższych
+zmiennych — nie wprowadzamy nowych progów bez potrzeby.
+
+## Wyrównanie pól w wierszach formularza (subgrid)
+
+Pola w siatkach `.row--N` muszą mieć inputy wyrównane w pionie niezależnie od
+tego, czy etykieta łamie się na dwie linie albo czy tylko jedno pole ma
+podpowiedź. Realizuje to CSS subgrid: każdy `ui-field` będący dzieckiem `.row`
+(oraz jego wewnętrzny `.field`) rozpina się przez `grid-template-rows: subgrid`
+na trzy współdzielone wiersze — etykieta / kontrolka / podpowiedź — więc
+wysokości tych stref są wspólne dla całego wiersza siatki. Odstępy między
+strefami realizują paddingi na `.field-label` (dół) i `.field-hint` (góra),
+a nie `gap`, żeby puste strefy nie dokładały pustej przestrzeni. Oba poziomy
+subgrida deklarują kolumnę `minmax(0, 1fr)` — bez tego wewnętrzna kolumna
+auto-wymiarowałaby się do max-content i zawartość (np. `.inline` z inputem
+i segmentem) wystawałaby poza komórkę siatki.
+
+Przyciski `ui-segmented` (`.seg-btn`) mają `flex: 1 1 auto` + przycinanie
+z wielokropkiem: segment najpierw mieści swój tekst (podział nierówny), nadmiar
+dzielony jest po równo, a etykieta nigdy nie wychodzi poza obrys kontrolki.
+
+## Skalowanie donutów wyników
+
+`ui-donut` rysuje SVG w układzie współrzędnych `viewBox` (o boku `size`,
+domyślnie 216) i ma dwa tryby: sztywny (wrap dostaje `width`/`height` w px
+równie `size` — tak działa m.in. w parach donutów porównania) oraz płynny
+(`fluid` — wrap wypełnia szerokość kontenera, proporcje trzyma
+`aspect-ratio: 1/1`). Karty „Struktura płatności” i „Struktura raty” używają
+trybu płynnego, a ich `.donut-row` przydziela donutowi pas
+`clamp(216px, 34%, 300px)` — donut skaluje się więc z szerokością kolumny
+wyników w podobnym tempie co pełnoszerokościowy wykres trendu, co utrzymuje
+oba komponenty w zbliżonej skali na każdej rozdzielczości.

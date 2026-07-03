@@ -1,3 +1,5 @@
+@use 'variables' as *;
+
 :host {
   display: flex;
   flex: 1;
@@ -25,5 +27,40 @@
 
   &::-webkit-scrollbar {
     display: none;
+  }
+}
+
+/* Tablet i telefon: kolumny jedna pod drugą, przewija się cały widok zamiast każdej kolumny osobno */
+@media (max-width: $breakpoint-tablet-wide) {
+  :host {
+    display: block;
+    overflow-y: auto;
+
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .two-column-layout {
+    flex-direction: column;
+    padding: var(--space-4);
+  }
+
+  .column {
+    flex: none;
+    overflow: visible;
+    padding-bottom: 0;
+  }
+
+  .column:last-child {
+    padding-bottom: var(--space-8);
+  }
+}
+
+@media (max-width: $breakpoint-phone) {
+  .two-column-layout {
+    padding: var(--space-3);
   }
 }

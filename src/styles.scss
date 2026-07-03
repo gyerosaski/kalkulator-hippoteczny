@@ -1,5 +1,7 @@
 @use 'styles/variables' as *;
 
+@include design-tokens;
+
 /* Reset */
 * {
   box-sizing: border-box;
@@ -216,6 +218,20 @@ body {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+/* Węższe ekrany: siatki pól zwijają się do mniejszej liczby kolumn */
+@media (max-width: $breakpoint-desktop-wide) {
+  .row--4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: $breakpoint-phone) {
+  .row--2,
+  .row--3,
+  .row--4 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .tranche-num {
   width: var(--space-7);
   height: var(--space-7);
@@ -234,6 +250,32 @@ body {
   flex-direction: column;
   gap: var(--space-2);
   min-width: 0;
+}
+/* Wyrównanie pionowe pól w wierszu siatki: każde pole rozpina się przez subgrid
+   na trzy współdzielone wiersze (etykieta / kontrolka / podpowiedź), więc inputy
+   w wierszu pozostają wyrównane także wtedy, gdy któraś z sąsiednich etykiet
+   złamie się na dwie linie albo tylko jedno pole ma podpowiedź. Odstępy między
+   wierszami subgrida realizują paddingi (nie gap), żeby puste wiersze nie
+   dokładały pustej przestrzeni. */
+.row > ui-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: subgrid;
+  grid-row: span 3;
+}
+.row > ui-field > .field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: subgrid;
+  grid-row: span 3;
+  gap: 0;
+}
+.row > ui-field .field-label {
+  align-self: end;
+  padding-bottom: var(--space-2);
+}
+.row > ui-field .field-hint {
+  padding-top: var(--space-2);
 }
 .field-label {
   display: flex;
@@ -353,7 +395,8 @@ body {
   }
 }
 .seg-btn {
-  flex: 1;
+  /* basis auto: segment najpierw mieści swój tekst, dopiero nadmiar dzielony jest po równo */
+  flex: 1 1 auto;
   position: relative;
   z-index: var(--z-base);
   border: 0;
@@ -364,6 +407,11 @@ body {
   cursor: pointer;
   color: var(--ink-2);
   font-weight: var(--font-weight-medium);
+  /* etykieta nie może wyjść poza obrys kontrolki — przy braku miejsca jest przycinana z wielokropkiem */
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .seg-btn.is-on {
   color: var(--ink);
@@ -447,6 +495,14 @@ body {
 .rate-period-from {
   width: 184px;
   flex-shrink: 0;
+}
+
+@media (max-width: $breakpoint-phone) {
+  .rate-period-from {
+    width: auto;
+    flex: 1;
+    min-width: 0;
+  }
 }
 
 ui-card + ui-card,

@@ -31,6 +31,7 @@ import { AppRoute } from '../../../model';
   templateUrl: './topbar.component.html',
   styleUrls: ['./topbar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '(window:resize)': 'updateIndicatorPosition()' },
 })
 export class TopbarComponent {
   private readonly router = inject(Router);
@@ -70,18 +71,21 @@ export class TopbarComponent {
 
   constructor() {
     afterRenderEffect(() => {
-      const buttons = this.tabButtonElements();
-      const activeIndex = this.activeTabIndex();
-      const activeButton = buttons[activeIndex]?.nativeElement;
-      if (!activeButton) return;
-      const parentRect = activeButton.parentElement!.getBoundingClientRect();
-      const buttonRect = activeButton.getBoundingClientRect();
-      this.indicatorStyle.set({
-        left: `${buttonRect.left - parentRect.left}px`,
-        width: `${buttonRect.width}px`,
-      });
-      this.isIndicatorVisible.set(true);
+      this.tabButtonElements();
+      this.activeTabIndex();
+      this.updateIndicatorPosition();
     });
+  }
+
+  protected updateIndicatorPosition(): void {
+    const buttons = this.tabButtonElements();
+    const activeButton = buttons[this.activeTabIndex()]?.nativeElement;
+    if (!activeButton) return;
+    this.indicatorStyle.set({
+      left: `${activeButton.offsetLeft}px`,
+      width: `${activeButton.offsetWidth}px`,
+    });
+    this.isIndicatorVisible.set(true);
   }
 
   navigateToCalculator(): void {

@@ -1,3 +1,5 @@
+@use 'variables' as *;
+
 :host {
   display: block;
   flex: 1;
@@ -105,4 +107,29 @@
 
 .sort-control .ico-btn.is-flipped icon-arrow-up {
   transform: rotate(180deg);
+}
+
+/* Telefon: pole szukania i sortowanie układają się pionowo, pełną szerokością */
+@media (max-width: $breakpoint-phone) {
+  .saved-view {
+    padding-top: var(--space-4);
+  }
+
+  .view-hero {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .search-field {
+    flex-basis: 100%;
+  }
+
+  .sort-control {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .sort-control ui-select {
+    flex: 1;
+    min-width: 0;
+  }
 }

@@ -1,3 +1,5 @@
+@use 'variables' as *;
+
 .kpi-section {
   border: var(--border-width) solid var(--line);
   border-radius: var(--r-xl);
@@ -135,7 +137,7 @@
 }
 
 /* ---------- Responsive ---------- */
-@media (max-width: 720px) {
+@media (max-width: $breakpoint-phone-wide) {
   .kpi-row {
     grid-template-columns: 1fr;
   }

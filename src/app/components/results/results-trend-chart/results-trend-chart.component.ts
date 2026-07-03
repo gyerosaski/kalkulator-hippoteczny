@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  afterRenderEffect,
+  computed,
+  inject,
+  input,
+  signal,
+  viewChild,
+} from '@angular/core';
 import {
   ChartSlice,
   ColorCodeArea,
@@ -61,6 +71,9 @@ const STACK_SEGMENT_DESCRIPTORS: readonly StackSegmentDescriptor[] = [
 const STACK_TICK_STEP = 5_000;
 const BALANCE_TICK_STEP = 50_000;
 
+/** Docelowa szerokość rocznego słupka w px ekranu — stała niezależnie od skalowania SVG. */
+const BAR_SCREEN_WIDTH = 24;
+
 const AXIS_AMOUNT_FORMATTER = new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 0 });
 
 function formatAxisAmount(value: number): string {
@@ -99,6 +112,23 @@ export class ResultsTrendChartComponent {
 
   private readonly localSelectedYearIndex = signal<number | null>(null);
 
+  private readonly svgElement = viewChild<ElementRef<SVGSVGElement>>('trendSvg');
+
+  /** Zmierzona (wyrenderowana) szerokość SVG — pozwala przeliczyć px ekranu na jednostki viewBox. */
+  private readonly renderedSvgWidth = signal<number | null>(null);
+
+  constructor() {
+    afterRenderEffect((onCleanup) => {
+      const svg = this.svgElement()?.nativeElement;
+      if (!svg) return;
+      const observer = new ResizeObserver((entries) => {
+        this.renderedSvgWidth.set(entries[0].contentRect.width);
+      });
+      observer.observe(svg);
+      onCleanup(() => observer.disconnect());
+    });
+  }
+
   protected readonly selectedYearIndex = computed(() =>
     this.rememberUiState()
       ? this.uiStateService.selectedTrendYearIndex()
@@ -121,7 +151,11 @@ export class ResultsTrendChartComponent {
     const yearCount = groups.length;
 
     const columnWidth = innerWidth / yearCount;
-    const barWidth = Math.max(8, columnWidth * 0.74);
+    /* Stała szerokość słupka w px ekranu: przeliczana na jednostki viewBox przez zmierzoną
+       skalę renderowania SVG; przy ciasnych kolumnach (dużo lat / wąski ekran) słupek
+       zwęża się, żeby słupki nie nachodziły na siebie. */
+    const renderScale = (this.renderedSvgWidth() ?? width) / width;
+    const barWidth = Math.max(4, Math.min(BAR_SCREEN_WIDTH / renderScale, columnWidth * 0.8));
     const xCenterForIndex = (index: number) => paddingLeft + columnWidth * (index + 0.5);
 
     const stackTotals = groups.map(

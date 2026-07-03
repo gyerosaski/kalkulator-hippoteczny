@@ -1,3 +1,5 @@
+@use 'variables' as *;
+
 :host {
   display: block;
   flex: 1;
@@ -197,6 +199,26 @@
   color: var(--line-2);
 }
 
+/* Telefon: sloty ofert jeden pod drugim, przycisk zamiany między nimi (strzałki obrócone w pion) */
+@media (max-width: $breakpoint-phone-wide) {
+  .compare-slots {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .compare-swap {
+    justify-self: center;
+    transform: rotate(90deg);
+
+    &:not(:disabled):hover {
+      transform: rotate(270deg);
+    }
+  }
+
+  .compare-hero {
+    padding: var(--space-4) var(--space-5);
+  }
+}
+
 /* ---------- Pasek akcji globalnych ---------- */
 .compare-actions {
   display: flex;
@@ -242,7 +264,7 @@
   color: var(--ink);
 }
 
-@media (max-width: 1024px) {
+@media (max-width: $breakpoint-tablet-wide) {
   .trend-side-by-side {
     grid-template-columns: 1fr;
   }
@@ -351,7 +373,7 @@
   line-height: var(--leading-relaxed);
 }
 
-@media (max-width: 720px) {
+@media (max-width: $breakpoint-phone-wide) {
   .step-label {
     display: none;
   }

@@ -1,5 +1,10 @@
-<div class="donut-wrap" [style.width.px]="size()" [style.height.px]="size()">
-  <svg [attr.width]="size()" [attr.height]="size()">
+<div
+  #donutWrap
+  class="donut-wrap"
+  [style.width.px]="fluid() ? null : size()"
+  [style.height.px]="fluid() ? null : size()"
+>
+  <svg class="donut-svg" [attr.viewBox]="'0 0 ' + effectiveSize() + ' ' + effectiveSize()">
     <circle
       [attr.cx]="c()"
       [attr.cy]="c()"

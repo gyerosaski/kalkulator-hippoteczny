@@ -1,3 +1,5 @@
+@use 'variables' as *;
+
 /* Wspólne style pary donutów (sekcje 3.5 i 3.6 widoku „Porównanie ofert”). */
 
 .donut-pair-section {
@@ -170,7 +172,7 @@
 }
 
 /* ---------- Responsive ---------- */
-@media (max-width: 860px) {
+@media (max-width: $breakpoint-tablet-narrow) {
   .donut-pair {
     grid-template-columns: 1fr;
     justify-items: center;

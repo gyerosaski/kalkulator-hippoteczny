@@ -38,6 +38,7 @@
 
   @if (geometry(); as geometry) {
     <svg
+      #trendSvg
       class="trend-chart-svg"
       [attr.viewBox]="'0 0 ' + geometry.width + ' ' + geometry.height"
       preserveAspectRatio="xMidYMid meet"

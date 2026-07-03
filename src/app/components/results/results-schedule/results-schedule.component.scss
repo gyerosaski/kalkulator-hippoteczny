@@ -1,3 +1,5 @@
+@use 'variables' as *;
+
 ui-card {
   --ui-card-padding: 18px 0 0;
 }
@@ -83,6 +85,21 @@ ui-card {
 .month-reveal-inner {
   overflow: hidden;
   min-height: 0;
+}
+
+/* Telefon: tabela z wieloma kolumnami liczbowymi przewija się poziomo,
+   wewnętrzne wrappery animacji dostają tę samą szerokość minimalną, żeby nic nie było przycinane */
+@media (max-width: $breakpoint-phone) {
+  .tbl {
+    overflow-x: auto;
+  }
+
+  .tbl-head,
+  .tbl-row,
+  .rows-reveal,
+  .month-reveal {
+    min-width: 640px;
+  }
 }
 
 /* Panel ze szczegółami zaznaczonego miesiąca (dwa donuty), pokazywany inline pod wierszem */
