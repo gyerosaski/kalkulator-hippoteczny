@@ -152,7 +152,7 @@ Enum `Theme` (`src/app/model/ui.model.ts:97`): `LIGHT` / `DARK` / `OCHRA`.
 | Ciemny | `dark`            | chłodny ciemny                                    | powierzchnie, tekst, linie, cienie, palety akcentu + `.btn--primary:hover` (blok `.app[data-theme='dark']`)                                                                       |
 | Ochra  | `ochra`           | ciepły wariant ciemny (ugier / oliwka / terakota) | powierzchnie i akcenty na stałych hex, przemapowane kolory semantyczne, `color-scheme: dark`, nadpisania `.btn--primary` oraz `.tbl-row--month` (blok `.app[data-theme='ochra']`) |
 
-### Gęstość
+### Gęstość interfejsu
 
 Analogicznie do motywu, przełączaniem steruje `DensityService`
 (`src/app/services/density/density.service.ts`):

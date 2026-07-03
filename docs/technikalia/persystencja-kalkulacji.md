@@ -67,7 +67,7 @@ natychmiastowego pomalowania motywu przy starcie (zero migotania), zanim asynchr
   realizuje istniejący efekt sygnału. Reconcile używa bezpośredniego ustawienia sygnału (bez ponownego
   zapisu do store), więc nie powstaje echo-write.
 
-### Gęstość — kanoniczny `settings.json` + cache `localStorage`
+### Gęstość interfejsu — kanoniczny `settings.json` + cache `localStorage`
 
 `DensityService` (`src/app/services/density/density.service.ts`) trzyma gęstość w sygnale wg tego
 samego wzorca co `ThemeService` — źródłem prawdy jest `settings.json`, `localStorage` (klucz
