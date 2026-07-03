@@ -33,7 +33,7 @@ export class OverheadCostBreakdownService {
         value: item.value,
         color: 'var(--c-cost)',
         variant: ColorCodeArea.COST,
-        navigationTarget: overheadCostNavigationTarget(item.kind),
+        navigationTarget: overheadCostNavigationTarget(item.kind, item.name),
       }));
   }
 }

@@ -27,6 +27,12 @@ export interface ChartSlice extends DonutSlice {
 export interface FormSectionNavigationTarget {
   sectionId: FormSectionId;
   subsectionKey?: string;
+  /**
+   * Identyfikator konkretnego elementu dynamicznej listy w podsekcji (np. nazwa kosztu
+   * dodatkowego). Gdy ustawiony, przewinięcie i wyróżnienie celują w ten element,
+   * a nie w tytuł podsekcji.
+   */
+  itemKey?: string;
 }
 
 export interface TrendBarSegmentRect {

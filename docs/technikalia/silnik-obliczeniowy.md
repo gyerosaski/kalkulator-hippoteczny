@@ -149,3 +149,21 @@ Kliknięcie etykiety pozycji legendy powiązanej z sekcją formularza wywołuje
 `overheadCostNavigationTarget` (koszt → sekcja) i `interestComponentNavigationTarget`
 (składnik odsetek → sekcja), oba w `form-navigation.helper.ts`. „Odsetki bazowe” → sekcja
 `RATE_PERIODS`; pozostałe składniki odsetek → podsekcje „Koszty okołokredytowe”.
+
+Szczegóły przewijania: kotwicą sekcji jest `id` hosta `ui-foldable-section`
+(`formSectionAnchorId`), kotwicą podsekcji — `id` hosta `ui-subsection`
+(`formSubsectionAnchorId`; `ui-subsection` czerpie `sectionId` z wstrzykniętego rodzica
+`FoldableSectionComponent`, a klucz z inputu `subsectionKey`). Cel może dodatkowo wskazywać
+element dynamicznej listy przez `itemKey` (`FormSectionNavigationTarget.itemKey`) — dziś używane
+dla kosztów dodatkowych, gdzie kluczem jest przycięta nazwa kosztu (`overheadCostNavigationTarget`
+dokleja ją dla `ADDITIONAL_COST`). Kotwicą elementu jest `id` z `formListItemAnchorId`
+(klucz kodowany `encodeURIComponent`), bindowane w szablonie kosztów na `ui-card` z sygnału
+`additionalCostNames`. Gdy sekcja była zwinięta, `revealFormSection()` czeka na `transitionend`
+animacji `grid-template-rows` na `.sec-body` (z awaryjnym timeoutem), bo dopiero wtedy pozycja celu
+jest ostateczna. Elementy list i podsekcje przewijane są z `block: 'center'`, całe sekcje
+z `block: 'start'`; brakujący element listy (np. po zmianie nazwy) degraduje cel do podsekcji.
+Po starcie przewinięcia sygnał `UiStateService.highlightedNavigationTarget` przez ~2 s wskazuje
+cel — `ui-subsection` / `ui-foldable-section` nakładają wtedy na tytuł globalną klasę
+`.title-pulse`, a `ui-card` (input `highlighted`) pulsuje obrysem przez klasę `.card--pulse`;
+tytuł podsekcji nie pulsuje, gdy cel ma `itemKey`. Ponowne kliknięcie restartuje animację przez
+zdjęcie i ponowne nałożenie klasy.

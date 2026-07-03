@@ -10,7 +10,7 @@
       <ui-color-code-marker [variant]="context()!" />
     }
     @if (title()) {
-      <span class="subsec-title">{{ title() }}</span>
+      <span class="subsec-title" [class.title-pulse]="isHighlighted()">{{ title() }}</span>
     }
     <span class="subsec-chev"><icon-chevron-right /></span>
   </button>

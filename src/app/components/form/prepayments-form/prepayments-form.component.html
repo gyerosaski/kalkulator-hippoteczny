@@ -12,6 +12,7 @@
       [context]="colorCodeArea.PREPAYMENT"
       [num]="1"
       title="Reguły nadpłat"
+      subsectionKey="prepaymentRules"
       [open]="openSubsection() === 'prepaymentRules'"
       (openChange)="setSubsectionOpen('prepaymentRules', $event)"
     >
@@ -91,6 +92,7 @@
       [context]="colorCodeArea.PREPAYMENT"
       [num]="2"
       title="Docelowa rata"
+      subsectionKey="rataDocelowaRegula"
       [open]="openSubsection() === 'rataDocelowaRegula'"
       (openChange)="setSubsectionOpen('rataDocelowaRegula', $event)"
     >
@@ -138,6 +140,7 @@
       [context]="colorCodeArea.COST"
       [num]="3"
       title="Prowizja za wcześniejszą spłatę"
+      subsectionKey="prowizjaWczesniejszaSplata"
       [open]="openSubsection() === 'prowizjaWczesniejszaSplata'"
       (openChange)="setSubsectionOpen('prowizjaWczesniejszaSplata', $event)"
     >

@@ -66,8 +66,17 @@ export const PREPAYMENTS_NAVIGATION_TARGET: FormSectionNavigationTarget = {
   sectionId: FormSectionId.PREPAYMENTS,
 };
 
-export function overheadCostNavigationTarget(kind: OverheadCostKind): FormSectionNavigationTarget {
-  return OVERHEAD_COST_NAVIGATION_TARGETS[kind];
+export function overheadCostNavigationTarget(
+  kind: OverheadCostKind,
+  itemName?: string,
+): FormSectionNavigationTarget {
+  const baseTarget = OVERHEAD_COST_NAVIGATION_TARGETS[kind];
+  const trimmedItemName = itemName?.trim();
+  // koszty dodatkowe mają w legendzie osobne pozycje per nazwa — celujemy w konkretny element listy
+  if (kind === OverheadCostKind.ADDITIONAL_COST && trimmedItemName) {
+    return { ...baseTarget, itemKey: trimmedItemName };
+  }
+  return baseTarget;
 }
 
 export function interestComponentNavigationTarget(
@@ -78,4 +87,17 @@ export function interestComponentNavigationTarget(
 
 export function formSectionAnchorId(sectionId: FormSectionId): string {
   return `form-section-${sectionId.toLowerCase()}`;
+}
+
+export function formSubsectionAnchorId(sectionId: FormSectionId, subsectionKey: string): string {
+  return `${formSectionAnchorId(sectionId)}-${subsectionKey.toLowerCase()}`;
+}
+
+/** `itemKey` jest kodowany, bo pochodzi z tekstu użytkownika (id nie może zawierać białych znaków). */
+export function formListItemAnchorId(
+  sectionId: FormSectionId,
+  subsectionKey: string,
+  itemKey: string,
+): string {
+  return `${formSubsectionAnchorId(sectionId, subsectionKey)}-item-${encodeURIComponent(itemKey)}`;
 }

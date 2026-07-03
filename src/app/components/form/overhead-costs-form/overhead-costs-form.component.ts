@@ -10,6 +10,7 @@ import {
 } from '../../../model';
 import { FormService } from '../../../services/form/form';
 import { UiStateService } from '../../../services/ui-state/ui-state.service';
+import { formListItemAnchorId } from '../../../helpers/form-navigation.helper';
 import { InsuranceFrequencyLabelPipe } from '../../../pipes/insurance-frequency-label/insurance-frequency-label.pipe';
 import { InsuranceCalcMethodLabelPipe } from '../../../pipes/insurance-calc-method-label/insurance-calc-method-label.pipe';
 import { LifeInsuranceCalcMethodLabelPipe } from '../../../pipes/life-insurance-calc-method-label/life-insurance-calc-method-label.pipe';
@@ -97,6 +98,41 @@ export class OverheadCostsFormComponent {
       ),
     },
   );
+
+  readonly additionalCostNames = toSignal(
+    this.form.controls.additionalCosts.controls.items.valueChanges.pipe(
+      map(() =>
+        this.form.controls.additionalCosts.controls.items.controls.map(
+          (control) => control.controls.name.value,
+        ),
+      ),
+    ),
+    {
+      initialValue: this.form.controls.additionalCosts.controls.items.controls.map(
+        (control) => control.controls.name.value,
+      ),
+    },
+  );
+
+  /** Kotwica przewijania z legendy do karty konkretnego kosztu dodatkowego (klucz: nazwa kosztu). */
+  protected additionalCostAnchorId(index: number): string | null {
+    const costName = this.additionalCostNames()[index]?.trim();
+    return costName
+      ? formListItemAnchorId(FormSectionId.OVERHEAD_COSTS, 'additionalCosts', costName)
+      : null;
+  }
+
+  protected isAdditionalCostHighlighted(index: number): boolean {
+    const target = this.uiStateService.highlightedNavigationTarget();
+    const costName = this.additionalCostNames()[index]?.trim();
+    return (
+      target !== null &&
+      !!costName &&
+      target.sectionId === FormSectionId.OVERHEAD_COSTS &&
+      target.subsectionKey === 'additionalCosts' &&
+      target.itemKey === costName
+    );
+  }
 
   get section() {
     return this.formService.overheadCostsSection;

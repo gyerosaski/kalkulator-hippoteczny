@@ -12,7 +12,7 @@
       @if (num()) {
         <span class="sec-num">{{ num() }}</span>
       }
-      <span class="sec-title">{{ title() }}</span>
+      <span class="sec-title" [class.title-pulse]="isHighlighted()">{{ title() }}</span>
       @if (badge()) {
         <span class="sec-badge">{{ badge() }}</span>
       }

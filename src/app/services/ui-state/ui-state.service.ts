@@ -7,7 +7,11 @@ import {
   SavedCalculationSortOption,
   SortDirection,
 } from '../../model';
-import { formSectionAnchorId } from '../../helpers/form-navigation.helper';
+import {
+  formListItemAnchorId,
+  formSectionAnchorId,
+  formSubsectionAnchorId,
+} from '../../helpers/form-navigation.helper';
 import { DEFAULT_SORT_DIRECTIONS } from '../../helpers/saved-calculation-sort.helper';
 
 /**
@@ -17,6 +21,11 @@ import { DEFAULT_SORT_DIRECTIONS } from '../../helpers/saved-calculation-sort.he
  */
 @Injectable({ providedIn: 'root' })
 export class UiStateService {
+  /** Zapas czasowy na animację rozwijania sekcji (`--duration-slow`), gdyby `transitionend` nie nadszedł. */
+  private static readonly SECTION_EXPANSION_FALLBACK_MS = 450;
+  /** Musi pokrywać czas animacji `.title-pulse` zdefiniowanej w `styles.scss`. */
+  private static readonly NAVIGATION_HIGHLIGHT_DURATION_MS = 2000;
+
   private readonly sectionOpenStates = new Map<FormSectionId, WritableSignal<boolean>>();
   private readonly sectionDefaultOpen = new Map<FormSectionId, boolean>();
   private readonly openSubsections = new Map<FormSectionId, WritableSignal<string | null>>();
@@ -30,6 +39,12 @@ export class UiStateService {
 
   private readonly _selectedMonthIndex = signal<number | null>(null);
   readonly selectedMonthIndex = this._selectedMonthIndex.asReadonly();
+
+  private readonly _highlightedNavigationTarget = signal<FormSectionNavigationTarget | null>(null);
+  /** Cel ostatniej nawigacji legenda → formularz; przez chwilę po przewinięciu wyróżnia tytuł sekcji/podsekcji. */
+  readonly highlightedNavigationTarget = this._highlightedNavigationTarget.asReadonly();
+
+  private navigationHighlightResetHandle: ReturnType<typeof setTimeout> | null = null;
 
   private readonly _calculatorFormColumnScrollTop = signal(0);
   readonly calculatorFormColumnScrollTop = this._calculatorFormColumnScrollTop.asReadonly();
@@ -86,16 +101,96 @@ export class UiStateService {
     this.expandedLegendLabelState(legendId).update((current) => (current === label ? null : label));
   }
 
-  /** Otwiera sekcję (i opcjonalnie podsekcję) formularza, po czym przewija do niej lewą kolumnę. */
+  /**
+   * Otwiera sekcję (i opcjonalnie podsekcję) formularza, przewija do niej lewą kolumnę
+   * i na chwilę wyróżnia tytuł celu. Gdy sekcja była zwinięta, przewinięcie startuje dopiero
+   * po zakończeniu animacji rozwijania — wcześniej pozycja celu jeszcze się przesuwa.
+   */
   revealFormSection(target: FormSectionNavigationTarget): void {
+    const sectionWasOpen = this.sectionOpenState(target.sectionId, true)();
     this.setSectionOpen(target.sectionId, true);
     if (target.subsectionKey !== undefined) {
       this.setOpenSubsection(target.sectionId, target.subsectionKey);
     }
     requestAnimationFrame(() => {
-      document
-        .getElementById(formSectionAnchorId(target.sectionId))
-        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const sectionElement = document.getElementById(formSectionAnchorId(target.sectionId));
+      if (!sectionElement) {
+        return;
+      }
+      const scrollToTarget = () => {
+        const itemElement =
+          target.subsectionKey !== undefined && target.itemKey !== undefined
+            ? document.getElementById(
+                formListItemAnchorId(target.sectionId, target.subsectionKey, target.itemKey),
+              )
+            : null;
+        const subsectionElement =
+          target.subsectionKey !== undefined
+            ? document.getElementById(
+                formSubsectionAnchorId(target.sectionId, target.subsectionKey),
+              )
+            : null;
+        // element listy lub podsekcję centrujemy w widoku; samą sekcję dosuwamy do góry, żeby nie chować jej nagłówka
+        const centeredElement = itemElement ?? subsectionElement;
+        if (centeredElement) {
+          centeredElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+          sectionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        // gdy element listy zniknął (np. zmieniono nazwę), wyróżnienie spada na tytuł podsekcji
+        const highlightTarget =
+          target.itemKey !== undefined && itemElement === null
+            ? { sectionId: target.sectionId, subsectionKey: target.subsectionKey }
+            : target;
+        this.triggerNavigationHighlight(highlightTarget);
+      };
+      if (sectionWasOpen) {
+        scrollToTarget();
+      } else {
+        this.runAfterSectionExpansion(sectionElement, scrollToTarget);
+      }
+    });
+  }
+
+  /** Wywołuje `callback` po zakończeniu animacji rozwijania sekcji (z awaryjnym timeoutem). */
+  private runAfterSectionExpansion(sectionElement: HTMLElement, callback: () => void): void {
+    const sectionBody = sectionElement.querySelector('.sec-body');
+    if (!(sectionBody instanceof HTMLElement)) {
+      callback();
+      return;
+    }
+    let finished = false;
+    const finish = () => {
+      if (finished) {
+        return;
+      }
+      finished = true;
+      sectionBody.removeEventListener('transitionend', onTransitionEnd);
+      clearTimeout(fallbackHandle);
+      callback();
+    };
+    const onTransitionEnd = (event: TransitionEvent) => {
+      if (event.target === sectionBody && event.propertyName === 'grid-template-rows') {
+        finish();
+      }
+    };
+    sectionBody.addEventListener('transitionend', onTransitionEnd);
+    const fallbackHandle = setTimeout(finish, UiStateService.SECTION_EXPANSION_FALLBACK_MS);
+  }
+
+  /** Uruchamia jednorazową animację wyróżnienia tytułu celu nawigacji; restartuje ją przy ponownym kliknięciu. */
+  private triggerNavigationHighlight(target: FormSectionNavigationTarget): void {
+    if (this.navigationHighlightResetHandle !== null) {
+      clearTimeout(this.navigationHighlightResetHandle);
+    }
+    // zdjęcie i ponowne nałożenie klasy w kolejnej klatce restartuje animację CSS dla tego samego celu
+    this._highlightedNavigationTarget.set(null);
+    requestAnimationFrame(() => {
+      this._highlightedNavigationTarget.set(target);
+      this.navigationHighlightResetHandle = setTimeout(
+        () => this._highlightedNavigationTarget.set(null),
+        UiStateService.NAVIGATION_HIGHLIGHT_DURATION_MS,
+      );
     });
   }
 

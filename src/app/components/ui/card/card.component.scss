@@ -23,6 +23,18 @@
   padding: 0;
 }
 
+/* czas trwania zsynchronizowany z .title-pulse (styles.scss) i NAVIGATION_HIGHLIGHT_DURATION_MS */
+@keyframes card-pulse {
+  50% {
+    border-color: var(--accent-deep);
+    box-shadow: var(--focus-ring);
+  }
+}
+
+.card--pulse {
+  animation: card-pulse 0.9s ease-in-out 2;
+}
+
 .card-head {
   display: flex;
   align-items: center;

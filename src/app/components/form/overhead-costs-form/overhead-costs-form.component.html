@@ -12,6 +12,7 @@
       [context]="colorCodeArea.COST"
       [num]="1"
       title="Prowizja za udzielenie"
+      subsectionKey="commission"
       [open]="openSubsection() === 'commission'"
       (openChange)="setSubsectionOpen('commission', $event)"
     >
@@ -39,6 +40,7 @@
       [context]="colorCodeArea.COST"
       [num]="2"
       title="Opłata za wycenę"
+      subsectionKey="appraisal"
       [open]="openSubsection() === 'appraisal'"
       (openChange)="setSubsectionOpen('appraisal', $event)"
     >
@@ -58,6 +60,7 @@
       [context]="colorCodeArea.INTEREST"
       [num]="3"
       title="Ubezpieczenie pomostowe"
+      subsectionKey="bridge"
       [open]="openSubsection() === 'bridge'"
       (openChange)="setSubsectionOpen('bridge', $event)"
     >
@@ -87,6 +90,7 @@
       [context]="colorCodeArea.COST"
       [num]="4"
       title="Ubezpieczenie nieruchomości"
+      subsectionKey="propertyInsurance"
       [open]="openSubsection() === 'propertyInsurance'"
       (openChange)="setSubsectionOpen('propertyInsurance', $event)"
     >
@@ -140,6 +144,7 @@
       [context]="colorCodeArea.INTEREST"
       [num]="5"
       title="Ubezpieczenie niskiego wkładu"
+      subsectionKey="lowEquityInsurance"
       [open]="openSubsection() === 'lowEquityInsurance'"
       (openChange)="setSubsectionOpen('lowEquityInsurance', $event)"
     >
@@ -165,6 +170,7 @@
       [context]="colorCodeArea.COST"
       [num]="6"
       title="Ubezpieczenie na życie"
+      subsectionKey="lifeInsurance"
       [open]="openSubsection() === 'lifeInsurance'"
       (openChange)="setSubsectionOpen('lifeInsurance', $event)"
     >
@@ -230,6 +236,7 @@
       [context]="colorCodeArea.COST"
       [num]="7"
       title="Ubezpieczenie od utraty pracy"
+      subsectionKey="jobLossInsurance"
       [open]="openSubsection() === 'jobLossInsurance'"
       (openChange)="setSubsectionOpen('jobLossInsurance', $event)"
     >
@@ -295,6 +302,7 @@
       [context]="colorCodeArea.COST"
       [num]="8"
       title="Dodatkowe koszty"
+      subsectionKey="additionalCosts"
       [open]="openSubsection() === 'additionalCosts'"
       (openChange)="setSubsectionOpen('additionalCosts', $event)"
     >
@@ -306,8 +314,10 @@
           @let costValueId = 'additional-cost-' + $index + '-value';
           @let costFromId = 'additional-cost-' + $index + '-from';
           <ui-card
+            [attr.id]="additionalCostAnchorId($index)"
             [tag]="($index + 1).toString()"
             [removable]="additionalCostsArray.length > 1"
+            [highlighted]="isAdditionalCostHighlighted($index)"
             (remove)="removeAdditionalCost($index)"
           >
             <div class="row row--2">
@@ -389,6 +399,7 @@
       [context]="colorCodeArea.INTEREST"
       [num]="9"
       title="Promocja oprocentowania"
+      subsectionKey="promoRate"
       [open]="openSubsection() === 'promoRate'"
       (openChange)="setSubsectionOpen('promoRate', $event)"
     >

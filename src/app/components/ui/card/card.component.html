@@ -1,4 +1,4 @@
-﻿<div class="card" [class.card--bare]="bare()">
+﻿<div class="card" [class.card--bare]="bare()" [class.card--pulse]="highlighted()">
   @if (tag() || removable()) {
     <div class="card-head">
       @if (tag()) {

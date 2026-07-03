@@ -13,5 +13,7 @@ export class CardComponent {
   readonly tag = input<string>('');
   readonly removable = input<boolean>(false);
   readonly bare = input<boolean>(false);
+  /** Jednorazowy puls obrysu karty — wskazuje element po nawigacji z legendy do formularza. */
+  readonly highlighted = input<boolean>(false);
   readonly remove = output<void>();
 }

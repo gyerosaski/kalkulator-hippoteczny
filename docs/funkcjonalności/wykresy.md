@@ -18,8 +18,17 @@
   składników jest dokładnie równa wartości „Odsetki”.
 - **Nawigacja z legendy do formularza:** kliknięcie etykiety pozycji legendy powiązanej z sekcją formularza
   (rozwinięte składowe kosztów, składniki odsetek oraz pozycja „Nadpłaty”) otwiera odpowiednią sekcję
-  (i podsekcję) w lewej kolumnie i przewija do niej widok. „Odsetki bazowe” przewijają do sekcji
-  „Oprocentowanie”, pozostałe składniki odsetek — do właściwej podsekcji „Koszty okołokredytowe”. Etykiety
+  (i podsekcję) w lewej kolumnie i przewija do niej widok — już przy pierwszym kliknięciu, także gdy sekcja
+  była zwinięta (przewinięcie następuje po zakończeniu animacji rozwijania sekcji). Cel będący podsekcją
+  jest wyśrodkowany w pionie w widocznym obszarze kolumny; cel będący całą sekcją jest dosuwany do góry,
+  tak by jej nagłówek pozostał widoczny. Po przewinięciu tytuł docelowej sekcji/podsekcji przez chwilę
+  subtelnie pulsuje kolorem akcentu, wskazując miejsce, na które należy spojrzeć. Pozycja legendy
+  odpowiadająca pojedynczemu kosztowi dodatkowemu (rozpoznawanemu po nazwie kosztu) celuje jeszcze
+  precyzyjniej: na środku widoku ląduje karta tego konkretnego kosztu w podsekcji „Dodatkowe koszty”
+  i to jej obrys pulsuje zamiast tytułu podsekcji; gdy koszt o tej nazwie już nie istnieje, zachowanie
+  wraca do wskazania samej podsekcji. „Odsetki bazowe”
+  przewijają do sekcji „Oprocentowanie”, pozostałe składniki odsetek — do właściwej podsekcji
+  „Koszty okołokredytowe”. Etykiety
   nawigowalne są wyróżnione (kursor, podkreślenie na hover) i dostępne z klawiatury. Pozycje „Kapitał” oraz
   wiersze-rodzice „Koszty okołokredytowe” i „Odsetki” (które klik rozwija na składowe) nie nawigują.
 

@@ -187,6 +187,17 @@ body {
   border-top: var(--border-width) solid var(--line);
 }
 
+/* jednorazowy, subtelny puls koloru tytułu — wskazuje cel po nawigacji z legendy do formularza */
+@keyframes title-pulse {
+  50% {
+    color: var(--accent-deep);
+  }
+}
+
+.title-pulse {
+  animation: title-pulse 0.9s ease-in-out 2;
+}
+
 /* Fields */
 .row {
   display: grid;

@@ -46,6 +46,18 @@ export class FoldableSectionComponent {
     return sectionId !== null ? formSectionAnchorId(sectionId) : null;
   });
 
+  /** Wyróżnienie tytułu po nawigacji z legendy wskazującej całą sekcję (bez podsekcji). */
+  protected readonly isHighlighted = computed(() => {
+    const target = this.uiStateService.highlightedNavigationTarget();
+    const sectionId = this.sectionId();
+    return (
+      target !== null &&
+      sectionId !== null &&
+      target.sectionId === sectionId &&
+      target.subsectionKey === undefined
+    );
+  });
+
   readonly open = computed(() => {
     const sectionId = this.sectionId();
     return sectionId !== null
