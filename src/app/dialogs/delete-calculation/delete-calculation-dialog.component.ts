@@ -3,13 +3,12 @@ import { ChangeDetectionStrategy, Component, signal, viewChild } from '@angular/
 import { DialogVariant, SavedCalculation } from '../../model';
 import { AbstractDialog } from '../../components/ui/dialog/abstract-dialog';
 import { DialogComponent } from '../../components/ui/dialog/dialog.component';
-import { IconTrashComponent } from '../../components/icons/icon-trash/icon-trash.component';
 
 @Component({
   selector: 'app-delete-calculation-dialog',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DialogComponent, IconTrashComponent],
+  imports: [DialogComponent],
   templateUrl: './delete-calculation-dialog.component.html',
   styleUrl: './delete-calculation-dialog.component.scss',
 })
