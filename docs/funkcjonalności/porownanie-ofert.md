@@ -19,7 +19,8 @@ użytkownik mógł szybko odpowiedzieć na pytania:
 - Jakie parametry wejściowe (oprocentowanie, okres, tryb rat, nadpłaty) odpowiadają za te różnice?
 
 Wszystkie wartości w widoku są wyłącznie odczytami — nie modyfikuje się tu danych wejściowych ofert.
-Edycja odbywa się przez „Otwórz w kalkulatorze”, które ładuje wybraną kalkulację do widoku „Kalkulator”.
+Edycja danych wejściowych odbywa się wyłącznie w widoku „Kalkulator” — ofertę wczytuje się tam z listy
+w „Twoje kalkulacje”.
 
 Ograniczenie do dwóch ofert jest decyzją projektową. Para to najczęstszy realny scenariusz decyzyjny
 („oferta z banku A vs oferta z banku B”), a układ dwukolumnowy pozwala zestawić wartości obok siebie bez
@@ -50,8 +51,9 @@ wejść oferty — porównanie zawsze odzwierciedla aktualną logikę obliczeń.
 └──────────────────────────────────────────────────────────────────────────┘
 ```
 
-Liczba kolumn ofertowych jest stała: **dwie**. Dopóki oba sloty nie są wypełnione, widok pokazuje pusty
-stan z wezwaniem „Wybierz dwie oferty do porównania”.
+Liczba kolumn ofertowych jest stała: **dwie**. Dopóki oba sloty nie są wypełnione, żadna z sekcji
+wynikowych się nie pokazuje — widok ogranicza się do nagłówka z paskiem slotów, a pusty slot jest
+przyciskiem `+ Wybierz ofertę` otwierającym listę zapisanych kalkulacji.
 
 Konwencja A / B: `A` zajmuje zawsze lewą kolumnę i jest „bazą” (względem niej liczone są delty `Δ = B − A`);
 `B` — prawą, jest „porównywaną”. Przycisk `↔ Zamień strony` zamienia `A ↔ B`, co odwraca znak delt.
@@ -83,17 +85,15 @@ Konwencja A / B: `A` zajmuje zawsze lewą kolumnę i jest „bazą” (względem
 | `Tylko różnice`             | przełącznik w tabeli parametrów; domyślnie wyłączony — włączony ukrywa wiersze identyczne w obu ofertach |
 | `Drukuj`                    | **ODŁOŻONE** — docelowo wydruk widoku w formacie A4 poziomo                                              |
 | `Eksportuj CSV`             | **ODŁOŻONE** — docelowo eksport tabel jako arkusz `metric, offer_a, offer_b, delta`                      |
-| `Otwórz w kalkulatorze`     | akcja per-oferta (na chipie); ładuje migawkę wejść do formularza i przełącza na „Kalkulator”             |
 
 ### 3.3. Akcje per kolumna (nagłówek oferty)
 
-| Element                 | Działanie                                                                |
-| ----------------------- | ------------------------------------------------------------------------ |
-| Etykieta strony         | badge `A` (lewa) lub `B` (prawa) — identyfikuje stronę porównania        |
-| Nazwa oferty            | edycja inline **ODŁOŻONA** — zmiana nazwy wyłącznie w „Twoje kalkulacje” |
-| Znacznik koloru         | kolor identyfikujący ofertę na wykresie trendu                           |
-| `Otwórz w kalkulatorze` | patrz 3.2                                                                |
-| `Zmień ofertę`          | kliknięcie chipa otwiera dialog wyboru dla tego slotu                    |
+| Element         | Działanie                                                                |
+| --------------- | ------------------------------------------------------------------------ |
+| Etykieta strony | badge `A` (lewa) lub `B` (prawa) — identyfikuje stronę porównania        |
+| Nazwa oferty    | edycja inline **ODŁOŻONA** — zmiana nazwy wyłącznie w „Twoje kalkulacje” |
+| Znacznik koloru | kolor identyfikujący ofertę na wykresie trendu                           |
+| `Zmień ofertę`  | kliknięcie chipa otwiera dialog wyboru dla tego slotu                    |
 
 ---
 
@@ -287,14 +287,14 @@ Wartości formatowane w `pl-PL`, dwa miejsca po przecinku.
 
 ## 10. Walidacje i komunikaty
 
-| Sytuacja                                      | Komunikat / zachowanie                                                                                                   |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| Slot A i/lub B pusty                          | pusty stan: ilustracja + „Wybierz dwie oferty do porównania”; sekcje wynikowe ukryte                                     |
-| Próba wybrania tej samej oferty w obu slotach | wybór odrzucony: „Oferta jest już wybrana po drugiej stronie”                                                            |
-| Oferta A lub B z błędami walidacji wejść      | chip oznaczony błędem, baner ostrzegawczy + „Otwórz w kalkulatorze”; tabela parametrów widoczna, pozostałe sekcje ukryte |
-| Oferty mają różne kwoty kredytu               | baner informacyjny nad KPI: „Oferty mają różne kwoty kredytu — porównuj ostrożnie”                                       |
-| Oferty mają różne okresy spłaty               | baner informacyjny nad wykresem trendu: „Różne okresy spłaty — wykres trendu pokazuje unię lat”                          |
-| Usunięto ofertę z „Twoje kalkulacje”          | slot przechodzi w stan pusty z toastem „Oferta została usunięta”                                                         |
+| Sytuacja                                      | Komunikat / zachowanie                                                                          |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Slot A i/lub B pusty                          | sekcje wynikowe ukryte; widoczny wyłącznie pasek slotów z placeholderem `+ Wybierz ofertę`      |
+| Próba wybrania tej samej oferty w obu slotach | wybór odrzucony: „Oferta jest już wybrana po drugiej stronie”                                   |
+| Oferta A lub B z błędami walidacji wejść      | chip oznaczony błędem, baner ostrzegawczy; tabela parametrów widoczna, pozostałe sekcje ukryte  |
+| Oferty mają różne kwoty kredytu               | baner informacyjny nad KPI: „Oferty mają różne kwoty kredytu — porównuj ostrożnie”              |
+| Oferty mają różne okresy spłaty               | baner informacyjny nad wykresem trendu: „Różne okresy spłaty — wykres trendu pokazuje unię lat” |
+| Usunięto ofertę z „Twoje kalkulacje”          | slot przechodzi w stan pusty z toastem „Oferta została usunięta”                                |
 
 **Znana niedoskonałość:** identyfikatorem oferty jest jej **nazwa** — zmiana nazwy kalkulacji w „Twoje
 kalkulacje” osierraca slot porównania (objawia się jak usunięcie: pusty slot + toast).
@@ -316,7 +316,7 @@ kalkulacje” osierraca slot porównania (objawia się jak usunięcie: pusty slo
 ## 12. Zależności od innych zakładek
 
 - „Twoje kalkulacje” — źródło listy ofert do wyboru.
-- „Kalkulator” — źródło bieżącej oferty roboczej oraz cel akcji „Otwórz w kalkulatorze”.
+- „Kalkulator” — źródło bieżącej oferty roboczej.
 
 ---
 

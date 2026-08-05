@@ -2,7 +2,10 @@
   <header class="compare-hero">
     <div class="compare-hero-tag">PORÓWNANIE OFERT</div>
     <p class="compare-hero-sub">
-      Oferta <icon-slot-a [size]="IconSize.SMALL"/> stanowi bazę porównania, oferta <icon-slot-b [size]="IconSize.SMALL"/> jest porównywana. Różnica <icon-delta class="inline-delta"/> obliczana jest jako <icon-slot-b [size]="IconSize.SMALL"/>  − <icon-slot-a [size]="IconSize.SMALL"/>
+      Oferta <icon-slot-a [size]="IconSize.SMALL" /> stanowi bazę porównania, oferta
+      <icon-slot-b [size]="IconSize.SMALL" /> jest porównywana. Różnica
+      <icon-delta class="inline-delta" /> obliczana jest jako
+      <icon-slot-b [size]="IconSize.SMALL" /> − <icon-slot-a [size]="IconSize.SMALL" />
     </p>
 
     <div class="compare-slots">
@@ -33,92 +36,11 @@
     </div>
   </header>
 
-  @if (!comparisonState.bothSelected()) {
-    <div class="compare-empty">
-      <ol class="steps" aria-label="Postęp porównania">
-        <li
-          class="step"
-          [class.is-current]="currentStep() === 1"
-          [class.is-done]="currentStep() > 1"
-        >
-          <span class="step-num">
-            @if (currentStep() > 1) {
-              <icon-check-circle />
-            } @else {
-              1
-            }
-          </span>
-          <span class="step-label">Wybierz ofertę A</span>
-        </li>
-        <li class="step-conn" [class.is-active]="currentStep() >= 2" aria-hidden="true"></li>
-        <li
-          class="step"
-          [class.is-current]="currentStep() === 2"
-          [class.is-done]="currentStep() > 2"
-        >
-          <span class="step-num">
-            @if (currentStep() > 2) {
-              <icon-check-circle />
-            } @else {
-              2
-            }
-          </span>
-          <span class="step-label">Wybierz ofertę B</span>
-        </li>
-        <li class="step-conn" [class.is-active]="currentStep() >= 3" aria-hidden="true"></li>
-        <li class="step" [class.is-current]="currentStep() >= 3">
-          <span class="step-num">3</span>
-          <span class="step-label">Zobacz różnice</span>
-        </li>
-      </ol>
-
-      <div class="empty-hero">
-        <div class="muted small">KROK {{ currentStep() }} Z 2</div>
-        <h2 class="empty-hero-title">
-          {{ currentStep() === 1 ? 'Wybierz pierwszą ofertę' : 'Wybierz drugą ofertę' }}
-        </h2>
-        <p class="empty-hero-sub muted">
-          @if (currentStep() === 1) {
-            Otwórz listę zapisanych kalkulacji i wskaż <b>bazę</b> porównania (lewa kolumna).
-          } @else {
-            Wskaż kalkulację porównywaną (prawa kolumna).
-          }
-        </p>
-        @if (hasEnoughOffers()) {
-          <button class="btn btn--primary" type="button" (click)="openPicker(targetSlot())">
-            Wybierz ofertę {{ targetSlot() }}
-          </button>
-        }
-      </div>
-
-      @if (!hasEnoughOffers()) {
-        <div class="empty-nosaved">
-          <icon-compare />
-          <div class="empty-title">Za mało kalkulacji do porównania</div>
-          <div class="empty-sub muted">
-            Aby porównać dwie oferty, potrzebujesz co najmniej <b>dwóch</b> wariantów. Przejdź do
-            zakładki <b>Kalkulator</b>, wprowadź parametry i zapisz kalkulację.
-          </div>
-          <button class="btn btn--primary" type="button" (click)="navigateToCalculator()">
-            <icon-plus />
-            Stwórz nową kalkulację
-          </button>
-        </div>
-      }
-    </div>
-  } @else {
+  @if (comparisonState.bothSelected()) {
     @if (invalidOffer(); as offer) {
       <ui-banner [variant]="BannerVariant.WARNING">
         Oferta „{{ offer.name }}” zawiera błędy walidacji i nie może zostać przeliczona — sekcje
         wskaźników i wykresów są ukryte.
-        <button
-          bannerAction
-          class="btn btn--primary"
-          type="button"
-          (click)="openInCalculator(offer)"
-        >
-          Otwórz w kalkulatorze
-        </button>
       </ui-banner>
     } @else {
       @if (loanAmountsDiffer()) {
@@ -251,15 +173,6 @@
             <span class="dot-sep">·</span>
             <span>rata {{ offer.firstInstallment | formatAmount }} zł</span>
           </div>
-        </button>
-        <button
-          class="slot-action"
-          type="button"
-          (click)="openInCalculator(offer)"
-          title="Otwórz w kalkulatorze"
-          aria-label="Otwórz w kalkulatorze"
-        >
-          <icon-calculator />
         </button>
         <ui-btn-remove (remove)="clearSlot(slot)" />
       </div>

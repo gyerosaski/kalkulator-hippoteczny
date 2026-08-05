@@ -288,7 +288,7 @@ Zmienne progów i ich efekty:
   i „Pierwsza rata”.
 - **`$breakpoint-tablet-narrow` (860px) / `$breakpoint-phone-wide` (720px)** —
   komponenty porównania ofert (tabele parametrów/różnic, pary donutów, KPI,
-  sloty A/B + hero, kroki empty state) przechodzą na układy jednokolumnowe;
+  sloty A/B + hero) przechodzą na układy jednokolumnowe;
   przycisk zamiany ofert obraca strzałki w pion.
 - **`$breakpoint-phone` (600px)** — siatki pól `.row--2/3/4` zwijają się do
   jednej kolumny; `.rate-period-from` przestaje mieć sztywną szerokość; donuty

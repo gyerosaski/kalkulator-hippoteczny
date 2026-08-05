@@ -106,6 +106,6 @@
 - [x] Offer badge wynieść do oddzielnego komponentu ui
 - [x] na widoku "Porównanie ofert" zmień kolejność prezentacji sekcji, mają być "Kluczowe wskaźniki" -> "Struktura wszystkich płatności" -> "Tabela różnic kosztowych" -> "Struktura pierwszej raty" -> "Harmonogram spłaty" -> "Tabela parametrów wejściowych"
 - ujednolić badge "wczytana" i "bieżąca" -> zostaw tylko bieżąca; dodaj tekst po najechaniu na badge "Kalkulacja wczytana na zakładce "Kalkulator""
-- usunąć przyciski "otwórz w kalkulatorze" w porównywarce ofert
+- [x] usunąć przyciski "otwórz w kalkulatorze" w porównywarce ofert
 - selektor "Typ wykresu trendu" prezentuj w prawym górnym rogu sekcji "Harmonogram spłaty"
 - pixel hippo ma być opcjonalny, do wyłączenia na modalu ustawień

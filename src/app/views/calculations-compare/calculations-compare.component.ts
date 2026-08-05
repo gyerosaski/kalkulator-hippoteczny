@@ -5,17 +5,14 @@ import {
   computed,
   ElementRef,
   inject,
-  NgZone,
   OnInit,
   viewChild,
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
-import { Router } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 import {
-  AppRoute,
   BadgeVariant,
   BannerVariant,
   ComparableOffer,
@@ -34,7 +31,6 @@ import { roundUpToStep } from '../../helpers/chart-scale.helper';
 import { ComparisonStateService } from '../../services/comparison-state/comparison-state.service';
 import { UiStateService } from '../../services/ui-state/ui-state.service';
 import { SavedCalculationsStateService } from '../../services/saved-calculations-state/saved-calculations-state.service';
-import { FormService } from '../../services/form/form';
 import { ToastService } from '../../services/toast/toast.service';
 import { SelectOfferDialogComponent } from '../../dialogs/select-offer/select-offer-dialog.component';
 import { BadgeComponent } from '../../components/ui/badge/badge.component';
@@ -43,9 +39,6 @@ import { BtnRemoveComponent } from '../../components/ui/btn-remove/btn-remove.co
 import { IconSwapComponent } from '../../components/icons/icon-swap/icon-swap.component';
 import { IconPlusComponent } from '../../components/icons/icon-plus/icon-plus.component';
 import { IconDeltaComponent } from '../../components/icons/icon-delta/icon-delta.component';
-import { IconCheckCircleComponent } from '../../components/icons/icon-check-circle/icon-check-circle.component';
-import { IconCompareComponent } from '../../components/icons/icon-compare/icon-compare.component';
-import { IconCalculatorComponent } from '../../components/icons/icon-calculator/icon-calculator.component';
 import { IconSlotAComponent } from '../../components/icons/icon-slot-a/icon-slot-a.component';
 import { IconSlotBComponent } from '../../components/icons/icon-slot-b/icon-slot-b.component';
 import { FormatAmountPipe } from '../../pipes/format-amount/format-amount.pipe';
@@ -78,10 +71,7 @@ const TREND_STACK_TICK_STEP = 5_000;
     IconSwapComponent,
     IconPlusComponent,
     IconDeltaComponent,
-    IconCheckCircleComponent,
-    IconCompareComponent,
     BannerComponent,
-    IconCalculatorComponent,
     IconSlotAComponent,
     IconSlotBComponent,
     FormatAmountPipe,
@@ -107,10 +97,7 @@ const TREND_STACK_TICK_STEP = 5_000;
 export class CalculationsCompareComponent implements OnInit {
   protected readonly comparisonState = inject(ComparisonStateService);
   private readonly savedCalculationsState = inject(SavedCalculationsStateService);
-  private readonly formService = inject(FormService);
   private readonly toastService = inject(ToastService);
-  private readonly router = inject(Router);
-  private readonly ngZone = inject(NgZone);
   private readonly uiStateService = inject(UiStateService);
   private readonly hostElement = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly selectOfferDialog = viewChild.required(SelectOfferDialogComponent);
@@ -224,21 +211,6 @@ export class CalculationsCompareComponent implements OnInit {
     );
   });
 
-  /** Krok kreatora: 1 — wybór oferty A, 2 — wybór oferty B, 3 — gotowe do porównania. */
-  protected readonly currentStep = computed<1 | 2 | 3>(() => {
-    if (!this.comparisonState.offerA()) return 1;
-    if (!this.comparisonState.offerB()) return 2;
-    return 3;
-  });
-
-  protected readonly targetSlot = computed<ComparisonSlot>(() =>
-    this.currentStep() === 1 ? ComparisonSlot.A : ComparisonSlot.B,
-  );
-
-  protected readonly hasEnoughOffers = computed<boolean>(
-    () => this.comparisonState.availableOffers().length >= 2,
-  );
-
   async ngOnInit(): Promise<void> {
     await this.savedCalculationsState.loadAll();
     this.clearSlotsWithRemovedOffers();
@@ -299,10 +271,6 @@ export class CalculationsCompareComponent implements OnInit {
     this.comparisonState.swap();
   }
 
-  protected navigateToCalculator(): void {
-    void this.router.navigate([AppRoute.CALCULATOR]);
-  }
-
   private buildTrendSeries(
     side: ComparisonOfferData | undefined,
     color: string,
@@ -330,22 +298,5 @@ export class CalculationsCompareComponent implements OnInit {
       overheadCostsEnabled: side.formValue?.overheadCosts.enabled ?? false,
       prepaymentsEnabled: side.formValue?.prepayments.enabled ?? false,
     };
-  }
-
-  /** Ładuje wskazaną ofertę do formularza i przełącza na zakładkę „Kalkulator”. */
-  protected async openInCalculator(offer: ComparableOffer): Promise<void> {
-    if (offer.kind === ComparableOfferKind.DRAFT) {
-      await this.router.navigate([AppRoute.CALCULATOR]);
-      return;
-    }
-    const record = this.savedCalculationsState
-      .records()
-      .find((savedRecord) => savedRecord.name === offer.id);
-    if (!record) return;
-    this.ngZone.run(() => {
-      this.formService.loadFromSavedCalculation(record.data, record.name);
-    });
-    await this.router.navigate([AppRoute.CALCULATOR]);
-    this.toastService.show(`Wczytano kalkulację „${record.name}"`);
   }
 }
