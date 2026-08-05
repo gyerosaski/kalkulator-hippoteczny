@@ -401,7 +401,11 @@ body {
   z-index: var(--z-base);
   border: 0;
   background: transparent;
-  padding: var(--space-2) var(--space-3);
+  padding-inline: var(--space-3);
+  padding-block: 0;
+  /* overflow: hidden (poniżej) wyłącza wbudowane centrowanie treści przycisku,
+     dlatego etykietę centrujemy w pionie jawnie */
+  align-content: center;
   font: inherit;
   border-radius: var(--r-sm);
   cursor: pointer;
@@ -484,7 +488,7 @@ body {
   bottom: 2px;
 }
 .seg--compact .seg-btn {
-  padding: var(--space-2) var(--space-2);
+  padding-inline: var(--space-2);
   font-size: var(--text-sm);
 }
 
