@@ -2,9 +2,7 @@
   <header class="compare-hero">
     <div class="compare-hero-tag">PORÓWNANIE OFERT</div>
     <p class="compare-hero-sub">
-      Oferta <b>A</b> to baza, oferta <b>B</b> jest porównywana. Różnice (<icon-delta
-        class="inline-delta"
-      />) liczymy jako <span class="mono">B − A</span>.
+      Oferta <icon-slot-a [size]="IconSize.SMALL"/> stanowi bazę porównania, oferta <icon-slot-b [size]="IconSize.SMALL"/> jest porównywana. Różnica <icon-delta class="inline-delta"/> obliczana jest jako <icon-slot-b [size]="IconSize.SMALL"/>  − <icon-slot-a [size]="IconSize.SMALL"/>
     </p>
 
     <div class="compare-slots">
@@ -183,7 +181,7 @@
           <div class="trend-side-by-side">
             <div class="trend-side">
               <div class="trend-side-caption">
-                <span class="slot-badge slot-badge--a" aria-hidden="true">A</span>
+                <icon-slot-a />
                 {{ trendA.name }}
               </div>
               <app-results-trend-chart
@@ -198,7 +196,7 @@
             </div>
             <div class="trend-side">
               <div class="trend-side-caption">
-                <span class="slot-badge slot-badge--b" aria-hidden="true">B</span>
+                <icon-slot-b />
                 {{ trendB.name }}
               </div>
               <app-results-trend-chart
@@ -232,12 +230,11 @@
         [class.slot--b]="slot === ComparisonSlot.B"
         [class.slot--error]="invalidOffer()?.id === offer.id"
       >
-        <span
-          class="slot-badge"
-          [class.slot-badge--a]="slot === ComparisonSlot.A"
-          [class.slot-badge--b]="slot === ComparisonSlot.B"
-          >{{ slot }}</span
-        >
+        @if (slot === ComparisonSlot.A) {
+          <icon-slot-a />
+        } @else {
+          <icon-slot-b />
+        }
         <button class="slot-body" type="button" (click)="openPicker(slot)" title="Zmień ofertę">
           <div class="slot-name">
             {{ offer.name }}
@@ -274,12 +271,11 @@
         type="button"
         (click)="openPicker(slot)"
       >
-        <span
-          class="slot-badge"
-          [class.slot-badge--a]="slot === ComparisonSlot.A"
-          [class.slot-badge--b]="slot === ComparisonSlot.B"
-          >{{ slot }}</span
-        >
+        @if (slot === ComparisonSlot.A) {
+          <icon-slot-a />
+        } @else {
+          <icon-slot-b />
+        }
         <span class="slot-placeholder">
           <icon-plus />
           Wybierz ofertę

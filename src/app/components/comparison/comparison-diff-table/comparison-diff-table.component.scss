@@ -124,29 +124,6 @@
   color: var(--muted);
 }
 
-/* ---------- Offer badges ---------- */
-.offer-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  font-size: var(--text-xs);
-  font-weight: var(--font-weight-bold);
-  color: var(--surface);
-  margin-right: var(--space-2);
-  vertical-align: middle;
-}
-
-.offer-badge--a {
-  background: var(--offer-a);
-}
-
-.offer-badge--b {
-  background: var(--offer-b);
-}
-
 /* ---------- Responsive ---------- */
 @media (max-width: $breakpoint-phone-wide) {
   .diff-table-head,

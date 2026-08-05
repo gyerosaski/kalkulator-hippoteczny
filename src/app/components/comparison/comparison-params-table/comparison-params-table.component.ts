@@ -12,6 +12,7 @@ import {
   ComparisonParamNumericRowOptions,
   ComparisonParamRow,
   FormErrorSection,
+  IconSize,
   InsuranceCalcMethod,
   LifeInsuranceCalcMethod,
   MortgageFormRawValue,
@@ -22,6 +23,8 @@ import {
 } from '../../../model';
 import { monthsBetweenStr } from '../../../helpers/date.helper';
 import { SwitchComponent } from '../../ui/switch/switch.component';
+import { IconSlotAComponent } from '../../icons/icon-slot-a/icon-slot-a.component';
+import { IconSlotBComponent } from '../../icons/icon-slot-b/icon-slot-b.component';
 import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
 import { FormatLoanPeriodPipe } from '../../../pipes/format-loan-period/format-loan-period.pipe';
 import { InstallmentTypeLabelPipe } from '../../../pipes/installment-type-label/installment-type-label.pipe';
@@ -200,7 +203,7 @@ function buildComplexListParamRow(
 @Component({
   selector: 'app-comparison-params-table',
   standalone: true,
-  imports: [ReactiveFormsModule, SwitchComponent],
+  imports: [ReactiveFormsModule, SwitchComponent, IconSlotAComponent, IconSlotBComponent],
   providers: [
     FormatMonthPipe,
     FormatLoanPeriodPipe,
@@ -227,6 +230,8 @@ export class ComparisonParamsTableComponent {
 
   readonly sideA = input.required<ComparisonOfferData>();
   readonly sideB = input.required<ComparisonOfferData>();
+
+  protected readonly IconSize = IconSize;
 
   protected readonly onlyDifferencesControl = new FormControl<boolean>(false, {
     nonNullable: true,

@@ -150,25 +150,9 @@
 }
 
 /* ---------- Offer badges ---------- */
-.offer-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
+icon-slot-a,
+icon-slot-b {
   flex-shrink: 0;
-  border-radius: 50%;
-  font-size: var(--text-xs);
-  font-weight: var(--font-weight-bold);
-  color: var(--surface);
-}
-
-.offer-badge--a {
-  background: var(--offer-a);
-}
-
-.offer-badge--b {
-  background: var(--offer-b);
 }
 
 /* ---------- Responsive ---------- */

@@ -23,7 +23,7 @@
         [centerValue]="donutA().centerValue"
       />
       <figcaption class="donut-pair-caption">
-        <span class="offer-badge offer-badge--a" aria-hidden="true">A</span>
+        <icon-slot-a [size]="IconSize.SMALL" />
         <span class="donut-pair-caption-name">{{ sideA().offer.name }}</span>
         <span class="donut-pair-caption-total mono">{{ donutA().installmentText }}</span>
         <span class="donut-pair-caption-meta mono">{{ donutA().rateText }}</span>
@@ -52,7 +52,7 @@
         [centerValue]="donutB().centerValue"
       />
       <figcaption class="donut-pair-caption">
-        <span class="offer-badge offer-badge--b" aria-hidden="true">B</span>
+        <icon-slot-b [size]="IconSize.SMALL" />
         <span class="donut-pair-caption-name">{{ sideB().offer.name }}</span>
         <span class="donut-pair-caption-total mono">{{ donutB().installmentText }}</span>
         <span class="donut-pair-caption-meta mono">{{ donutB().rateText }}</span>

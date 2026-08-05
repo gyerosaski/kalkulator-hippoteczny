@@ -27,6 +27,7 @@ import {
   ComparisonTrendSharedAxisMax,
   ComparisonTrendSideModel,
   DRAFT_OFFER_ID,
+  IconSize,
   YearGroup,
 } from '../../model';
 import { roundUpToStep } from '../../helpers/chart-scale.helper';
@@ -45,6 +46,8 @@ import { IconDeltaComponent } from '../../components/icons/icon-delta/icon-delta
 import { IconCheckCircleComponent } from '../../components/icons/icon-check-circle/icon-check-circle.component';
 import { IconCompareComponent } from '../../components/icons/icon-compare/icon-compare.component';
 import { IconCalculatorComponent } from '../../components/icons/icon-calculator/icon-calculator.component';
+import { IconSlotAComponent } from '../../components/icons/icon-slot-a/icon-slot-a.component';
+import { IconSlotBComponent } from '../../components/icons/icon-slot-b/icon-slot-b.component';
 import { FormatAmountPipe } from '../../pipes/format-amount/format-amount.pipe';
 import { FormatLoanPeriodPipe } from '../../pipes/format-loan-period/format-loan-period.pipe';
 import { FormatRatePipe } from '../../pipes/format-rate/format-rate.pipe';
@@ -79,6 +82,8 @@ const TREND_STACK_TICK_STEP = 5_000;
     IconCompareComponent,
     BannerComponent,
     IconCalculatorComponent,
+    IconSlotAComponent,
+    IconSlotBComponent,
     FormatAmountPipe,
     FormatLoanPeriodPipe,
     FormatRatePipe,
@@ -124,6 +129,7 @@ export class CalculationsCompareComponent implements OnInit {
   protected readonly ComparableOfferKind = ComparableOfferKind;
   protected readonly BadgeVariant = BadgeVariant;
   protected readonly BannerVariant = BannerVariant;
+  protected readonly IconSize = IconSize;
 
   protected readonly ComparisonTrendMode = ComparisonTrendMode;
   protected readonly trendModeOptions = Object.values(ComparisonTrendMode);

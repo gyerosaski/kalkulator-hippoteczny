@@ -5,9 +5,12 @@ import {
   ComparisonDeltaClass,
   ComparisonOfferData,
   DonutSlice,
+  IconSize,
 } from '../../../model';
 import { DonutComponent } from '../../ui/donut/donut.component';
 import { ColorCodeMarkerComponent } from '../../ui/color-code-marker/color-code-marker.component';
+import { IconSlotAComponent } from '../../icons/icon-slot-a/icon-slot-a.component';
+import { IconSlotBComponent } from '../../icons/icon-slot-b/icon-slot-b.component';
 
 const AMOUNT_FORMATTER = new Intl.NumberFormat('pl-PL', {
   minimumFractionDigits: 2,
@@ -44,7 +47,7 @@ const DONUT_THICKNESS = 22;
 @Component({
   selector: 'app-comparison-donuts-installment',
   standalone: true,
-  imports: [DonutComponent, ColorCodeMarkerComponent],
+  imports: [DonutComponent, ColorCodeMarkerComponent, IconSlotAComponent, IconSlotBComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './comparison-donuts-installment.component.html',
   styleUrl: './comparison-donuts-installment.component.scss',
@@ -56,6 +59,7 @@ export class ComparisonDonutsInstallmentComponent {
   protected readonly donutSize = DONUT_SIZE;
   protected readonly donutThickness = DONUT_THICKNESS;
   protected readonly segmentLegend = SEGMENT_LEGEND;
+  protected readonly IconSize = IconSize;
 
   protected readonly donutA = computed<InstallmentDonutModel>(() =>
     this.buildDonutModel(this.sideA()),

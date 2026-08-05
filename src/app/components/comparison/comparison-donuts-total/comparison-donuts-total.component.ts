@@ -5,9 +5,12 @@ import {
   ComparisonDonutDeltaRow,
   ComparisonOfferData,
   DonutSlice,
+  IconSize,
 } from '../../../model';
 import { DonutComponent } from '../../ui/donut/donut.component';
 import { ColorCodeMarkerComponent } from '../../ui/color-code-marker/color-code-marker.component';
+import { IconSlotAComponent } from '../../icons/icon-slot-a/icon-slot-a.component';
+import { IconSlotBComponent } from '../../icons/icon-slot-b/icon-slot-b.component';
 
 const WHOLE_AMOUNT_FORMATTER = new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 0 });
 
@@ -59,7 +62,7 @@ const DONUT_THICKNESS = 28;
 @Component({
   selector: 'app-comparison-donuts-total',
   standalone: true,
-  imports: [DonutComponent, ColorCodeMarkerComponent],
+  imports: [DonutComponent, ColorCodeMarkerComponent, IconSlotAComponent, IconSlotBComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './comparison-donuts-total.component.html',
   styleUrl: './comparison-donuts-total.component.scss',
@@ -71,6 +74,7 @@ export class ComparisonDonutsTotalComponent {
 
   protected readonly donutSize = DONUT_SIZE;
   protected readonly donutThickness = DONUT_THICKNESS;
+  protected readonly IconSize = IconSize;
 
   /** Segmenty widoczne w tej parze donutów — segment znika tylko, gdy jest zerowy w OBU ofertach i toggle jest wyłączony. */
   protected readonly visibleSegments = computed<PaymentSegmentDescriptor[]>(() => {

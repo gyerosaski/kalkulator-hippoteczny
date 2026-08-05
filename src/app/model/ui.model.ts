@@ -137,6 +137,12 @@ export enum DialogSize {
   LARGE = 'LARGE',
 }
 
+/** Preset rozmiaru ikony; konkretne wymiary rozstrzyga styl komponentu ikony. */
+export enum IconSize {
+  REGULAR = 'REGULAR',
+  SMALL = 'SMALL',
+}
+
 export interface Toast {
   message: string;
   variant: ToastVariant;

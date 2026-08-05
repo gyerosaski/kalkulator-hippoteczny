@@ -8,11 +8,11 @@
     <div class="diff-table-head" role="row">
       <div class="diff-table-cell diff-table-cell--label" role="columnheader">Pozycja</div>
       <div class="diff-table-cell diff-table-cell--offer diff-table-cell--a" role="columnheader">
-        <span class="offer-badge offer-badge--a">A</span>
+        <icon-slot-a [size]="IconSize.SMALL" />
         {{ offerName().a }}
       </div>
       <div class="diff-table-cell diff-table-cell--offer diff-table-cell--b" role="columnheader">
-        <span class="offer-badge offer-badge--b">B</span>
+        <icon-slot-b [size]="IconSize.SMALL" />
         {{ offerName().b }}
       </div>
       <div class="diff-table-cell diff-table-cell--delta" role="columnheader">

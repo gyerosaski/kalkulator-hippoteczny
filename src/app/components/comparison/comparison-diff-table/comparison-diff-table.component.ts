@@ -4,8 +4,11 @@ import {
   ComparisonDiffRow,
   ComparisonOfferData,
   OverheadCostItem,
+  IconSize,
   OverheadCostKind,
 } from '../../../model';
+import { IconSlotAComponent } from '../../icons/icon-slot-a/icon-slot-a.component';
+import { IconSlotBComponent } from '../../icons/icon-slot-b/icon-slot-b.component';
 
 const AMOUNT_FORMATTER = new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 0 });
 const PERCENT_FORMATTER = new Intl.NumberFormat('pl-PL', {
@@ -166,7 +169,7 @@ function earlyRepaymentCommissionTotal(side: ComparisonOfferData): number | null
 @Component({
   selector: 'app-comparison-diff-table',
   standalone: true,
-  imports: [],
+  imports: [IconSlotAComponent, IconSlotBComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './comparison-diff-table.component.html',
   styleUrl: './comparison-diff-table.component.scss',
@@ -174,6 +177,8 @@ function earlyRepaymentCommissionTotal(side: ComparisonOfferData): number | null
 export class ComparisonDiffTableComponent {
   readonly sideA = input.required<ComparisonOfferData>();
   readonly sideB = input.required<ComparisonOfferData>();
+
+  protected readonly IconSize = IconSize;
 
   protected readonly offerName = computed(() => ({
     a: this.sideA().offer.name,
