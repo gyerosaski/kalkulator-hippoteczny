@@ -143,11 +143,6 @@
       </div>
     }
 
-    <app-comparison-params-table
-      [sideA]="comparisonState.sideA()!"
-      [sideB]="comparisonState.sideB()!"
-    />
-
     @if (!invalidOffer()) {
       <app-comparison-kpi-grid
         [sideA]="comparisonState.sideA()!"
@@ -158,6 +153,11 @@
         [sideA]="comparisonState.sideA()!"
         [sideB]="comparisonState.sideB()!"
         [showExcludedSegments]="showExcludedSegments()"
+      />
+
+      <app-comparison-diff-table
+        [sideA]="comparisonState.sideA()!"
+        [sideB]="comparisonState.sideB()!"
       />
 
       <app-comparison-donuts-installment
@@ -214,12 +214,12 @@
           </div>
         }
       }
-
-      <app-comparison-diff-table
-        [sideA]="comparisonState.sideA()!"
-        [sideB]="comparisonState.sideB()!"
-      />
     }
+
+    <app-comparison-params-table
+      [sideA]="comparisonState.sideA()!"
+      [sideB]="comparisonState.sideB()!"
+    />
   }
 
   <app-select-offer-dialog />

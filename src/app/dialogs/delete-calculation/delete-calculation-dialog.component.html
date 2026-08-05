@@ -1,8 +1,4 @@
-<ui-dialog
-  title="Usuwanie kalkulacji"
-  [variant]="DialogVariant.DANGER"
-  (closed)="handleClosed()"
->
+<ui-dialog title="Usuwanie kalkulacji" [variant]="DialogVariant.DANGER" (closed)="handleClosed()">
   @if (target(); as calculation) {
     <div class="dialog-body">
       <p class="dialog-text">

@@ -104,7 +104,8 @@
 - import wartości wskaźnika w formacie "yyyy-mm": wartość; i konwersja na okresy oprocentowania
 - kliknięcie na wykresie oprocentowania - scroll do formularza do konkretnego okresu i podkreślenie go
 - Offer badge wynieść do oddzielnego komponentu ui
-- na widoku "Porównanie ofert" zmień kolejność prezentacji sekcji, mają być "Kluczowe wskaźniki" -> "Struktura wszystkich płatności" -> "Tabela różnic kosztowych" -> "Struktura pierwszej raty" -> "Harmonogram spłaty" -> "Tabela parametrów wejściowych"
+- [x] na widoku "Porównanie ofert" zmień kolejność prezentacji sekcji, mają być "Kluczowe wskaźniki" -> "Struktura wszystkich płatności" -> "Tabela różnic kosztowych" -> "Struktura pierwszej raty" -> "Harmonogram spłaty" -> "Tabela parametrów wejściowych"
 - ujednolić badge "wczytana" i "bieżąca" -> zostaw tylko bieżąca; dodaj tekst po najechaniu na badge "Kalkulacja wczytana na zakładce "Kalkulator""
 - usunąć przyciski "otwórz w kalkulatorze" w porównywarce ofert
 - selektor "Typ wykresu trendu" prezentuj w prawym górnym rogu sekcji "Harmonogram spłaty"
+- pixel hippo ma być opcjonalny, do wyłączenia na modalu ustawień

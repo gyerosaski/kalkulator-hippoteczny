@@ -36,17 +36,17 @@ wejść oferty — porównanie zawsze odzwierciedla aktualną logikę obliczeń.
 ┌──────────────────────────────────────────────────────────────────────────┐
 │ Pasek wyboru ofert (2 sloty: A i B)        │ Akcje globalne               │
 ├──────────────────────────────────────────────────────────────────────────┤
-│ Tabela parametrów wejściowych — kolumny: parametr | A | B | Δ            │
-├──────────────────────────────────────────────────────────────────────────┤
 │ KPI — 4 wskaźniki × 2 oferty + środkowa kolumna delty Δ                  │
 ├──────────────────────────────────────────────────────────────────────────┤
 │ Para donutów „Struktura wszystkich płatności” — A obok B                 │
+├──────────────────────────────────────────────────────────────────────────┤
+│ Tabela różnic kosztowych — pozycja | A | B | Δ (= B − A)                  │
 ├──────────────────────────────────────────────────────────────────────────┤
 │ Para donutów „Struktura pierwszej raty” — A obok B                       │
 ├──────────────────────────────────────────────────────────────────────────┤
 │ Wykres trendu — nakładka 2 linii salda lub 2 pełne wykresy obok siebie    │
 ├──────────────────────────────────────────────────────────────────────────┤
-│ Tabela różnic kosztowych — pozycja | A | B | Δ (= B − A)                  │
+│ Tabela parametrów wejściowych — kolumny: parametr | A | B | Δ            │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -97,7 +97,119 @@ Konwencja A / B: `A` zajmuje zawsze lewą kolumnę i jest „bazą” (względem
 
 ---
 
-## 4. Tabela parametrów wejściowych
+## 4. KPI
+
+Siatka `4 wskaźniki × (Oferta A | Δ | Oferta B)` — te same cztery wskaźniki co w pasku wyników na zakładce
+„Kalkulator”:
+
+1. **Pierwsza rata** — wartość `zł`, meta: `tryb rat · rodzaj stopy · %`.
+2. **Suma wszystkich płatności** — wartość `zł`, meta: `oddasz X% pożyczonej kwoty`.
+3. **Odsetki** — wartość `zł`, meta: `% od kapitału`.
+4. **Koszty okołokredytowe** — wartość `zł`, meta: `prowizja … · wycena …`.
+
+Środkowa kolumna `Δ` dla każdego wskaźnika prezentuje:
+
+- liczbę `B − A` (`+1 234 zł` / `−2 567 zł`),
+- procentową zmianę względem A w nawiasie (`(+1,3%)` / `(−5,2%)`),
+- kolor: ostrzegawczy gdy `B > A` (B gorsza), pozytywny gdy `B < A` (B lepsza).
+
+Kafelek oferty z **mniejszą wartością** (lepszą dla wskaźników „mniej znaczy lepiej”) dostaje znacznik
+`✓ lider`. Brak znacznika gdy `B = A`.
+
+---
+
+## 5. Para donutów
+
+Obie pary donutów mają wspólną charakterystykę opisaną poniżej, ale **nie sąsiadują ze sobą w widoku** —
+między „Strukturą wszystkich płatności” a „Strukturą pierwszej raty” prezentowana jest tabela różnic
+kosztowych (§ 6).
+
+### 5.1. „Struktura wszystkich płatności”
+
+Dwa donuty obok siebie (`A` po lewej, `B` po prawej), każdy z czterema segmentami w identycznych kolorach
+jak w widoku „Kalkulator”: Kapitał, Odsetki, Koszty okołokredytowe, Nadpłaty.
+
+- Oba donuty mają identyczny rozmiar i **wspólną skalę liczbową** — wielkość pierścienia jest porównywalna
+  wzrokowo (każda oferta to ta sama 100% pula).
+- Jedna wspólna legenda nad parą.
+- Pod każdym donutem etykieta: `A`/`B` + nazwa oferty + suma wszystkich płatności w `zł`.
+- Między donutami opcjonalna kolumna delty segmentów (`Kapitał / Odsetki / Koszty / Nadpłaty`, każdy
+  z wartością `B − A` ze znakiem).
+- Przełącznik „Pokaż wykluczone segmenty” decyduje, czy segment o wartości `0` jest pomijany, czy
+  renderowany jako `0,00 zł`.
+
+### 5.2. „Struktura pierwszej raty”
+
+Dwa donuty obok siebie, każdy z **dwoma segmentami**: Kapitał i Odsetki.
+
+Dla rat malejących oraz ofert z karencją tytuł karty jest dynamiczny:
+
+- standardowo: `Struktura pierwszej raty`,
+- gdy **obie** oferty są w okresie karencji (kapitał = 0): `Pierwsza rata (okres karencji)`; oferta
+  w karencji ma centralną etykietę `100% / odsetek` i podpis `(okres karencji)`.
+
+Pod każdym donutem etykieta: `A`/`B` + nazwa oferty + `rata = X zł` + `oprocentowanie startowe %`.
+Między donutami wskaźnik `Δ raty` = `rata_B − rata_A` w `zł`.
+
+---
+
+## 6. Tabela różnic kosztowych
+
+Tabela 4 kolumn: `Pozycja | Oferta A | Oferta B | Δ (= B − A)`.
+
+| Pozycja                                | Źródło                                                                                                                                                                          |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Kapitał                                | kwota kredytu                                                                                                                                                                   |
+| Odsetki — łącznie                      | suma odsetek                                                                                                                                                                    |
+| Odsetki — w okresie ubezp. pomostowego | suma odsetek miesięcy pomostowych; `—` gdy sekcja kosztów wyłączona lub brak okresu pomostowego                                                                                 |
+| Prowizja za udzielenie                 | składowa kosztów „prowizja za udzielenie”                                                                                                                                       |
+| Opłata za wycenę                       | składowa kosztów „opłata za wycenę”                                                                                                                                             |
+| Ubezpieczenia (wszystkie)              | suma ubezpieczeń (nieruchomości, na życie, utraty pracy, dodatkowe koszty) oraz opłat za uruchomienie transz; celowo **bez** prowizji za wcześniejszą spłatę — ma własny wiersz |
+| Nadpłaty                               | suma nadpłat                                                                                                                                                                    |
+| Prowizja za wcześniejszą spłatę        | suma prowizji za wcześniejszą spłatę; `—` gdy sekcja nadpłat wyłączona                                                                                                          |
+| **SUMA — całkowity koszt kredytu**     | suma wszystkich płatności                                                                                                                                                       |
+| **Oddasz do banku [%]**                | suma wszystkich płatności / kwota kredytu × 100                                                                                                                                 |
+
+Każdy wiersz: kolumna `A` (wartość), kolumna `B` (wartość), kolumna `Δ` (`B − A` ze znakiem):
+
+- kolor ostrzegawczy gdy `B > A` (B gorsza) — dla pozycji „mniej znaczy lepiej” (wszystkie wiersze kosztów + SUMA),
+- kolor pozytywny gdy `B < A` (B lepsza),
+- inwersja koloru dla wiersza „Nadpłaty” (więcej nadpłat = lepiej).
+
+Wiersz SUMA jest pogrubiony i ma cieniowane tło; wiersz „Oddasz do banku [%]” jest wyróżniony jak akcent.
+„Lider” (oferta z lepszą wartością) jest oznaczany cienkim markerem po lewej stronie komórki A lub B —
+zgodnie z regułą „mniej znaczy lepiej” (z inwersją dla „Nadpłaty”). Brak markera gdy `A = B`.
+
+---
+
+## 7. Wykres trendu „Harmonogram spłaty”
+
+Dwa tryby, przełączane kontrolką „Tryb wykresu trendu”:
+
+### 7.1. Tryb `nakładka` (domyślny)
+
+- **dwie linie „Pozostało do spłaty”** nałożone na siebie (każda w kolorze swojej oferty), z węzłami;
+  bez słupków skumulowanych — nakładka linii salda jest czytelniejsza dla dwóch ofert,
+- oś X kategorialna (rok) obejmuje **unię zakresów lat** obu ofert (najwcześniejszy rok startu →
+  najpóźniejszy rok końca); brak danych oferty w roku = brak punktu,
+- oś Y skalowana do maksymalnego salda obu ofert,
+- tooltip per rok wymienia saldo obu ofert (`A: … zł`, `B: … zł`, dodatkowo `Δ: B − A`).
+
+Legenda nad wykresem: dokładnie dwie pozycje (`A: <nazwa>`, `B: <nazwa>`). Tytuł dynamiczny:
+`Harmonogram spłaty — porównanie: <pierwszy rok> – <ostatni rok>`.
+
+### 7.2. Tryb `obok siebie`
+
+Dwa pełne wykresy trendu w jednym rzędzie (50% / 50%). Każdy ma swą pełną zawartość — słupki skumulowane +
+linia salda — dokładnie jak na widoku „Kalkulator”. Pod każdym etykieta `A` / `B` + nazwa oferty.
+
+Wymóg porównywalności wzrokowej: w tym trybie **wymuszane są wspólne maksima osi Y** (salda i słupków)
+wyznaczone dla obu ofert łącznie. Bez tego porównanie kształtu krzywych byłoby mylące — automatyczne
+skalowanie sprawiłoby, że niższa kwota kredytu „wygląda jak ta sama wielkość”.
+
+---
+
+## 8. Tabela parametrów wejściowych
 
 Tabela 4 kolumn: `Parametr | Oferta A | Oferta B | Δ`, wiersze pogrupowane nagłówkami sekcji formularza.
 Cel: pokazać, **co użytkownik zmienił** między dwiema ofertami. Czyta wyłącznie migawkę wejść, więc działa
@@ -105,7 +217,7 @@ także dla ofert z błędami walidacji.
 
 Kolumna `Δ` zależnie od typu parametru:
 
-- liczby (`zł`, `%`, miesiące): `Δ = B − A` ze znakiem i kolorem (patrz § 8),
+- liczby (`zł`, `%`, miesiące): `Δ = B − A` ze znakiem i kolorem (patrz § 9),
 - daty: różnica w miesiącach (`+12 m-cy`, `−3 m-ce`),
 - wybory tekstowe (`równe` ↔ `malejące`, `zmienna` ↔ `stała`): `≠` w kolorze ostrzegawczym lub `=` neutralnie,
 - listy złożone (dodatkowe koszty, okresy oprocentowania): liczba pozycji + `≠`, jeśli zawartość się różni.
@@ -149,113 +261,8 @@ Reguły wizualne wiersza:
   lepiej” (np. oprocentowanie, prowizja, koszty) ma cienki marker po lewej w kolorze pozytywnym.
 - Komórki z wyłączonymi sekcjami (`Koszty: wył.`, `Nadpłaty: wył.`) renderowane jako `—`.
 
----
-
-## 5. KPI
-
-Siatka `4 wskaźniki × (Oferta A | Δ | Oferta B)` — te same cztery wskaźniki co w pasku wyników na zakładce
-„Kalkulator”:
-
-1. **Pierwsza rata** — wartość `zł`, meta: `tryb rat · rodzaj stopy · %`.
-2. **Suma wszystkich płatności** — wartość `zł`, meta: `oddasz X% pożyczonej kwoty`.
-3. **Odsetki** — wartość `zł`, meta: `% od kapitału`.
-4. **Koszty okołokredytowe** — wartość `zł`, meta: `prowizja … · wycena …`.
-
-Środkowa kolumna `Δ` dla każdego wskaźnika prezentuje:
-
-- liczbę `B − A` (`+1 234 zł` / `−2 567 zł`),
-- procentową zmianę względem A w nawiasie (`(+1,3%)` / `(−5,2%)`),
-- kolor: ostrzegawczy gdy `B > A` (B gorsza), pozytywny gdy `B < A` (B lepsza).
-
-Kafelek oferty z **mniejszą wartością** (lepszą dla wskaźników „mniej znaczy lepiej”) dostaje znacznik
-`✓ lider`. Brak znacznika gdy `B = A`.
-
----
-
-## 6. Para donutów
-
-### 6.1. „Struktura wszystkich płatności”
-
-Dwa donuty obok siebie (`A` po lewej, `B` po prawej), każdy z czterema segmentami w identycznych kolorach
-jak w widoku „Kalkulator”: Kapitał, Odsetki, Koszty okołokredytowe, Nadpłaty.
-
-- Oba donuty mają identyczny rozmiar i **wspólną skalę liczbową** — wielkość pierścienia jest porównywalna
-  wzrokowo (każda oferta to ta sama 100% pula).
-- Jedna wspólna legenda nad parą.
-- Pod każdym donutem etykieta: `A`/`B` + nazwa oferty + suma wszystkich płatności w `zł`.
-- Między donutami opcjonalna kolumna delty segmentów (`Kapitał / Odsetki / Koszty / Nadpłaty`, każdy
-  z wartością `B − A` ze znakiem).
-- Przełącznik „Pokaż wykluczone segmenty” decyduje, czy segment o wartości `0` jest pomijany, czy
-  renderowany jako `0,00 zł`.
-
-### 6.2. „Struktura pierwszej raty”
-
-Dwa donuty obok siebie, każdy z **dwoma segmentami**: Kapitał i Odsetki.
-
-Dla rat malejących oraz ofert z karencją tytuł karty jest dynamiczny:
-
-- standardowo: `Struktura pierwszej raty`,
-- gdy **obie** oferty są w okresie karencji (kapitał = 0): `Pierwsza rata (okres karencji)`; oferta
-  w karencji ma centralną etykietę `100% / odsetek` i podpis `(okres karencji)`.
-
-Pod każdym donutem etykieta: `A`/`B` + nazwa oferty + `rata = X zł` + `oprocentowanie startowe %`.
-Między donutami wskaźnik `Δ raty` = `rata_B − rata_A` w `zł`.
-
----
-
-## 7. Wykres trendu „Harmonogram spłaty”
-
-Dwa tryby, przełączane kontrolką „Tryb wykresu trendu”:
-
-### 7.1. Tryb `nakładka` (domyślny)
-
-- **dwie linie „Pozostało do spłaty”** nałożone na siebie (każda w kolorze swojej oferty), z węzłami;
-  bez słupków skumulowanych — nakładka linii salda jest czytelniejsza dla dwóch ofert,
-- oś X kategorialna (rok) obejmuje **unię zakresów lat** obu ofert (najwcześniejszy rok startu →
-  najpóźniejszy rok końca); brak danych oferty w roku = brak punktu,
-- oś Y skalowana do maksymalnego salda obu ofert,
-- tooltip per rok wymienia saldo obu ofert (`A: … zł`, `B: … zł`, dodatkowo `Δ: B − A`).
-
-Legenda nad wykresem: dokładnie dwie pozycje (`A: <nazwa>`, `B: <nazwa>`). Tytuł dynamiczny:
-`Harmonogram spłaty — porównanie: <pierwszy rok> – <ostatni rok>`.
-
-### 7.2. Tryb `obok siebie`
-
-Dwa pełne wykresy trendu w jednym rzędzie (50% / 50%). Każdy ma swą pełną zawartość — słupki skumulowane +
-linia salda — dokładnie jak na widoku „Kalkulator”. Pod każdym etykieta `A` / `B` + nazwa oferty.
-
-Wymóg porównywalności wzrokowej: w tym trybie **wymuszane są wspólne maksima osi Y** (salda i słupków)
-wyznaczone dla obu ofert łącznie. Bez tego porównanie kształtu krzywych byłoby mylące — automatyczne
-skalowanie sprawiłoby, że niższa kwota kredytu „wygląda jak ta sama wielkość”.
-
----
-
-## 8. Tabela różnic kosztowych
-
-Tabela 4 kolumn: `Pozycja | Oferta A | Oferta B | Δ (= B − A)`.
-
-| Pozycja                                | Źródło                                                                                                                                                                          |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Kapitał                                | kwota kredytu                                                                                                                                                                   |
-| Odsetki — łącznie                      | suma odsetek                                                                                                                                                                    |
-| Odsetki — w okresie ubezp. pomostowego | suma odsetek miesięcy pomostowych; `—` gdy sekcja kosztów wyłączona lub brak okresu pomostowego                                                                                 |
-| Prowizja za udzielenie                 | składowa kosztów „prowizja za udzielenie”                                                                                                                                       |
-| Opłata za wycenę                       | składowa kosztów „opłata za wycenę”                                                                                                                                             |
-| Ubezpieczenia (wszystkie)              | suma ubezpieczeń (nieruchomości, na życie, utraty pracy, dodatkowe koszty) oraz opłat za uruchomienie transz; celowo **bez** prowizji za wcześniejszą spłatę — ma własny wiersz |
-| Nadpłaty                               | suma nadpłat                                                                                                                                                                    |
-| Prowizja za wcześniejszą spłatę        | suma prowizji za wcześniejszą spłatę; `—` gdy sekcja nadpłat wyłączona                                                                                                          |
-| **SUMA — całkowity koszt kredytu**     | suma wszystkich płatności                                                                                                                                                       |
-| **Oddasz do banku [%]**                | suma wszystkich płatności / kwota kredytu × 100                                                                                                                                 |
-
-Każdy wiersz: kolumna `A` (wartość), kolumna `B` (wartość), kolumna `Δ` (`B − A` ze znakiem):
-
-- kolor ostrzegawczy gdy `B > A` (B gorsza) — dla pozycji „mniej znaczy lepiej” (wszystkie wiersze kosztów + SUMA),
-- kolor pozytywny gdy `B < A` (B lepsza),
-- inwersja koloru dla wiersza „Nadpłaty” (więcej nadpłat = lepiej).
-
-Wiersz SUMA jest pogrubiony i ma cieniowane tło; wiersz „Oddasz do banku [%]” jest wyróżniony jak akcent.
-„Lider” (oferta z lepszą wartością) jest oznaczany cienkim markerem po lewej stronie komórki A lub B —
-zgodnie z regułą „mniej znaczy lepiej” (z inwersją dla „Nadpłaty”). Brak markera gdy `A = B`.
+Sekcja jest prezentowana jako **ostatnia** na widoku — po wskaźnikach, wykresach i tabeli różnic — oraz
+jako **jedyna** widoczna sekcja wynikowa, gdy któraś z ofert zawiera błędy walidacji wejść.
 
 ---
 

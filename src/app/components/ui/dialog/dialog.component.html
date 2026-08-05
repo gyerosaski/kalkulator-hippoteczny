@@ -8,7 +8,10 @@
     <div class="dialog-head">
       <div>
         @if (title()) {
-          <div class="dialog-title" [class.dialog-title--danger]="variant() === DialogVariant.DANGER">
+          <div
+            class="dialog-title"
+            [class.dialog-title--danger]="variant() === DialogVariant.DANGER"
+          >
             {{ title() }}
           </div>
         }

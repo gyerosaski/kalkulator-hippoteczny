@@ -1,8 +1,4 @@
-<ui-dialog
-  [title]="slotTag()"
-  [size]="DialogSize.LARGE"
-  (closed)="handleClosed()"
->
+<ui-dialog [title]="slotTag()" [size]="DialogSize.LARGE" (closed)="handleClosed()">
   @if (context(); as ctx) {
     <div class="dialog-body">
       @if (selectableOffers().length > 0) {
