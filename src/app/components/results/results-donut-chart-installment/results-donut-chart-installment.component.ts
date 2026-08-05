@@ -17,6 +17,7 @@ import { CardComponent } from '../../ui/card/card.component';
 import { OverheadCostBreakdownService } from '../../../services/overhead-cost-breakdown/overhead-cost-breakdown.service';
 import { InterestBreakdownService } from '../../../services/interest-breakdown/interest-breakdown.service';
 import { PREPAYMENTS_NAVIGATION_TARGET } from '../../../helpers/form-navigation.helper';
+import { sortChartSlicesBySignificance } from '../../../helpers/chart-slice-sort.helper';
 
 @Component({
   selector: 'app-results-donut-chart-installment',
@@ -98,12 +99,12 @@ export class ResultsDonutChartInstallmentComponent {
           navigationTarget: PREPAYMENTS_NAVIGATION_TARGET,
         });
       }
-      return slices;
+      return sortChartSlicesBySignificance(slices);
     }
     const results = this.results();
     const firstInstallment = results?.firstInstallment;
     if (!firstInstallment) return [];
-    return [
+    return sortChartSlicesBySignificance([
       {
         label: 'Kapitał',
         value: firstInstallment.capital,
@@ -111,7 +112,7 @@ export class ResultsDonutChartInstallmentComponent {
         variant: ColorCodeArea.CAPITAL,
       },
       this.buildInterestSlice(firstInstallment.interest, firstInstallment.interestBreakdown),
-    ];
+    ]);
   });
 
   private formatPercentage(value: number): string {

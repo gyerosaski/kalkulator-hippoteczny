@@ -6,6 +6,12 @@
 - Dane: udział kategorii w całkowitych płatnościach — Kapitał, Odsetki, Koszty okołokredytowe, Nadpłaty.
 - **RRSO:** w stopce legendy karty prezentowana jest metryka RRSO (format `pl-PL`, 2 miejsca, sufiks `%`);
   ukrywana, gdy wartość jest nieobliczalna. Sposób wyliczania — patrz `docs/funkcjonalności/dane-podstawowe.md` §4.1.
+- **Kolejność pozycji:** pozycje legendy — i odpowiadające im łuki donuta — prezentowane są od
+  najistotniejszej do najmniej istotnej, czyli malejąco po wartości. Ta sama reguła obowiązuje wewnątrz
+  każdej rozwijanej kategorii: składowe „Kosztów okołokredytowych” i składniki „Odsetek” też układają się
+  malejąco w obrębie swojej kategorii. Pozycja o wartości ujemnej („Promocja oprocentowania”) plasowana
+  jest według wielkości wpływu (wartości bezwzględnej), a nie spychana na koniec listy. Pozycje o równych
+  wartościach zachowują względną kolejność.
 - **Suma nad legendą:** nad legendą prezentowany jest wiersz „Suma wszystkich płatności” (= suma wartości
   widocznych segmentów), oddzielony poziomym separatorem od listy legendy.
 - **Rozwijalna pozycja „Koszty okołokredytowe”:** kliknięcie pozycji „Koszty okołokredytowe” rozwija ją
@@ -40,7 +46,8 @@
   przypisane do raty). Pozycja „Odsetki” jest rozwijalna na składniki efektywnej stopy — analogicznie jak
   w §5.1. Po wybraniu miesiąca w harmonogramie karta pokazuje strukturę raty wybranego miesiąca, a pozycje
   „Koszty okołokredytowe” i „Odsetki” są rozwijalne na składowe tego miesiąca. Nad legendą prezentowany
-  jest wiersz „Razem” (suma składników raty) z separatorem.
+  jest wiersz „Razem” (suma składników raty) z separatorem. Kolejność pozycji legendy i łuków donuta —
+  malejąco po wartości, wraz z rozwiniętymi składowymi, dokładnie jak w §5.1.
 - **Przycisk „drukuj”:** renderuje widok do wydruku (drukarka/PDF) z podsumowaniami, wykresami i/lub harmonogramem.
 
 ### 5.3. „Harmonogram spłaty kredytu …” (wykres trendu)
@@ -90,8 +97,9 @@ Na słupki **nakładana jest linia „Pozostało do spłaty”** (kolor neutraln
 
 #### 5.3.5. Legenda
 
-- Jedna pozioma legenda nad wykresem, w kolejności: Odsetki, Koszty okołokredytowe, Kapitał, Nadpłaty,
-  Pozostało do spłaty.
+- Jedna pozioma legenda nad wykresem, w **stałej** kolejności: Odsetki, Koszty okołokredytowe, Kapitał,
+  Nadpłaty, Pozostało do spłaty — odpowiada ona układowi segmentów w słupku (identycznemu dla każdego
+  roku) i nie zmienia się wraz z wartościami.
 - Każda pozycja ma kwadratową próbkę koloru (segment) lub miniaturkę linii z punktem (saldo).
 
 #### 5.3.6. Tooltip
@@ -99,7 +107,9 @@ Na słupki **nakładana jest linia „Pozostało do spłaty”** (kolor neutraln
 Najechanie na rok pokazuje pop-over z:
 
 - nagłówkiem: pełna etykieta roku (np. `2030`),
-- wierszami: nazwa serii + kwota w `zł` (`pl-PL`, 2 miejsca), w kolejności jak w stosie,
+- wierszami: nazwa serii + kwota w `zł` (`pl-PL`, 2 miejsca), uporządkowanymi malejąco po wartości
+  (najistotniejsza pozycja na górze — tak jak w legendach donutów, §5.1); kolejność ta jest niezależna
+  od stałego układu segmentów w słupku,
 - sumą: „Razem w roku” = suma czterech segmentów,
 - stopką: „Saldo na koniec roku” = wartość punktu linii.
 

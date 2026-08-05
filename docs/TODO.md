@@ -100,7 +100,7 @@
 - [x] w src/styles/\_variables.scss jest zdefiniowanych aż 10 różnych wielkości czcionek, zaproponuj plan na zmniejszenie ich liczby
 - [x] w src/styles/\_variables.scss jest zdefiniowanych aż 12 różnych spacingów, zaproponuj plan na zmniejszenie ich liczby
 - [x] parametr data-density (src/styles/\_variables.scss) obecnie nie jest możliwy do zmiany w interfejsie, dodaj odpowiednie ustawienie w app-settings-dialog
-- pozycje legendy donuta sortować po wartości od naistotniejszych do najmniej istotnych (analogicznie w obrębie danej kategorii np. "Koszty okołokredytowe")
+- [x] pozycje legendy donuta sortować po wartości od naistotniejszych do najmniej istotnych (analogicznie w obrębie danej kategorii np. "Koszty okołokredytowe")
 - import wartości wskaźnika w formacie "yyyy-mm": wartość; i konwersja na okresy oprocentowania
 - kliknięcie na wykresie oprocentowania - scroll do formularza do konkretnego okresu i podkreślenie go
 - Offer badge wynieść do oddzielnego komponentu ui

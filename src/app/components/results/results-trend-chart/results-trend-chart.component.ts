@@ -33,6 +33,7 @@ import { LegendComponent } from '../../ui/legend/legend.component';
 import { OverheadCostBreakdownService } from '../../../services/overhead-cost-breakdown/overhead-cost-breakdown.service';
 import { UiStateService } from '../../../services/ui-state/ui-state.service';
 import { roundUpToStep } from '../../../helpers/chart-scale.helper';
+import { sortChartSlicesBySignificance } from '../../../helpers/chart-slice-sort.helper';
 
 interface StackSegmentDescriptor {
   readonly fieldKey: 'sumInterest' | 'sumInsuranceCost' | 'sumCapital' | 'sumPrepayment';
@@ -286,7 +287,7 @@ export class ResultsTrendChartComponent {
       }
       slices.push(slice);
     }
-    return slices;
+    return sortChartSlicesBySignificance(slices);
   });
 
   protected selectYear(index: number): void {

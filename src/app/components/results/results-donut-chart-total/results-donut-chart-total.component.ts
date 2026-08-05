@@ -19,6 +19,7 @@ import { CardComponent } from '../../ui/card/card.component';
 import { OverheadCostBreakdownService } from '../../../services/overhead-cost-breakdown/overhead-cost-breakdown.service';
 import { InterestBreakdownService } from '../../../services/interest-breakdown/interest-breakdown.service';
 import { PREPAYMENTS_NAVIGATION_TARGET } from '../../../helpers/form-navigation.helper';
+import { sortChartSlicesBySignificance } from '../../../helpers/chart-slice-sort.helper';
 
 @Component({
   selector: 'app-results-donut-chart-total',
@@ -137,7 +138,7 @@ export class ResultsDonutChartTotalComponent {
           navigationTarget: PREPAYMENTS_NAVIGATION_TARGET,
         });
       }
-      return slices;
+      return sortChartSlicesBySignificance(slices);
     }
     const results = this.results();
     if (!results) return [];
@@ -170,7 +171,7 @@ export class ResultsDonutChartTotalComponent {
         navigationTarget: PREPAYMENTS_NAVIGATION_TARGET,
       });
     }
-    return slices;
+    return sortChartSlicesBySignificance(slices);
   });
 
   private formatPercentage(value: number): string {
