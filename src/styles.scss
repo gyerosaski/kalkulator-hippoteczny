@@ -662,33 +662,26 @@ ui-cards-group + ui-card {
   font-size: var(--text-sm);
 }
 
-/* Współdzielona „chrome" okien dialog (nagłówek, tag, tytuł, przycisk zamknięcia).
+/* Współdzielona „chrome" okien dialog (nagłówek, tytuł, przycisk zamknięcia).
    Pudełko `dialog{}`, `.dialog-body` i `.dialog-actions` pozostają lokalne w komponentach,
    bo różnią się między dialogami (szerokość, padding). */
 .dialog-head {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   padding: var(--space-5) var(--space-5) 0;
   gap: var(--space-3);
 }
 
-.dialog-tag {
-  font-size: var(--text-xs);
+.dialog-title {
+  font-size: var(--text-sm);
   font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-widest);
   text-transform: uppercase;
   color: var(--muted);
 }
 
-.dialog-title {
-  margin: var(--space-1) 0 0;
-  font-size: var(--text-lg);
-  font-weight: var(--font-weight-semibold);
-  color: var(--ink);
-}
-
-.dialog-tag--danger {
+.dialog-title--danger {
   color: var(--c-int);
 }
 

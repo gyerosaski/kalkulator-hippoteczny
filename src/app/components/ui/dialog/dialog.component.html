@@ -5,23 +5,20 @@
   (close)="onNativeClose()"
 >
   <ng-content select="[slot=head]">
-    @if (title()) {
-      <div class="dialog-head">
-        <div>
-          @if (tag()) {
-            <div class="dialog-tag" [class.dialog-tag--danger]="variant() === DialogVariant.DANGER">
-              {{ tag() }}
-            </div>
-          }
-          <h2 class="dialog-title">{{ title() }}</h2>
-        </div>
-        @if (showClose()) {
-          <button class="dialog-close" type="button" (click)="close()" aria-label="Zamknij">
-            <icon-x />
-          </button>
+    <div class="dialog-head">
+      <div>
+        @if (title()) {
+          <div class="dialog-title" [class.dialog-title--danger]="variant() === DialogVariant.DANGER">
+            {{ title() }}
+          </div>
         }
       </div>
-    }
+      @if (showClose()) {
+        <button class="dialog-close" type="button" (click)="close()" aria-label="Zamknij">
+          <icon-x />
+        </button>
+      }
+    </div>
   </ng-content>
   <ng-content />
 </dialog>

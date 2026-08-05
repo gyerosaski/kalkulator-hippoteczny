@@ -1,7 +1,7 @@
-<ui-dialog tag="akcja" title="Zmień nazwę kalkulacji" (closed)="handleClosed()">
+<ui-dialog title="Zmiana nazwy kalkulacji" (closed)="handleClosed()">
   <form (submit)="$event.preventDefault(); confirm()">
     <div class="dialog-body">
-      <label class="dialog-label" for="rename-calc-name">Nazwa</label>
+      <label class="dialog-label" for="rename-calc-name">Nowa nazwa</label>
       <div class="inp inp--focus">
         <input
           id="rename-calc-name"
@@ -11,9 +11,6 @@
           (input)="onInput($any($event.target).value)"
           (keydown.escape)="dismiss()"
         />
-      </div>
-      <div class="dialog-hint">
-        Nadaj kalkulacji nazwę, po której łatwo ją rozpoznasz — np. „Mieszkanie 65&nbsp;m² Wrocław".
       </div>
     </div>
     <div class="dialog-actions">

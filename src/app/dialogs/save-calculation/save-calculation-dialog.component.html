@@ -1,8 +1,8 @@
-<ui-dialog title="Zapisz kalkulację" [size]="DialogSize.SMALL" (closed)="handleClosed()">
+<ui-dialog title="Zapis kalkulacji" [size]="DialogSize.SMALL" (closed)="handleClosed()">
   <form (submit)="$event.preventDefault(); onSave()">
     <div class="dialog-body">
       <div class="field">
-        <label class="field-label" for="save-calc-name">Nazwa kalkulacji</label>
+        <label class="field-label" for="save-calc-name">Nazwa</label>
         <div class="inp">
           <input
             id="save-calc-name"

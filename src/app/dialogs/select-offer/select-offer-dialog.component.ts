@@ -45,7 +45,7 @@ export class SelectOfferDialogComponent extends AbstractDialog<string | null> {
   /** Etykieta tagu nagłówka — numer slotu, do którego wybierana jest oferta. */
   protected readonly slotTag = computed<string>(() => {
     const context = this.context();
-    return context ? `Slot ${context.slot}` : '';
+    return context ? `Wybór oferty ${context.slot}` : '';
   });
 
   /** Oferty możliwe do wyboru: bez tej z przeciwnego slotu i bez ofert z błędami walidacji. */
