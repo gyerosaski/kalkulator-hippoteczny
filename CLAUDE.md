@@ -71,7 +71,7 @@ Aplikacja jest pakowana jako desktopowa przez **Tauri V2**. Konfiguracja żyje w
 - `src-tauri/src/lib.rs` — rejestracja pluginów Tauri
 - `src-tauri/capabilities/default.json` — uprawnienia (`store`, `dialog`, `fs` ze scope na `$DOCUMENT/$DOWNLOAD/$DESKTOP/$HOME/**/*.json`)
 
-Persistencja kalkulacji idzie przez `CalculationsStoreService` (`src/app/services/calculations-store/`) — abstrakcja nad `@tauri-apps/plugin-store` z metodami `list/save/delete/exportToFile/importFromFile`. Plik store'a: `%APPDATA%/com.gyerosaski.kalkulator-hipoteczny/calculations.json`. Routing wymusza `withHashLocation()` (kompatybilność z `tauri://localhost`).
+Persistencja kalkulacji idzie przez `CalculationsStoreService` (`src/app/services/calculations-store/`) — abstrakcja nad `@tauri-apps/plugin-store` z metodami `list/save/delete/exportToFile/importFromFile`. Plik store'a: `%APPDATA%/com.gyerosaski.kalkulator-hippoteczny/calculations.json`. Routing wymusza `withHashLocation()` (kompatybilność z `tauri://localhost`).
 
 ### Component layout
 

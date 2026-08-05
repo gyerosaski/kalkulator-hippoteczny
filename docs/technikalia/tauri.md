@@ -26,8 +26,8 @@ Po `tauri:build` artefakty znajdziesz w `src-tauri/target/release/bundle/`:
 `@tauri-apps/plugin-store` trzyma dane w plikach JSON w katalogu danych aplikacji:
 
 ```
-%APPDATA%/com.gyerosaski.kalkulator-hipoteczny/calculations.json
-%APPDATA%/com.gyerosaski.kalkulator-hipoteczny/settings.json
+%APPDATA%/com.gyerosaski.kalkulator-hippoteczny/calculations.json
+%APPDATA%/com.gyerosaski.kalkulator-hippoteczny/settings.json
 ```
 
 Dostęp do kalkulacji przez `CalculationsStoreService` (`src/app/services/calculations-store/`). Klucz `calculations` przechowuje `SavedCalculationRecord[]`. Eksport do pliku (np. dla backupu lub współdzielenia) używa `@tauri-apps/plugin-dialog` (`save` / `open`) i `@tauri-apps/plugin-fs` (`writeTextFile` / `readTextFile`).
@@ -85,4 +85,4 @@ connect-src 'self' ipc: http://ipc.localhost
 - `targets: ["msi", "nsis"]`
 - `bundle.windows.wix.language: ["pl-PL"]` — instalator MSI po polsku
 - `bundle.windows.nsis.languages: ["Polish"]` — instalator NSIS po polsku
-- `identifier: "com.gyerosaski.kalkulator-hipoteczny"` — używany jako reverse-DNS bundle ID
+- `identifier: "com.gyerosaski.kalkulator-hippoteczny"` — używany jako reverse-DNS bundle ID

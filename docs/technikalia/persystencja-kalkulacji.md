@@ -9,7 +9,7 @@ w `docs/funkcjonalności/twoje-kalkulacje.md`.
 Aplikacja działa jako desktopowa (Tauri V2). Kalkulacje przechowuje `CalculationsStoreService`
 (`src/app/services/calculations-store/calculations-store.service.ts`).
 
-- Plik danych: `calculations.json` w `%APPDATA%/com.gyerosaski.kalkulator-hipoteczny/`.
+- Plik danych: `calculations.json` w `%APPDATA%/com.gyerosaski.kalkulator-hippoteczny/`.
 - Klucz tablicy rekordów w store: `"calculations"` (domyślnie pusta tablica).
 - Instancja Store tworzona jednorazowo przy pierwszym dostępie, opcja `autoSave: true`.
 

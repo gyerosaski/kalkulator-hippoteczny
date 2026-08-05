@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "kalkulator-hipoteczny": {
+    "kalkulator-hippoteczny": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -70,10 +70,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "kalkulator-hipoteczny:build:production"
+              "buildTarget": "kalkulator-hippoteczny:build:production"
             },
             "development": {
-              "buildTarget": "kalkulator-hipoteczny:build:development"
+              "buildTarget": "kalkulator-hippoteczny:build:development"
             }
           },
           "defaultConfiguration": "development"

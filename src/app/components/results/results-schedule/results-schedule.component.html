@@ -49,7 +49,7 @@
         <div class="mono c-cap">{{ year.sumCapital | formatAmount }}</div>
         <div class="mono c-int">{{ year.sumInterest | formatAmount }}</div>
         @if (isRateColumnEnabled()) {
-          <div class="mono">
+          <div class="mono rate-year-change">
             @if (year.firstInterestRate === year.lastInterestRate) {
               {{ year.firstInterestRate | formatRate }}
             } @else {

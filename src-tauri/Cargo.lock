@@ -1742,7 +1742,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "kalkulator-hipoteczny"
+name = "kalkulator-hippoteczny"
 version = "0.1.0"
 dependencies = [
  "log",
