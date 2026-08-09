@@ -17,6 +17,7 @@ import { IconCalculatorComponent } from '../../icons/icon-calculator/icon-calcul
 import { IconSettingsComponent } from '../../icons/icon-settings/icon-settings.component';
 import { SettingsDialogComponent } from '../../../dialogs/settings/settings-dialog.component';
 import { PixelHippoComponent } from '../pixel-hippo/pixel-hippo.component';
+import { PixelHippoService } from '../../../services/pixel-hippo/pixel-hippo.service';
 import { AppRoute } from '../../../model';
 
 @Component({
@@ -35,6 +36,7 @@ import { AppRoute } from '../../../model';
 })
 export class TopbarComponent {
   private readonly router = inject(Router);
+  protected readonly pixelHippoService = inject(PixelHippoService);
   protected readonly settingsDialog = viewChild.required(SettingsDialogComponent);
 
   private readonly routerUrl = toSignal(this.router.events.pipe(map(() => this.router.url)), {

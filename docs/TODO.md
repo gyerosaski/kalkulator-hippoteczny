@@ -108,4 +108,4 @@
 - ujednolić badge "wczytana" i "bieżąca" -> zostaw tylko bieżąca; dodaj tekst po najechaniu na badge "Kalkulacja wczytana na zakładce "Kalkulator""
 - [x] usunąć przyciski "otwórz w kalkulatorze" w porównywarce ofert
 - selektor "Typ wykresu trendu" prezentuj w prawym górnym rogu sekcji "Harmonogram spłaty"
-- pixel hippo ma być opcjonalny, do wyłączenia na modalu ustawień
+- [x] pixel hippo ma być opcjonalny, do wyłączenia na modalu ustawień

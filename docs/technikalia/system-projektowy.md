@@ -214,7 +214,7 @@ Wszystkie komponenty są `standalone` + `OnPush`. Kontrolki formularzowe oznaczo
 | `ui-switch` **(CVA)**       | przełącznik włącz/wyłącz (CVA lub dwukierunkowe `[(checked)]`; używany m.in. przez `ui-foldable-section`) | `label`, `checked` (model)                                                                                                      |
 | `ui-toast`                  | host kolejki powiadomień toast                                                                            | — (sterowany serwisem; `ToastVariant`)                                                                                          |
 | `ui-topbar`                 | górny pasek aplikacji                                                                                     | —                                                                                                                               |
-| `ui-pixel-hippo`            | dekoracyjny logotyp (pixel-art)                                                                           | —                                                                                                                               |
+| `ui-pixel-hippo`            | dekoracyjny logotyp (pixel-art); opcjonalny — renderowany warunkowo wg ustawienia aplikacji               | —                                                                                                                               |
 
 Typy pomocnicze (`DonutSlice`, `ChartSlice`, `BadgeVariant`, `BannerVariant`,
 `DividerVariant`, `ToastVariant`, `DropdownPlacement`, `LegendId`, `FormSectionId`) deklarowane w

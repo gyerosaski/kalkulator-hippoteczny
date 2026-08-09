@@ -46,3 +46,15 @@ Kliknięcie ikony otwiera modalne okno **„Ustawienia”** z listą dostępnych
   w wybranych miejscach.
 - Wybór jest utrwalany między sesjami. Przy starcie aplikacji odczytywana jest zapisana gęstość; w razie
   jej braku stosowana jest gęstość standardowa (brak odpowiednika preferencji systemowej).
+
+### 2.3. Hipopotam Hippoteczny
+
+- Kontrolka: przełącznik włącz/wyłącz.
+- Steruje dekoracyjną animacją w pasku górnym: pixel-artowy hipopotam, który w losowych odstępach
+  (kilka–kilkanaście sekund) wybiega zza paska nawigacji w losowo wybraną stronę, przystaje na chwilę
+  i wraca na miejsce.
+- Element jest wyłącznie ozdobny — nie niesie żadnej informacji i nie da się z nim wejść w interakcję.
+  Wyłączenie nie wpływa na działanie ani wygląd pozostałych części aplikacji.
+- Wyłączenie usuwa hipopotama z paska górnego natychmiast, bez zamykania okna ustawień; ponowne
+  włączenie przywraca go, a animacja rusza po najbliższej losowej przerwie.
+- Domyślnie włączony. Wybór jest utrwalany między sesjami.

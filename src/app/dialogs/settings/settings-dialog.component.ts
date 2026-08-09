@@ -5,9 +5,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Density, Theme } from '../../model';
 import { ThemeService } from '../../services/theme/theme.service';
 import { DensityService } from '../../services/density/density.service';
+import { PixelHippoService } from '../../services/pixel-hippo/pixel-hippo.service';
 import { AbstractDialog } from '../../components/ui/dialog/abstract-dialog';
 import { DialogComponent } from '../../components/ui/dialog/dialog.component';
 import { SelectComponent } from '../../components/ui/select/select.component';
+import { SwitchComponent } from '../../components/ui/switch/switch.component';
 import { ThemeLabelPipe } from '../../pipes/theme-label/theme-label.pipe';
 import { DensityLabelPipe } from '../../pipes/density-label/density-label.pipe';
 
@@ -19,6 +21,7 @@ import { DensityLabelPipe } from '../../pipes/density-label/density-label.pipe';
     DialogComponent,
     ReactiveFormsModule,
     SelectComponent,
+    SwitchComponent,
     ThemeLabelPipe,
     DensityLabelPipe,
   ],
@@ -28,6 +31,7 @@ import { DensityLabelPipe } from '../../pipes/density-label/density-label.pipe';
 export class SettingsDialogComponent extends AbstractDialog<void> {
   private readonly themeService = inject(ThemeService);
   private readonly densityService = inject(DensityService);
+  private readonly pixelHippoService = inject(PixelHippoService);
   protected readonly dialog = viewChild.required(DialogComponent);
 
   protected readonly themeOptions = Object.values(Theme);
@@ -40,6 +44,11 @@ export class SettingsDialogComponent extends AbstractDialog<void> {
     nonNullable: true,
   });
 
+  protected readonly pixelHippoControl = new FormControl<boolean>(
+    this.pixelHippoService.isEnabled(),
+    { nonNullable: true },
+  );
+
   constructor() {
     super();
     this.themeControl.valueChanges
@@ -48,11 +57,15 @@ export class SettingsDialogComponent extends AbstractDialog<void> {
     this.densityControl.valueChanges
       .pipe(takeUntilDestroyed())
       .subscribe((density) => this.densityService.setDensity(density));
+    this.pixelHippoControl.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((isEnabled) => this.pixelHippoService.setEnabled(isEnabled));
   }
 
   open(): Promise<void> {
     this.themeControl.setValue(this.themeService.theme(), { emitEvent: false });
     this.densityControl.setValue(this.densityService.density(), { emitEvent: false });
+    this.pixelHippoControl.setValue(this.pixelHippoService.isEnabled(), { emitEvent: false });
     return this.beginInteraction(undefined);
   }
 }

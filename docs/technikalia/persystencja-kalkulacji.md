@@ -80,6 +80,27 @@ samego wzorca co `ThemeService` — źródłem prawdy jest `settings.json`, `loc
 - `setDensity()` zapisuje gęstość kanonicznie przez `updateSettings({ density })`, analogicznie do
   `setTheme()`.
 
+### Hipopotam (pixel-art) — kanoniczny `settings.json` + cache `localStorage`
+
+`PixelHippoService` (`src/app/services/pixel-hippo/pixel-hippo.service.ts`) trzyma flagę
+`pixelHippoEnabled` w sygnale `isEnabled` wg tego samego wzorca co `ThemeService`/`DensityService`
+— źródłem prawdy jest `settings.json`, `localStorage` (klucz `pixelHippoEnabled`) pełni rolę
+szybkiego cache'u przy starcie (bez migotania hipopotama, gdy jest wyłączony).
+
+- **Uwaga:** reconcile porównuje `stored?.pixelHippoEnabled !== undefined`, a nie sprawdza
+  prawdziwości jak w `DensityService`. Dla ustawienia boolowskiego `false` jest poprawną zapisaną
+  wartością — truthiness-check potraktowałby ją jak brak pola i zaseedował store z powrotem
+  wartością `true`, przez co wyłączenie nie przetrwałoby restartu. Z tego samego powodu
+  `loadPreference()` porównuje odczyt z `localStorage` z literałami `'true'`/`'false'`, zamiast
+  rzutować go na `Boolean`.
+- Brak pola w pliku (pierwsze uruchomienie lub `settings.json` sprzed wprowadzenia opcji) oznacza
+  migrację: `settings.json` jest uzupełniany bieżącą wartością sygnału.
+- `setEnabled()` zapisuje flagę kanonicznie przez `updateSettings({ pixelHippoEnabled })`.
+- Konsumentem jest `ui-topbar`, który owija `ui-pixel-hippo` (wraz z wrapperem `.sprite-track`)
+  w `@if (pixelHippoService.isEnabled())`. Wyłączenie niszczy komponent, więc istniejące sprzątanie
+  w `DestroyRef.onDestroy` czyści `setTimeout` i anuluje animacje Web Animations API — po wyłączeniu
+  nie zostaje żaden aktywny timer.
+
 ## Model rekordu — `SavedCalculationRecord`
 
 `src/app/model/saved-calculation.model.ts`:

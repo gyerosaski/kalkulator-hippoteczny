@@ -1,7 +1,9 @@
 <header class="topbar">
-  <div class="sprite-track">
-    <ui-pixel-hippo />
-  </div>
+  @if (pixelHippoService.isEnabled()) {
+    <div class="sprite-track">
+      <ui-pixel-hippo />
+    </div>
+  }
   <div class="topbar-left">
     <div class="brand">
       <div class="brand-mark">

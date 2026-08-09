@@ -122,6 +122,8 @@ export enum Density {
 export interface AppSettings {
   theme: Theme;
   density: Density;
+  /** Czy dekoracyjna animacja hipopotama w pasku górnym jest włączona. */
+  pixelHippoEnabled: boolean;
 }
 
 /** Wariant kolorystyczny dialogu — neutralny lub ostrzegawczy (operacje nieodwracalne). */

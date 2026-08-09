@@ -6,6 +6,7 @@ import { AppSettings, Density, Theme } from '../../model';
 const DEFAULT_APP_SETTINGS: AppSettings = {
   theme: Theme.LIGHT,
   density: Density.STANDARD,
+  pixelHippoEnabled: true,
 };
 
 @Injectable({ providedIn: 'root' })
