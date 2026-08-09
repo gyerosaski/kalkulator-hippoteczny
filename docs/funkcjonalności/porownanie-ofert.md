@@ -70,7 +70,9 @@ Konwencja A / B: `A` zajmuje zawsze lewą kolumnę i jest „bazą” (względem
   - pozycję już wybraną w przeciwnym slocie (nie można porównać oferty samej ze sobą),
   - pozycję z błędami walidacji (nie ma pewności, że da się wyliczyć wszystkie wartości).
 - Pozycja `Bieżąca kalkulacja` wczytuje bieżącą kalkulację i odświeża porównanie na każdą zmianę
-  parametrów w zakładce „Kalkulator”.
+  parametrów w zakładce „Kalkulator”. Jest oznaczona badge'em `bieżąca` — zarówno na liście w oknie
+  wyboru, jak i na chipie slotu; po najechaniu na badge pojawia się podpowiedź
+  `Kalkulacja wczytana na zakładce „Kalkulator”`.
 - Wyczyszczenie slotu: ikona kosza na chipie (slot wraca do stanu pustego).
 - Przycisk `↔` między slotami zamienia `A ↔ B`.
 - Do pokazania sekcji wynikowych wymagane jest wypełnienie **obu** slotów.

@@ -37,7 +37,11 @@
             <div class="name-row">
               <span class="calc-name">{{ calculation.name }}</span>
               @if (calculation.name === activeCalculationName()) {
-                <ui-badge label="wczytana" [variant]="BadgeVariant.GREEN" />
+                <ui-badge
+                  label="bieżąca"
+                  [variant]="BadgeVariant.GREEN"
+                  tooltip="Kalkulacja wczytana na zakładce „Kalkulator”"
+                />
                 @if (isLoadedCalculationModified()) {
                   <ui-badge label="zmodyfikowana" [variant]="BadgeVariant.RED" />
                 }

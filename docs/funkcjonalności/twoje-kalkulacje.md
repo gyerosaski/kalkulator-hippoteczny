@@ -55,21 +55,24 @@ kierunek. Kryterium i kierunek przeżywają przełączanie widoków w ramach ses
 
 ### 4. Tabela kalkulacji — kolumny
 
-| #   | Kolumna         | Zawartość                                                                                                                   | Format                                                          |
-| --- | --------------- | --------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| 1   | `Nazwa`         | nazwa kalkulacji; badge `wczytana` gdy aktualnie załadowana; badge `zmodyfikowana` gdy bieżący stan różni się od wczytanego | tekst                                                           |
-| 2   | `Kwota · LTV`   | kwota kredytu + wartość nieruchomości w podwierszu + LTV%; LTV wyróżnione (czerwone) gdy `> 80%`                            | PLN bez miejsc; LTV `X %`                                       |
-| 3   | `Okres`         | liczba lat i miesięcy + typ raty w podwierszu                                                                               | `X lat` lub `X l. Y m-cy`; badge `rata równa` / `rata malejąca` |
-| 4   | `Oproc.`        | łączna stopa; w podwierszu `Wskaźnik referencyjny X,XX + marża X,XX` (stopa zmienna) lub `stała`                            | 2 miejsca, `%`                                                  |
-| 5   | `Pierwsza rata` | pierwsza rata miesięczna                                                                                                    | PLN, 2 miejsca                                                  |
-| 6   | `Odsetki`       | suma odsetek przez cały okres                                                                                               | PLN bez miejsc                                                  |
-| 7   | `Zmodyfikowano` | czas względny; po najechaniu — pełna data i godzina; w podwierszu data bez godziny                                          | `DD.MM.RRRR`                                                    |
-| 8   | `Akcje`         | przycisk `Wczytaj` + menu `⋯`                                                                                               | —                                                               |
+| #   | Kolumna         | Zawartość                                                                                                                                                                                            | Format                                                          |
+| --- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| 1   | `Nazwa`         | nazwa kalkulacji; badge `bieżąca` gdy aktualnie załadowana (po najechaniu podpowiedź `Kalkulacja wczytana na zakładce „Kalkulator”`); badge `zmodyfikowana` gdy bieżący stan różni się od wczytanego | tekst                                                           |
+| 2   | `Kwota · LTV`   | kwota kredytu + wartość nieruchomości w podwierszu + LTV%; LTV wyróżnione (czerwone) gdy `> 80%`                                                                                                     | PLN bez miejsc; LTV `X %`                                       |
+| 3   | `Okres`         | liczba lat i miesięcy + typ raty w podwierszu                                                                                                                                                        | `X lat` lub `X l. Y m-cy`; badge `rata równa` / `rata malejąca` |
+| 4   | `Oproc.`        | łączna stopa; w podwierszu `Wskaźnik referencyjny X,XX + marża X,XX` (stopa zmienna) lub `stała`                                                                                                     | 2 miejsca, `%`                                                  |
+| 5   | `Pierwsza rata` | pierwsza rata miesięczna                                                                                                                                                                             | PLN, 2 miejsca                                                  |
+| 6   | `Odsetki`       | suma odsetek przez cały okres                                                                                                                                                                        | PLN bez miejsc                                                  |
+| 7   | `Zmodyfikowano` | czas względny; po najechaniu — pełna data i godzina; w podwierszu data bez godziny                                                                                                                   | `DD.MM.RRRR`                                                    |
+| 8   | `Akcje`         | przycisk `Wczytaj` + menu `⋯`                                                                                                                                                                        | —                                                               |
 
 #### 4.1 Wyróżnienie aktywnego wiersza
 
-Wiersz odpowiadający aktualnie wczytanej kalkulacji otrzymuje lewy kolorowy pasek i badge `wczytana`.
+Wiersz odpowiadający aktualnie wczytanej kalkulacji otrzymuje lewy kolorowy pasek i badge `bieżąca`.
+Po najechaniu kursorem na badge pojawia się podpowiedź `Kalkulacja wczytana na zakładce „Kalkulator”`.
 Jeśli formularz został zmodyfikowany po wczytaniu, obok pojawia się dodatkowo badge `zmodyfikowana`.
+
+Ten sam badge `bieżąca` (z tą samą podpowiedzią) oznacza bieżącą kalkulację w widoku porównania ofert.
 
 #### 4.2 Wykrywanie modyfikacji
 

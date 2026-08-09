@@ -15,7 +15,11 @@
                   <div class="offer-row-name">
                     <span>{{ offer.name }}</span>
                     @if (offer.kind === ComparableOfferKind.DRAFT) {
-                      <ui-badge label="bieżąca" [variant]="BadgeVariant.GREEN" />
+                      <ui-badge
+                        label="bieżąca"
+                        [variant]="BadgeVariant.GREEN"
+                        tooltip="Kalkulacja wczytana na zakładce „Kalkulator”"
+                      />
                     }
                   </div>
                   <div class="offer-row-meta mono muted small">

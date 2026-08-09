@@ -161,7 +161,11 @@
           <div class="slot-name">
             {{ offer.name }}
             @if (offer.kind === ComparableOfferKind.DRAFT) {
-              <ui-badge label="bieżąca" [variant]="BadgeVariant.GREEN" />
+              <ui-badge
+                label="bieżąca"
+                [variant]="BadgeVariant.GREEN"
+                tooltip="Kalkulacja wczytana na zakładce „Kalkulator”"
+              />
             }
           </div>
           <div class="slot-meta mono muted small">
