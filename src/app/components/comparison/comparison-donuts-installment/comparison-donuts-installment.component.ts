@@ -41,9 +41,6 @@ const SEGMENT_LEGEND: readonly { label: string; variant: ColorCodeArea }[] = [
   { label: 'Odsetki', variant: ColorCodeArea.INTEREST },
 ];
 
-const DONUT_SIZE = 160;
-const DONUT_THICKNESS = 22;
-
 @Component({
   selector: 'app-comparison-donuts-installment',
   standalone: true,
@@ -56,8 +53,6 @@ export class ComparisonDonutsInstallmentComponent {
   readonly sideA = input.required<ComparisonOfferData>();
   readonly sideB = input.required<ComparisonOfferData>();
 
-  protected readonly donutSize = DONUT_SIZE;
-  protected readonly donutThickness = DONUT_THICKNESS;
   protected readonly segmentLegend = SEGMENT_LEGEND;
   protected readonly IconSize = IconSize;
 
