@@ -1,9 +1,4 @@
-<section class="donut-pair-section">
-  <div class="donut-pair-header">
-    <div class="donut-pair-tag">3.6 · PIERWSZA RATA</div>
-    <h2 class="donut-pair-title">{{ sectionTitle() }}</h2>
-  </div>
-
+<ui-section tag="3.6 · PIERWSZA RATA" [heading]="sectionTitle()">
   <div class="donut-pair-legend" role="list" aria-label="Legenda segmentów">
     @for (segment of segmentLegend; track segment.label) {
       <span class="donut-pair-legend-item" role="listitem">
@@ -58,4 +53,4 @@
       </figcaption>
     </figure>
   </div>
-</section>
+</ui-section>

@@ -55,6 +55,11 @@ jak usunięcie: pusty slot + toast). Znana niedoskonałość.
 
 ## Komponenty i ich reużycie
 
+- Szkielet każdej sekcji (3.3–3.8): wspólny `ui-section` (`src/app/components/ui/section/`) —
+  nadtytuł + tytuł przez inputy `tag`/`heading`, akcje nagłówka przez `[slot=actions]`
+  (używa go tylko tabela parametrów: przełącznik „Tylko różnice”), treść przez `ng-content`.
+  Zlikwidowało to duplikację reguł `.{prefix}-section/-header/-tag/-title` powielonych wcześniej
+  w SCSS każdej sekcji (m.in. w `donut-pair.shared.scss`).
 - Tabela parametrów: `app-comparison-params-table` (czyta `formValue`, działa też dla ofert z błędami).
 - KPI grid: `app-comparison-kpi-grid` (kafelek to wewnętrzny markup — generyczny `Kpi` nie istnieje).
 - Donuty: `app-comparison-donuts-total`, `app-comparison-donuts-installment` — **reużycie generycznego

@@ -1,9 +1,4 @@
-<section class="trend-compare-section">
-  <div class="trend-compare-header">
-    <div class="trend-compare-tag">3.7 · WYKRES TRENDU</div>
-    <h2 class="trend-compare-title">{{ chartTitle() }}</h2>
-  </div>
-
+<ui-section tag="3.7 · WYKRES TRENDU" [heading]="chartTitle()">
   <div class="trend-compare-legend" role="list" aria-label="Legenda ofert">
     <span class="trend-compare-legend-item" role="listitem">
       <span
@@ -211,4 +206,4 @@
   } @else {
     <div class="trend-compare-empty">Brak danych do wyświetlenia.</div>
   }
-</section>
+</ui-section>

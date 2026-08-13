@@ -1,11 +1,5 @@
-<section class="params-table-section">
-  <div class="params-table-header">
-    <div>
-      <div class="params-table-tag">3.3 · PARAMETRY WEJŚCIOWE</div>
-      <h2 class="params-table-title">Tabela parametrów wejściowych</h2>
-    </div>
-    <ui-switch label="Tylko różnice" [formControl]="onlyDifferencesControl" />
-  </div>
+<ui-section tag="3.3 · PARAMETRY WEJŚCIOWE" heading="Tabela parametrów wejściowych">
+  <ui-switch slot="actions" label="Tylko różnice" [formControl]="onlyDifferencesControl" />
 
   <div class="params-table" role="table" aria-label="Tabela parametrów wejściowych">
     <div class="params-table-head" role="row">
@@ -79,4 +73,4 @@
       </div>
     }
   </div>
-</section>
+</ui-section>

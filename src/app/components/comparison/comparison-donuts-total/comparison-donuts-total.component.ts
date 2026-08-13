@@ -9,6 +9,7 @@ import {
 } from '../../../model';
 import { DonutComponent } from '../../ui/donut/donut.component';
 import { ColorCodeMarkerComponent } from '../../ui/color-code-marker/color-code-marker.component';
+import { SectionComponent } from '../../ui/section/section.component';
 import { IconSlotAComponent } from '../../icons/icon-slot-a/icon-slot-a.component';
 import { IconSlotBComponent } from '../../icons/icon-slot-b/icon-slot-b.component';
 
@@ -59,7 +60,13 @@ const PAYMENT_SEGMENT_DESCRIPTORS: readonly PaymentSegmentDescriptor[] = [
 @Component({
   selector: 'app-comparison-donuts-total',
   standalone: true,
-  imports: [DonutComponent, ColorCodeMarkerComponent, IconSlotAComponent, IconSlotBComponent],
+  imports: [
+    DonutComponent,
+    ColorCodeMarkerComponent,
+    SectionComponent,
+    IconSlotAComponent,
+    IconSlotBComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './comparison-donuts-total.component.html',
   styleUrl: './comparison-donuts-total.component.scss',

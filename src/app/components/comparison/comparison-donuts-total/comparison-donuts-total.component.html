@@ -1,9 +1,4 @@
-<section class="donut-pair-section">
-  <div class="donut-pair-header">
-    <div class="donut-pair-tag">3.5 · STRUKTURA WSZYSTKICH PŁATNOŚCI</div>
-    <h2 class="donut-pair-title">Struktura wszystkich płatności</h2>
-  </div>
-
+<ui-section tag="3.5 · STRUKTURA WSZYSTKICH PŁATNOŚCI" heading="Struktura wszystkich płatności">
   <div class="donut-pair-legend" role="list" aria-label="Legenda segmentów">
     @for (segment of visibleSegments(); track segment.label) {
       <span class="donut-pair-legend-item" role="listitem">
@@ -15,11 +10,7 @@
 
   <div class="donut-pair">
     <figure class="donut-pair-chart">
-      <ui-donut
-        [data]="slicesA()"
-        centerLabel="Razem"
-        [centerValue]="centerValueA()"
-      />
+      <ui-donut [data]="slicesA()" centerLabel="Razem" [centerValue]="centerValueA()" />
       <figcaption class="donut-pair-caption">
         <icon-slot-a [size]="IconSize.SMALL" />
         <span class="donut-pair-caption-name">{{ sideA().offer.name }}</span>
@@ -43,11 +34,7 @@
     </div>
 
     <figure class="donut-pair-chart">
-      <ui-donut
-        [data]="slicesB()"
-        centerLabel="Razem"
-        [centerValue]="centerValueB()"
-      />
+      <ui-donut [data]="slicesB()" centerLabel="Razem" [centerValue]="centerValueB()" />
       <figcaption class="donut-pair-caption">
         <icon-slot-b [size]="IconSize.SMALL" />
         <span class="donut-pair-caption-name">{{ sideB().offer.name }}</span>
@@ -55,4 +42,4 @@
       </figcaption>
     </figure>
   </div>
-</section>
+</ui-section>

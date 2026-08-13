@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, input } from '@an
 import { ComparableOffer, ComparisonKpiRow, ComparisonOfferData } from '../../../model';
 import { InstallmentTypeLabelPipe } from '../../../pipes/installment-type-label/installment-type-label.pipe';
 import { RateTypeLabelPipe } from '../../../pipes/rate-type-label/rate-type-label.pipe';
+import { SectionComponent } from '../../ui/section/section.component';
 
 const AMOUNT_FORMATTER = new Intl.NumberFormat('pl-PL', {
   minimumFractionDigits: 2,
@@ -40,7 +41,7 @@ interface KpiRowDefinition {
 @Component({
   selector: 'app-comparison-kpi-grid',
   standalone: true,
-  imports: [],
+  imports: [SectionComponent],
   providers: [InstallmentTypeLabelPipe, RateTypeLabelPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './comparison-kpi-grid.component.html',

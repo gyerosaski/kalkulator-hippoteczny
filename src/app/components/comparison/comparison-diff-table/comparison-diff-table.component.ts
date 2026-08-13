@@ -9,6 +9,7 @@ import {
 } from '../../../model';
 import { IconSlotAComponent } from '../../icons/icon-slot-a/icon-slot-a.component';
 import { IconSlotBComponent } from '../../icons/icon-slot-b/icon-slot-b.component';
+import { SectionComponent } from '../../ui/section/section.component';
 
 const AMOUNT_FORMATTER = new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 0 });
 const PERCENT_FORMATTER = new Intl.NumberFormat('pl-PL', {
@@ -169,7 +170,7 @@ function earlyRepaymentCommissionTotal(side: ComparisonOfferData): number | null
 @Component({
   selector: 'app-comparison-diff-table',
   standalone: true,
-  imports: [IconSlotAComponent, IconSlotBComponent],
+  imports: [IconSlotAComponent, IconSlotBComponent, SectionComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './comparison-diff-table.component.html',
   styleUrl: './comparison-diff-table.component.scss',

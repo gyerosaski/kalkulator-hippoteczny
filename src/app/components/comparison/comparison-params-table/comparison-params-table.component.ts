@@ -23,6 +23,7 @@ import {
 } from '../../../model';
 import { monthsBetweenStr } from '../../../helpers/date.helper';
 import { SwitchComponent } from '../../ui/switch/switch.component';
+import { SectionComponent } from '../../ui/section/section.component';
 import { IconSlotAComponent } from '../../icons/icon-slot-a/icon-slot-a.component';
 import { IconSlotBComponent } from '../../icons/icon-slot-b/icon-slot-b.component';
 import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
@@ -203,7 +204,13 @@ function buildComplexListParamRow(
 @Component({
   selector: 'app-comparison-params-table',
   standalone: true,
-  imports: [ReactiveFormsModule, SwitchComponent, IconSlotAComponent, IconSlotBComponent],
+  imports: [
+    ReactiveFormsModule,
+    SwitchComponent,
+    SectionComponent,
+    IconSlotAComponent,
+    IconSlotBComponent,
+  ],
   providers: [
     FormatMonthPipe,
     FormatLoanPeriodPipe,

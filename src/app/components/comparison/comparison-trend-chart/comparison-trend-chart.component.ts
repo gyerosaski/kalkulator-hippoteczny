@@ -12,6 +12,7 @@ import {
   YearGroup,
 } from '../../../model';
 import { roundUpToStep } from '../../../helpers/chart-scale.helper';
+import { SectionComponent } from '../../ui/section/section.component';
 
 const BALANCE_TICK_STEP = 50_000;
 
@@ -28,7 +29,7 @@ function sign(value: number): string {
 @Component({
   selector: 'app-comparison-trend-chart',
   standalone: true,
-  imports: [],
+  imports: [SectionComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './comparison-trend-chart.component.html',
   styleUrl: './comparison-trend-chart.component.scss',
