@@ -1,6 +1,5 @@
-/* SVG rysowany w układzie współrzędnych viewBox — wypełnia wrap zarówno przy
-   sztywnym rozmiarze (wrap ma width/height w px), jak i w trybie płynnym
-   (wrap dziedziczy szerokość kontenera, proporcje trzyma aspect-ratio) */
+/* SVG rysowany w układzie współrzędnych viewBox — wypełnia wrap o sztywnym
+   rozmiarze (wrap ma width/height w px), proporcje trzyma aspect-ratio */
 .donut-svg {
   display: block;
   width: 100%;

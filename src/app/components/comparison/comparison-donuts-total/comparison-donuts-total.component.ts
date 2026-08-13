@@ -56,9 +56,6 @@ const PAYMENT_SEGMENT_DESCRIPTORS: readonly PaymentSegmentDescriptor[] = [
   },
 ];
 
-const DONUT_SIZE = 200;
-const DONUT_THICKNESS = 28;
-
 @Component({
   selector: 'app-comparison-donuts-total',
   standalone: true,
@@ -72,8 +69,6 @@ export class ComparisonDonutsTotalComponent {
   readonly sideB = input.required<ComparisonOfferData>();
   readonly showExcludedSegments = input<boolean>(false);
 
-  protected readonly donutSize = DONUT_SIZE;
-  protected readonly donutThickness = DONUT_THICKNESS;
   protected readonly IconSize = IconSize;
 
   /** Segmenty widoczne w tej parze donutów — segment znika tylko, gdy jest zerowy w OBU ofertach i toggle jest wyłączony. */

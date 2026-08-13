@@ -319,14 +319,12 @@ Przyciski `ui-segmented` (`.seg-btn`) mają `flex: 1 1 auto` + przycinanie
 z wielokropkiem: segment najpierw mieści swój tekst (podział nierówny), nadmiar
 dzielony jest po równo, a etykieta nigdy nie wychodzi poza obrys kontrolki.
 
-## Skalowanie donutów wyników
+## Rozmiar donutów
 
 `ui-donut` rysuje SVG w układzie współrzędnych `viewBox` (o boku `size`,
-domyślnie 216) i ma dwa tryby: sztywny (wrap dostaje `width`/`height` w px
-równie `size` — tak działa m.in. w parach donutów porównania) oraz płynny
-(`fluid` — wrap wypełnia szerokość kontenera, proporcje trzyma
-`aspect-ratio: 1/1`). Karty „Struktura płatności” i „Struktura raty” używają
-trybu płynnego, a ich `.donut-row` przydziela donutowi pas
-`clamp(216px, 34%, 300px)` — donut skaluje się więc z szerokością kolumny
-wyników w podobnym tempie co pełnoszerokościowy wykres trendu, co utrzymuje
-oba komponenty w zbliżonej skali na każdej rozdzielczości.
+domyślnie 200) i ma jeden, sztywny tryb: wrap dostaje `width`/`height` w px
+równe `size`, a SVG wypełnia go proporcjami trzymanymi przez
+`aspect-ratio: 1/1`. Wszystkie donuty — karty „Struktura płatności”/„Struktura
+raty” oraz pary donutów porównania — mają tę samą, stałą średnicę 200 px
+(karty wyników korzystają z domyślnej wartości `size`, dlatego ich `.donut-row`
+przydziela donutowi pas `auto`, a legenda zajmuje resztę szerokości kolumny).
