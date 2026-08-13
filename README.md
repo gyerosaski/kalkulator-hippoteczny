@@ -1,59 +1,75 @@
-# KalkulatorHipoteczny
+# Kalkulator Hippoteczny
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.8.
+Kalkulator kredytu hipotecznego (Angular 21 + Tauri V2). Aplikacja docelowo działa jako program
+desktopowy (Windows, pakowany do MSI/NSIS), a dane kalkulacji przechowuje lokalnie w pliku JSON.
 
-## Development server
+## Tryby uruchamiania w developmencie
 
-To start a local development server, run:
+Aplikację można rozwijać na dwa sposoby. Różnią się warstwą persystencji.
 
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### Tryb przeglądarkowy (szybki dev / HMR)
 
 ```bash
-ng generate component component-name
+npm start
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Uruchamia dev server Angulara pod `http://localhost:4200/` (automatyczny reload po zmianach).
+Najszybsza ścieżka do pracy nad UI i logiką kalkulacji — **bez** uruchamiania okna desktopowego.
+
+Poza środowiskiem Tauri wtyczki `@tauri-apps/*` nie działają, więc persystencja korzysta z
+**fallbacku na `localStorage`**. To odizolowana kopia robocza — nie modyfikuje realnego pliku store'a
+aplikacji desktopowej. Przy pierwszym starcie lista kalkulacji jest zasilana snapshotem realnych
+danych:
 
 ```bash
-ng generate --help
+npm run seed:calc
 ```
 
-## Building
+Skrypt kopiuje `%APPDATA%/kalkulator-hippoteczny/calculations.json` do `public/dev-seed/` (asset
+serwowany w dev). Jest też uruchamiany automatycznie jako `prestart` przed `npm start`. Gdy realny
+plik nie istnieje, dev startuje z pustą listą. Szczegóły: `docs/technikalia/persystencja-kalkulacji.md`
+(sekcja „Fallback przeglądarkowy”).
 
-To build the project run:
+### Tryb desktop / Tauri (pełne środowisko)
 
 ```bash
-ng build
+npm run tauri:dev
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Uruchamia dev server Angulara wraz z oknem Tauri (desktop, HMR). Persystencja idzie przez realny store
+Tauri — plik `%APPDATA%/kalkulator-hippoteczny/calculations.json`. Ten tryb jest wymagany do
+weryfikacji natywnych okien dialogowych (zapis/otwarcie pliku) i realnego zapisu danych.
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+Spakowanie do instalatorów (MSI + NSIS) — artefakty w `src-tauri/target/release/bundle/`:
 
 ```bash
-ng test
+npm run tauri:build
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+## Pozostałe polecenia
 
 ```bash
-ng e2e
+npm run build      # produkcyjny build frontendu (dist/)
+npm run watch      # build dev w trybie watch
+npm test           # testy jednostkowe (Vitest)
+npm run prettier   # formatowanie kodu
+npm run lint       # ESLint
+npm run seed:calc  # odświeżenie snapshotu kalkulacji dla trybu przeglądarkowego
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Pojedynczy plik testowy:
 
-## Additional Resources
+```bash
+npx vitest run src/app/services/calculator/calculator.service.spec.ts
+```
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## Dokumentacja
+
+- `docs/funkcjonalności/` — opis funkcjonalny (reguły biznesowe, walidacje, zachowania UI).
+- `docs/technikalia/` — architektura i decyzje implementacyjne (silnik obliczeniowy, persystencja,
+  Tauri, wykresy, system projektowy).
+
+## Angular CLI
+
+Projekt wygenerowany za pomocą [Angular CLI](https://github.com/angular/angular-cli). Pełny opis
+poleceń: [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli).

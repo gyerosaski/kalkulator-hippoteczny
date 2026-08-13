@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
-import { load, type Store } from '@tauri-apps/plugin-store';
+import { load } from '@tauri-apps/plugin-store';
 
-import { AppSettings, Density, Theme } from '../../model';
+import { AppSettings, Density, KeyValueStore, Theme } from '../../model';
+import { isTauriRuntime } from '../platform/is-tauri';
+import { LocalStorageStore } from '../platform/local-storage-store';
 
 const DEFAULT_APP_SETTINGS: AppSettings = {
   theme: Theme.LIGHT,
@@ -14,7 +16,7 @@ export class AppSettingsStoreService {
   private static readonly STORE_FILE_NAME = 'settings.json';
   private static readonly SETTINGS_KEY = 'settings';
 
-  private storePromise: Promise<Store> | null = null;
+  private storePromise: Promise<KeyValueStore> | null = null;
 
   /** Pobiera ustawienia zmergowane z wartościami domyślnymi (uzupełnia brakujące pola). */
   async getSettings(): Promise<AppSettings> {
@@ -37,15 +39,15 @@ export class AppSettingsStoreService {
     await store.save();
   }
 
-  private async getStore(): Promise<Store> {
+  private async getStore(): Promise<KeyValueStore> {
     if (!this.storePromise) {
       // Puste `defaults` (klucz `settings` celowo nieobecny) — dzięki temu `getRawSettings()`
       // zwraca `undefined` przy braku wpisu (rozróżnienie pierwszego uruchomienia od zapisanego
       // ustawienia w logice migracji); merge z `DEFAULT_APP_SETTINGS` robi `getSettings()`.
-      this.storePromise = load(AppSettingsStoreService.STORE_FILE_NAME, {
-        defaults: {},
-        autoSave: true,
-      });
+      // Poza Tauri (dev w przeglądarce) most IPC nie istnieje — używamy fallbacku na localStorage.
+      this.storePromise = isTauriRuntime()
+        ? load(AppSettingsStoreService.STORE_FILE_NAME, { defaults: {}, autoSave: true })
+        : Promise.resolve(new LocalStorageStore(AppSettingsStoreService.STORE_FILE_NAME, {}));
     }
     return this.storePromise;
   }

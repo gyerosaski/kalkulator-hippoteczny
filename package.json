@@ -4,7 +4,9 @@
   "license": "AGPL-3.0-only",
   "scripts": {
     "ng": "ng",
+    "prestart": "node scripts/seed-calculations.mjs",
     "start": "ng serve",
+    "seed:calc": "node scripts/seed-calculations.mjs",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",

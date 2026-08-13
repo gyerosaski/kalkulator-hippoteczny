@@ -14,7 +14,7 @@ import {
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { ask as askDialog } from '@tauri-apps/plugin-dialog';
+import { confirmDialog } from '../../services/platform/platform-dialog';
 
 import {
   AppRoute,
@@ -328,7 +328,7 @@ export class CalculationsManagerComponent implements OnInit {
     const existingRecord = existingRecords.find((record) => record.name === name);
 
     if (existingRecord) {
-      const overwrite = await askDialog(
+      const overwrite = await confirmDialog(
         `Istnieje już kalkulacja o nazwie "${name}". Czy chcesz ją nadpisać?`,
         { title: 'Nadpisać kalkulację?', kind: 'warning' },
       );

@@ -34,6 +34,58 @@ Deklarowane w `src-tauri/capabilities/default.json`:
 | `dialog` | systemowe dialogi otwarcia i zapisu pliku                                                                                                                     |
 | `fs`     | odczyt/zapis JSON oraz zapis CSV; scope zapisu: `$DOCUMENT`, `$DOWNLOAD`, `$DESKTOP`, `$HOME` dla wzorców `**/*.json` i `**/*.csv` (odczyt tylko `**/*.json`) |
 
+## Fallback przeglądarkowy (tryb dev bez Tauri)
+
+Aplikacja jest projektowana pod desktop (Tauri), ale w developmencie bywa uruchamiana jako zwykły
+dev server (`npm start` → `http://localhost:4200`). Poza środowiskiem Tauri most IPC nie istnieje,
+więc `@tauri-apps/plugin-store` (a także `plugin-dialog`/`plugin-fs`) odrzucają wywołania. Aby cała
+aplikacja działała również w przeglądarce, wprowadzono cienką warstwę wyboru implementacji.
+
+### Warstwa `platform`
+
+`src/app/services/platform/`:
+
+| Plik                     | Rola                                                                                                                                                    |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `is-tauri.ts`            | `isTauriRuntime()` — strażnik środowiska; sprawdza obecność `window.__TAURI_INTERNALS__` / `window.__TAURI__`                                            |
+| `local-storage-store.ts` | `LocalStorageStore` — implementacja `KeyValueStore` (`src/app/model/platform.model.ts`) oparta o `localStorage`; `storageKeyForStoreFile(fileName)`      |
+| `browser-file-io.ts`     | przeglądarkowe odpowiedniki IO: `downloadTextFile` (Blob + `<a download>`), `pickAndReadTextFile` (`<input type="file">`)                                 |
+| `platform-dialog.ts`     | `confirmDialog(message, options?)` — w Tauri deleguje do `ask`, w przeglądarce do `window.confirm`                                                        |
+
+`KeyValueStore` to wspólny interfejs (`get`/`set`/`save`/`delete`) odwzorowujący podzbiór API `Store`
+Tauri. Natywny `Store` spełnia go strukturalnie, więc `getStore()` w obu store'ach zwraca
+`Promise<KeyValueStore>`, a ciała metod `list/save/delete` są wspólne dla obu środowisk.
+
+`LocalStorageStore` mapuje jeden „plik” store'a na jeden wpis `localStorage` z prefiksem
+`tauri-store:` (np. `tauri-store:calculations.json`), przechowujący obiekt `{ [key]: value }` — dzięki
+temu `calculations.json` i `settings.json` pozostają odizolowane. Zapis jest natychmiastowy przy każdym
+`set`/`delete`; `save()` istnieje wyłącznie dla zgodności API.
+
+### Wybór ścieżki w store'ach
+
+`CalculationsStoreService.getStore()` oraz `AppSettingsStoreService.getStore()` branchują na
+`isTauriRuntime()`: w Tauri — natywny `load(...)`; poza Tauri — `LocalStorageStore`. Metody
+importu/eksportu i `getStorePath()` w `CalculationsStoreService` mają analogiczny branch: w przeglądarce
+eksport realizuje pobranie pliku (`downloadTextFile`), import — wybór pliku (`pickAndReadTextFile`),
+a `getStorePath()` zwraca etykietę `„localStorage (tryb przeglądarkowy)”` zamiast `appDataDir()`.
+
+### Seed z realnych danych
+
+Aby w przeglądarce widoczna była realna lista kalkulacji, `CalculationsStoreService` przy pierwszym
+starcie (gdy w `localStorage` nie ma jeszcze wpisu `tauri-store:calculations.json`) pobiera
+`fetch('dev-seed/calculations.json')` i zasila store zawartością (obsługuje kształt `{ calculations }`
+oraz gołą tablicę). Warunek „brak wpisu” sprawia, że świadome wyczyszczenie listy (zapis pustej
+tablicy) nie powoduje ponownego zasiania.
+
+Snapshot tworzy skrypt `scripts/seed-calculations.mjs` (`npm run seed:calc`, także `prestart` przed
+`npm start`) — kopiuje realny `%APPDATA%/kalkulator-hippoteczny/calculations.json` do
+`public/dev-seed/calculations.json` (asset serwowany pod `/dev-seed/`). Katalog `public/dev-seed/`
+jest w `.gitignore` (zawiera realne dane użytkownika). Brak pliku źródłowego → skrypt kończy się
+sukcesem, a dev startuje z pustą listą.
+
+Ścieżka produkcyjna (Tauri desktop) pozostaje nietknięta — `isTauriRuntime()` zawsze wybiera tam
+natywny store, a seed i fallbacki przeglądarkowe nie są używane.
+
 ## Ustawienia aplikacji — `settings.json`
 
 Ustawienia aplikacji (motyw i gęstość interfejsu) przechowuje `AppSettingsStoreService`

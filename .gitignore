@@ -52,3 +52,6 @@ Thumbs.db
 
 # Claude
 .claude/worktrees
+
+# Seed danych kalkulacji dla dev w przeglądarce (snapshot realnych danych użytkownika)
+/public/dev-seed
