@@ -52,6 +52,7 @@ import { IconDownloadComponent } from '../../components/icons/icon-download/icon
 import { IconSearchComponent } from '../../components/icons/icon-search/icon-search.component';
 import { IconArrowUpComponent } from '../../components/icons/icon-arrow-up/icon-arrow-up.component';
 import { CalculationsFooterComponent } from '../../components/calculations/calculations-footer/calculations-footer.component';
+import { RelativeTimePipe } from '../../pipes/relative-time/relative-time.pipe';
 import { ToastService } from '../../services/toast/toast.service';
 
 @Component({
@@ -74,6 +75,7 @@ import { ToastService } from '../../services/toast/toast.service';
     IconSearchComponent,
     IconArrowUpComponent,
     CalculationsFooterComponent,
+    RelativeTimePipe,
   ],
 })
 export class CalculationsManagerComponent implements OnInit {
@@ -136,6 +138,15 @@ export class CalculationsManagerComponent implements OnInit {
   readonly calculations = computed(() =>
     this.savedCalculationsStateService.records().map(toSavedCalculation),
   );
+
+  readonly lastUpdatedAt = computed<Date | null>(() => {
+    const items = this.calculations();
+    if (!items.length) return null;
+    return items.reduce(
+      (latest, item) => (item.updatedAt > latest ? item.updatedAt : latest),
+      items[0].updatedAt,
+    );
+  });
 
   readonly filteredCalculations = computed(() => {
     let items = this.calculations();

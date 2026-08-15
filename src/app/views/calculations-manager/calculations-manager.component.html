@@ -1,16 +1,27 @@
 <div class="saved-view">
   <header class="view-hero">
-    <button class="btn btn--primary" type="button" (click)="navigateToNewCalculation()">
-      <icon-plus />
-      Nowa kalkulacja
-    </button>
-    <button class="btn btn--secondary" type="button" (click)="saveAsNewCalculation()">
-      Zapisz jako
-    </button>
-    <button class="btn btn--ghost" type="button" (click)="importFromFile()">
-      <icon-download />
-      Importuj
-    </button>
+    <div class="view-hero-text">
+      <h1 class="view-hero-title">Zapisane kalkulacje</h1>
+      <div class="view-hero-meta muted">
+        <span><b class="mono">{{ calculations().length }}</b> zapisanych</span>
+        @if (lastUpdatedAt(); as lastUpdatedAt) {
+          <span class="view-hero-meta-time">ostatnia zmiana {{ lastUpdatedAt | relativeTime }}</span>
+        }
+      </div>
+    </div>
+    <div class="view-hero-actions">
+      <button class="btn btn--primary" type="button" (click)="navigateToNewCalculation()">
+        <icon-plus />
+        Nowa kalkulacja
+      </button>
+      <button class="btn btn--ghost" type="button" (click)="saveAsNewCalculation()">
+        Zapisz jako
+      </button>
+      <button class="btn btn--ghost" type="button" (click)="importFromFile()">
+        <icon-download />
+        Importuj
+      </button>
+    </div>
   </header>
 
   <!-- TOOLBAR -->
