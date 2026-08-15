@@ -1,11 +1,8 @@
 <section class="section">
   <div class="section-head">
     <div class="section-head-text">
-      @if (tag()) {
-        <div class="section-tag">{{ tag() }}</div>
-      }
-      @if (heading()) {
-        <h2 class="section-title">{{ heading() }}</h2>
+      @if (title()) {
+        <div class="section-title">{{ title() }}</div>
       }
     </div>
     <ng-content select="[slot=actions]" />

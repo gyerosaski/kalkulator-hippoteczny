@@ -20,17 +20,10 @@
   border-bottom: var(--border-width) solid var(--line);
 }
 
-.section-tag {
-  font-size: var(--text-xs);
+.section-title {
+  font-size: var(--text-sm);
   font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-widest);
   color: var(--muted);
   text-transform: uppercase;
-}
-
-.section-title {
-  margin: var(--space-2) 0 0;
-  font-size: var(--text-lg);
-  font-weight: var(--font-weight-bold);
-  color: var(--ink);
 }
