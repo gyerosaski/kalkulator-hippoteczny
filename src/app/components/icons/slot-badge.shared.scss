@@ -1,4 +1,4 @@
-/* Okrągła plakietka z literą oferty; kolor tła dokłada komponent konkretnej ikony. */
+/* Kwadratowa plakietka z literą oferty i lekko zaokrąglonymi rogami; kolor tła dokłada komponent konkretnej ikony. */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -6,7 +6,7 @@
   width: 24px;
   height: 24px;
   flex-shrink: 0;
-  border-radius: 50%;
+  border-radius: var(--r-xs);
   font-size: var(--text-sm);
   font-weight: var(--font-weight-bold);
   line-height: 1;
