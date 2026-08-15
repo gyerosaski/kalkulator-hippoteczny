@@ -12,33 +12,10 @@ import {
 import { MonthLabelPipe } from '../pipes/month-label.pipe';
 import { CalcService } from '../calc.service';
 
-const MONTH_NAMES_SHORT = [
-  'sty',
-  'lut',
-  'mar',
-  'kwi',
-  'maj',
-  'cze',
-  'lip',
-  'sie',
-  'wrz',
-  'paź',
-  'lis',
-  'gru',
-];
-const MONTH_NAMES_LONG = [
-  'styczeń',
-  'luty',
-  'marzec',
-  'kwiecień',
-  'maj',
-  'czerwiec',
-  'lipiec',
-  'sierpień',
-  'wrzesień',
-  'październik',
-  'listopad',
-  'grudzień',
+const MONTH_NAMES_SHORT = ['sty','lut','mar','kwi','maj','cze','lip','sie','wrz','paź','lis','gru'];
+const MONTH_NAMES_LONG  = [
+  'styczeń','luty','marzec','kwiecień','maj','czerwiec',
+  'lipiec','sierpień','wrzesień','październik','listopad','grudzień',
 ];
 
 /**
@@ -66,9 +43,9 @@ const MONTH_NAMES_LONG = [
     >
       <span class="mono inp-trigger-val">{{ value() | monthLabel }}</span>
       <svg width="14" height="14" viewBox="0 0 14 14" class="cal-ico">
-        <rect x="1.5" y="2.5" width="11" height="10" rx="1.5" stroke="currentColor" fill="none" />
-        <path d="M1.5 5.5 H12.5" stroke="currentColor" />
-        <path d="M4 1 V3.5 M10 1 V3.5" stroke="currentColor" stroke-linecap="round" />
+        <rect x="1.5" y="2.5" width="11" height="10" rx="1.5" stroke="currentColor" fill="none"/>
+        <path d="M1.5 5.5 H12.5" stroke="currentColor"/>
+        <path d="M4 1 V3.5 M10 1 V3.5" stroke="currentColor" stroke-linecap="round"/>
       </svg>
     </button>
 
@@ -129,14 +106,7 @@ const MONTH_NAMES_LONG = [
               aria-label="Cofnij o 10 lat"
             >
               <svg width="12" height="12" viewBox="0 0 12 12">
-                <path
-                  d="M7.5 2 L3.5 6 L7.5 10"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
+                <path d="M7.5 2 L3.5 6 L7.5 10" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
             <div class="mp-decade-label">
@@ -149,14 +119,7 @@ const MONTH_NAMES_LONG = [
               aria-label="Naprzód o 10 lat"
             >
               <svg width="12" height="12" viewBox="0 0 12 12">
-                <path
-                  d="M4.5 2 L8.5 6 L4.5 10"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
+                <path d="M4.5 2 L8.5 6 L4.5 10" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
             <button class="btn btn--mini mp-today" (click)="jumpToToday()">Dziś</button>
@@ -172,9 +135,7 @@ const MONTH_NAMES_LONG = [
                 (click)="stagedYear.set(y)"
               >
                 <span class="mp-year-num mono">{{ y }}</span>
-                @if (y === todayYear) {
-                  <span class="mp-year-tag">dziś</span>
-                }
+                @if (y === todayYear) { <span class="mp-year-tag">dziś</span> }
               </button>
             }
           </div>
@@ -189,9 +150,7 @@ const MONTH_NAMES_LONG = [
                 <button
                   class="mp-month"
                   [class.is-focused]="$index === stagedMonth()"
-                  [class.is-selected]="
-                    $index === value().getMonth() && stagedYear() === value().getFullYear()
-                  "
+                  [class.is-selected]="$index === value().getMonth() && stagedYear() === value().getFullYear()"
                   [class.is-today]="$index === todayMonth && stagedYear() === todayYear"
                   (click)="pickMonth($index)"
                 >
@@ -220,13 +179,13 @@ export class MonthPickerComponent {
 
   monthsShort = MONTH_NAMES_SHORT;
 
-  readonly todayYear = new Date().getFullYear();
+  readonly todayYear  = new Date().getFullYear();
   readonly todayMonth = new Date().getMonth();
 
-  open = signal(false);
-  stagedYear = signal(this.todayYear);
-  stagedMonth = signal(this.todayMonth);
-  decadeStart = signal(Math.floor(this.todayYear / 10) * 10);
+  open         = signal(false);
+  stagedYear   = signal(this.todayYear);
+  stagedMonth  = signal(this.todayMonth);
+  decadeStart  = signal(Math.floor(this.todayYear / 10) * 10);
 
   years = computed(() => {
     const start = this.decadeStart();
@@ -259,7 +218,7 @@ export class MonthPickerComponent {
   }
 
   shiftDecade(delta: number) {
-    this.decadeStart.update((d) => d + delta);
+    this.decadeStart.update(d => d + delta);
   }
 
   jumpToToday() {
@@ -291,13 +250,7 @@ export class MonthPickerComponent {
   @HostListener('window:keydown', ['$event'])
   onKey(e: KeyboardEvent) {
     if (!this.open()) return;
-    if (e.key === 'Escape') {
-      e.preventDefault();
-      this.close();
-    }
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      this.confirm();
-    }
+    if (e.key === 'Escape') { e.preventDefault(); this.close(); }
+    if (e.key === 'Enter')  { e.preventDefault(); this.confirm(); }
   }
 }

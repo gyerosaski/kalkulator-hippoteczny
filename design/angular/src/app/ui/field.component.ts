@@ -7,15 +7,11 @@ import { Component, ChangeDetectionStrategy, input } from '@angular/core';
   template: `
     <div class="field">
       <label class="field-label">
-        @if (num()) {
-          <span class="field-num">{{ num() }}</span>
-        }
+        @if (num()) { <span class="field-num">{{ num() }}</span> }
         <span>{{ label() }}</span>
       </label>
-      <ng-content />
-      @if (hint()) {
-        <div class="field-hint">{{ hint() }}</div>
-      }
+      <ng-content/>
+      @if (hint()) { <div class="field-hint">{{ hint() }}</div> }
     </div>
   `,
 })

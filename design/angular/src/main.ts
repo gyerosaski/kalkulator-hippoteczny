@@ -3,5 +3,7 @@ import { provideExperimentalZonelessChangeDetection } from '@angular/core';
 import { AppComponent } from './app/app.component';
 
 bootstrapApplication(AppComponent, {
-  providers: [provideExperimentalZonelessChangeDetection()],
-}).catch((err) => console.error(err));
+  providers: [
+    provideExperimentalZonelessChangeDetection(),
+  ],
+}).catch(err => console.error(err));

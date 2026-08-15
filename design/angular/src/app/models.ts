@@ -13,11 +13,7 @@ export interface Costs {
 }
 
 export type PropertyInsuranceFreq = 'co rok' | 'co miesiąc';
-export type PropertyInsuranceMode =
-  | '% wartości nieruchomości'
-  | '% kwoty kredytu'
-  | '% salda kredytu'
-  | 'znam kwotę';
+export type PropertyInsuranceMode = '% wartości nieruchomości' | '% kwoty kredytu' | '% salda kredytu' | 'znam kwotę';
 export type LifeInsuranceFreq = 'co rok' | 'co miesiąc' | 'jednorazowo';
 export type LifeInsuranceMode = '% kwoty kredytu' | '% salda kredytu' | 'znam kwotę';
 export type ExtraCostFreq = 'jednorazowo' | 'co rok' | 'co miesiąc';
@@ -80,14 +76,10 @@ export interface YearAggregate {
 }
 
 export type RateChangeCause =
-  | 'start'
-  | 'period'
-  | 'bridge-on'
-  | 'bridge-off'
-  | 'lowdown-on'
-  | 'lowdown-off'
-  | 'promo-on'
-  | 'promo-off';
+  | 'start' | 'period'
+  | 'bridge-on' | 'bridge-off'
+  | 'lowdown-on' | 'lowdown-off'
+  | 'promo-on' | 'promo-off';
 
 export interface RateChange {
   fromMonth: number;
@@ -214,9 +206,9 @@ export interface Offer {
   id: string;
   name: string;
   savedAt: Date;
-  source: SavedCalculation; // pełna kopia danych wejściowych
+  source: SavedCalculation;          // pełna kopia danych wejściowych
   startDate: Date;
-  result: ScheduleResult; // wynik = generateSchedule(input)
+  result: ScheduleResult;            // wynik = generateSchedule(input)
 }
 
 export type ComparisonTrendMode = 'overlay' | 'side-by-side';

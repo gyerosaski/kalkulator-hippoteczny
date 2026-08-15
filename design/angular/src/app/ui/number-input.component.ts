@@ -16,12 +16,8 @@ import { Component, ChangeDetectionStrategy, input, output, signal, computed } f
         (input)="onInput($any($event.target).value)"
         class="mono"
       />
-      @if (suffix()) {
-        <span class="suffix">{{ suffix() }}</span>
-      }
-      @if (hint()) {
-        <span class="hint">{{ hint() }}</span>
-      }
+      @if (suffix()) { <span class="suffix">{{ suffix() }}</span> }
+      @if (hint()) { <span class="hint">{{ hint() }}</span> }
     </div>
   `,
 })

@@ -56,15 +56,15 @@ src/
 
 ## Mapowanie React → Angular
 
-| React (makieta)           | Angular                                    |
-| ------------------------- | ------------------------------------------ |
-| `useState`                | `signal()`                                 |
-| `useMemo`                 | `computed()`                               |
+| React (makieta) | Angular |
+|---|---|
+| `useState` | `signal()` |
+| `useMemo` | `computed()` |
 | `window.generateSchedule` | `CalcService.schedule()` (computed signal) |
-| props w dół               | `@Input() ... = input.required<...>()`     |
-| handlery w górę           | `output<T>()`                              |
-| `useTweaks`               | sygnał + `localStorage`                    |
-| inline JSX                | osobne komponenty stand-alone              |
+| props w dół | `@Input() ... = input.required<...>()` |
+| handlery w górę | `output<T>()` |
+| `useTweaks` | sygnał + `localStorage` |
+| inline JSX | osobne komponenty stand-alone |
 
 ## Stan globalny
 
@@ -80,11 +80,11 @@ src/
 
 O trybie decyduje `tweaks().viewState`:
 
-| wartość     | zachowanie                                                                    |
-| ----------- | ----------------------------------------------------------------------------- |
-| `'auto'`    | pokaż błędy jeśli `realErrors.length > 0`, w przeciwnym razie wyniki          |
-| `'results'` | zawsze wyniki (błędy ukryte — do podglądu designu)                            |
-| `'errors'`  | zawsze pełen zestaw przykładowych błędów (`demoErrors`) — do podglądu designu |
+| wartość | zachowanie |
+|---|---|
+| `'auto'` | pokaż błędy jeśli `realErrors.length > 0`, w przeciwnym razie wyniki |
+| `'results'` | zawsze wyniki (błędy ukryte — do podglądu designu) |
+| `'errors'` | zawsze pełen zestaw przykładowych błędów (`demoErrors`) — do podglądu designu |
 
 `AppComponent.handleGoto(err)` przewija stronę do elementu `#{{ err.fieldId }}` i przygasza go klasą `.field--err-target` (pulsujące obramowanie). Anchory są wstawione w `BasicDataComponent`, `TranchesComponent`, `OverpaymentsComponent` — każdy błąd w `FormError` ma odpowiadające `fieldId`.
 
@@ -94,13 +94,13 @@ Drugi widok aplikacji, przełączany przez topbar (`tweaks().activeTab`). Kompon
 
 Dane w `CalcService.savedCalculations: Signal<SavedCalculation[]>` (mock — 8 wpisów). Metody serwisu:
 
-| metoda                      | działanie                                                                     |
-| --------------------------- | ----------------------------------------------------------------------------- |
-| `renameSavedCalc(id, name)` | zmiana nazwy + aktualizacja `updatedAt`                                       |
-| `deleteSavedCalc(id)`       | trwałe usunięcie; jeśli była aktywna — `activeCalculationId = null`           |
-| `duplicateSavedCalc(id)`    | tworzy kopię z sufiksem „— kopia", tag `'robocza'`, ląduje na górze listy     |
-| `toggleFavSavedCalc(id)`    | przełączenie tagu `'ulubiona'`                                                |
-| `loadSavedCalc(c)`          | wpisuje parametry do sygnałów formularza i przełącza zakładkę na `kalkulator` |
+| metoda | działanie |
+|---|---|
+| `renameSavedCalc(id, name)` | zmiana nazwy + aktualizacja `updatedAt` |
+| `deleteSavedCalc(id)` | trwałe usunięcie; jeśli była aktywna — `activeCalculationId = null` |
+| `duplicateSavedCalc(id)` | tworzy kopię z sufiksem „— kopia", tag `'robocza'`, ląduje na górze listy |
+| `toggleFavSavedCalc(id)` | przełączenie tagu `'ulubiona'` |
+| `loadSavedCalc(c)` | wpisuje parametry do sygnałów formularza i przełącza zakładkę na `kalkulator` |
 
 Widok zarządza lokalnie: pole wyszukiwania, filtr (wszystkie / ulubione / robocze), sortowanie (5 kryteriów), otwarte menu kontekstowe, modale (rename / delete), toast.
 

@@ -43,29 +43,24 @@ interface XTick {
 
 interface ChartGeo {
   /** geometria SVG */
-  w: number;
-  h: number;
-  padL: number;
-  padR: number;
-  padT: number;
-  padB: number;
-  innerW: number;
-  innerH: number;
+  w: number; h: number;
+  padL: number; padR: number; padT: number; padB: number;
+  innerW: number; innerH: number;
   /** seria – słupki, linia, etykiety */
   bars: BarColumn[];
   linePath: string;
   linePts: LinePoint[];
   /** ticki osi */
-  balTicks: AxisTick[]; // lewa: saldo
-  stackTicks: AxisTick[]; // prawa: suma rocznych płatności
-  xTicks: XTick[]; // lata
+  balTicks: AxisTick[];      // lewa: saldo
+  stackTicks: AxisTick[];    // prawa: suma rocznych płatności
+  xTicks: XTick[];           // lata
 }
 
 const SEGMENTS: BarSegment[] = [
-  { key: 'interest', label: 'Odsetki', color: 'var(--c-int)' },
+  { key: 'interest',    label: 'Odsetki',               color: 'var(--c-int)'  },
   { key: 'monthlyCost', label: 'Koszty okołokredytowe', color: 'var(--c-cost)' },
-  { key: 'principal', label: 'Kapitał', color: 'var(--c-cap)' },
-  { key: 'overpayment', label: 'Nadpłaty', color: 'var(--c-over)' },
+  { key: 'principal',   label: 'Kapitał',               color: 'var(--c-cap)'  },
+  { key: 'overpayment', label: 'Nadpłaty',              color: 'var(--c-over)' },
 ];
 
 function niceCeil(v: number, step: number): number {
@@ -86,8 +81,7 @@ function fmtAxisPLN(v: number): string {
     <div class="card card--trend">
       <div class="trend-head">
         <h3 class="trend-title">
-          Harmonogram spłaty kredytu: {{ calc.startDate() | monthLabel }} -
-          {{ endDate() | monthLabel }}
+          Harmonogram spłaty kredytu: {{ calc.startDate() | monthLabel }} - {{ endDate() | monthLabel }}
         </h3>
         <ul class="trend-legend">
           <li><span class="dot" style="background:var(--c-int)"></span>Odsetki</li>
@@ -97,9 +91,9 @@ function fmtAxisPLN(v: number): string {
           <li>
             <span class="line-glyph">
               <svg width="28" height="10">
-                <line x1="2" y1="5" x2="26" y2="5" stroke="var(--ink)" stroke-width="2" />
-                <circle cx="9" cy="5" r="2.5" fill="var(--ink)" />
-                <circle cx="19" cy="5" r="2.5" fill="var(--ink)" />
+                <line x1="2" y1="5" x2="26" y2="5" stroke="var(--ink)" stroke-width="2"/>
+                <circle cx="9" cy="5" r="2.5" fill="var(--ink)"/>
+                <circle cx="19" cy="5" r="2.5" fill="var(--ink)"/>
               </svg>
             </span>
             Pozostało do spłaty
@@ -108,116 +102,61 @@ function fmtAxisPLN(v: number): string {
       </div>
 
       @if (geo(); as g) {
-        <svg
-          [attr.viewBox]="'0 0 ' + g.w + ' ' + g.h"
-          class="trend-chart trend-chart--combo"
-          preserveAspectRatio="none"
-        >
+        <svg [attr.viewBox]="'0 0 ' + g.w + ' ' + g.h" class="trend-chart trend-chart--combo" preserveAspectRatio="none">
           <!-- gridlines + etykiety lewej osi (saldo) -->
           @for (t of g.balTicks; track t.value) {
-            <line
-              [attr.x1]="g.padL"
-              [attr.x2]="g.w - g.padR"
-              [attr.y1]="t.y"
-              [attr.y2]="t.y"
-              stroke="var(--grid)"
-              stroke-dasharray="2 4"
-            />
-            <text [attr.x]="g.padL - 10" [attr.y]="t.y + 3" class="ax-label" text-anchor="end">
-              {{ t.label }}
-            </text>
+            <line [attr.x1]="g.padL" [attr.x2]="g.w - g.padR"
+                  [attr.y1]="t.y" [attr.y2]="t.y"
+                  stroke="var(--grid)" stroke-dasharray="2 4"/>
+            <text [attr.x]="g.padL - 10" [attr.y]="t.y + 3"
+                  class="ax-label" text-anchor="end">{{ t.label }}</text>
           }
 
           <!-- etykiety prawej osi (suma rocznych płatności) -->
           @for (t of g.stackTicks; track t.value) {
-            <text
-              [attr.x]="g.w - g.padR + 10"
-              [attr.y]="t.y + 3"
-              class="ax-label"
-              text-anchor="start"
-            >
-              {{ t.label }}
-            </text>
+            <text [attr.x]="g.w - g.padR + 10" [attr.y]="t.y + 3"
+                  class="ax-label" text-anchor="start">{{ t.label }}</text>
           }
 
           <!-- tytuły osi -->
-          <text
-            [attr.x]="g.padL - 70"
-            [attr.y]="g.padT + g.innerH / 2"
-            [attr.transform]="'rotate(-90 ' + (g.padL - 70) + ' ' + (g.padT + g.innerH / 2) + ')'"
-            class="ax-title"
-            text-anchor="middle"
-          >
-            Kwota pozostała do spłaty
-          </text>
-          <text
-            [attr.x]="g.w - g.padR + 70"
-            [attr.y]="g.padT + g.innerH / 2"
-            [attr.transform]="
-              'rotate(-90 ' + (g.w - g.padR + 70) + ' ' + (g.padT + g.innerH / 2) + ')'
-            "
-            class="ax-title"
-            text-anchor="middle"
-          >
-            Suma płatności w danym roku
-          </text>
+          <text [attr.x]="g.padL - 70" [attr.y]="g.padT + g.innerH / 2"
+                [attr.transform]="'rotate(-90 ' + (g.padL - 70) + ' ' + (g.padT + g.innerH / 2) + ')'"
+                class="ax-title" text-anchor="middle">Kwota pozostała do spłaty</text>
+          <text [attr.x]="g.w - g.padR + 70" [attr.y]="g.padT + g.innerH / 2"
+                [attr.transform]="'rotate(-90 ' + (g.w - g.padR + 70) + ' ' + (g.padT + g.innerH / 2) + ')'"
+                class="ax-title" text-anchor="middle">Suma płatności w danym roku</text>
 
           <!-- słupki -->
           @for (b of g.bars; track b.year) {
             <g class="bar-group">
               @for (s of b.segments; track $index) {
-                <rect
-                  [attr.x]="s.x"
-                  [attr.y]="s.y"
-                  [attr.width]="s.width"
-                  [attr.height]="s.height"
-                  [attr.fill]="s.color"
-                />
+                <rect [attr.x]="s.x" [attr.y]="s.y"
+                      [attr.width]="s.width" [attr.height]="s.height"
+                      [attr.fill]="s.color"/>
               }
             </g>
           }
 
           <!-- linia salda + punkty -->
-          <path
-            [attr.d]="g.linePath"
-            fill="none"
-            stroke="var(--ink)"
-            stroke-width="2"
-            stroke-linejoin="round"
-            stroke-linecap="round"
-          />
+          <path [attr.d]="g.linePath" fill="none"
+                stroke="var(--ink)" stroke-width="2"
+                stroke-linejoin="round" stroke-linecap="round"/>
           @for (p of g.linePts; track $index) {
-            <circle
-              [attr.cx]="p.x"
-              [attr.cy]="p.y"
-              r="4"
-              fill="var(--ink)"
-              stroke="var(--surface)"
-              stroke-width="1.5"
-            />
+            <circle [attr.cx]="p.x" [attr.cy]="p.y" r="4"
+                    fill="var(--ink)" stroke="var(--surface)" stroke-width="1.5"/>
           }
 
           <!-- etykiety osi X (lata, obrócone) -->
           @for (t of g.xTicks; track t.year) {
-            <text
-              [attr.x]="t.x"
-              [attr.y]="g.padT + g.innerH + 10"
-              [attr.transform]="'rotate(-90 ' + t.x + ' ' + (g.padT + g.innerH + 10) + ')'"
-              class="ax-label"
-              text-anchor="end"
-            >
-              {{ t.year }}
-            </text>
+            <text [attr.x]="t.x" [attr.y]="g.padT + g.innerH + 10"
+                  [attr.transform]="'rotate(-90 ' + t.x + ' ' + (g.padT + g.innerH + 10) + ')'"
+                  class="ax-label" text-anchor="end">{{ t.year }}</text>
           }
 
           <!-- baseline -->
-          <line
-            [attr.x1]="g.padL"
-            [attr.x2]="g.w - g.padR"
-            [attr.y1]="g.padT + g.innerH"
-            [attr.y2]="g.padT + g.innerH"
-            stroke="var(--line-2)"
-          />
+          <line [attr.x1]="g.padL" [attr.x2]="g.w - g.padR"
+                [attr.y1]="g.padT + g.innerH" [attr.y2]="g.padT + g.innerH"
+                stroke="var(--line-2)"/>
         </svg>
       } @else {
         <div class="chart-empty">Brak danych</div>
@@ -240,12 +179,8 @@ export class TrendChartComponent {
     if (!years.length || !rows.length) return null;
 
     // ===== geometria =====
-    const w = 1100,
-      h = 360;
-    const padL = 92,
-      padR = 92,
-      padT = 24,
-      padB = 56;
+    const w = 1100, h = 360;
+    const padL = 92, padR = 92, padT = 24, padB = 56;
     const innerW = w - padL - padR;
     const innerH = h - padT - padB;
     const n = years.length;
@@ -255,17 +190,16 @@ export class TrendChartComponent {
     const xCenter = (i: number) => padL + groupW * (i + 0.5);
 
     // ===== skale =====
-    const stackTotals = years.map((y) => y.interest + y.monthlyCost + y.principal + y.overpayment);
+    const stackTotals = years.map(y => y.interest + y.monthlyCost + y.principal + y.overpayment);
     const maxStack = Math.max(...stackTotals);
-    const startBalance =
-      (rows[0].balance ?? 0) + (rows[0].principal ?? 0) + (rows[0].overpayment ?? 0);
-    const maxBalance = Math.max(startBalance, ...years.map((y) => y.balance));
+    const startBalance = (rows[0].balance ?? 0) + (rows[0].principal ?? 0) + (rows[0].overpayment ?? 0);
+    const maxBalance = Math.max(startBalance, ...years.map(y => y.balance));
 
     const yMaxStack = niceCeil(maxStack, 5000);
     const yMaxBalance = niceCeil(maxBalance, 50000);
 
     const yStack = (v: number) => padT + innerH - (v / yMaxStack) * innerH;
-    const yBal = (v: number) => padT + innerH - (v / yMaxBalance) * innerH;
+    const yBal   = (v: number) => padT + innerH - (v / yMaxBalance) * innerH;
 
     // ===== ticki =====
     const balTicks: AxisTick[] = [];
@@ -289,10 +223,8 @@ export class TrendChartComponent {
         const y2 = yStack(cursor + v);
         cursor += v;
         segments.push({
-          x: cx - barW / 2,
-          y: y2,
-          width: barW,
-          height: Math.max(0, y1 - y2),
+          x: cx - barW / 2, y: y2,
+          width: barW, height: Math.max(0, y1 - y2),
           color: seg.color,
         });
       }
@@ -303,10 +235,7 @@ export class TrendChartComponent {
     const linePts: LinePoint[] = [
       { x: padL, y: yBal(startBalance), value: startBalance, year: null },
       ...years.map((yr, i) => ({
-        x: xCenter(i),
-        y: yBal(yr.balance),
-        value: yr.balance,
-        year: yr.year,
+        x: xCenter(i), y: yBal(yr.balance), value: yr.balance, year: yr.year,
       })),
     ];
     const linePath = linePts
@@ -317,20 +246,8 @@ export class TrendChartComponent {
     const xTicks: XTick[] = years.map((yr, i) => ({ year: yr.year, x: xCenter(i) }));
 
     return {
-      w,
-      h,
-      padL,
-      padR,
-      padT,
-      padB,
-      innerW,
-      innerH,
-      bars,
-      linePath,
-      linePts,
-      balTicks,
-      stackTicks,
-      xTicks,
+      w, h, padL, padR, padT, padB, innerW, innerH,
+      bars, linePath, linePts, balTicks, stackTicks, xTicks,
     };
   });
 }

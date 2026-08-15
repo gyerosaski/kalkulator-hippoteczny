@@ -35,17 +35,12 @@ import { MonthLabelPipe } from '../pipes/month-label.pipe';
         </div>
         @for (y of visibleYears(); track y.year; let yi = $index) {
           @let yearChanges = y.rateMax - y.rateMin > 0.001;
-          <button
-            class="tbl-row tbl-row--year"
-            [class.is-open]="expandedYear() === y.year"
-            (click)="toggle(y.year)"
-          >
+          <button class="tbl-row tbl-row--year" [class.is-open]="expandedYear() === y.year"
+            (click)="toggle(y.year)">
             <div class="cell-year"><span class="chev">▸</span>{{ y.year }}</div>
             <div class="mono">{{ y.rata | pln }}</div>
-            <div class="mono num--cap" [class.num--zero]="!y.principal">
-              {{ y.principal | pln }}
-            </div>
-            <div class="mono num--int" [class.num--zero]="!y.interest">{{ y.interest | pln }}</div>
+            <div class="mono num--cap"  [class.num--zero]="!y.principal">{{ y.principal | pln }}</div>
+            <div class="mono num--int"  [class.num--zero]="!y.interest">{{ y.interest | pln }}</div>
             @if (hasRateChange()) {
               <div class="mono num--rate" [class.num--rate-range]="yearChanges">
                 @if (yearChanges) {
@@ -57,51 +52,32 @@ import { MonthLabelPipe } from '../pipes/month-label.pipe';
                 }
               </div>
             }
-            <div class="mono num--over" [class.num--zero]="!y.overpayment">
-              {{ y.overpayment | pln }}
-            </div>
-            <div class="mono num--cost" [class.num--zero]="!y.monthlyCost">
-              {{ y.monthlyCost | pln }}
-            </div>
-            <div class="mono">
-              <b>{{ y.balance | pln }}</b>
-            </div>
+            <div class="mono num--over" [class.num--zero]="!y.overpayment">{{ y.overpayment | pln }}</div>
+            <div class="mono num--cost" [class.num--zero]="!y.monthlyCost">{{ y.monthlyCost | pln }}</div>
+            <div class="mono"><b>{{ y.balance | pln }}</b></div>
           </button>
           @if (expandedYear() === y.year) {
             @for (r of y.rows; track r.idx; let ri = $index) {
-              @let prevRate =
-                ri > 0 ? y.rows[ri - 1].rate : yi > 0 ? visibleYears()[yi - 1].rateEnd : null;
+              @let prevRate = ri > 0 ? y.rows[ri-1].rate : (yi > 0 ? visibleYears()[yi-1].rateEnd : null);
               @let rateJump = prevRate !== null && Math.abs(r.rate - prevRate) > 0.001;
               <button
                 type="button"
                 class="tbl-row tbl-row--month"
                 [class.is-selected]="selectedIdx() === r.idx"
                 [attr.aria-pressed]="selectedIdx() === r.idx"
-                (click)="selectMonth(r.idx)"
-              >
+                (click)="selectMonth(r.idx)">
                 <div class="cell-month">{{ r.date | monthLabel }}</div>
                 <div class="mono">{{ r.rata | pln }}</div>
-                <div class="mono num--cap" [class.num--zero]="!r.principal">
-                  {{ r.principal | pln }}
-                </div>
-                <div class="mono num--int" [class.num--zero]="!r.interest">
-                  {{ r.interest | pln }}
-                </div>
+                <div class="mono num--cap"  [class.num--zero]="!r.principal">{{ r.principal | pln }}</div>
+                <div class="mono num--int"  [class.num--zero]="!r.interest">{{ r.interest | pln }}</div>
                 @if (hasRateChange()) {
-                  <div
-                    class="mono num--rate"
-                    [class.num--rate-jump]="rateJump"
-                    [attr.title]="rateJump ? 'zmiana oprocentowania w tym miesiącu' : null"
-                  >
+                  <div class="mono num--rate" [class.num--rate-jump]="rateJump"
+                       [attr.title]="rateJump ? 'zmiana oprocentowania w tym miesiącu' : null">
                     {{ ratePct(r.rate) }}%
                   </div>
                 }
-                <div class="mono num--over" [class.num--zero]="!r.overpayment">
-                  {{ r.overpayment | pln }}
-                </div>
-                <div class="mono num--cost" [class.num--zero]="!r.monthlyCost">
-                  {{ r.monthlyCost | pln }}
-                </div>
+                <div class="mono num--over" [class.num--zero]="!r.overpayment">{{ r.overpayment | pln }}</div>
+                <div class="mono num--cost" [class.num--zero]="!r.monthlyCost">{{ r.monthlyCost | pln }}</div>
                 <div class="mono">{{ r.balance | pln }}</div>
               </button>
             }
@@ -125,7 +101,7 @@ export class ScheduleTableComponent {
   selectedRow = this.calc.selectedRow;
 
   toggle(y: number) {
-    this.expandedYear.update((curr) => (curr === y ? null : y));
+    this.expandedYear.update(curr => curr === y ? null : y);
   }
   selectMonth(idx: number) {
     this.calc.toggleSelectedMonth(idx);
@@ -134,9 +110,6 @@ export class ScheduleTableComponent {
     this.calc.clearSelectedMonth();
   }
   ratePct(v: number): string {
-    return new Intl.NumberFormat('pl-PL', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(v);
+    return new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(v);
   }
 }

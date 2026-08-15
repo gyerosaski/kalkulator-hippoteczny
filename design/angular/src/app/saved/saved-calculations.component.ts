@@ -1,20 +1,11 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  inject,
-  signal,
-  computed,
-  HostListener,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CalcService, fmtPLN } from '../calc.service';
 import { SavedCalculation, SavedCalcFilter, SavedCalcSort } from '../models';
 
 const fmtPct = (v: number, dec = 2) =>
-  new Intl.NumberFormat('pl-PL', { minimumFractionDigits: dec, maximumFractionDigits: dec }).format(
-    v,
-  );
+  new Intl.NumberFormat('pl-PL', { minimumFractionDigits: dec, maximumFractionDigits: dec }).format(v);
 
 function relativeTime(d: Date): string {
   const now = new Date(2026, 4, 15, 10, 0);
@@ -46,78 +37,25 @@ function exactDate(d: Date): string {
       <!-- HERO -->
       <header class="sc-hero">
         <div class="sc-hero-text">
-          <div class="sc-hero-tag">TWOJE KALKULACJE</div>
-          <h1 class="sc-hero-title">
-            Wracaj do swoich obliczeń, porównuj warianty, planuj decyzje.
-          </h1>
-          <p class="sc-hero-sub">
-            Każda zapisana kalkulacja przechowuje pełny zestaw parametrów — kwotę, okres,
-            oprocentowanie, koszty i nadpłaty. Wczytaj ją jednym kliknięciem, zmień nazwę albo usuń,
-            gdy przestanie być potrzebna.
-          </p>
-          <div class="sc-hero-stats">
-            <div class="sc-stat">
-              <div class="sc-stat-val mono">{{ stats().total }}</div>
-              <div class="sc-stat-lab">zapisanych</div>
-            </div>
-            <div class="sc-stat">
-              <div class="sc-stat-val mono">{{ stats().fav }}</div>
-              <div class="sc-stat-lab">ulubionych</div>
-            </div>
-            <div class="sc-stat">
-              <div class="sc-stat-val mono">{{ stats().work }}</div>
-              <div class="sc-stat-lab">roboczych</div>
-            </div>
-            <div class="sc-stat sc-stat--wide">
-              <div class="sc-stat-val sc-stat-val--sm">{{ stats().lastUpdatedRelative }}</div>
-              <div class="sc-stat-lab">ostatnia zmiana</div>
-            </div>
+          <h1 class="sc-hero-title">Zapisane kalkulacje</h1>
+          <div class="sc-hero-meta">
+            <span><b class="mono">{{ stats().total }}</b> zapisanych</span>
+            <span><b class="mono">{{ stats().fav }}</b> ulubionych</span>
+            <span><b class="mono">{{ stats().work }}</b> roboczych</span>
+            <span class="sc-hero-meta-time">ostatnia zmiana {{ relativeTime(stats().lastUpdated) }}</span>
           </div>
         </div>
         <div class="sc-hero-actions">
           <button class="btn btn--primary sc-hero-btn">
-            <svg width="13" height="13" viewBox="0 0 13 13">
-              <path
-                d="M6.5 2 L6.5 11 M2 6.5 L11 6.5"
-                stroke="currentColor"
-                stroke-width="1.6"
-                stroke-linecap="round"
-              />
-            </svg>
+            <svg width="13" height="13" viewBox="0 0 13 13"><path d="M6.5 2 L6.5 11 M2 6.5 L11 6.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
             Nowa kalkulacja
           </button>
           <button class="btn btn--ghost sc-hero-btn">
-            <svg width="13" height="13" viewBox="0 0 13 13">
-              <path
-                d="M6.5 2 L6.5 9 M3.5 6 L6.5 9 L9.5 6 M2 11 L11 11"
-                stroke="currentColor"
-                stroke-width="1.2"
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
+            <svg width="13" height="13" viewBox="0 0 13 13"><path d="M6.5 2 L6.5 9 M3.5 6 L6.5 9 L9.5 6 M2 11 L11 11" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Importuj
           </button>
           <button class="btn btn--ghost sc-hero-btn">
-            <svg width="13" height="13" viewBox="0 0 13 13">
-              <rect
-                x="2"
-                y="3"
-                width="9"
-                height="7.5"
-                rx="1"
-                stroke="currentColor"
-                stroke-width="1.1"
-                fill="none"
-              />
-              <path
-                d="M4.5 5.5 L8.5 5.5 M4.5 7.5 L7 7.5"
-                stroke="currentColor"
-                stroke-width="1.1"
-                stroke-linecap="round"
-              />
-            </svg>
+            <svg width="13" height="13" viewBox="0 0 13 13"><rect x="2" y="3" width="9" height="7.5" rx="1" stroke="currentColor" stroke-width="1.1" fill="none"/><path d="M4.5 5.5 L8.5 5.5 M4.5 7.5 L7 7.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
             Porównaj wybrane
           </button>
         </div>
@@ -126,16 +64,9 @@ function exactDate(d: Date): string {
       <!-- TOOLBAR -->
       <div class="sc-toolbar">
         <div class="sc-search">
-          <svg width="14" height="14" viewBox="0 0 14 14">
-            <circle cx="6" cy="6" r="3.5" stroke="currentColor" stroke-width="1.3" fill="none" />
-            <path d="M9 9 L12 12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
-          </svg>
-          <input
-            type="text"
-            placeholder="Szukaj po nazwie lub notatce…"
-            [ngModel]="search()"
-            (ngModelChange)="search.set($event)"
-          />
+          <svg width="14" height="14" viewBox="0 0 14 14"><circle cx="6" cy="6" r="3.5" stroke="currentColor" stroke-width="1.3" fill="none"/><path d="M9 9 L12 12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          <input type="text" placeholder="Szukaj po nazwie lub notatce…"
+            [ngModel]="search()" (ngModelChange)="search.set($event)"/>
           @if (search()) {
             <button class="sc-search-clear" (click)="search.set('')" aria-label="Wyczyść">×</button>
           }
@@ -159,15 +90,7 @@ function exactDate(d: Date): string {
               <option value="loan">kwota kredytu</option>
               <option value="rata">wysokość raty</option>
             </select>
-            <svg width="12" height="12" viewBox="0 0 12 12">
-              <path
-                d="M2 4 L6 8 L10 4"
-                stroke="currentColor"
-                stroke-width="1.5"
-                fill="none"
-                stroke-linecap="round"
-              />
-            </svg>
+            <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 4 L6 8 L10 4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
           </div>
         </div>
       </div>
@@ -189,33 +112,12 @@ function exactDate(d: Date): string {
         @if (filtered().length === 0) {
           <div class="sc-empty">
             <svg width="48" height="48" viewBox="0 0 48 48" aria-hidden="true">
-              <rect
-                x="6"
-                y="10"
-                width="36"
-                height="32"
-                rx="3"
-                stroke="currentColor"
-                stroke-width="1.5"
-                fill="none"
-              />
-              <path
-                d="M6 18 L42 18 M14 6 L14 12 M34 6 L34 12"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-              />
-              <path
-                d="M16 28 L22 28 M16 34 L26 34"
-                stroke="currentColor"
-                stroke-width="1.3"
-                stroke-linecap="round"
-              />
+              <rect x="6" y="10" width="36" height="32" rx="3" stroke="currentColor" stroke-width="1.5" fill="none"/>
+              <path d="M6 18 L42 18 M14 6 L14 12 M34 6 L34 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M16 28 L22 28 M16 34 L26 34" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
             </svg>
             <div class="sc-empty-title">Brak pasujących kalkulacji</div>
-            <div class="sc-empty-sub">
-              Zmień filtry albo wyczyść pole szukania, aby zobaczyć wszystkie zapisane warianty.
-            </div>
+            <div class="sc-empty-sub">Zmień filtry albo wyczyść pole szukania, aby zobaczyć wszystkie zapisane warianty.</div>
             @if (search() || filter() !== 'all') {
               <button class="btn btn--ghost" (click)="clearFilters()">Wyczyść filtry</button>
             }
@@ -227,20 +129,14 @@ function exactDate(d: Date): string {
 
               <!-- Nazwa -->
               <div class="sc-cell sc-cell--name">
-                <button
-                  class="sc-fav"
-                  [class.is-on]="c.tag === 'ulubiona'"
+                <button class="sc-fav" [class.is-on]="c.tag === 'ulubiona'"
                   (click)="calc.toggleFavSavedCalc(c.id)"
-                  [title]="c.tag === 'ulubiona' ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'"
-                >
+                  [title]="c.tag === 'ulubiona' ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'">
                   <svg width="14" height="14" viewBox="0 0 14 14">
-                    <path
-                      d="M7 1.5 L8.6 5 L12.4 5.4 L9.6 8 L10.4 12 L7 10 L3.6 12 L4.4 8 L1.6 5.4 L5.4 5 Z"
+                    <path d="M7 1.5 L8.6 5 L12.4 5.4 L9.6 8 L10.4 12 L7 10 L3.6 12 L4.4 8 L1.6 5.4 L5.4 5 Z"
                       [attr.fill]="c.tag === 'ulubiona' ? 'var(--c-cost)' : 'transparent'"
                       [attr.stroke]="c.tag === 'ulubiona' ? 'var(--c-cost)' : 'currentColor'"
-                      stroke-width="1.1"
-                      stroke-linejoin="round"
-                    />
+                      stroke-width="1.1" stroke-linejoin="round"/>
                   </svg>
                 </button>
                 <div class="sc-name-block">
@@ -261,15 +157,10 @@ function exactDate(d: Date): string {
 
               <!-- Kwota / LTV -->
               <div class="sc-cell sc-cell--money">
-                <div class="sc-money mono">
-                  <b>{{ fmtPLN0(c.loanAmount) }}</b
-                  ><span class="sc-unit">zł</span>
-                </div>
+                <div class="sc-money mono"><b>{{ fmtPLN0(c.loanAmount) }}</b><span class="sc-unit">zł</span></div>
                 <div class="sc-money-sub">
                   <span class="muted">z {{ fmtPLN0(c.propertyValue) }} zł</span>
-                  <span class="sc-ltv" [class.sc-ltv--high]="ltvOf(c) > 80"
-                    >LTV {{ ltvOf(c).toFixed(0) }} %</span
-                  >
+                  <span class="sc-ltv" [class.sc-ltv--high]="ltvOf(c) > 80">LTV {{ ltvOf(c).toFixed(0) }} %</span>
                 </div>
               </div>
 
@@ -277,11 +168,8 @@ function exactDate(d: Date): string {
               <div class="sc-cell sc-cell--period">
                 <div class="sc-period mono">{{ periodOf(c) }}</div>
                 <div class="sc-period-sub muted">
-                  <span
-                    class="sc-pill"
-                    [class.sc-pill--rowne]="c.installmentType === 'równe'"
-                    [class.sc-pill--malejace]="c.installmentType === 'malejące'"
-                  >
+                  <span class="sc-pill" [class.sc-pill--rowne]="c.installmentType === 'równe'"
+                    [class.sc-pill--malejace]="c.installmentType === 'malejące'">
                     {{ c.installmentType === 'równe' ? 'rata równa' : 'rata malejąca' }}
                   </span>
                 </div>
@@ -301,18 +189,13 @@ function exactDate(d: Date): string {
 
               <!-- Pierwsza rata -->
               <div class="sc-cell sc-cell--rata">
-                <div class="sc-rata mono">
-                  <b>{{ fmtPLN(c.firstInstallment, 2) }}</b
-                  ><span class="sc-unit">zł</span>
-                </div>
+                <div class="sc-rata mono"><b>{{ fmtPLN(c.firstInstallment, 2) }}</b><span class="sc-unit">zł</span></div>
                 <div class="sc-rata-sub muted">pierwsza rata</div>
               </div>
 
               <!-- Odsetki -->
               <div class="sc-cell sc-cell--int">
-                <div class="sc-int mono">
-                  {{ fmtPLN0(c.totalInterest) }}<span class="sc-unit">zł</span>
-                </div>
+                <div class="sc-int mono">{{ fmtPLN0(c.totalInterest) }}<span class="sc-unit">zł</span></div>
                 <div class="sc-int-sub">
                   <span class="sc-int-dot"></span>
                   <span class="muted">suma odsetek</span>
@@ -322,20 +205,10 @@ function exactDate(d: Date): string {
               <!-- Chart -->
               <div class="sc-cell sc-cell--chart">
                 <svg class="sc-spark" viewBox="0 0 96 28" aria-hidden="true">
-                  <path [attr.d]="sparkFill(c.overpaymentsEnabled)" fill="var(--c-cap-soft)" />
-                  <path
-                    [attr.d]="sparkLine(c.overpaymentsEnabled)"
-                    fill="none"
-                    stroke="var(--c-cap)"
-                    stroke-width="1.4"
-                  />
+                  <path [attr.d]="sparkFill(c.overpaymentsEnabled)" fill="var(--c-cap-soft)"/>
+                  <path [attr.d]="sparkLine(c.overpaymentsEnabled)" fill="none" stroke="var(--c-cap)" stroke-width="1.4"/>
                   @if (c.overpaymentsEnabled) {
-                    <circle
-                      [attr.cx]="sparkLastX(c.overpaymentsEnabled)"
-                      [attr.cy]="sparkLastY(c.overpaymentsEnabled)"
-                      r="2"
-                      fill="var(--c-over)"
-                    />
+                    <circle [attr.cx]="sparkLastX(c.overpaymentsEnabled)" [attr.cy]="sparkLastY(c.overpaymentsEnabled)" r="2" fill="var(--c-over)"/>
                   }
                 </svg>
                 @if (c.overpaymentsEnabled) {
@@ -345,106 +218,44 @@ function exactDate(d: Date): string {
 
               <!-- Data -->
               <div class="sc-cell sc-cell--date">
-                <div class="sc-date" [title]="exactDateOf(c.updatedAt)">
-                  {{ relativeTimeOf(c.updatedAt) }}
-                </div>
-                <div class="sc-date-sub muted mono">
-                  {{ exactDateOf(c.updatedAt).slice(0, 10) }}
-                </div>
+                <div class="sc-date" [title]="exactDateOf(c.updatedAt)">{{ relativeTimeOf(c.updatedAt) }}</div>
+                <div class="sc-date-sub muted mono">{{ exactDateOf(c.updatedAt).slice(0, 10) }}</div>
               </div>
 
               <!-- Akcje -->
               <div class="sc-cell sc-cell--actions">
                 <button class="sc-btn sc-btn--load" (click)="loadCalc(c)">
                   <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
-                    <path
-                      d="M2 6 L10 6 M7 3 L10 6 L7 9"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                      fill="none"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
+                    <path d="M2 6 L10 6 M7 3 L10 6 L7 9" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                   Wczytaj
                 </button>
                 <div class="sc-menu-wrap">
-                  <button
-                    class="sc-btn sc-btn--ghost"
-                    [class.is-on]="openMenu() === c.id"
-                    (click)="toggleMenu($event, c.id)"
-                    aria-label="Więcej akcji"
-                  >
+                  <button class="sc-btn sc-btn--ghost" [class.is-on]="openMenu() === c.id"
+                    (click)="toggleMenu($event, c.id)" aria-label="Więcej akcji">
                     <svg width="14" height="14" viewBox="0 0 14 14">
-                      <circle cx="3" cy="7" r="1.2" fill="currentColor" />
-                      <circle cx="7" cy="7" r="1.2" fill="currentColor" />
-                      <circle cx="11" cy="7" r="1.2" fill="currentColor" />
+                      <circle cx="3" cy="7" r="1.2" fill="currentColor"/>
+                      <circle cx="7" cy="7" r="1.2" fill="currentColor"/>
+                      <circle cx="11" cy="7" r="1.2" fill="currentColor"/>
                     </svg>
                   </button>
                   @if (openMenu() === c.id) {
                     <div class="sc-menu" role="menu" (click)="$event.stopPropagation()">
                       <button (click)="startRename(c)">
-                        <svg width="13" height="13" viewBox="0 0 13 13">
-                          <path
-                            d="M2 11 L2 9 L9 2 L11 4 L4 11 Z"
-                            stroke="currentColor"
-                            stroke-width="1.1"
-                            fill="none"
-                            stroke-linejoin="round"
-                          />
-                        </svg>
+                        <svg width="13" height="13" viewBox="0 0 13 13"><path d="M2 11 L2 9 L9 2 L11 4 L4 11 Z" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linejoin="round"/></svg>
                         Zmień nazwę
                       </button>
                       <button (click)="duplicate(c)">
-                        <svg width="13" height="13" viewBox="0 0 13 13">
-                          <rect
-                            x="2"
-                            y="2"
-                            width="7"
-                            height="7"
-                            rx="1.2"
-                            stroke="currentColor"
-                            stroke-width="1.1"
-                            fill="none"
-                          />
-                          <rect
-                            x="4.5"
-                            y="4.5"
-                            width="7"
-                            height="7"
-                            rx="1.2"
-                            stroke="currentColor"
-                            stroke-width="1.1"
-                            fill="none"
-                          />
-                        </svg>
+                        <svg width="13" height="13" viewBox="0 0 13 13"><rect x="2" y="2" width="7" height="7" rx="1.2" stroke="currentColor" stroke-width="1.1" fill="none"/><rect x="4.5" y="4.5" width="7" height="7" rx="1.2" stroke="currentColor" stroke-width="1.1" fill="none"/></svg>
                         Duplikuj
                       </button>
                       <button>
-                        <svg width="13" height="13" viewBox="0 0 13 13">
-                          <path
-                            d="M3 5 L6.5 1.5 L10 5 M6.5 1.5 L6.5 9 M2 11 L11 11"
-                            stroke="currentColor"
-                            stroke-width="1.1"
-                            fill="none"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          />
-                        </svg>
+                        <svg width="13" height="13" viewBox="0 0 13 13"><path d="M3 5 L6.5 1.5 L10 5 M6.5 1.5 L6.5 9 M2 11 L11 11" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
                         Eksportuj CSV
                       </button>
                       <div class="sc-menu-sep"></div>
                       <button class="sc-menu-danger" (click)="startDelete(c)">
-                        <svg width="13" height="13" viewBox="0 0 13 13">
-                          <path
-                            d="M3 4 L3 11 Q3 12 4 12 L9 12 Q10 12 10 11 L10 4 M2 4 L11 4 M5 4 L5 2 Q5 1.5 5.5 1.5 L7.5 1.5 Q8 1.5 8 2 L8 4 M5.5 6.5 L5.5 9.5 M7.5 6.5 L7.5 9.5"
-                            stroke="currentColor"
-                            stroke-width="1"
-                            fill="none"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          />
-                        </svg>
+                        <svg width="13" height="13" viewBox="0 0 13 13"><path d="M3 4 L3 11 Q3 12 4 12 L9 12 Q10 12 10 11 L10 4 M2 4 L11 4 M5 4 L5 2 Q5 1.5 5.5 1.5 L7.5 1.5 Q8 1.5 8 2 L8 4 M5.5 6.5 L5.5 9.5 M7.5 6.5 L7.5 9.5" stroke="currentColor" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
                         Usuń
                       </button>
                     </div>
@@ -460,8 +271,8 @@ function exactDate(d: Date): string {
       <div class="sc-footer">
         <div class="muted small">
           Wyświetlono <b class="mono">{{ filtered().length }}</b> z
-          <b class="mono">{{ calc.savedCalculations().length }}</b> kalkulacji · dane przechowywane
-          lokalnie w przeglądarce
+          <b class="mono">{{ calc.savedCalculations().length }}</b> kalkulacji ·
+          dane przechowywane lokalnie w przeglądarce
         </div>
         <button class="btn btn--ghost btn--mini">Eksportuj wszystkie do CSV</button>
       </div>
@@ -475,36 +286,23 @@ function exactDate(d: Date): string {
                 <div class="sc-modal-tag">akcja</div>
                 <h3>Zmień nazwę kalkulacji</h3>
               </div>
-              <button class="sc-modal-close" (click)="renameTarget.set(null)" aria-label="Zamknij">
-                ×
-              </button>
+              <button class="sc-modal-close" (click)="renameTarget.set(null)" aria-label="Zamknij">×</button>
             </div>
             <div class="sc-modal-body">
               <label class="sc-modal-label">Nazwa</label>
               <div class="inp inp--focus">
-                <input
-                  #renameInput
-                  type="text"
-                  [ngModel]="renameVal()"
-                  (ngModelChange)="renameVal.set($event)"
+                <input #renameInput type="text"
+                  [ngModel]="renameVal()" (ngModelChange)="renameVal.set($event)"
                   (keydown.enter)="confirmRename()"
-                  (keydown.escape)="renameTarget.set(null)"
-                />
+                  (keydown.escape)="renameTarget.set(null)"/>
               </div>
-              <div class="sc-modal-hint">
-                Nadaj kalkulacji nazwę, po której łatwo ją rozpoznasz — np. „Mieszkanie 65&nbsp;m²
-                Wrocław".
-              </div>
+              <div class="sc-modal-hint">Nadaj kalkulacji nazwę, po której łatwo ją rozpoznasz — np. „Mieszkanie 65&nbsp;m² Wrocław".</div>
             </div>
             <div class="sc-modal-foot">
               <button class="btn btn--ghost" (click)="renameTarget.set(null)">Anuluj</button>
-              <button
-                class="btn btn--primary"
+              <button class="btn btn--primary"
                 [disabled]="!renameVal().trim() || renameVal().trim() === r.name"
-                (click)="confirmRename()"
-              >
-                Zapisz
-              </button>
+                (click)="confirmRename()">Zapisz</button>
             </div>
           </div>
         </div>
@@ -519,46 +317,23 @@ function exactDate(d: Date): string {
                 <div class="sc-modal-tag sc-modal-tag--danger">usuwanie</div>
                 <h3>Usunąć kalkulację?</h3>
               </div>
-              <button class="sc-modal-close" (click)="deleteTarget.set(null)" aria-label="Zamknij">
-                ×
-              </button>
+              <button class="sc-modal-close" (click)="deleteTarget.set(null)" aria-label="Zamknij">×</button>
             </div>
             <div class="sc-modal-body">
               <p class="sc-modal-text">
-                Kalkulacja <b>„{{ d.name }}"</b> zostanie trwale usunięta. Tej operacji nie można
-                cofnąć.
+                Kalkulacja <b>„{{ d.name }}"</b> zostanie trwale usunięta. Tej operacji nie można cofnąć.
               </p>
               <div class="sc-modal-summary">
-                <div>
-                  <span class="muted">Kwota kredytu</span
-                  ><b class="mono">{{ fmtPLN0(d.loanAmount) }} zł</b>
-                </div>
-                <div>
-                  <span class="muted">Okres</span><b class="mono">{{ d.years }} lat</b>
-                </div>
-                <div>
-                  <span class="muted">Oprocentowanie</span
-                  ><b class="mono">{{ fmtPct(d.rate, 2) }} %</b>
-                </div>
-                <div>
-                  <span class="muted">Utworzono</span
-                  ><b class="mono">{{ exactDateOf(d.createdAt).slice(0, 10) }}</b>
-                </div>
+                <div><span class="muted">Kwota kredytu</span><b class="mono">{{ fmtPLN0(d.loanAmount) }} zł</b></div>
+                <div><span class="muted">Okres</span><b class="mono">{{ d.years }} lat</b></div>
+                <div><span class="muted">Oprocentowanie</span><b class="mono">{{ fmtPct(d.rate, 2) }} %</b></div>
+                <div><span class="muted">Utworzono</span><b class="mono">{{ exactDateOf(d.createdAt).slice(0, 10) }}</b></div>
               </div>
             </div>
             <div class="sc-modal-foot">
               <button class="btn btn--ghost" (click)="deleteTarget.set(null)">Anuluj</button>
               <button class="btn btn--danger" (click)="confirmDelete()">
-                <svg width="13" height="13" viewBox="0 0 13 13" aria-hidden="true">
-                  <path
-                    d="M3 4 L3 11 Q3 12 4 12 L9 12 Q10 12 10 11 L10 4 M2 4 L11 4 M5 4 L5 2 Q5 1.5 5.5 1.5 L7.5 1.5 Q8 1.5 8 2 L8 4"
-                    stroke="currentColor"
-                    stroke-width="1.2"
-                    fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
+                <svg width="13" height="13" viewBox="0 0 13 13" aria-hidden="true"><path d="M3 4 L3 11 Q3 12 4 12 L9 12 Q10 12 10 11 L10 4 M2 4 L11 4 M5 4 L5 2 Q5 1.5 5.5 1.5 L7.5 1.5 Q8 1.5 8 2 L8 4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 Usuń kalkulację
               </button>
             </div>
@@ -569,17 +344,7 @@ function exactDate(d: Date): string {
       <!-- TOAST -->
       @if (toast(); as t) {
         <div class="sc-toast" role="status">
-          <svg width="14" height="14" viewBox="0 0 14 14">
-            <circle cx="7" cy="7" r="5.5" stroke="var(--c-cap)" stroke-width="1.4" fill="none" />
-            <path
-              d="M4.5 7 L6.3 8.6 L9.5 5.3"
-              stroke="var(--c-cap)"
-              stroke-width="1.5"
-              fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
+          <svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke="var(--c-cap)" stroke-width="1.4" fill="none"/><path d="M4.5 7 L6.3 8.6 L9.5 5.3" stroke="var(--c-cap)" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <span>{{ t }}</span>
         </div>
       }
@@ -609,11 +374,11 @@ export class SavedCalculationsComponent {
   /* ============== computed ============== */
   stats = computed(() => {
     const items = this.calc.savedCalculations();
-    const lastUpdated = items.reduce((m, c) => (c.updatedAt > m ? c.updatedAt : m), new Date(0));
+    const lastUpdated = items.reduce((m, c) => c.updatedAt > m ? c.updatedAt : m, new Date(0));
     return {
       total: items.length,
-      fav: items.filter((c) => c.tag === 'ulubiona').length,
-      work: items.filter((c) => c.tag === 'robocza').length,
+      fav: items.filter(c => c.tag === 'ulubiona').length,
+      work: items.filter(c => c.tag === 'robocza').length,
       lastUpdatedRelative: items.length ? relativeTime(lastUpdated) : '—',
     };
   });
@@ -621,20 +386,17 @@ export class SavedCalculationsComponent {
   filtered = computed(() => {
     let out = this.calc.savedCalculations();
     const f = this.filter();
-    if (f === 'fav') out = out.filter((c) => c.tag === 'ulubiona');
-    if (f === 'work') out = out.filter((c) => c.tag === 'robocza');
+    if (f === 'fav') out = out.filter(c => c.tag === 'ulubiona');
+    if (f === 'work') out = out.filter(c => c.tag === 'robocza');
     const q = this.search().trim().toLowerCase();
-    if (q)
-      out = out.filter(
-        (c) => c.name.toLowerCase().includes(q) || (c.note && c.note.toLowerCase().includes(q)),
-      );
+    if (q) out = out.filter(c => c.name.toLowerCase().includes(q) || (c.note && c.note.toLowerCase().includes(q)));
     const s = this.sortBy();
     const cmp: Record<SavedCalcSort, (a: SavedCalculation, b: SavedCalculation) => number> = {
       updated: (a, b) => b.updatedAt.getTime() - a.updatedAt.getTime(),
       created: (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
-      name: (a, b) => a.name.localeCompare(b.name, 'pl'),
-      loan: (a, b) => b.loanAmount - a.loanAmount,
-      rata: (a, b) => a.firstInstallment - b.firstInstallment,
+      name:    (a, b) => a.name.localeCompare(b.name, 'pl'),
+      loan:    (a, b) => b.loanAmount - a.loanAmount,
+      rata:    (a, b) => a.firstInstallment - b.firstInstallment,
     };
     return [...out].sort(cmp[s]);
   });
@@ -642,36 +404,23 @@ export class SavedCalculationsComponent {
   filterCount(id: SavedCalcFilter): number {
     const items = this.calc.savedCalculations();
     if (id === 'all') return items.length;
-    if (id === 'fav') return items.filter((c) => c.tag === 'ulubiona').length;
-    return items.filter((c) => c.tag === 'robocza').length;
+    if (id === 'fav') return items.filter(c => c.tag === 'ulubiona').length;
+    return items.filter(c => c.tag === 'robocza').length;
   }
 
   /* ============== helpers ============== */
-  fmtPLN(v: number, dec = 2) {
-    return fmtPLN(v, dec);
-  }
-  fmtPLN0(v: number) {
-    return fmtPLN(v, 0);
-  }
+  fmtPLN(v: number, dec = 2)  { return fmtPLN(v, dec); }
+  fmtPLN0(v: number)          { return fmtPLN(v, 0); }
   fmtPct = fmtPct;
-  ltvOf(c: SavedCalculation) {
-    return c.propertyValue ? (c.loanAmount / c.propertyValue) * 100 : 0;
-  }
+  ltvOf(c: SavedCalculation)  { return c.propertyValue ? (c.loanAmount / c.propertyValue) * 100 : 0; }
   periodOf(c: SavedCalculation) {
     return c.months ? `${c.years} l. ${c.months} m-cy` : `${c.years} lat`;
   }
-  relativeTimeOf(d: Date) {
-    return relativeTime(d);
-  }
-  exactDateOf(d: Date) {
-    return exactDate(d);
-  }
+  relativeTimeOf(d: Date) { return relativeTime(d); }
+  exactDateOf(d: Date)    { return exactDate(d); }
 
   /* ============== sparkline ============== */
-  private sparkCache = new Map<
-    boolean,
-    { line: string; fill: string; lastX: number; lastY: number }
-  >();
+  private sparkCache = new Map<boolean, { line: string; fill: string; lastX: number; lastY: number }>();
   private buildSpark(overpay: boolean) {
     if (this.sparkCache.has(overpay)) return this.sparkCache.get(overpay)!;
     const n = 40;
@@ -688,24 +437,13 @@ export class SavedCalculationsComponent {
     this.sparkCache.set(overpay, v);
     return v;
   }
-  sparkLine(overpay: boolean) {
-    return this.buildSpark(overpay).line;
-  }
-  sparkFill(overpay: boolean) {
-    return this.buildSpark(overpay).fill;
-  }
-  sparkLastX(overpay: boolean) {
-    return this.buildSpark(overpay).lastX;
-  }
-  sparkLastY(overpay: boolean) {
-    return this.buildSpark(overpay).lastY;
-  }
+  sparkLine(overpay: boolean)  { return this.buildSpark(overpay).line; }
+  sparkFill(overpay: boolean)  { return this.buildSpark(overpay).fill; }
+  sparkLastX(overpay: boolean) { return this.buildSpark(overpay).lastX; }
+  sparkLastY(overpay: boolean) { return this.buildSpark(overpay).lastY; }
 
   /* ============== akcje ============== */
-  clearFilters() {
-    this.search.set('');
-    this.filter.set('all');
-  }
+  clearFilters() { this.search.set(''); this.filter.set('all'); }
 
   toggleMenu(ev: MouseEvent, id: string) {
     ev.stopPropagation();

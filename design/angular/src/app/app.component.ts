@@ -22,44 +22,25 @@ import { FormError } from './models';
   standalone: true,
   imports: [
     CommonModule,
-    BasicDataComponent,
-    CostsComponent,
-    TranchesComponent,
-    OverpaymentsComponent,
-    KpiStripComponent,
-    PaymentStructureComponent,
-    FirstInstallmentComponent,
-    TrendChartComponent,
-    RateChartComponent,
-    ScheduleTableComponent,
-    TweaksPanelComponent,
-    ErrorsPanelComponent,
-    SavedCalculationsComponent,
-    ComparisonComponent,
+    BasicDataComponent, CostsComponent, TranchesComponent, OverpaymentsComponent,
+    KpiStripComponent, PaymentStructureComponent, FirstInstallmentComponent,
+    TrendChartComponent, RateChartComponent, ScheduleTableComponent, TweaksPanelComponent,
+    ErrorsPanelComponent, SavedCalculationsComponent, ComparisonComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div
-      class="app"
-      [attr.data-palette]="calc.tweaks().palette"
-      [attr.data-density]="calc.tweaks().density"
-      [attr.data-theme]="calc.baseTheme()"
-      [attr.data-skin]="calc.themeSkin()"
-      [attr.data-font]="calc.tweaks().fontPair"
-    >
+    <div class="app" [attr.data-palette]="calc.tweaks().palette"
+         [attr.data-density]="calc.tweaks().density"
+         [attr.data-theme]="calc.baseTheme()"
+         [attr.data-skin]="calc.themeSkin()"
+         [attr.data-font]="calc.tweaks().fontPair">
       <header class="topbar">
         <div class="brand">
           <div class="brand-mark">
             <svg width="24" height="24" viewBox="0 0 24 24">
-              <rect x="3" y="3" width="18" height="18" rx="5" fill="var(--accent-sage-deep)" />
-              <path
-                d="M8 12 L11 15 L16 9"
-                stroke="white"
-                stroke-width="2"
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
+              <rect x="3" y="3" width="18" height="18" rx="5" fill="var(--accent-sage-deep)"/>
+              <path d="M8 12 L11 15 L16 9" stroke="white" stroke-width="2" fill="none"
+                stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
           <div>
@@ -68,27 +49,12 @@ import { FormError } from './models';
           </div>
         </div>
         <nav class="tabs">
-          <button
-            class="tab"
-            [class.is-on]="calc.tweaks().activeTab === 'kalkulator'"
-            (click)="calc.saveTweaks({ activeTab: 'kalkulator' })"
-          >
-            Kalkulator
-          </button>
-          <button
-            class="tab"
-            [class.is-on]="calc.tweaks().activeTab === 'kalkulacje'"
-            (click)="calc.saveTweaks({ activeTab: 'kalkulacje' })"
-          >
-            Twoje kalkulacje
-          </button>
-          <button
-            class="tab"
-            [class.is-on]="calc.tweaks().activeTab === 'porownanie'"
-            (click)="calc.saveTweaks({ activeTab: 'porownanie' })"
-          >
-            Porównanie ofert
-          </button>
+          <button class="tab" [class.is-on]="calc.tweaks().activeTab === 'kalkulator'"
+            (click)="calc.saveTweaks({ activeTab: 'kalkulator' })">Kalkulator</button>
+          <button class="tab" [class.is-on]="calc.tweaks().activeTab === 'kalkulacje'"
+            (click)="calc.saveTweaks({ activeTab: 'kalkulacje' })">Twoje kalkulacje</button>
+          <button class="tab" [class.is-on]="calc.tweaks().activeTab === 'porownanie'"
+            (click)="calc.saveTweaks({ activeTab: 'porownanie' })">Porównanie ofert</button>
           <button class="tab">Słownik</button>
         </nav>
         <div class="topbar-actions">
@@ -100,36 +66,36 @@ import { FormError } from './models';
 
       <main class="grid">
         @if (calc.tweaks().activeTab === 'porownanie') {
-          <app-comparison />
+          <app-comparison/>
         } @else if (calc.tweaks().activeTab === 'kalkulacje') {
-          <app-saved-calculations />
+          <app-saved-calculations/>
         } @else {
           <div class="col col--form">
-            <app-basic-data />
-            <app-costs />
-            <app-tranches />
-            <app-overpayments />
+            <app-basic-data/>
+            <app-costs/>
+            <app-tranches/>
+            <app-overpayments/>
           </div>
           <div class="col col--results">
             @if (calc.showErrors()) {
-              <app-errors-panel [errors]="calc.errors()" (goto)="handleGoto($event)" />
+              <app-errors-panel [errors]="calc.errors()" (goto)="handleGoto($event)"/>
             } @else {
-              <app-kpi-strip />
+              <app-kpi-strip/>
               <div class="result-grid">
-                <app-payment-structure />
-                <app-first-installment />
+                <app-payment-structure/>
+                <app-first-installment/>
               </div>
-              <app-trend-chart />
+              <app-trend-chart/>
               @if (calc.schedule().hasRateChange) {
-                <app-rate-chart />
+                <app-rate-chart/>
               }
-              <app-schedule-table />
+              <app-schedule-table/>
             }
           </div>
         }
       </main>
 
-      <app-tweaks-panel />
+      <app-tweaks-panel/>
     </div>
   `,
 })

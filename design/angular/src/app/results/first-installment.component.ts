@@ -22,13 +22,8 @@ import { MonthLabelPipe } from '../pipes/month-label.pipe';
         </h3>
       </div>
       <div class="donut-row donut-row--single">
-        <app-donut
-          [data]="slices()"
-          [size]="160"
-          [thickness]="22"
-          centerLabel="rata"
-          [centerValue]="rataValue() | pln: 0"
-        />
+        <app-donut [data]="slices()" [size]="160" [thickness]="22"
+          centerLabel="rata" [centerValue]="(rataValue() | pln:0)"/>
         <ul class="legend">
           @for (s of slices(); track s.label) {
             <li>

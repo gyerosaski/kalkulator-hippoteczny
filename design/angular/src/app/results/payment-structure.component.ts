@@ -31,7 +31,7 @@ import { MonthLabelPipe } from '../pipes/month-label.pipe';
         <button class="btn btn--mini">drukuj</button>
       </div>
       <div class="donut-row">
-        <app-donut [data]="slices()" [centerLabel]="'Razem'" [centerValue]="centerVal()" />
+        <app-donut [data]="slices()" [centerLabel]="'Razem'" [centerValue]="centerVal()"/>
         <ul class="legend">
           @for (s of slices(); track s.label) {
             <li>
@@ -72,7 +72,5 @@ export class PaymentStructureComponent {
     return `${(total / 1000).toFixed(0)}k`;
   });
 
-  clearSelection() {
-    this.calc.clearSelectedMonth();
-  }
+  clearSelection() { this.calc.clearSelectedMonth(); }
 }

@@ -7,9 +7,7 @@ import { Component, ChangeDetectionStrategy, input, output } from '@angular/core
   template: `
     <div class="seg" [class.seg--compact]="compact()">
       @for (o of options(); track o) {
-        <button class="seg-btn" [class.is-on]="o === value()" (click)="valueChange.emit(o)">
-          {{ o }}
-        </button>
+        <button class="seg-btn" [class.is-on]="o === value()" (click)="valueChange.emit(o)">{{ o }}</button>
       }
     </div>
   `,

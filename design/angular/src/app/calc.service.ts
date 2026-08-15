@@ -1,50 +1,20 @@
 import { Injectable, signal, computed } from '@angular/core';
 import {
-  CalcInput,
-  ScheduleResult,
-  ScheduleRow,
-  YearAggregate,
-  InstallmentType,
-  RateType,
-  FrequencyAll,
-  OverpaymentEffect,
-  RatePeriod,
-  Tweaks,
-  ExtraCost,
-  FormError,
-  SavedCalculation,
-  Offer,
-  Comparison,
-  ComparisonTrendMode,
-  RateChange,
-  RateBand,
-  RateChangeCause,
+  CalcInput, ScheduleResult, ScheduleRow, YearAggregate,
+  InstallmentType, RateType, FrequencyAll, OverpaymentEffect,
+  RatePeriod, Tweaks, ExtraCost, FormError, SavedCalculation,
+  Offer, Comparison, ComparisonTrendMode,
+  RateChange, RateBand, RateChangeCause,
 } from './models';
 
 export function addMonths(d: Date, n: number): Date {
   return new Date(d.getFullYear(), d.getMonth() + n, 1);
 }
 
-const MONTHS_PL = [
-  'sty',
-  'lut',
-  'mar',
-  'kwi',
-  'maj',
-  'cze',
-  'lip',
-  'sie',
-  'wrz',
-  'paź',
-  'lis',
-  'gru',
-];
+const MONTHS_PL = ['sty','lut','mar','kwi','maj','cze','lip','sie','wrz','paź','lis','gru'];
 export const monthLabel = (d: Date) => `${MONTHS_PL[d.getMonth()]} ${d.getFullYear()}`;
 export const fmtPLN = (v: number, decimals = 0) =>
-  new Intl.NumberFormat('pl-PL', {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  }).format(v);
+  new Intl.NumberFormat('pl-PL', { minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(v);
 
 @Injectable({ providedIn: 'root' })
 export class CalcService {
@@ -63,23 +33,20 @@ export class CalcService {
   addRatePeriod() {
     const list = this.ratePeriods();
     const lastFrom = list.length ? list[list.length - 1].fromMonth : 0;
-    this.ratePeriods.set([
-      ...list,
-      {
-        id: Date.now() + Math.random(),
-        fromMonth: Math.max(12, lastFrom + 12),
-        rateType: this.rateType(),
-        rate: this.rate(),
-        wibor: this.wibor(),
-        margin: this.margin(),
-      },
-    ]);
+    this.ratePeriods.set([...list, {
+      id: Date.now() + Math.random(),
+      fromMonth: Math.max(12, lastFrom + 12),
+      rateType: this.rateType(),
+      rate: this.rate(),
+      wibor: this.wibor(),
+      margin: this.margin(),
+    }]);
   }
   updateRatePeriod(id: number, patch: Partial<RatePeriod>) {
-    this.ratePeriods.update((rp) => rp.map((p) => (p.id === id ? { ...p, ...patch } : p)));
+    this.ratePeriods.update(rp => rp.map(p => p.id === id ? { ...p, ...patch } : p));
   }
   removeRatePeriod(id: number) {
-    this.ratePeriods.update((rp) => rp.filter((p) => p.id !== id));
+    this.ratePeriods.update(rp => rp.filter(p => p.id !== id));
   }
   startDate = signal<Date>(new Date(2026, 3, 1));
   firstRepaymentDate = signal<Date>(new Date(2026, 4, 1));
@@ -89,7 +56,7 @@ export class CalcService {
     const rows = this.schedule().rows;
     const last = rows.length > 0 ? rows[rows.length - 1].date : null;
     const out: { id: string; label: string; date: Date }[] = [
-      { id: 'start', label: 'Data uruchomienia', date: this.startDate() },
+      { id: 'start',    label: 'Data uruchomienia',       date: this.startDate() },
       { id: 'firstRep', label: 'Początek spłat kapitału', date: this.firstRepaymentDate() },
     ];
     if (last) out.push({ id: 'last', label: 'Ostatni miesiąc kredytu', date: last });
@@ -104,9 +71,7 @@ export class CalcService {
 
   // 4. Ubezpieczenie nieruchomości
   propInsFreq = signal<'co rok' | 'co miesiąc'>('co rok');
-  propInsMode = signal<
-    '% wartości nieruchomości' | '% kwoty kredytu' | '% salda kredytu' | 'znam kwotę'
-  >('% wartości nieruchomości');
+  propInsMode = signal<'% wartości nieruchomości' | '% kwoty kredytu' | '% salda kredytu' | 'znam kwotę'>('% wartości nieruchomości');
   insurancePct = signal(0.0008);
   propInsFrom = signal<Date>(new Date(2026, 4, 1));
   propInsTo = signal<Date>(new Date(2046, 3, 1));
@@ -129,33 +94,18 @@ export class CalcService {
 
   // 8. Dodatkowe koszty — lista
   extraCosts = signal<ExtraCost[]>([
-    {
-      id: 1,
-      name: '',
-      freq: 'jednorazowo',
-      mode: 'znam kwotę',
-      value: 0,
-      from: new Date(2026, 4, 1),
-    },
+    { id: 1, name: '', freq: 'jednorazowo', mode: 'znam kwotę', value: 0, from: new Date(2026, 4, 1) },
   ]);
   addExtraCost() {
-    this.extraCosts.update((arr) => [
-      ...arr,
-      {
-        id: Date.now(),
-        name: '',
-        freq: 'jednorazowo',
-        mode: 'znam kwotę',
-        value: 0,
-        from: new Date(2026, 4, 1),
-      },
-    ]);
+    this.extraCosts.update(arr => [...arr, {
+      id: Date.now(), name: '', freq: 'jednorazowo', mode: 'znam kwotę', value: 0, from: new Date(2026, 4, 1)
+    }]);
   }
   updateExtraCost(id: number, patch: Partial<ExtraCost>) {
-    this.extraCosts.update((arr) => arr.map((c) => (c.id === id ? { ...c, ...patch } : c)));
+    this.extraCosts.update(arr => arr.map(c => c.id === id ? { ...c, ...patch } : c));
   }
   removeExtraCost(id: number) {
-    this.extraCosts.update((arr) => arr.filter((c) => c.id !== id));
+    this.extraCosts.update(arr => arr.filter(c => c.id !== id));
   }
 
   // 9. Promocyjna wysokość oprocentowania
@@ -190,7 +140,7 @@ export class CalcService {
   selectedMonthIdx = signal<number | null>(null);
 
   toggleSelectedMonth(idx: number) {
-    this.selectedMonthIdx.update((curr) => (curr === idx ? null : idx));
+    this.selectedMonthIdx.update(curr => curr === idx ? null : idx);
   }
   clearSelectedMonth() {
     this.selectedMonthIdx.set(null);
@@ -200,7 +150,7 @@ export class CalcService {
   selectedRow = computed<ScheduleRow | null>(() => {
     const idx = this.selectedMonthIdx();
     if (idx == null) return null;
-    return this.schedule().rows.find((r) => r.idx === idx) ?? null;
+    return this.schedule().rows.find(r => r.idx === idx) ?? null;
   });
 
   /**
@@ -208,21 +158,13 @@ export class CalcService {
    * Koszty jednorazowe (prowizja, wycena) doliczane są w całości — ponoszone na starcie.
    */
   cumulativeToSelected = computed<{
-    principal: number;
-    interest: number;
-    overpayment: number;
-    costs: number;
-    total: number;
-    rata: number;
+    principal: number; interest: number; overpayment: number;
+    costs: number; total: number; rata: number;
   } | null>(() => {
     const row = this.selectedRow();
     if (!row) return null;
     const sched = this.schedule();
-    let principal = 0,
-      interest = 0,
-      overpayment = 0,
-      monthlyCost = 0,
-      rata = 0;
+    let principal = 0, interest = 0, overpayment = 0, monthlyCost = 0, rata = 0;
     for (const r of sched.rows) {
       principal += r.principal;
       interest += r.interest;
@@ -233,9 +175,7 @@ export class CalcService {
     }
     const oneTimeCosts = (sched.commission || 0) + (sched.valuationFee || 0);
     return {
-      principal,
-      interest,
-      overpayment,
+      principal, interest, overpayment,
       costs: oneTimeCosts + monthlyCost,
       total: principal + interest + overpayment + oneTimeCosts + monthlyCost,
       rata,
@@ -247,7 +187,7 @@ export class CalcService {
 
   /** Preferencja systemowa (ciemny) — używana, gdy motyw = 'auto'. */
   private systemDark = signal<boolean>(
-    typeof matchMedia !== 'undefined' && matchMedia('(prefers-color-scheme: dark)').matches,
+    typeof matchMedia !== 'undefined' && matchMedia('(prefers-color-scheme: dark)').matches
   );
   constructor() {
     if (typeof matchMedia !== 'undefined') {
@@ -272,212 +212,86 @@ export class CalcService {
 
   // ====================== TWOJE KALKULACJE ======================
   savedCalculations = signal<SavedCalculation[]>([
-    {
-      id: 'c1',
-      name: 'Mieszkanie 65 m² · Wrocław Krzyki',
-      note: 'wersja z prowizją 1,5 %',
-      tag: null,
-      propertyValue: 685000,
-      loanAmount: 548000,
-      years: 25,
-      months: 0,
-      installmentType: 'równe',
-      rateType: 'zmienna',
-      wibor: 5.85,
-      margin: 1.9,
-      rate: 7.75,
-      firstInstallment: 4124.78,
-      totalInterest: 689420,
-      totalCosts: 18540,
-      overpaymentsEnabled: true,
-      tranches: 1,
-      updatedAt: new Date(2026, 4, 13, 17, 42),
-      createdAt: new Date(2026, 3, 28),
-    },
-    {
-      id: 'c2',
-      name: 'Dom 120 m² · podmiejski',
-      note: 'oferta z banku PKO',
-      tag: 'ulubiona',
-      propertyValue: 950000,
-      loanAmount: 712500,
-      years: 30,
-      months: 0,
-      installmentType: 'równe',
-      rateType: 'stała',
-      wibor: 0,
-      margin: 0,
-      rate: 7.39,
-      firstInstallment: 4923.65,
-      totalInterest: 1059314,
-      totalCosts: 22890,
-      overpaymentsEnabled: false,
-      tranches: 4,
-      updatedAt: new Date(2026, 4, 10, 9, 15),
-      createdAt: new Date(2026, 2, 14),
-    },
-    {
-      id: 'c3',
-      name: 'Refinansowanie 2026',
-      note: 'porównanie do obecnej oferty',
-      tag: null,
-      propertyValue: 580000,
-      loanAmount: 320000,
-      years: 20,
-      months: 0,
-      installmentType: 'malejące',
-      rateType: 'zmienna',
-      wibor: 5.85,
-      margin: 2.1,
-      rate: 7.95,
-      firstInstallment: 3454.2,
-      totalInterest: 268940,
-      totalCosts: 9810,
-      overpaymentsEnabled: false,
-      tranches: 1,
-      updatedAt: new Date(2026, 4, 8, 21, 3),
-      createdAt: new Date(2026, 4, 8),
-    },
-    {
-      id: 'c4',
-      name: 'Kawalerka inwestycyjna',
-      note: null,
-      tag: 'robocza',
-      propertyValue: 320000,
-      loanAmount: 256000,
-      years: 30,
-      months: 0,
-      installmentType: 'równe',
-      rateType: 'zmienna',
-      wibor: 5.85,
-      margin: 2.4,
-      rate: 8.25,
-      firstInstallment: 1924.1,
-      totalInterest: 436920,
-      totalCosts: 8740,
-      overpaymentsEnabled: false,
-      tranches: 1,
-      updatedAt: new Date(2026, 4, 6, 14, 22),
-      createdAt: new Date(2026, 1, 4),
-    },
-    {
-      id: 'c5',
-      name: 'Wersja z nadpłatą 1 000 zł / m-c',
-      note: 'skrócenie okresu',
-      tag: null,
-      propertyValue: 685000,
-      loanAmount: 548000,
-      years: 25,
-      months: 0,
-      installmentType: 'równe',
-      rateType: 'zmienna',
-      wibor: 5.85,
-      margin: 1.9,
-      rate: 7.75,
-      firstInstallment: 4124.78,
-      totalInterest: 412690,
-      totalCosts: 18540,
-      overpaymentsEnabled: true,
-      tranches: 1,
-      updatedAt: new Date(2026, 4, 2, 11, 8),
-      createdAt: new Date(2026, 3, 30),
-    },
-    {
-      id: 'c6',
-      name: 'Plan B — krótszy okres (15 lat)',
-      note: null,
-      tag: null,
-      propertyValue: 685000,
-      loanAmount: 548000,
-      years: 15,
-      months: 0,
-      installmentType: 'równe',
-      rateType: 'stała',
-      wibor: 0,
-      margin: 0,
-      rate: 7.1,
-      firstInstallment: 4938.1,
-      totalInterest: 340120,
-      totalCosts: 18540,
-      overpaymentsEnabled: false,
-      tranches: 1,
-      updatedAt: new Date(2026, 3, 28, 19, 51),
-      createdAt: new Date(2026, 3, 28),
-    },
-    {
-      id: 'c7',
-      name: 'Mieszkanie rodziców — Gdańsk',
-      note: 'bez ubezpieczeń, raty malejące',
-      tag: null,
-      propertyValue: 540000,
-      loanAmount: 432000,
-      years: 22,
-      months: 0,
-      installmentType: 'malejące',
-      rateType: 'zmienna',
-      wibor: 5.85,
-      margin: 1.75,
-      rate: 7.6,
-      firstInstallment: 4373.55,
-      totalInterest: 374230,
-      totalCosts: 5400,
-      overpaymentsEnabled: false,
-      tranches: 1,
-      updatedAt: new Date(2026, 3, 19, 8, 41),
-      createdAt: new Date(2026, 3, 19),
-    },
-    {
-      id: 'c8',
-      name: 'Symulacja wzrostu WIBOR do 9 %',
-      note: 'stress-test',
-      tag: 'robocza',
-      propertyValue: 685000,
-      loanAmount: 548000,
-      years: 25,
-      months: 0,
-      installmentType: 'równe',
-      rateType: 'zmienna',
-      wibor: 9.0,
-      margin: 1.9,
-      rate: 10.9,
-      firstInstallment: 5249.3,
-      totalInterest: 1027840,
-      totalCosts: 18540,
-      overpaymentsEnabled: false,
-      tranches: 1,
-      updatedAt: new Date(2026, 3, 11, 22, 14),
-      createdAt: new Date(2026, 3, 11),
-    },
+    { id: 'c1', name: 'Mieszkanie 65 m² · Wrocław Krzyki', note: 'wersja z prowizją 1,5 %', tag: null,
+      propertyValue: 685000, loanAmount: 548000, years: 25, months: 0,
+      installmentType: 'równe', rateType: 'zmienna',
+      wibor: 5.85, margin: 1.90, rate: 7.75,
+      firstInstallment: 4124.78, totalInterest: 689420, totalCosts: 18540,
+      overpaymentsEnabled: true, tranches: 1,
+      updatedAt: new Date(2026, 4, 13, 17, 42), createdAt: new Date(2026, 3, 28) },
+    { id: 'c2', name: 'Dom 120 m² · podmiejski', note: 'oferta z banku PKO', tag: 'ulubiona',
+      propertyValue: 950000, loanAmount: 712500, years: 30, months: 0,
+      installmentType: 'równe', rateType: 'stała',
+      wibor: 0, margin: 0, rate: 7.39,
+      firstInstallment: 4923.65, totalInterest: 1059314, totalCosts: 22890,
+      overpaymentsEnabled: false, tranches: 4,
+      updatedAt: new Date(2026, 4, 10, 9, 15), createdAt: new Date(2026, 2, 14) },
+    { id: 'c3', name: 'Refinansowanie 2026', note: 'porównanie do obecnej oferty', tag: null,
+      propertyValue: 580000, loanAmount: 320000, years: 20, months: 0,
+      installmentType: 'malejące', rateType: 'zmienna',
+      wibor: 5.85, margin: 2.10, rate: 7.95,
+      firstInstallment: 3454.20, totalInterest: 268940, totalCosts: 9810,
+      overpaymentsEnabled: false, tranches: 1,
+      updatedAt: new Date(2026, 4, 8, 21, 3), createdAt: new Date(2026, 4, 8) },
+    { id: 'c4', name: 'Kawalerka inwestycyjna', note: null, tag: 'robocza',
+      propertyValue: 320000, loanAmount: 256000, years: 30, months: 0,
+      installmentType: 'równe', rateType: 'zmienna',
+      wibor: 5.85, margin: 2.40, rate: 8.25,
+      firstInstallment: 1924.10, totalInterest: 436920, totalCosts: 8740,
+      overpaymentsEnabled: false, tranches: 1,
+      updatedAt: new Date(2026, 4, 6, 14, 22), createdAt: new Date(2026, 1, 4) },
+    { id: 'c5', name: 'Wersja z nadpłatą 1 000 zł / m-c', note: 'skrócenie okresu', tag: null,
+      propertyValue: 685000, loanAmount: 548000, years: 25, months: 0,
+      installmentType: 'równe', rateType: 'zmienna',
+      wibor: 5.85, margin: 1.90, rate: 7.75,
+      firstInstallment: 4124.78, totalInterest: 412690, totalCosts: 18540,
+      overpaymentsEnabled: true, tranches: 1,
+      updatedAt: new Date(2026, 4, 2, 11, 8), createdAt: new Date(2026, 3, 30) },
+    { id: 'c6', name: 'Plan B — krótszy okres (15 lat)', note: null, tag: null,
+      propertyValue: 685000, loanAmount: 548000, years: 15, months: 0,
+      installmentType: 'równe', rateType: 'stała',
+      wibor: 0, margin: 0, rate: 7.10,
+      firstInstallment: 4938.10, totalInterest: 340120, totalCosts: 18540,
+      overpaymentsEnabled: false, tranches: 1,
+      updatedAt: new Date(2026, 3, 28, 19, 51), createdAt: new Date(2026, 3, 28) },
+    { id: 'c7', name: 'Mieszkanie rodziców — Gdańsk', note: 'bez ubezpieczeń, raty malejące', tag: null,
+      propertyValue: 540000, loanAmount: 432000, years: 22, months: 0,
+      installmentType: 'malejące', rateType: 'zmienna',
+      wibor: 5.85, margin: 1.75, rate: 7.60,
+      firstInstallment: 4373.55, totalInterest: 374230, totalCosts: 5400,
+      overpaymentsEnabled: false, tranches: 1,
+      updatedAt: new Date(2026, 3, 19, 8, 41), createdAt: new Date(2026, 3, 19) },
+    { id: 'c8', name: 'Symulacja wzrostu WIBOR do 9 %', note: 'stress-test', tag: 'robocza',
+      propertyValue: 685000, loanAmount: 548000, years: 25, months: 0,
+      installmentType: 'równe', rateType: 'zmienna',
+      wibor: 9.00, margin: 1.90, rate: 10.90,
+      firstInstallment: 5249.30, totalInterest: 1027840, totalCosts: 18540,
+      overpaymentsEnabled: false, tranches: 1,
+      updatedAt: new Date(2026, 3, 11, 22, 14), createdAt: new Date(2026, 3, 11) },
   ]);
   activeCalculationId = signal<string | null>('c1');
 
   renameSavedCalc(id: string, newName: string) {
-    this.savedCalculations.update((arr) =>
-      arr.map((c) => (c.id === id ? { ...c, name: newName, updatedAt: new Date() } : c)),
-    );
+    this.savedCalculations.update(arr => arr.map(c => c.id === id ? { ...c, name: newName, updatedAt: new Date() } : c));
   }
   deleteSavedCalc(id: string) {
-    this.savedCalculations.update((arr) => arr.filter((c) => c.id !== id));
+    this.savedCalculations.update(arr => arr.filter(c => c.id !== id));
     if (this.activeCalculationId() === id) this.activeCalculationId.set(null);
   }
   duplicateSavedCalc(id: string): SavedCalculation | null {
-    const src = this.savedCalculations().find((c) => c.id === id);
+    const src = this.savedCalculations().find(c => c.id === id);
     if (!src) return null;
     const copy: SavedCalculation = {
-      ...src,
-      id: 'c' + Date.now(),
+      ...src, id: 'c' + Date.now(),
       name: src.name + ' — kopia',
-      updatedAt: new Date(),
-      createdAt: new Date(),
-      tag: 'robocza',
+      updatedAt: new Date(), createdAt: new Date(), tag: 'robocza',
     };
-    this.savedCalculations.update((arr) => [copy, ...arr]);
+    this.savedCalculations.update(arr => [copy, ...arr]);
     return copy;
   }
   toggleFavSavedCalc(id: string) {
-    this.savedCalculations.update((arr) =>
-      arr.map((c) => (c.id === id ? { ...c, tag: c.tag === 'ulubiona' ? null : 'ulubiona' } : c)),
-    );
+    this.savedCalculations.update(arr => arr.map(c =>
+      c.id === id ? { ...c, tag: c.tag === 'ulubiona' ? null : 'ulubiona' } : c));
   }
   loadSavedCalc(c: SavedCalculation) {
     this.propertyValue.set(c.propertyValue);
@@ -503,26 +317,26 @@ export class CalcService {
     diffOnly: false,
   });
   setComparison(patch: Partial<Comparison>) {
-    this.comparison.update((c) => ({ ...c, ...patch }));
+    this.comparison.update(c => ({ ...c, ...patch }));
   }
   swapComparison() {
-    this.comparison.update((c) => ({ ...c, offerAId: c.offerBId, offerBId: c.offerAId }));
+    this.comparison.update(c => ({ ...c, offerAId: c.offerBId, offerBId: c.offerAId }));
   }
 
   /** Pełna lista ofert (każda zapisana kalkulacja zrekonstruowana do Offer). */
   availableOffers = computed<Offer[]>(() =>
-    this.savedCalculations().map((c) => this.buildOffer(c)),
+    this.savedCalculations().map(c => this.buildOffer(c))
   );
 
   /** Aktualnie wybrana oferta A (lewa kolumna). */
   offerA = computed<Offer | null>(() => {
     const id = this.comparison().offerAId;
-    return id ? (this.availableOffers().find((o) => o.id === id) ?? null) : null;
+    return id ? this.availableOffers().find(o => o.id === id) ?? null : null;
   });
   /** Aktualnie wybrana oferta B (prawa kolumna). */
   offerB = computed<Offer | null>(() => {
     const id = this.comparison().offerBId;
-    return id ? (this.availableOffers().find((o) => o.id === id) ?? null) : null;
+    return id ? this.availableOffers().find(o => o.id === id) ?? null : null;
   });
 
   /** Buduje Offer z SavedCalculation — uruchamia generator harmonogramu. */
@@ -530,26 +344,26 @@ export class CalcService {
     const startDate = new Date(2026, 3, 1);
     const result = this.compute({
       propertyValue: c.propertyValue,
-      loanAmount: c.loanAmount,
-      years: c.years,
-      months: c.months,
-      rateType: c.rateType,
-      rate: c.rate,
-      wibor: c.wibor,
-      margin: c.margin,
+      loanAmount:    c.loanAmount,
+      years:         c.years,
+      months:        c.months,
+      rateType:      c.rateType,
+      rate:          c.rate,
+      wibor:         c.wibor,
+      margin:        c.margin,
       installmentType: c.installmentType,
       startDate,
       costs: {
         commissionPct: c.id === 'c1' ? 1.5 : c.id === 'c2' ? 0.0 : 1.0,
-        valuationFee: c.id === 'c1' ? 400 : c.id === 'c2' ? 600 : 400,
-        bridgeRate: c.tranches > 1 ? 1.2 : 0,
-        bridgeMonths: c.tranches > 1 ? 8 : 0,
-        insurancePct: 0.0008,
+        valuationFee:  c.id === 'c1' ? 400 : c.id === 'c2' ? 600 : 400,
+        bridgeRate:    c.tranches > 1 ? 1.2 : 0,
+        bridgeMonths:  c.tranches > 1 ? 8 : 0,
+        insurancePct:  0.0008,
       },
       overpayments: {
         frequency: 'co miesiąc',
-        amount: c.overpaymentsEnabled ? 1000 : 0,
-        effect: 'skrócenie okresu',
+        amount:    c.overpaymentsEnabled ? 1000 : 0,
+        effect:    'skrócenie okresu',
       },
       tranches: [],
       ratePeriods: [],
@@ -565,45 +379,37 @@ export class CalcService {
     return pv ? (this.loanAmount() / pv) * 100 : 0;
   });
 
-  schedule = computed<ScheduleResult>(() =>
-    this.compute({
-      propertyValue: this.propertyValue(),
-      loanAmount: this.loanAmount(),
-      years: this.years(),
-      months: this.months(),
-      installmentType: this.installmentType(),
-      rateType: this.rateType(),
-      rate: this.rate(),
-      wibor: this.wibor(),
-      margin: this.margin(),
-      startDate: this.startDate(),
-      costs: this.costsEnabled()
-        ? {
-            commissionPct: this.commissionPct(),
-            valuationFee: this.valuationFee(),
-            bridgeRate: this.bridgeRate(),
-            bridgeMonths: this.bridgeMonths(),
-            insurancePct: this.insurancePct(),
-          }
-        : { commissionPct: 0, valuationFee: 0, bridgeRate: 0, bridgeMonths: 0, insurancePct: 0 },
-      lowDown: { rate: this.costsEnabled() ? this.lowDownRate() : 0 },
-      promo: {
-        rate: this.costsEnabled() ? this.promoRate() : 0,
-        from: this.promoFrom(),
-        to: this.promoTo(),
-      },
-      overpayments: {
-        frequency: this.overFreq(),
-        amount: this.overpaymentsEnabled() ? this.overAmount() : 0,
-        effect: this.overEffect(),
-      },
-      tranches: [],
-      ratePeriods: this.ratePeriods(),
-    }),
-  );
+  schedule = computed<ScheduleResult>(() => this.compute({
+    propertyValue: this.propertyValue(),
+    loanAmount: this.loanAmount(),
+    years: this.years(),
+    months: this.months(),
+    installmentType: this.installmentType(),
+    rateType: this.rateType(),
+    rate: this.rate(),
+    wibor: this.wibor(),
+    margin: this.margin(),
+    startDate: this.startDate(),
+    costs: this.costsEnabled() ? {
+      commissionPct: this.commissionPct(),
+      valuationFee: this.valuationFee(),
+      bridgeRate: this.bridgeRate(),
+      bridgeMonths: this.bridgeMonths(),
+      insurancePct: this.insurancePct(),
+    } : { commissionPct: 0, valuationFee: 0, bridgeRate: 0, bridgeMonths: 0, insurancePct: 0 },
+    lowDown: { rate: this.costsEnabled() ? this.lowDownRate() : 0 },
+    promo: { rate: this.costsEnabled() ? this.promoRate() : 0, from: this.promoFrom(), to: this.promoTo() },
+    overpayments: {
+      frequency: this.overFreq(),
+      amount: this.overpaymentsEnabled() ? this.overAmount() : 0,
+      effect: this.overEffect(),
+    },
+    tranches: [],
+    ratePeriods: this.ratePeriods(),
+  }));
 
   setLtv(pct: number) {
-    this.loanAmount.set((this.propertyValue() * pct) / 100);
+    this.loanAmount.set(this.propertyValue() * pct / 100);
   }
 
   // ====================== walidacja formularza ======================
@@ -622,9 +428,7 @@ export class CalcService {
         section: 'Dane podstawowe',
         message: 'Kwota kredytu nie może być większa niż wartość nieruchomości.',
         detail: `${fmtPLN(loan)} zł kwoty kredytu vs ${fmtPLN(prop)} zł wartości — różnica ${fmtPLN(diff)} zł`,
-        fieldNum: '2',
-        fieldLabel: 'Kwota kredytu',
-        fieldId: 'field-loan',
+        fieldNum: '2', fieldLabel: 'Kwota kredytu', fieldId: 'field-loan',
       });
     }
     if (totalMonths <= 0) {
@@ -632,9 +436,7 @@ export class CalcService {
         section: 'Dane podstawowe',
         message: 'Łączna liczba miesięcy musi być większa od 0.',
         detail: 'Ustaw okres kredytowania na co najmniej 1 miesiąc.',
-        fieldNum: '4',
-        fieldLabel: 'Okres kredytowania',
-        fieldId: 'field-period',
+        fieldNum: '4', fieldLabel: 'Okres kredytowania', fieldId: 'field-period',
       });
     }
     if (this.firstRepaymentDate() < this.startDate()) {
@@ -642,9 +444,7 @@ export class CalcService {
         section: 'Dane podstawowe',
         message: 'Początek spłat kapitału nie może być wcześniejszy niż data uruchomienia.',
         detail: `uruchomienie ${monthLabel(this.startDate())} → start spłat ${monthLabel(this.firstRepaymentDate())}`,
-        fieldNum: '6',
-        fieldLabel: 'Początek spłat kapitału',
-        fieldId: 'field-first-repayment',
+        fieldNum: '6', fieldLabel: 'Początek spłat kapitału', fieldId: 'field-first-repayment',
       });
     }
     if (this.overpaymentsEnabled() && this.overFrom() > this.overTo()) {
@@ -652,9 +452,7 @@ export class CalcService {
         section: 'Nadpłaty',
         message: 'W regule nadpłaty data „do” nie może być wcześniejsza niż data „od”.',
         detail: `od ${monthLabel(this.overFrom())} → do ${monthLabel(this.overTo())}`,
-        fieldNum: '2',
-        fieldLabel: 'Reguła nadpłat — okres',
-        fieldId: 'field-over-dates',
+        fieldNum: '2', fieldLabel: 'Reguła nadpłat — okres', fieldId: 'field-over-dates',
       });
     }
     if (this.overpaymentsEnabled() && this.targetFrom() > this.targetTo()) {
@@ -662,9 +460,7 @@ export class CalcService {
         section: 'Nadpłaty',
         message: 'W regule docelowej raty data „do” nie może być wcześniejsza niż data „od”.',
         detail: `od ${monthLabel(this.targetFrom())} → do ${monthLabel(this.targetTo())}`,
-        fieldNum: '6',
-        fieldLabel: 'Docelowa rata — okres',
-        fieldId: 'field-target-dates',
+        fieldNum: '6', fieldLabel: 'Docelowa rata — okres', fieldId: 'field-target-dates',
       });
     }
     if (this.tranchesEnabled() && Math.abs(this.tranchesTotal() - loan) > 0.5) {
@@ -673,9 +469,7 @@ export class CalcService {
         section: 'Transze',
         message: 'Suma transz musi być równa kwocie kredytu.',
         detail: `suma ${fmtPLN(this.tranchesTotal())} zł vs kwota ${fmtPLN(loan)} zł — ${diff > 0 ? 'brakuje' : 'nadwyżka'} ${fmtPLN(Math.abs(diff))} zł`,
-        fieldNum: '∑',
-        fieldLabel: 'Suma transz',
-        fieldId: 'field-tranches',
+        fieldNum: '∑', fieldLabel: 'Suma transz', fieldId: 'field-tranches',
       });
     }
     return errs;
@@ -683,58 +477,28 @@ export class CalcService {
 
   // Demo: pełna lista przykładowych błędów na potrzeby podglądu projektu.
   readonly demoErrors: FormError[] = [
-    {
-      section: 'Dane podstawowe',
-      message: 'Kwota kredytu nie może być większa niż wartość nieruchomości.',
+    { section: 'Dane podstawowe', message: 'Kwota kredytu nie może być większa niż wartość nieruchomości.',
       detail: '520 000 zł kwoty kredytu vs 500 000 zł wartości — różnica 20 000 zł',
-      fieldNum: '2',
-      fieldLabel: 'Kwota kredytu',
-      fieldId: 'field-loan',
-    },
-    {
-      section: 'Dane podstawowe',
-      message: 'Łączna liczba miesięcy musi być większa od 0.',
+      fieldNum: '2', fieldLabel: 'Kwota kredytu', fieldId: 'field-loan' },
+    { section: 'Dane podstawowe', message: 'Łączna liczba miesięcy musi być większa od 0.',
       detail: 'Ustaw okres kredytowania na co najmniej 1 miesiąc.',
-      fieldNum: '4',
-      fieldLabel: 'Okres kredytowania',
-      fieldId: 'field-period',
-    },
-    {
-      section: 'Dane podstawowe',
-      message: 'Początek spłat kapitału nie może być wcześniejszy niż data uruchomienia.',
+      fieldNum: '4', fieldLabel: 'Okres kredytowania', fieldId: 'field-period' },
+    { section: 'Dane podstawowe', message: 'Początek spłat kapitału nie może być wcześniejszy niż data uruchomienia.',
       detail: 'uruchomienie kwi 2026 → start spłat mar 2026',
-      fieldNum: '6',
-      fieldLabel: 'Początek spłat kapitału',
-      fieldId: 'field-first-repayment',
-    },
-    {
-      section: 'Transze',
-      message: 'Suma transz musi być równa kwocie kredytu.',
+      fieldNum: '6', fieldLabel: 'Początek spłat kapitału', fieldId: 'field-first-repayment' },
+    { section: 'Transze', message: 'Suma transz musi być równa kwocie kredytu.',
       detail: 'suma 350 000 zł vs kwota 400 000 zł — brakuje 50 000 zł',
-      fieldNum: '∑',
-      fieldLabel: 'Suma transz',
-      fieldId: 'field-tranches',
-    },
-    {
-      section: 'Nadpłaty',
-      message: 'W regule nadpłaty data „do” nie może być wcześniejsza niż data „od”.',
+      fieldNum: '∑', fieldLabel: 'Suma transz', fieldId: 'field-tranches' },
+    { section: 'Nadpłaty', message: 'W regule nadpłaty data „do” nie może być wcześniejsza niż data „od”.',
       detail: 'od maj 2028 → do sty 2027',
-      fieldNum: '2',
-      fieldLabel: 'Reguła nadpłat — okres',
-      fieldId: 'field-over-dates',
-    },
-    {
-      section: 'Nadpłaty',
-      message: 'W regule docelowej raty data „do” nie może być wcześniejsza niż data „od”.',
+      fieldNum: '2', fieldLabel: 'Reguła nadpłat — okres', fieldId: 'field-over-dates' },
+    { section: 'Nadpłaty', message: 'W regule docelowej raty data „do” nie może być wcześniejsza niż data „od”.',
       detail: 'od maj 2030 → do sty 2028',
-      fieldNum: '6',
-      fieldLabel: 'Docelowa rata — okres',
-      fieldId: 'field-target-dates',
-    },
+      fieldNum: '6', fieldLabel: 'Docelowa rata — okres', fieldId: 'field-target-dates' },
   ];
 
   errors = computed<FormError[]>(() =>
-    this.tweaks().viewState === 'errors' ? this.demoErrors : this.realErrors(),
+    this.tweaks().viewState === 'errors' ? this.demoErrors : this.realErrors()
   );
 
   showErrors = computed<boolean>(() => {
@@ -745,14 +509,7 @@ export class CalcService {
   });
 
   private loadTweaks(): Tweaks {
-    const defaults: Tweaks = {
-      palette: 'sage',
-      density: 'cozy',
-      fontPair: 'inter',
-      viewState: 'errors',
-      activeTab: 'kalkulator',
-      theme: 'light',
-    };
+    const defaults: Tweaks = { palette: 'sage', density: 'cozy', fontPair: 'inter', viewState: 'errors', activeTab: 'kalkulator', theme: 'light' };
     try {
       const raw = localStorage.getItem('khip:tweaks');
       if (raw) return { ...defaults, ...JSON.parse(raw) };
@@ -760,49 +517,25 @@ export class CalcService {
     return defaults;
   }
   saveTweaks(t: Partial<Tweaks>) {
-    this.tweaks.update((prev) => {
+    this.tweaks.update(prev => {
       const next = { ...prev, ...t };
-      try {
-        localStorage.setItem('khip:tweaks', JSON.stringify(next));
-      } catch {}
+      try { localStorage.setItem('khip:tweaks', JSON.stringify(next)); } catch {}
       return next;
     });
   }
 
   // ====================== logika finansowa ======================
   compute(input: CalcInput): ScheduleResult {
-    const {
-      propertyValue,
-      loanAmount,
-      years,
-      months,
-      rateType,
-      rate,
-      wibor,
-      margin,
-      installmentType,
-      startDate,
-      costs,
-      overpayments,
-      ratePeriods,
-      lowDown,
-      promo,
-    } = input;
+    const { propertyValue, loanAmount, years, months, rateType, rate, wibor, margin,
+            installmentType, startDate, costs, overpayments, ratePeriods,
+            lowDown, promo } = input;
 
     const n = years * 12 + months;
     const empty: ScheduleResult = {
-      rows: [],
-      yearly: [],
-      totalInterest: 0,
-      totalPayments: 0,
-      firstInstallment: 0,
-      totalCosts: 0,
-      totalOverpayments: 0,
-      commission: 0,
-      valuationFee: 0,
-      hasRateChange: false,
-      rateChanges: [],
-      rateBands: [],
+      rows: [], yearly: [], totalInterest: 0, totalPayments: 0,
+      firstInstallment: 0, totalCosts: 0, totalOverpayments: 0,
+      commission: 0, valuationFee: 0,
+      hasRateChange: false, rateChanges: [], rateBands: [],
     };
     if (n <= 0 || loanAmount <= 0) return empty;
 
@@ -823,9 +556,10 @@ export class CalcService {
 
     const i = baseNominal / 100 / 12;
     let balance = loanAmount;
-    const installmentEqual = i === 0 ? balance / n : (balance * i) / (1 - Math.pow(1 + i, -n));
+    const installmentEqual = i === 0 ? balance / n
+      : balance * i / (1 - Math.pow(1 + i, -n));
 
-    const insuranceMonthly = ((costs.insurancePct / 100) * propertyValue) / 12;
+    const insuranceMonthly = (costs.insurancePct / 100) * propertyValue / 12;
     const commission = (costs.commissionPct / 100) * loanAmount;
     const valuationFee = costs.valuationFee || 0;
 
@@ -835,8 +569,8 @@ export class CalcService {
     const promoRate = promo?.rate ?? 0;
     const monthDiff = (a: Date, b: Date) =>
       (a.getFullYear() - b.getFullYear()) * 12 + (a.getMonth() - b.getMonth());
-    const promoFromIdx = promo?.from ? Math.max(0, monthDiff(promo.from, startDate)) : -1;
-    const promoToIdx = promo?.to ? monthDiff(promo.to, startDate) : -1;
+    const promoFromIdx = (promo?.from) ? Math.max(0, monthDiff(promo.from, startDate)) : -1;
+    const promoToIdx   = (promo?.to)   ? monthDiff(promo.to, startDate) : -1;
     const lowDownThreshold = 0.8 * propertyValue;
 
     const rows: ScheduleRow[] = [];
@@ -846,10 +580,9 @@ export class CalcService {
     for (let m = 0; m < n; m++) {
       const date = addMonths(startDate, m);
       const base = rateAt(m);
-      const bridgeUp = m < bridgeMonths ? bridgeRate : 0;
-      const lowDownUp = lowDownRate > 0 && balance > lowDownThreshold ? lowDownRate : 0;
-      const promoDown =
-        promoRate > 0 && promoFromIdx >= 0 && m >= promoFromIdx && m <= promoToIdx ? promoRate : 0;
+      const bridgeUp = (m < bridgeMonths) ? bridgeRate : 0;
+      const lowDownUp = (lowDownRate > 0 && balance > lowDownThreshold) ? lowDownRate : 0;
+      const promoDown = (promoRate > 0 && promoFromIdx >= 0 && m >= promoFromIdx && m <= promoToIdx) ? promoRate : 0;
       const rateNominal = base.rate + bridgeUp + lowDownUp - promoDown;
       const effRate = rateNominal / 100 / 12;
       const interest = balance * effRate;
@@ -880,43 +613,25 @@ export class CalcService {
       totalOverpayments += overpayment;
 
       rows.push({
-        idx: m + 1,
-        date,
-        rata,
-        principal,
-        interest,
-        overpayment,
-        balance,
-        monthlyCost: insuranceMonthly + (m < bridgeMonths ? balance * (bridgeRate / 100 / 12) : 0),
+        idx: m + 1, date, rata, principal, interest, overpayment, balance,
+        monthlyCost: insuranceMonthly + (m < bridgeMonths ? balance * (bridgeRate/100/12) : 0),
         rate: rateNominal,
         rateBase: base.rate,
         ratePeriodIdx: base.periodIdx,
-        bridgeUp,
-        lowDownUp,
-        promoDown,
+        bridgeUp, lowDownUp, promoDown,
       });
 
       if (balance === 0) break;
     }
 
     const byYear = new Map<number, YearAggregate>();
-    rows.forEach((r) => {
+    rows.forEach(r => {
       const y = r.date.getFullYear();
-      if (!byYear.has(y))
-        byYear.set(y, {
-          year: y,
-          rata: 0,
-          principal: 0,
-          interest: 0,
-          overpayment: 0,
-          monthlyCost: 0,
-          balance: 0,
-          rows: [],
-          rateMin: r.rate,
-          rateMax: r.rate,
-          rateStart: r.rate,
-          rateEnd: r.rate,
-        });
+      if (!byYear.has(y)) byYear.set(y, {
+        year: y, rata: 0, principal: 0, interest: 0, overpayment: 0,
+        monthlyCost: 0, balance: 0, rows: [],
+        rateMin: r.rate, rateMax: r.rate, rateStart: r.rate, rateEnd: r.rate,
+      });
       const a = byYear.get(y)!;
       a.rata += r.rata;
       a.principal += r.principal;
@@ -931,14 +646,14 @@ export class CalcService {
     });
 
     const yearly = Array.from(byYear.values());
-    const totalCosts = commission + valuationFee + rows.reduce((s, r) => s + r.monthlyCost, 0);
+    const totalCosts = commission + valuationFee + rows.reduce((s,r)=>s+r.monthlyCost,0);
     const totalPayments = loanAmount + totalInterest + totalCosts;
 
     // === Detekcja zmian + pasma ===
     const rateChanges: RateChange[] = [];
     for (let k = 0; k < rows.length; k++) {
       const r = rows[k];
-      const prev = k > 0 ? rows[k - 1] : null;
+      const prev = k > 0 ? rows[k-1] : null;
       if (!prev || Math.abs(r.rate - prev.rate) > 0.001) {
         let cause: RateChangeCause = 'period';
         if (prev) {
@@ -961,43 +676,27 @@ export class CalcService {
 
     const rateBands: RateBand[] = [];
     const pctFmt = (v: number) =>
-      new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(
-        v,
-      );
+      new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(v);
     if (bridgeMonths > 0 && bridgeRate > 0) {
       rateBands.push({
-        kind: 'bridge',
-        fromMonth: 1,
-        toMonth: Math.min(bridgeMonths, rows.length),
-        delta: +bridgeRate,
-        label: `ubezp. pomostowe +${pctFmt(bridgeRate)}%`,
+        kind: 'bridge', fromMonth: 1, toMonth: Math.min(bridgeMonths, rows.length),
+        delta: +bridgeRate, label: `ubezp. pomostowe +${pctFmt(bridgeRate)}%`,
       });
     }
     if (lowDownRate > 0) {
-      let from: number | null = null,
-        to: number | null = null;
+      let from: number | null = null, to: number | null = null;
       for (const r of rows) {
-        if (r.lowDownUp > 0) {
-          if (from == null) from = r.idx;
-          to = r.idx;
-        }
+        if (r.lowDownUp > 0) { if (from == null) from = r.idx; to = r.idx; }
       }
-      if (from != null && to != null)
-        rateBands.push({
-          kind: 'lowDown',
-          fromMonth: from,
-          toMonth: to,
-          delta: +lowDownRate,
-          label: `niski wkład +${pctFmt(lowDownRate)}%`,
-        });
+      if (from != null && to != null) rateBands.push({
+        kind: 'lowDown', fromMonth: from, toMonth: to,
+        delta: +lowDownRate, label: `niski wkład +${pctFmt(lowDownRate)}%`,
+      });
     }
     if (promoRate > 0 && promoFromIdx >= 0 && promoToIdx >= promoFromIdx) {
       rateBands.push({
-        kind: 'promo',
-        fromMonth: promoFromIdx + 1,
-        toMonth: Math.min(promoToIdx + 1, rows.length),
-        delta: -promoRate,
-        label: `promocja –${pctFmt(promoRate)}%`,
+        kind: 'promo', fromMonth: promoFromIdx + 1, toMonth: Math.min(promoToIdx + 1, rows.length),
+        delta: -promoRate, label: `promocja –${pctFmt(promoRate)}%`,
       });
     }
     if (periods.length >= 1) {
@@ -1007,12 +706,8 @@ export class CalcService {
         const idx = k < rows.length ? rows[k].ratePeriodIdx : -1;
         if (idx !== curIdx) {
           rateBands.push({
-            kind: 'period',
-            fromMonth: curStart,
-            toMonth: k,
-            delta: 0,
-            label: `okres ${curIdx + 1}`,
-            periodIdx: curIdx,
+            kind: 'period', fromMonth: curStart, toMonth: k,
+            delta: 0, label: `okres ${curIdx + 1}`, periodIdx: curIdx,
           });
           curIdx = idx;
           curStart = k + 1;
@@ -1021,24 +716,16 @@ export class CalcService {
     }
 
     const hasRateChange =
-      periods.length >= 1 ||
+      (periods.length >= 1) ||
       (bridgeMonths > 0 && bridgeRate > 0) ||
-      lowDownRate > 0 ||
+      (lowDownRate > 0) ||
       (promoRate > 0 && promoFromIdx >= 0 && promoToIdx >= promoFromIdx);
 
     return {
-      rows,
-      yearly,
-      totalInterest,
-      totalPayments,
+      rows, yearly, totalInterest, totalPayments,
       firstInstallment: rows[0]?.rata ?? 0,
-      totalCosts,
-      totalOverpayments,
-      commission,
-      valuationFee,
-      hasRateChange,
-      rateChanges,
-      rateBands,
+      totalCosts, totalOverpayments, commission, valuationFee,
+      hasRateChange, rateChanges, rateBands,
     };
   }
 }
