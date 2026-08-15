@@ -1,4 +1,6 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input } from '@angular/core';
+
+import { IconSize } from '../../../model';
 
 @Component({
   selector: 'icon-delta',
@@ -6,5 +8,10 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
   host: { class: 'icon' },
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './icon-delta.component.html',
+  styleUrl: './icon-delta.component.scss',
 })
-export class IconDeltaComponent {}
+export class IconDeltaComponent {
+  readonly size = input<IconSize>(IconSize.REGULAR);
+
+  protected readonly IconSize = IconSize;
+}

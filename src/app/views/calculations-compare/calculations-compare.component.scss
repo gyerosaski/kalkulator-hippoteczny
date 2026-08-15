@@ -54,7 +54,6 @@
 .compare-hero-meta {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
   gap: var(--space-1) var(--space-4);
   font-size: var(--text-sm);
   color: var(--muted);
@@ -64,10 +63,6 @@
     align-items: center;
     gap: var(--space-1);
   }
-}
-
-.inline-delta {
-  color: var(--accent-deep);
 }
 
 /* ---------- Slot bar ---------- */
