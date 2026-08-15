@@ -55,6 +55,7 @@ import { CalculationsFooterComponent } from '../../components/calculations/calcu
 import { RelativeTimePipe } from '../../pipes/relative-time/relative-time.pipe';
 import { ToastService } from '../../services/toast/toast.service';
 import {IconSaveComponent} from '../../components/icons/icon-save/icon-save.component';
+import { ViewHeaderComponent } from '../../components/ui/view-header/view-header.component';
 
 @Component({
   selector: 'app-calculations-manager',
@@ -78,6 +79,7 @@ import {IconSaveComponent} from '../../components/icons/icon-save/icon-save.comp
     CalculationsFooterComponent,
     RelativeTimePipe,
     IconSaveComponent,
+    ViewHeaderComponent,
   ],
 })
 export class CalculationsManagerComponent implements OnInit {

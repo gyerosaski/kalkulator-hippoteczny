@@ -55,6 +55,7 @@ import { ResultsTrendChartComponent } from '../../components/results/results-tre
 import { SwitchComponent } from '../../components/ui/switch/switch.component';
 import { SegmentedComponent } from '../../components/ui/segmented/segmented.component';
 import { ComparisonTrendModeLabelPipe } from '../../pipes/comparison-trend-mode-label/comparison-trend-mode-label.pipe';
+import { ViewHeaderComponent } from '../../components/ui/view-header/view-header.component';
 
 const TREND_BALANCE_TICK_STEP = 50_000;
 const TREND_STACK_TICK_STEP = 5_000;
@@ -88,6 +89,7 @@ const TREND_STACK_TICK_STEP = 5_000;
     SwitchComponent,
     SegmentedComponent,
     ComparisonTrendModeLabelPipe,
+    ViewHeaderComponent,
   ],
   templateUrl: './calculations-compare.component.html',
   styleUrls: ['./calculations-compare.component.scss'],

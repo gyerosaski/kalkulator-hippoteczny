@@ -17,39 +17,13 @@
 .saved-view {
   max-width: 1440px;
   margin: 0 auto;
-  padding: var(--space-8) var(--view-pad) 64px;
+  padding: 0 var(--view-pad) 64px;
   display: flex;
   flex-direction: column;
   gap: var(--view-gap);
 }
 
 /* ─── HERO ─────────────────────────────────────────── */
-
-.view-hero {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: var(--space-4) var(--space-6);
-  padding: 0 0 var(--space-4);
-  border-bottom: var(--border-width) solid var(--line);
-}
-
-.view-hero-text {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  min-width: 0;
-}
-
-.view-hero-title {
-  margin: 0;
-  font-size: var(--text-xl);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-  color: var(--ink);
-}
 
 .view-hero-meta {
   display: flex;
@@ -149,10 +123,6 @@
 
 /* Telefon: pole szukania i sortowanie układają się pionowo, pełną szerokością */
 @media (max-width: $breakpoint-phone) {
-  .saved-view {
-    padding-top: var(--space-4);
-  }
-
   .view-hero-actions {
     width: 100%;
   }

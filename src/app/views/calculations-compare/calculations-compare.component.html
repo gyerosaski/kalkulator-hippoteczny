@@ -1,15 +1,12 @@
 <div class="compare-view">
-  <header class="compare-hero">
-    <div class="compare-hero-text">
-      <h1 class="compare-hero-title">Porównanie ofert</h1>
-      <div class="compare-hero-meta">
-        <span><icon-slot-a [size]="IconSize.SMALL" /> Baza</span>
-        <span><icon-slot-b [size]="IconSize.SMALL" /> Porównywana</span>
-        <span><icon-delta [size]="IconSize.SMALL" /> Różnica</span>
-      </div>
+  <ui-view-header heading="Porównanie ofert">
+    <div slot="meta" class="compare-hero-meta">
+      <span><icon-slot-a [size]="IconSize.SMALL" /> Baza</span>
+      <span><icon-slot-b [size]="IconSize.SMALL" /> Porównywana</span>
+      <span><icon-delta [size]="IconSize.SMALL" /> Różnica</span>
     </div>
 
-    <div class="compare-slots">
+    <div slot="aside" class="compare-slots">
       <ng-container
         *ngTemplateOutlet="
           slotTpl;
@@ -35,7 +32,7 @@
         "
       ></ng-container>
     </div>
-  </header>
+  </ui-view-header>
 
   @if (comparisonState.bothSelected()) {
     @if (invalidOffer(); as offer) {

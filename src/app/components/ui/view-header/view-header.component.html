@@ -1,0 +1,7 @@
+<header class="view-header">
+  <div class="view-header-text">
+    <h1 class="view-header-title">{{ heading() }}</h1>
+    <ng-content select="[slot=meta]" />
+  </div>
+  <ng-content select="[slot=aside]" />
+</header>
