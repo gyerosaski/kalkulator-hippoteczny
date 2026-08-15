@@ -1,12 +1,16 @@
 <div class="compare-view">
   <header class="compare-hero">
-    <div class="compare-hero-tag">PORÓWNANIE OFERT</div>
-    <p class="compare-hero-sub">
-      Oferta <icon-slot-a [size]="IconSize.SMALL" /> stanowi bazę porównania, oferta
-      <icon-slot-b [size]="IconSize.SMALL" /> jest porównywana. Różnica
-      <icon-delta class="inline-delta" /> obliczana jest jako
-      <icon-slot-b [size]="IconSize.SMALL" /> − <icon-slot-a [size]="IconSize.SMALL" />
-    </p>
+    <div class="compare-hero-text">
+      <h1 class="compare-hero-title">Porównanie ofert</h1>
+      <div class="compare-hero-meta">
+        <span><icon-slot-a [size]="IconSize.SMALL" /> baza</span>
+        <span><icon-slot-b [size]="IconSize.SMALL" /> porównywana</span>
+        <span class="mono">
+          <icon-delta class="inline-delta" /> = <icon-slot-b [size]="IconSize.SMALL" /> −
+          <icon-slot-a [size]="IconSize.SMALL" />
+        </span>
+      </div>
+    </div>
 
     <div class="compare-slots">
       <ng-container
