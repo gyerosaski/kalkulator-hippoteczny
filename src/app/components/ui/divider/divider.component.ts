@@ -7,8 +7,12 @@ import { DividerVariant } from '../../../model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './divider.component.html',
   styleUrl: './divider.component.scss',
+  host: {
+    '[class.divider--no-padding]': '!padding()',
+  },
 })
 export class DividerComponent {
   readonly variant = input<DividerVariant>(DividerVariant.DASHED);
+  readonly padding = input<boolean>(true);
   protected readonly dividerVariant = DividerVariant;
 }
