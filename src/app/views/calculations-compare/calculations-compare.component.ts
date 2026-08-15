@@ -8,15 +8,12 @@ import {
   OnInit,
   viewChild,
 } from '@angular/core';
-import { NgTemplateOutlet } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 import {
-  BadgeVariant,
   BannerVariant,
   ComparableOffer,
-  ComparableOfferKind,
   ComparisonOfferData,
   ComparisonSlot,
   ComparisonTrendMode,
@@ -33,18 +30,12 @@ import { UiStateService } from '../../services/ui-state/ui-state.service';
 import { SavedCalculationsStateService } from '../../services/saved-calculations-state/saved-calculations-state.service';
 import { ToastService } from '../../services/toast/toast.service';
 import { SelectOfferDialogComponent } from '../../dialogs/select-offer/select-offer-dialog.component';
-import { BadgeComponent } from '../../components/ui/badge/badge.component';
 import { BannerComponent } from '../../components/ui/banner/banner.component';
-import { BtnRemoveComponent } from '../../components/ui/btn-remove/btn-remove.component';
 import { IconSwapComponent } from '../../components/icons/icon-swap/icon-swap.component';
-import { IconPlusComponent } from '../../components/icons/icon-plus/icon-plus.component';
 import { IconDeltaComponent } from '../../components/icons/icon-delta/icon-delta.component';
 import { IconSlotAComponent } from '../../components/icons/icon-slot-a/icon-slot-a.component';
 import { IconSlotBComponent } from '../../components/icons/icon-slot-b/icon-slot-b.component';
-import { FormatAmountPipe } from '../../pipes/format-amount/format-amount.pipe';
-import { FormatLoanPeriodPipe } from '../../pipes/format-loan-period/format-loan-period.pipe';
-import { FormatRatePipe } from '../../pipes/format-rate/format-rate.pipe';
-import { FormatWholeAmountPipe } from '../../pipes/format-whole-amount/format-whole-amount.pipe';
+import { ComparisonOfferSlotComponent } from '../../components/comparison/comparison-offer-slot/comparison-offer-slot.component';
 import { ComparisonDiffTableComponent } from '../../components/comparison/comparison-diff-table/comparison-diff-table.component';
 import { ComparisonParamsTableComponent } from '../../components/comparison/comparison-params-table/comparison-params-table.component';
 import { ComparisonKpiGridComponent } from '../../components/comparison/comparison-kpi-grid/comparison-kpi-grid.component';
@@ -64,21 +55,14 @@ const TREND_STACK_TICK_STEP = 5_000;
   selector: 'app-calculations-compare',
   standalone: true,
   imports: [
-    NgTemplateOutlet,
     ReactiveFormsModule,
     SelectOfferDialogComponent,
-    BadgeComponent,
-    BtnRemoveComponent,
     IconSwapComponent,
-    IconPlusComponent,
     IconDeltaComponent,
     BannerComponent,
     IconSlotAComponent,
     IconSlotBComponent,
-    FormatAmountPipe,
-    FormatLoanPeriodPipe,
-    FormatRatePipe,
-    FormatWholeAmountPipe,
+    ComparisonOfferSlotComponent,
     ComparisonDiffTableComponent,
     ComparisonParamsTableComponent,
     ComparisonKpiGridComponent,
@@ -115,8 +99,6 @@ export class CalculationsCompareComponent implements OnInit {
   }
 
   protected readonly ComparisonSlot = ComparisonSlot;
-  protected readonly ComparableOfferKind = ComparableOfferKind;
-  protected readonly BadgeVariant = BadgeVariant;
   protected readonly BannerVariant = BannerVariant;
   protected readonly IconSize = IconSize;
 

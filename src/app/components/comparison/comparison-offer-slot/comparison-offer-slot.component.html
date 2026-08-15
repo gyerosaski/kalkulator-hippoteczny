@@ -1,0 +1,54 @@
+@if (offer(); as offer) {
+  <div
+    class="slot slot--filled"
+    [class.slot--a]="slot() === ComparisonSlot.A"
+    [class.slot--b]="slot() === ComparisonSlot.B"
+    [class.slot--error]="invalid()"
+  >
+    @if (slot() === ComparisonSlot.A) {
+      <icon-slot-a />
+    } @else {
+      <icon-slot-b />
+    }
+    <button class="slot-body" type="button" (click)="pick.emit()" title="Zmień ofertę">
+      <div class="slot-name">
+        {{ offer.name }}
+        @if (offer.kind === ComparableOfferKind.DRAFT) {
+          <ui-badge
+            label="bieżąca"
+            [variant]="BadgeVariant.GREEN"
+            tooltip="Kalkulacja wczytana na zakładce „Kalkulator”"
+          />
+        }
+      </div>
+      <div class="slot-meta mono muted small">
+        <span>{{ offer.loanAmount | formatWholeAmount }} zł</span>
+        <span class="dot-sep">·</span>
+        <span>{{ offer.loanPeriodYears | formatLoanPeriod: offer.loanPeriodExtraMonths }}</span>
+        <span class="dot-sep">·</span>
+        <span>{{ offer.nominalRate | formatRate }}</span>
+        <span class="dot-sep">·</span>
+        <span>rata {{ offer.firstInstallment | formatAmount }} zł</span>
+      </div>
+    </button>
+    <ui-btn-remove (remove)="clear.emit()" />
+  </div>
+} @else {
+  <button
+    class="slot slot--empty"
+    [class.slot--a]="slot() === ComparisonSlot.A"
+    [class.slot--b]="slot() === ComparisonSlot.B"
+    type="button"
+    (click)="pick.emit()"
+  >
+    @if (slot() === ComparisonSlot.A) {
+      <icon-slot-a />
+    } @else {
+      <icon-slot-b />
+    }
+    <span class="slot-placeholder">
+      <icon-plus />
+      Wybierz ofertę
+    </span>
+  </button>
+}
