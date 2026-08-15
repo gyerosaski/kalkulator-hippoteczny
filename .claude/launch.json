@@ -4,8 +4,8 @@
     {
       "name": "kalkulator",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["start", "--", "--port", "4202"],
-      "port": 4202
+      "runtimeArgs": ["start", "--", "--port", "4205"],
+      "port": 4205
     }
   ]
 }

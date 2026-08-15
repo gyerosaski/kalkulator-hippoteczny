@@ -9,6 +9,12 @@
   align-items: center;
   gap: var(--card-gap);
   width: 100%;
+  /* Wysokość zrównana ze stanem wypełnionym (nazwa + linia meta), aby kafel
+     pusty nie był niższy od kafla z wybraną ofertą. */
+  min-height: calc(
+    var(--text-base) * var(--leading-base) + var(--space-1) + var(--text-sm) *
+      var(--leading-base) + 2 * var(--card-pad) + 2 * var(--border-width)
+  );
   padding: var(--card-pad) var(--card-pad);
   border: var(--border-width) solid var(--line);
   border-radius: var(--r-lg);
