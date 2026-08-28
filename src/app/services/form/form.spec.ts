@@ -130,6 +130,10 @@ describe('FormService', () => {
   describe('crossFieldValidator — capitalBeforeLastTranche', () => {
     function enableTranches(): void {
       service.form.controls.tranches.controls.enabled.setValue(true);
+      // Pierwsza transza (index 0) powstaje z datą domyślną równą bieżącemu miesiącowi.
+      // Przypinamy ją do stałej, wczesnej daty, aby wynik walidatora nie zależał od
+      // dzisiejszej daty — testy operują wyłącznie na jawnie ustawianych datach transz.
+      service.tranchesArray.at(0).controls.date.setValue('2026-01');
       service.form.updateValueAndValidity();
     }
 
