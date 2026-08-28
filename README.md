@@ -5,10 +5,15 @@ desktopowy (Windows, pakowany do MSI/NSIS), a dane kalkulacji przechowuje lokaln
 
 ## Pobieranie
 
-Gotowe instalatory Windows (MSI oraz NSIS `.exe`) są dostępne w zakładce
-[**Releases**](https://github.com/gyerosaski/kalkulator-hippoteczny/releases). Pobierz plik z
-najnowszego wydania i uruchom instalator. Instalatory nie są podpisane cyfrowo, więc Windows
-SmartScreen może pokazać ostrzeżenie — należy wybrać „Więcej informacji” → „Uruchom mimo to”.
+Wydania w zakładce [**Releases**](https://github.com/gyerosaski/kalkulator-hippoteczny/releases)
+zawierają dwie formy dystrybucji:
+
+- **Instalatory Windows** — MSI oraz NSIS (`setup.exe`): standardowa instalacja z wpisem w menu Start.
+- **Wersja standalone (portable)** — plik `Kalkulator-Hippoteczny-vX.Y.Z-portable.exe`: uruchamiany
+  bezpośrednio, bez instalacji (wymaga jedynie środowiska WebView2, obecnego w Windows 10/11).
+
+Pliki nie są podpisane cyfrowo, więc Windows SmartScreen może pokazać ostrzeżenie — należy wybrać
+„Więcej informacji” → „Uruchom mimo to”.
 
 ## Wydania (release)
 

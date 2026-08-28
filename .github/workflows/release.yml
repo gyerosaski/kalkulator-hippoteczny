@@ -38,6 +38,22 @@ jobs:
         with:
           tagName: ${{ github.ref_name }}
           releaseName: 'Kalkulator Hippoteczny ${{ github.ref_name }}'
-          releaseBody: 'Instalatory Windows (MSI / NSIS) w załącznikach poniżej.'
+          releaseBody: 'Instalatory Windows (MSI / NSIS) oraz przenośna wersja standalone (.exe) w załącznikach poniżej.'
           releaseDraft: true       # Release powstaje jako draft — publikujesz ręcznie po weryfikacji
           prerelease: false
+
+      # tauri-action dołącza do Release tylko instalatory (MSI/NSIS).
+      # Surowy plik wykonywalny z target/release to przenośna wersja standalone
+      # (bez instalacji — wymaga jedynie środowiska WebView2, obecnego w Windows 10/11).
+      - name: Dołącz wersję standalone (portable .exe) do Release
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $executable = Get-ChildItem -Path "src-tauri/target/release" -Filter *.exe -File |
+            Select-Object -First 1
+          if (-not $executable) { throw "Nie znaleziono pliku .exe wersji standalone w src-tauri/target/release" }
+          $portableName = "Kalkulator-Hippoteczny-${{ github.ref_name }}-portable.exe"
+          $portablePath = Join-Path $executable.DirectoryName $portableName
+          Copy-Item $executable.FullName $portablePath -Force
+          gh release upload ${{ github.ref_name }} $portablePath --clobber
