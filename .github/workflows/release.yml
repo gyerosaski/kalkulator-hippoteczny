@@ -1,0 +1,43 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    permissions:
+      contents: write            # wymagane do utworzenia Release
+    runs-on: windows-latest      # MSI/NSIS budują się tylko na Windows
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22        # Angular 21 wymaga Node 20+; 22 = aktualne LTS
+          cache: npm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust (src-tauri/target)
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: Install frontend deps
+        run: npm ci
+
+      - name: Build & release (Tauri)
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: 'Kalkulator Hippoteczny ${{ github.ref_name }}'
+          releaseBody: 'Instalatory Windows (MSI / NSIS) w załącznikach poniżej.'
+          releaseDraft: true       # Release powstaje jako draft — publikujesz ręcznie po weryfikacji
+          prerelease: false
