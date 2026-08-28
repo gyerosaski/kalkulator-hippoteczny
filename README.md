@@ -3,6 +3,29 @@
 Kalkulator kredytu hipotecznego (Angular 21 + Tauri V2). Aplikacja docelowo działa jako program
 desktopowy (Windows, pakowany do MSI/NSIS), a dane kalkulacji przechowuje lokalnie w pliku JSON.
 
+## Pobieranie
+
+Gotowe instalatory Windows (MSI oraz NSIS `.exe`) są dostępne w zakładce
+[**Releases**](https://github.com/gyerosaski/kalkulator-hippoteczny/releases). Pobierz plik z
+najnowszego wydania i uruchom instalator. Instalatory nie są podpisane cyfrowo, więc Windows
+SmartScreen może pokazać ostrzeżenie — należy wybrać „Więcej informacji” → „Uruchom mimo to”.
+
+## Wydania (release)
+
+Wydania powstają automatycznie po wypchnięciu tagu w formacie `vX.Y.Z`. Workflow GitHub Actions
+(`.github/workflows/release.yml`) buduje aplikację na runnerze Windows i tworzy szkic Release z
+załączonymi instalatorami MSI/NSIS. Procedura nowego wydania:
+
+1. Podbić wersję zgodnie w `package.json`, `src-tauri/tauri.conf.json` i `src-tauri/Cargo.toml`.
+2. Utworzyć i wypchnąć tag:
+
+   ```bash
+   git tag v0.1.0
+   git push origin v0.1.0
+   ```
+
+3. Po zakończeniu buildu opublikować szkic wydania w zakładce Releases.
+
 ## Tryby uruchamiania w developmencie
 
 Aplikację można rozwijać na dwa sposoby. Różnią się warstwą persystencji.

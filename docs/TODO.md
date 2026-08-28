@@ -109,3 +109,6 @@
 - [x] usunąć przyciski "otwórz w kalkulatorze" w porównywarce ofert
 - selektor "Typ wykresu trendu" prezentuj w prawym górnym rogu sekcji "Harmonogram spłaty"
 - [x] pixel hippo ma być opcjonalny, do wyłączenia na modalu ustawień
+- stan szukajki na widoku "Twoje kalkulacje" nie jest przechowywany przy przechodzeniu pomiędzy widokami
+- typ i kierunek sortowania zapisuj w ustawieniach
+
