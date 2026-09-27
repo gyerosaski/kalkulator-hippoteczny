@@ -1,0 +1,89 @@
+<div class="saved-view">
+  <ui-view-header heading="Zapisane kalkulacje">
+    <div slot="meta" class="view-hero-meta muted">
+      <span><b class="mono">{{ calculations().length }}</b> zapisanych</span>
+      @if (lastUpdatedAt(); as lastUpdatedAt) {
+        <span class="view-hero-meta-time">ostatnia zmiana {{ lastUpdatedAt | relativeTime }}</span>
+      }
+    </div>
+    <div slot="aside" class="view-hero-actions">
+      <button class="btn btn--primary" type="button" (click)="navigateToNewCalculation()">
+        <icon-plus />
+        Nowa kalkulacja
+      </button>
+      <button class="btn btn--ghost" type="button" (click)="saveAsNewCalculation()">
+        <icon-save />
+        Zapisz jako
+      </button>
+      <button class="btn btn--ghost" type="button" (click)="importFromFile()">
+        <icon-download />
+        Importuj
+      </button>
+    </div>
+  </ui-view-header>
+
+  <!-- TOOLBAR -->
+  <div class="filter-toolbar">
+    <div class="search-field">
+      <icon-search />
+      <input
+        type="text"
+        placeholder="Szukaj po nazwie…"
+        [value]="searchQuery()"
+        (input)="searchQuery.set($any($event.target).value)"
+      />
+      @if (searchQuery()) {
+        <button class="search-clear" (click)="searchQuery.set('')" aria-label="Wyczyść">×</button>
+      }
+    </div>
+
+    <div class="sort-control">
+      <span class="muted small">Sortuj:</span>
+      <ui-select
+        [formControl]="activeSortControl"
+        [options]="sortOptionValues"
+        [labels]="sortOptionLabels"
+      />
+      <button
+        class="ico-btn"
+        type="button"
+        [class.is-flipped]="sortDirection() === SortDirection.DESCENDING"
+        [class.is-animatable]="isAnimatable()"
+        (click)="toggleSortDirection()"
+        title="Odwróć kierunek sortowania"
+        aria-label="Odwróć kierunek sortowania"
+      >
+        <icon-arrow-up />
+      </button>
+    </div>
+  </div>
+
+  <app-calculations-list
+    [calculations]="filteredCalculations()"
+    [activeCalculationName]="activeCalculationName()"
+    [isLoadedCalculationModified]="isLoadedCalculationModified()"
+    [hasActiveFilter]="hasActiveFilter()"
+    (load)="loadCalculation($event)"
+    (saveChanges)="saveCurrentCalculation($event)"
+    (rename)="startRename($event)"
+    (delete)="startDelete($event)"
+    (duplicate)="duplicateCalculation($event)"
+    (exportRequested)="exportCalculation($event)"
+    (clearFilters)="clearFilters()"
+  />
+
+  <!-- FOOTER -->
+  @if (calculations().length) {
+    <app-calculations-footer
+      [filteredCount]="filteredCalculations().length"
+      [totalCount]="calculations().length"
+      [storePath]="storePathResource.value()"
+      (exportRequested)="exportAll()"
+    />
+  }
+
+  <app-save-calculation-dialog />
+  <app-rename-calculation-dialog />
+  <app-delete-calculation-dialog />
+  <app-export-calculation-dialog />
+</div>

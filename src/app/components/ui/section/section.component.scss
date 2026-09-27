@@ -1,0 +1,29 @@
+@use 'variables' as *;
+
+:host {
+  display: block;
+}
+
+.section {
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--r-xl);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--panel-gap);
+  padding: var(--panel-pad-y) var(--panel-pad-x) var(--panel-gap);
+  border-bottom: var(--border-width) solid var(--line);
+}
+
+.section-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-widest);
+  color: var(--muted);
+  text-transform: uppercase;
+}

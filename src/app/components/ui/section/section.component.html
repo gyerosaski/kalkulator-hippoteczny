@@ -1,0 +1,12 @@
+<section class="section">
+  <div class="section-head">
+    <div class="section-head-text">
+      @if (title()) {
+        <div class="section-title">{{ title() }}</div>
+      }
+    </div>
+    <ng-content select="[slot=actions]" />
+  </div>
+
+  <ng-content />
+</section>

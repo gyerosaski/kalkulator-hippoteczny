@@ -1,0 +1,89 @@
+<div class="legend-wrap">
+  @if (totalLabel()) {
+    <div
+      class="legend-total"
+      [class.is-active]="activeLabel() === legendTotalActive"
+      (mouseenter)="onHover(legendTotalActive)"
+      (mouseleave)="onHover(null)"
+    >
+      <span class="leg-lab">{{ totalLabel() }}</span>
+      <span class="leg-val mono" (click)="copyAmount(legendTotal())"
+        >{{ legendTotal() | formatAmount }} zł</span
+      >
+    </div>
+  }
+  <ul class="legend">
+    @for (slice of slices(); track slice.label) {
+      @if (slice.children?.length) {
+        <li
+          class="is-parent"
+          [class.is-active]="activeLabel() === slice.label"
+          [class.is-open]="isExpanded(slice.label)"
+          (mouseenter)="onHover(slice.label)"
+          (mouseleave)="onHover(null)"
+        >
+          <ui-color-code-marker [variant]="slice.variant" />
+          <span class="leg-lab" (click)="toggleExpand(slice.label)">{{ slice.label }}</span>
+          <span class="leg-val mono" (click)="copyAmount(slice.value)"
+            >{{ slice.value | formatAmount }} zł</span
+          >
+        </li>
+        <li class="children-row" [class.children-row--open]="isExpanded(slice.label)">
+          <ul class="children">
+            @for (child of slice.children ?? []; track child.label) {
+              <li
+                class="is-child"
+                [class.is-active]="activeLabel() === child.label"
+                (mouseenter)="onHover(child.label)"
+                (mouseleave)="onHover(null)"
+              >
+                @if (child.navigationTarget; as target) {
+                  <button type="button" class="leg-lab leg-lab--nav" (click)="navigateTo(target)">
+                    {{ child.label }}
+                  </button>
+                } @else {
+                  <span class="leg-lab">{{ child.label }}</span>
+                }
+                <span class="leg-val mono" (click)="copyAmount(child.value)"
+                  >{{ child.value | formatAmount }} zł</span
+                >
+              </li>
+            }
+          </ul>
+        </li>
+      } @else {
+        <li
+          [class.is-active]="activeLabel() === slice.label"
+          (mouseenter)="onHover(slice.label)"
+          (mouseleave)="onHover(null)"
+        >
+          <ui-color-code-marker [variant]="slice.variant" />
+          @if (slice.navigationTarget; as target) {
+            <button type="button" class="leg-lab leg-lab--nav" (click)="navigateTo(target)">
+              {{ slice.label }}
+            </button>
+          } @else {
+            <span class="leg-lab">{{ slice.label }}</span>
+          }
+          <span class="leg-val mono" (click)="copyAmount(slice.value)"
+            >{{ slice.value | formatAmount }} zł</span
+          >
+        </li>
+      }
+    }
+  </ul>
+  @if (footerLabel()) {
+    <div class="legend-footer">
+      <span class="leg-lab">{{ footerLabel() }}</span>
+      @if (footerValueText()) {
+        <span class="leg-val mono" (click)="copyText(footerValueText())">{{
+          footerValueText()
+        }}</span>
+      } @else {
+        <span class="leg-val mono" (click)="copyAmount(footerValue() ?? 0)"
+          >{{ footerValue() ?? 0 | formatAmount }} zł</span
+        >
+      }
+    </div>
+  }
+</div>

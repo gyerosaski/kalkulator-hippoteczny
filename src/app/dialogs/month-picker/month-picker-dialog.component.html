@@ -1,0 +1,62 @@
+<ui-dialog title="Wybór miesiąca" (closed)="handleClosed()">
+  @if (shortcuts().length) {
+    <div class="mp-shortcuts">
+      @for (shortcut of shortcuts(); track shortcut.label) {
+        <button class="mp-shortcut" type="button" (click)="pickShortcut(shortcut.value)">
+          <span class="mp-shortcut-label">{{ shortcut.label }}</span>
+          <span class="mp-shortcut-date mono">{{ shortcut.value | formatMonth }}</span>
+        </button>
+      }
+    </div>
+  }
+
+  <div class="mp-decade-nav">
+    <button
+      class="ico-btn mp-nav-btn"
+      type="button"
+      (click)="shiftDecade(-10)"
+      aria-label="Cofnij o 10 lat"
+    >
+      <icon-chevron-right class="mp-nav-icon mp-nav-icon--prev" />
+    </button>
+    <span class="mp-decade-range mono">{{ decadeStart() }}–{{ decadeStart() + 9 }}</span>
+    <button
+      class="ico-btn mp-nav-btn"
+      type="button"
+      (click)="shiftDecade(10)"
+      aria-label="Naprzód o 10 lat"
+    >
+      <icon-chevron-right class="mp-nav-icon" />
+    </button>
+  </div>
+
+  <div class="mp-years">
+    @for (year of years(); track year) {
+      <button
+        class="mp-year"
+        type="button"
+        [class.is-focused]="year === stagedYear()"
+        [class.is-selected]="isYearSelected(year)"
+        (click)="pickYear(year)"
+      >
+        {{ year }}
+      </button>
+    }
+  </div>
+
+  <div class="mp-months">
+    <div class="mp-months-grid">
+      @for (monthName of monthNamesShort; track $index) {
+        <button
+          class="mp-month"
+          type="button"
+          [class.is-focused]="$index === stagedMonth()"
+          [class.is-selected]="isMonthSelected($index)"
+          (click)="pickMonth($index)"
+        >
+          {{ monthName }}
+        </button>
+      }
+    </div>
+  </div>
+</ui-dialog>

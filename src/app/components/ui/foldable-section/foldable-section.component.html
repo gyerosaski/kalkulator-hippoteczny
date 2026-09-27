@@ -1,0 +1,39 @@
+<section
+  class="sec"
+  [class.is-open]="open() && !isOff()"
+  [class.sec--off]="isOff()"
+  [class.sec--animate]="isAnimatable()"
+>
+  <div class="sec-head-wrap">
+    <button class="sec-head" (click)="toggleOpen()" [disabled]="isOff()">
+      <span class="sec-chev">
+        <icon-chevron-right />
+      </span>
+      @if (num()) {
+        <span class="sec-num">{{ num() }}</span>
+      }
+      <span class="sec-title" [class.title-pulse]="isHighlighted()">{{ title() }}</span>
+      @if (badge()) {
+        <span class="sec-badge">{{ badge() }}</span>
+      }
+    </button>
+    @if (toggleable()) {
+      <ui-switch
+        [checked]="enabled()"
+        (checkedChange)="enabledChange.emit($event)"
+        [label]="enabled() ? 'wł.' : 'wył.'"
+        [title]="enabled() ? 'Wyłącz sekcję' : 'Włącz sekcję'"
+        (click)="$event.stopPropagation()"
+      />
+    }
+  </div>
+  <div
+    class="sec-body"
+    [class.sec-body--open]="open() && !isOff()"
+    [class.sec-body--animate]="isAnimatable()"
+  >
+    <div class="sec-body-inner">
+      <div class="sec-body-content"><ng-content /></div>
+    </div>
+  </div>
+</section>

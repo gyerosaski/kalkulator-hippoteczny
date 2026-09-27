@@ -1,0 +1,17 @@
+@use '../slot-badge.shared' as *;
+
+/* Delta na kwadratowym, neutralnym tle z lekko zaokrąglonymi rogami — wzorem plakietek ofert. */
+.badge {
+  background: var(--surface-2);
+  color: var(--accent-deep);
+}
+
+.badge svg {
+  width: 14px;
+  height: 14px;
+}
+
+.badge--sm svg {
+  width: 11px;
+  height: 11px;
+}

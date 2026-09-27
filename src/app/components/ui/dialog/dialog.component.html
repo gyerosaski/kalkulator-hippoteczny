@@ -1,0 +1,27 @@
+<dialog
+  #dialogEl
+  [attr.data-size]="size()"
+  [class.dialog--danger]="variant() === DialogVariant.DANGER"
+  (close)="onNativeClose()"
+>
+  <ng-content select="[slot=head]">
+    <div class="dialog-head">
+      <div>
+        @if (title()) {
+          <div
+            class="dialog-title"
+            [class.dialog-title--danger]="variant() === DialogVariant.DANGER"
+          >
+            {{ title() }}
+          </div>
+        }
+      </div>
+      @if (showClose()) {
+        <button class="dialog-close" type="button" (click)="close()" aria-label="Zamknij">
+          <icon-x />
+        </button>
+      }
+    </div>
+  </ng-content>
+  <ng-content />
+</dialog>

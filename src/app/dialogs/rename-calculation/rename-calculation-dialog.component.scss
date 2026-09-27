@@ -1,0 +1,11 @@
+.dialog-label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--ink-2);
+}
+
+.inp:focus-within {
+  background: var(--surface);
+  border-color: var(--accent-deep);
+  box-shadow: var(--focus-ring);
+}

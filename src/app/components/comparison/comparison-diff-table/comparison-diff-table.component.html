@@ -1,0 +1,54 @@
+<ui-section title="TABELA RÓŻNIC KOSZTOWYCH">
+  <div class="diff-table" role="table" aria-label="Tabela różnic kosztowych">
+    <div class="diff-table-head" role="row">
+      <div class="diff-table-cell diff-table-cell--label" role="columnheader">Pozycja</div>
+      <div class="diff-table-cell diff-table-cell--offer diff-table-cell--a" role="columnheader">
+        <icon-slot-a [size]="IconSize.SMALL" />
+        {{ offerName().a }}
+      </div>
+      <div class="diff-table-cell diff-table-cell--offer diff-table-cell--b" role="columnheader">
+        <icon-slot-b [size]="IconSize.SMALL" />
+        {{ offerName().b }}
+      </div>
+      <div class="diff-table-cell diff-table-cell--delta" role="columnheader">
+        Δ <span class="diff-table-head-sub">(B − A)</span>
+      </div>
+    </div>
+
+    @for (row of diffRows(); track row.label) {
+      <div class="diff-table-row" [class.diff-table-row--emphasized]="row.isEmphasized" role="row">
+        <div class="diff-table-cell diff-table-cell--label" role="rowheader">{{ row.label }}</div>
+
+        <div
+          class="diff-table-cell diff-table-cell--offer diff-table-cell--a mono"
+          [class.is-leader]="row.aIsLeader"
+          role="cell"
+        >
+          @if (row.aIsLeader) {
+            <span class="leader-marker" aria-hidden="true">▌</span>
+          }
+          {{ row.aText }}
+        </div>
+
+        <div
+          class="diff-table-cell diff-table-cell--offer diff-table-cell--b mono"
+          [class.is-leader]="row.bIsLeader"
+          role="cell"
+        >
+          @if (row.bIsLeader) {
+            <span class="leader-marker" aria-hidden="true">▌</span>
+          }
+          {{ row.bText }}
+        </div>
+
+        <div
+          class="diff-table-cell diff-table-cell--delta mono"
+          [class]="row.deltaClass"
+          role="cell"
+        >
+          {{ row.deltaText }}
+        </div>
+      </div>
+    }
+  </div>
+</ui-section>

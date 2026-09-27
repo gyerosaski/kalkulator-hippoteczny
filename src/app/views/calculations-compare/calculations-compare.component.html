@@ -1,0 +1,146 @@
+<div class="compare-view">
+  <ui-view-header heading="Porównanie ofert">
+    <div slot="meta" class="compare-hero-meta">
+      <span><icon-slot-a [size]="IconSize.SMALL" /> Baza</span>
+      <span><icon-slot-b [size]="IconSize.SMALL" /> Porównywana</span>
+      <span><icon-delta [size]="IconSize.SMALL" /> Różnica</span>
+    </div>
+
+    <div slot="aside" class="compare-slots">
+      <app-comparison-offer-slot
+        [slot]="ComparisonSlot.A"
+        [offer]="comparisonState.offerA()"
+        [invalid]="invalidOffer()?.id === comparisonState.offerA()?.id"
+        (pick)="openPicker(ComparisonSlot.A)"
+        (clear)="clearSlot(ComparisonSlot.A)"
+      />
+
+      <button
+        class="compare-swap"
+        type="button"
+        (click)="swap()"
+        [disabled]="!comparisonState.bothSelected()"
+        title="Zamień strony (A ↔ B)"
+        aria-label="Zamień strony"
+      >
+        <icon-swap />
+      </button>
+
+      <app-comparison-offer-slot
+        [slot]="ComparisonSlot.B"
+        [offer]="comparisonState.offerB()"
+        [invalid]="invalidOffer()?.id === comparisonState.offerB()?.id"
+        (pick)="openPicker(ComparisonSlot.B)"
+        (clear)="clearSlot(ComparisonSlot.B)"
+      />
+    </div>
+  </ui-view-header>
+
+  @if (comparisonState.bothSelected()) {
+    @if (invalidOffer(); as offer) {
+      <ui-banner [variant]="BannerVariant.WARNING">
+        Oferta „{{ offer.name }}” zawiera błędy walidacji i nie może zostać przeliczona — sekcje
+        wskaźników i wykresów są ukryte.
+      </ui-banner>
+    } @else {
+      @if (loanAmountsDiffer()) {
+        <ui-banner [variant]="BannerVariant.INFO">
+          Oferty mają różne kwoty kredytu — porównuj ostrożnie.
+        </ui-banner>
+      }
+
+      <div class="compare-actions">
+        <ui-switch label="Pokaż wykluczone segmenty" [formControl]="showExcludedSegmentsControl" />
+        <div class="compare-actions-group">
+          <span class="compare-actions-label">Tryb wykresu trendu</span>
+          <ui-segmented
+            [options]="trendModeOptions"
+            [labels]="trendModeOptions | comparisonTrendModeLabel"
+            [compact]="true"
+            [formControl]="trendModeControl"
+          />
+        </div>
+      </div>
+    }
+
+    @if (!invalidOffer()) {
+      <app-comparison-kpi-grid
+        [sideA]="comparisonState.sideA()!"
+        [sideB]="comparisonState.sideB()!"
+      />
+
+      <app-comparison-donuts-total
+        [sideA]="comparisonState.sideA()!"
+        [sideB]="comparisonState.sideB()!"
+        [showExcludedSegments]="showExcludedSegments()"
+      />
+
+      <app-comparison-diff-table
+        [sideA]="comparisonState.sideA()!"
+        [sideB]="comparisonState.sideB()!"
+      />
+
+      <app-comparison-donuts-installment
+        [sideA]="comparisonState.sideA()!"
+        [sideB]="comparisonState.sideB()!"
+      />
+
+      @if (loanPeriodsDiffer()) {
+        <ui-banner [variant]="BannerVariant.INFO">
+          Różne okresy spłaty — wykres trendu pokazuje unię lat.
+        </ui-banner>
+      }
+
+      @if (trendMode() === ComparisonTrendMode.OVERLAY) {
+        @if (trendSeriesA() && trendSeriesB()) {
+          <app-comparison-trend-chart [seriesA]="trendSeriesA()!" [seriesB]="trendSeriesB()!" />
+        }
+      } @else {
+        @let trendA = trendSideA();
+        @let trendB = trendSideB();
+        @let axisMax = sharedTrendAxisMax();
+        @if (trendA && trendB && axisMax) {
+          <div class="trend-side-by-side">
+            <div class="trend-side">
+              <div class="trend-side-caption">
+                <icon-slot-a />
+                {{ trendA.name }}
+              </div>
+              <app-results-trend-chart
+                [yearlyGroups]="trendA.yearlyGroups"
+                [loanAmount]="trendA.loanAmount"
+                [results]="trendA.results"
+                [overheadCostsEnabled]="trendA.overheadCostsEnabled"
+                [prepaymentsEnabled]="trendA.prepaymentsEnabled"
+                [forcedBalanceAxisMax]="axisMax.balance"
+                [forcedStackAxisMax]="axisMax.stack"
+              />
+            </div>
+            <div class="trend-side">
+              <div class="trend-side-caption">
+                <icon-slot-b />
+                {{ trendB.name }}
+              </div>
+              <app-results-trend-chart
+                [yearlyGroups]="trendB.yearlyGroups"
+                [loanAmount]="trendB.loanAmount"
+                [results]="trendB.results"
+                [overheadCostsEnabled]="trendB.overheadCostsEnabled"
+                [prepaymentsEnabled]="trendB.prepaymentsEnabled"
+                [forcedBalanceAxisMax]="axisMax.balance"
+                [forcedStackAxisMax]="axisMax.stack"
+              />
+            </div>
+          </div>
+        }
+      }
+    }
+
+    <app-comparison-params-table
+      [sideA]="comparisonState.sideA()!"
+      [sideB]="comparisonState.sideB()!"
+    />
+  }
+
+  <app-select-offer-dialog />
+</div>

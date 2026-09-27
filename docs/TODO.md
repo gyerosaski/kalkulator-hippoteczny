@@ -1,0 +1,114 @@
+- [x] jedna wspólna instancja formularza tworzona i przechowywana w FormService
+- [x] dodanie silnego typowania do formularza
+- [x] wydzielenie do oddzielnych komponentów sekcji "dane podstawowe", "Wyniki", "Transze", "Nadpłaty", "Harmonogram spłaty"
+- [x] przeniesienie do katalogu "model", wszystkich interfejsów i typów
+- [x] przekształcenie w pipe'a metoday `formatMonthPl()` oraz innych metod, których zadaniem jest formatowanie danych w celu ich prezentacji użytkownikowi
+- [x] zmiana layoutu na dwie kolumny, domyślnie równej szerokości z możliwością zmiany proporcji przez użytkownika. w lewej kolumnie prezentowane mają być wszystkie sekcje formularza, a w prawej wyniki i harmonogram spłat
+- [x] umożliwienie zwinięcia każdej sekcji formularza
+- [x] wydzielenie pól formularza sekcji "Koszty okołokredytowe i promocje", "Transze", "Nadpłaty" do oddzielnych formGroup
+- [x] umożliwienie włączania/wyłączania opcjonalnych sekcji formularza tj. "Koszty okołokredytowe i promocje", "Transze", "Nadpłaty", struktura formularza: form -> overheadCosts (FormGroup z polami `included` i `fields` (FormGroup z właściwymi polami sekcji)), nie branie pod uwagę pól z wyłączonych sekcji podczas wykonywania obliczeń
+- [x] zamiast pól `MortgageFormGroup.years` i `MortgageFormGroup.months` przechowuj okres kredytowania w jednym polu `MortgageFormGroup.loanPeriod`, w którym dane przechowywana będzie liczba miesięcy. w warstwie prezentacyjnej umożliw wpisanie okresu kredytowania w miesiącach lub latach (input number + radio switch "lat/miesięcy")
+- [x] paragraf "Wysokość pierwszej raty:" w komponencie `ResultsSummaryComponent`, zmienić nazwę na "Wysokość pierwszej raty kapitałowo-odsetkowej:" i prezentować odpowiednią wartość
+- [x] prezentować kolumny "Nadpłata" i "Koszty okołokredytowe" w harmonogramie spłaty warunkowo na podstawie flag `FormService.isPrepaymentIncluded` i `FormService.isOverheadCostsIncluded`
+- [x] wydzielenie pól formularza prezentowany w komponencie `BasicDataFormComponent` do oddzielnej formGroup
+- [x] umożliwienie zmiany oprocentowania (pola "Typ rat", "Stopa", "8.a WIBOR (%)", "8.b Marża (%)", "Oprocentowanie (nominalne, %)", "8. Oprocentowanie stałe (%)") w okresie kredytowania. wymienione pola powinny zostać zgrupowane i przechowywane jako formArray z możliwością dodania nowej z uwzględnieniem daty obowiązywania nowego oprocentowania
+- [x] udostępnić możliwość wczytywania uprzednio zapisanej konfiguracji formularza
+- [x] data wypłaty pierwszej transzy jest zawsze równa dacie uruchomienia kredytu. Pole powinno być zablokowane i aktualizować się po zmianie w polu "Data uruchomienia kredytu". zaktualizuj dokumentacje
+- [x] pierwsza rata prezentowana w src/app/components/results/results-summary powinna być pierwszą ratą pełną kapitałowo-odsetkową. w przypadku uruchomienia kredytu w transzach prezentować labelkę "PIERWSZA RATA KAPITAŁOWO-ODSETKOWA" oraz poprawną wartość
+- [x] brak walidacji pola "6. Początek spłat kapitału (YYYY-MM)" - jeśli są zdefiniowane transze, data musi być większa od daty uruchomienia ostatniej transzy
+- [x] cały kapitał nie jest spłacany, zostają jakieś grosze
+- [x] w przypadku wypłaty kredytu w transzach rata kredytu powinna się zwiększać w miesiącu po jej uruchomieniu, a nie w tym samym miesiącu, sekcja "Pozostało" prawidłowo przyrasta o wysokość transzy w miesiącu jej uruchomienia
+- [x] w harmonogramie spłat w miesiącu nadpłaty rata jest zwiększana o nadpłatę, a nie powinna
+- [x] usunąć metodę CalculatorService.round2
+- [x] przy dwóch regułach nadpłaty jeden skracającej okres, a drugiej obniżającej ratę okres kredytowania nie ulega skróceniu
+- [x] dodaj regułę, żeby preferować użycie enumów zamiast literal types, zamień wszystkie wykorzystania, enumy powinny mieć klucze i wartości w języku angielskim, THIS_WAY, konwersja enumów na docelowe labelki w języku polskim powinna odbywać się w pipe'ach
+- [x] stwórz scheme opisującą strukturę zapisanych ustawień w formacie .json, waliduj .json na podstawie schemy przy wczytywaniu ustawień - jeśli walidacje nie przebiegnie pomyślnie, prezentuj natywny dialog wzorem SaveCalculationDialogComponent z informacją o tym, które pola są niepoprawne/mają niepoprawne wartości
+- [x] jeśli transzę są włączone ich suma musi być równa kwocie kredytu
+- [x] umożliwić zaznaczenie wiersza miesięcznego w tabeli harmonogram spłat, po zaznaczeniu, donut "Struktura wszystkich płatności" powinien przekształcić się w "Struktura wszystkich płatności do <zaznaczony miesiąc i rok>", a donut "Struktura pierwszej raty" w "Struktura raty w miesiącu <zaznaczony miesiąc i rok>", ponowne kliknięcie w dany wiersz odznacza go i przywraca domyślne zachowanie donutów
+- [x] Podsekcja "Prowizja za udzielenie" powinna się składać z inputa numerycznego i przełącznika "%/zł" tak, aby użytkownik mógł wprowadzić wartość procentową lub konkretną kwotę
+- [x] Opłata za wycenę powinna być ujęta w harmonogramie spłat w kolumnie koszty w pierwszym miesiącu kredytu
+- [x] zmień konfigurację tauri tak, żeby aplikacja domyślnie uruchamiała się w trybie pełnoekranowym
+- [x] wynieś listę kalkulacji z komponentu src/app/views/calculations-manager do dedykowanego komponentu w przestrzeni src/app/components
+- [x] nowe ikony użyte w komponencie src/app/views/calculations-manager przenieś do przestrzeni src/app/components/ui
+- [x] usuń kolumnę przebieg salda
+- [x] usuń filtr "Robocze"
+- [x] customowy dropdown zgodny z design systemem
+- [x] nowy badge "Zmodyfikowana"
+- [x] Eksportuj wszystkie do .json
+- [x] ucięte menu harmburger
+- [x] przy zmianie CommissionCalcMethod w forumlarzu aplikacja powinna przeliczać aktualną wartość CommissionFormGroup.commissionValue na nową jednostkę
+- [x] po uzupełnieniu podsekcji "ubezpieczenie pomostowe" w harmonogramie spłat dla miesięcy, w których bank podwyższa oprocentowanie rata kapitałowa wynosi 0zł co jest błędem
+- [x] przy wyliczaniu ubezpieczenia nieruchomości płatnego co miesiąc jako % salda kredytu, kwota składki jest zaniżona o kilka zł, zbadaj możliwe przyczyny takiego stanu rzeczy, podobnie jest w przypadku ubezpieczenia na życie liczonego jako % salda kredytu
+- [x] Ubezpieczenie niskiego wkładu powinno przestawać obowiązywać gdy LTV spadnie poniżej 80%
+- [x] dotyczy podsekcji "Ubezpieczenie na życie", "Ubezpieczenie od utraty pracy" i "Dodatkowe koszty" w przypadku, gdy składka/koszt płacony jest jednorazowo nie prezentować pól od/do tylko jeden moth picker z miesiącem płatności składki/kosztu, jeśli ubezpieczenie/koszt płacone jesty cyklicznie (co rok/co miesiąc), prezentować 2 month pickery od/do
+- [x] dla pustego stanu listy kalkulacji nie wyświetlaj nagłówków tabeli tj. "Nazwa Kwota · LTV Okres Oproc. Pierwsza rata Odsetki Zmodyfikowano Akcje"
+- [x] Błąd - Zakładka "Twoje kalkulacje" -> kliknij importuj -> zamknij file picker -> wyświetla się toast "Zaimportowano kalkulacje"
+- [x] Stworzenie UI state service przechowującej rozwinięcie/zwinięcie sekcji, podsekcji, legendy, aktualnie wybrany rok w rocznych składowych płatności, wybrany miesiąc w harmonogramie spłat, etc.
+- [x] wyśrodkowanie wertykalne ikonki i labelki na toaście
+- [x] po kliknięciu w koszt na legendzie przescrollowanie formularza do odpowiedniej sekcji
+- [x] moth picker w okresach oprocentowania ucina nazwy miesięcy
+- [x] animacja zwijania rozwijania i animowany chevron dla wierszy lat w harmonogramie spłaty kredytu
+- [x] przeniesienie okresów oprocentowania do oddzielnej formGroup i zwijanej sekcji
+- [x] zmiana nazwy ui-section na ui-foldable-section
+- [x] wyśrodkowanie wertykalne elementów transzy
+- [x] zmniejszenie odstępów pomiędzy transzami
+- [x] obliczanie i prezentacja RRSO
+- [x] Zmiana WIBOR na Wskaźnik referencyjny
+- [x] przycisk do odwracania sortowania obok kryterium sortowania w "Twoje kalkulacje"
+- [x] Przenieść RRSO do sekcji footer komponentu ui-legend w komponencie `ResultsDonutChartTotalComponent`
+- [x] Zmienić nazwę sekcji formularza "Okresy oprocentowania" na "Oprocentowanie"
+- [x] Umożliwić rozwinięcie "Odsetek" na legendzie donutów, pokazywać składowe odsetek: wynikające z wartości ustawionych w sekcji "Oprocentowanie", wynikających z "Ubezpieczenia pomostowego", "Ubezpieczenia niskiego wkładu", etc. Zadbać, żeby mechanizm klik -> scroll do sekcji działał tu również poprawnie
+- [x] Przeprowadzić audyt color code'u formularza i przygotować poprawki, obecnie cała sekcja "Koszty okołokredytowe i promocje" jest oznaczona na żółto co jest niezgodne ze stanem faktycznym, bo na przykład podsekcja "Ubezpieczenie pomostowe" wpływa na wysokość odsetek i nie zalicza się do kosztów. Podobnie "Prowizja za wcześniejszą spłatę" zalicza się do kosztów, a jest pokolorowana na niebiesko (kolor przypisany nadpłatom)
+- [x] Dla poszczególnych wierszy w widoku "Twoje kalkulacje" w dots-menu akcję "Eksportuj CSV" zastąpić akcją "Eksportuj" z zagnieżdżoną listą formatów eksportu. Na początek powinna znaleźć się tam opcja "JSON" - oprogramować eksport do JSON
+- [x] Przycisk "Eksportuj wszystkie do JSON" na widoku "Twoje kalkulację" zastąpić przyciskiem-dropdownem "Eksportuj wszystkie". Dropdown na początek powinien pokazywać jedną opcję "JSON" podpiętą do obecnie działającego eksportu
+- [x] Przycisk "Importuj" na widoku "Twoje kalkulacje" powinien umożliwiać zarówno import pojedynczej kalkulacji, jak i tablicy kalkulacji w formacie JSON
+- [x] po zaznaczeniu miesiąca w harmonogramie spłat rozwijać wiersz; w rozwinięciu prezentować 2 donuty: struktura płatności do... i struktura raty w miesiącu tak, żeby user nie musiał scrollować po te dane na góre kolumny
+- [x] dokumentacja funkcjonalna powinna być agnostyczna względem faktycznej implementacji, przejrzeć i dostosować; dodać regułę do Claude.md
+- [x] przejrzeć dialogi w src/app/dialogs i stworzyć generyczne komponenty będące podstawą budowania tych i kolejnych dialogów, wykorzystać content projection
+- [x] w docs/technikalia dodać dokument opisujący design system, dostępne kontrolki ui, zmienne kolorów, palety motywów
+- [x] dodaj eksport do .csv pojedynczej i wszystkich kalkulacji
+- [x] dodać dokument walidacje.md w docs/funkcjonalności, który będzie zawierał listę wszystkich walidacji formularza kalkulatora
+- [x] podczas otwierania MonthPickerDialogComponent przez moment miga miesiąc i rok zaznaczony podczas poprzedniego otwarcia okna dialog
+- [x] animuj zmianę wysokości słupków w ResultsTrendChartComponent analogicznie jak w DonutComponent; animuj również zmianę wysokości salda kredytu
+- [x] rozwijanie sekcji w LegendComponent nie wygląda płynnie
+- [x] deklaracje zmiennych wynieść z src/styles.scss do oddzielnego pliku variables
+- [x] resetuj UiStateService po wczytaniu nowej kalkulacji
+- w CalculationsListComponent po najechaniu myszką prezentuj pełną nazwę kalkulacji; jeśli jest za długa ucinaj ją trzykropkiem
+- [x] w RatePeriodFormGroup i SavedCalculation zmienić nazwę pola `wibor` na `referenceIndex`, zmienić także nazwę metody `wiborMarginText()`, przeszukać kod pod kątem wystąpień wibor i zamienić w pozostałych miejscach
+- [x] wzbogacić DividerComponent o możliwość prezentacji ciągłej linii, przejrzeć kod pod kątem miejsc, w których można by go zastosować
+- w DialogComponent zamień tag w title, a title usuń
+- [x] użyj SwitchComponent w FoldableSectionComponent, przejrzyj kod w poszukiwaniu miejsc, w których można by zastosować SwitchComponent
+- [x] w ResultsRateChartComponent nie koloruj pola pod linią wykresu
+- [x] animacja na chevronie sekcji aktywuje się przy przechodzeniu pomiędzy zakładkami
+- [x] zamień kolejność wykresów prezentowanych po rozwinięciu miesiąca w harmonogramie spłaty kredytu; zmień styl dividera oddzielającego wykresy na linie ciągłą
+- [x] przechowuj ustawienia aplikacji (obecnie tylko bieżący motyw) w pliku settings.json, analogicznie jak ma to miejsce z kalkulacjami
+- [x] dodaj plik LICENSE (AGPLv3)
+- [x] przechowuj pozycję scrolla dla obu kolumn widoku "Kalkulator"
+- [x] wypracuj rozwiązanie, żeby wszystkie ikony były wyśrodkowane wertykalnie by default
+- [x] zmień flow eksportu pojedynczej kalkulacji; zamiast zagnieżdżonej listy na dropdownie po kliknięciu "Eksportuj" otwieraj okno dialog, konfigurator eksportu; dostępne opcje: Zakres: "Parametry kalkulacji/Harmonogram spłaty", Format "JSON/CSV"; Ograniczenia: Parametry powinny być eksportowalne tylko do formatu .json, harmonogram zarówno do json jak i do .csv
+- [x] dropdown "Eksportuj wszystkie" zamień w zwykły przycisk "Eksportuj wszystkie do JSON", usuń funkcjonalność eksportu wszystkich kalkulacji do .csv
+- [x] analogicznie jak w widoku "Kalkulacje", zapamiętuj pozycję scrolla na pozostałych widokach w UiStateService
+- [x] analogicznie jak w widoku "Kalkulacje", ukryj scrolla na pozostałych widokach
+- na legendzie donuta "Struktura płatności" pod wierszem "RRSO", dodaj wiersz "Całkowity koszt kredyt" który zsumuje odsetki i koszty okołokredytowe
+- [x] dodatkowe koszty na formularzu w sekcji "Koszty okołokredytowe i promocję" są ucinane powyżej 2-giego kosztu
+- [x] w MonthPickerDialogComponent po zmianie roku odznaczać wybrany miesiąc
+- [x] w MonthPickerDialogComponent dodać przyciski skrótów, "data uruchomienia kredytu", "początek spłat kapitału", "data zakończenia kredytu", zadbaj o to, żeby skróty pojawiały się warunkowo i miały sens w danym kontekście formularza
+- [x] w DialogComponent on hoover podświetlaj pole pod przyciskiem "x";stwórz ikonę "x";zadbaj żeby każdy dialog w aplikacji miał ten przycisk
+- [x] przy więcej niż jednej transzy, pomimo wyłączenia sekcji "Transze" formularza prezentowany jest błąd walidacji "Kwota każdej transzy musi być większa od zera.", jeśli sekcja jest wyłączona nie powinna być brana pod uwagę NIGDZIE
+- [x] przy przechodzeniu pomiędzy widokami animuje się przycisk zmiany kierunku sortowania na widoku "Twoje kalkulacje", zastosuj ten sam pattern co m.in. w foldable-section
+- [x] z widoku "Porównanie ofert" wyciąć korporacyjny bullshit w treściach, skupić się na prezentacji konkretnych danych i funkcjonalności
+- [x] w src/styles/\_variables.scss jest zdefiniowanych aż 10 różnych wielkości czcionek, zaproponuj plan na zmniejszenie ich liczby
+- [x] w src/styles/\_variables.scss jest zdefiniowanych aż 12 różnych spacingów, zaproponuj plan na zmniejszenie ich liczby
+- [x] parametr data-density (src/styles/\_variables.scss) obecnie nie jest możliwy do zmiany w interfejsie, dodaj odpowiednie ustawienie w app-settings-dialog
+- [x] pozycje legendy donuta sortować po wartości od naistotniejszych do najmniej istotnych (analogicznie w obrębie danej kategorii np. "Koszty okołokredytowe")
+- import wartości wskaźnika w formacie "yyyy-mm": wartość; i konwersja na okresy oprocentowania
+- kliknięcie na wykresie oprocentowania - scroll do formularza do konkretnego okresu i podkreślenie go
+- [x] Offer badge wynieść do oddzielnego komponentu ui
+- [x] na widoku "Porównanie ofert" zmień kolejność prezentacji sekcji, mają być "Kluczowe wskaźniki" -> "Struktura wszystkich płatności" -> "Tabela różnic kosztowych" -> "Struktura pierwszej raty" -> "Harmonogram spłaty" -> "Tabela parametrów wejściowych"
+- [x] ujednolić badge "wczytana" i "bieżąca" -> zostaw tylko bieżąca; dodaj tekst po najechaniu na badge "Kalkulacja wczytana na zakładce "Kalkulator""
+- [x] usunąć przyciski "otwórz w kalkulatorze" w porównywarce ofert
+- selektor "Typ wykresu trendu" prezentuj w prawym górnym rogu sekcji "Harmonogram spłaty"
+- [x] pixel hippo ma być opcjonalny, do wyłączenia na modalu ustawień
+- stan szukajki na widoku "Twoje kalkulacje" nie jest przechowywany przy przechodzeniu pomiędzy widokami
+- typ i kierunek sortowania zapisuj w ustawieniach
+

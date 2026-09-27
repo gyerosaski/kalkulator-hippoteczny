@@ -1,0 +1,76 @@
+<ui-foldable-section
+  title="Dane podstawowe"
+  badge="Dane wymagane do przeprowadzenia kalkulacji"
+  [sectionId]="FormSectionId.BASIC_DATA"
+>
+  <div>
+    <div class="row row--3">
+      <ui-field num="1" label="Wartość nieruchomości" inputId="property-value">
+        <ui-number-input
+          inputId="property-value"
+          [formControl]="propertyValueControl"
+          suffix="zł"
+          [decimals]="2"
+          (valueChange)="onPropertyValueChanged()"
+        />
+      </ui-field>
+
+      <ui-field num="2" label="Kwota kredytu" inputId="loan-amount">
+        <ui-number-input
+          inputId="loan-amount"
+          [formControl]="loanAmountControl"
+          suffix="zł"
+          [decimals]="2"
+          (valueChange)="onLoanAmountChanged()"
+        />
+      </ui-field>
+
+      <ui-field num="3" label="LTV" inputId="ltv">
+        <ui-number-input
+          inputId="ltv"
+          [formControl]="ltvControl"
+          suffix="%"
+          [decimals]="2"
+          (valueChange)="onLtvChanged()"
+        />
+      </ui-field>
+    </div>
+
+    <div class="row row--3">
+      <ui-field num="4" label="Okres kredytowania" inputId="loan-period">
+        <div class="inline">
+          <ui-number-input
+            inputId="loan-period"
+            [value]="loanPeriodDisplayValue"
+            [decimals]="0"
+            (valueChange)="onLoanPeriodValueChanged($event)"
+          />
+          <ui-segmented
+            [options]="loanPeriodUnitOptions"
+            [labels]="loanPeriodUnitOptions | loanPeriodUnitLabel"
+            [formControl]="loanPeriodUnitControl"
+            [compact]="true"
+          />
+        </div>
+      </ui-field>
+
+      <ui-field num="5" label="Data uruchomienia kredytu" inputId="start-date">
+        <ui-month-picker inputId="start-date" [formControl]="startDateControl" />
+      </ui-field>
+
+      <ui-field num="6" label="Początek spłat kapitału" inputId="capital-start-date">
+        <ui-month-picker inputId="capital-start-date" [formControl]="capitalStartDateControl" />
+      </ui-field>
+    </div>
+
+    <div class="row row--3">
+      <ui-field num="7" label="Typ rat">
+        <ui-segmented
+          [formControl]="installmentTypeControl"
+          [options]="installmentTypeOptions"
+          [labels]="installmentTypeOptions | installmentTypeLabel"
+        />
+      </ui-field>
+    </div>
+  </div>
+</ui-foldable-section>

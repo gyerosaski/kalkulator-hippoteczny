@@ -1,0 +1,109 @@
+:host {
+  display: block;
+}
+
+/* ---------- Legenda ofert ---------- */
+.trend-compare-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--panel-pad-y);
+  padding: var(--card-gap) var(--panel-pad-x) 0;
+  font-size: var(--text-sm);
+  color: var(--ink-2);
+}
+
+.trend-compare-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: var(--font-weight-semibold);
+}
+
+.trend-compare-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+/* ---------- SVG ---------- */
+.trend-compare-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  padding: var(--space-2) var(--space-4) var(--space-4);
+  box-sizing: border-box;
+}
+
+.trend-compare-grid {
+  stroke: var(--grid);
+  stroke-dasharray: 2 4;
+}
+
+.trend-compare-baseline {
+  stroke: var(--line-2);
+}
+
+.trend-compare-axis-label {
+  font-size: var(--text-base);
+  fill: var(--muted);
+  font-family: var(--font-mono);
+  font-feature-settings: 'tnum';
+  font-variant-numeric: tabular-nums;
+}
+
+.trend-compare-axis-title {
+  font-size: var(--text-base);
+  fill: var(--ink-2);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-wide);
+}
+
+.trend-compare-line,
+.trend-compare-node {
+  pointer-events: none;
+}
+
+.trend-compare-hover-target {
+  fill: transparent;
+  cursor: pointer;
+}
+
+.trend-compare-hover-target:hover {
+  fill: color-mix(in oklch, var(--accent) 18%, transparent);
+}
+
+/* ---------- Tooltip ---------- */
+.trend-compare-tooltip-bg {
+  fill: var(--surface);
+  stroke: var(--line-2);
+  stroke-width: 1;
+  filter: drop-shadow(0 4px 12px oklch(40% 0.02 250 / 0.18));
+}
+
+.trend-compare-tooltip-header {
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-semibold);
+  fill: var(--ink);
+}
+
+.trend-compare-tooltip-row-label {
+  font-size: var(--text-base);
+  fill: var(--ink-2);
+}
+
+.trend-compare-tooltip-row-value {
+  font-size: var(--text-base);
+  fill: var(--ink);
+  font-family: var(--font-mono);
+  font-feature-settings: 'tnum';
+  font-variant-numeric: tabular-nums;
+}
+
+.trend-compare-empty {
+  padding: var(--space-8);
+  text-align: center;
+  color: var(--muted);
+  font-size: var(--text-base);
+}

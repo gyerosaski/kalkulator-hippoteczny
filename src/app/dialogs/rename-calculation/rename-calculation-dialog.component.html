@@ -1,0 +1,23 @@
+<ui-dialog title="Zmiana nazwy kalkulacji" (closed)="handleClosed()">
+  <form (submit)="$event.preventDefault(); confirm()">
+    <div class="dialog-body">
+      <label class="dialog-label" for="rename-calc-name">Nowa nazwa</label>
+      <div class="inp inp--focus">
+        <input
+          id="rename-calc-name"
+          type="text"
+          autocomplete="off"
+          [value]="currentValue()"
+          (input)="onInput($any($event.target).value)"
+          (keydown.escape)="dismiss()"
+        />
+      </div>
+    </div>
+    <div class="dialog-actions">
+      <button class="btn btn--ghost" type="button" (click)="dismiss()">Anuluj</button>
+      <button class="btn btn--primary" type="submit" [disabled]="isConfirmDisabled()">
+        Zapisz
+      </button>
+    </div>
+  </form>
+</ui-dialog>

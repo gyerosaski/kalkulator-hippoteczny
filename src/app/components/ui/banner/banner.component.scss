@@ -1,0 +1,41 @@
+:host {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--r-control);
+  border: var(--border-width) solid var(--line-2);
+  font-size: var(--text-base);
+  line-height: 1.4;
+
+  &.banner--info {
+    background: var(--surface-2);
+    color: var(--ink-2);
+  }
+
+  &.banner--warning {
+    background: var(--c-cost-soft);
+    border-color: var(--c-cost-mid);
+    color: var(--ink);
+  }
+}
+
+.banner-icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.banner-content {
+  flex: 1 1 auto;
+}
+
+.banner-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 0 0 auto;
+
+  &:empty {
+    display: none;
+  }
+}

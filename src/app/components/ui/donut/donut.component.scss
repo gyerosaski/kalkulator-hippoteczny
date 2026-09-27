@@ -1,0 +1,32 @@
+/* SVG rysowany w układzie współrzędnych viewBox — wypełnia wrap o sztywnym
+   rozmiarze (wrap ma width/height w px), proporcje trzyma aspect-ratio */
+.donut-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+}
+
+.donut-slice {
+  cursor: pointer;
+  transition:
+    stroke-dasharray var(--duration-slower) var(--ease-standard),
+    stroke-dashoffset var(--duration-slower) var(--ease-standard),
+    stroke-width var(--duration-base) ease;
+}
+
+.donut-value {
+  animation: donut-value-change 280ms var(--ease-standard);
+}
+
+@keyframes donut-value-change {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

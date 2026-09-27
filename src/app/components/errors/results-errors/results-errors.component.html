@@ -1,0 +1,52 @@
+<div class="errors-view">
+  <div class="err-hero">
+    <div class="err-hero-ico">
+      <icon-warning />
+    </div>
+    <div class="err-hero-text">
+      <div class="err-hero-tag">FORMULARZ WYMAGA POPRAWEK</div>
+      <h2 class="err-hero-title">
+        Popraw <span class="err-hero-count">{{ totalLabel() }}</span
+        >, aby zobaczyć harmonogram
+      </h2>
+      <p class="err-hero-sub">
+        Wykresy, podsumowanie i tabela spłat pojawią się tutaj, gdy formularz po lewej będzie
+        kompletny i spójny.
+      </p>
+    </div>
+  </div>
+
+  <div class="err-groups">
+    @for (g of groups(); track g.section) {
+      <div class="err-card">
+        <div class="err-card-head">
+          <h3 class="err-card-title">{{ g.section }}</h3>
+          <ui-badge [label]="pluralFor(g.items.length)" [variant]="BadgeVariant.RED" />
+        </div>
+        <ul class="err-list">
+          @for (err of g.items; track $index) {
+            <li class="err-row">
+              <span class="err-row-bullet" aria-hidden="true">
+                <icon-warning-sm />
+              </span>
+              <div class="err-row-body">
+                <div class="err-row-msg">{{ err.message }}</div>
+                @if (err.detail) {
+                  <div class="err-row-detail mono">{{ err.detail }}</div>
+                }
+                <div class="err-row-meta">
+                  <span class="err-row-field">
+                    @if (err.fieldNum) {
+                      <span class="err-row-num">{{ err.fieldNum }}</span>
+                    }
+                    <span>{{ err.fieldLabel }}</span>
+                  </span>
+                </div>
+              </div>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </div>
+</div>

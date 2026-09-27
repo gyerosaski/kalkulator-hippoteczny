@@ -1,0 +1,196 @@
+<ui-card>
+  <div class="card-head trend-chart-head">
+    <h3>Roczne składowe płatności</h3>
+    <ul class="trend-chart-legend">
+      @if (prepaymentsEnabled()) {
+        <li>
+          <ui-color-code-marker [variant]="ColorCodeMarkerVariant.PREPAYMENT" />
+          <span>Nadpłaty</span>
+        </li>
+      }
+      <li>
+        <ui-color-code-marker [variant]="ColorCodeMarkerVariant.CAPITAL" />
+        <span>Kapitał</span>
+      </li>
+      @if (overheadCostsEnabled()) {
+        <li>
+          <ui-color-code-marker [variant]="ColorCodeMarkerVariant.COST" />
+          <span>Koszty okołokredytowe</span>
+        </li>
+      }
+      <li>
+        <ui-color-code-marker [variant]="ColorCodeMarkerVariant.INTEREST" />
+        <span>Odsetki</span>
+      </li>
+      <li>
+        <span class="trend-chart-legend-line">
+          <!--TODO: Wynieść jako ikonę do oddzielnego komponentu-->
+          <svg width="28" height="10" aria-hidden="true">
+            <line x1="2" y1="5" x2="26" y2="5" stroke="var(--ink)" stroke-width="2" />
+            <circle cx="9" cy="5" r="2.5" fill="var(--ink)" />
+            <circle cx="19" cy="5" r="2.5" fill="var(--ink)" />
+          </svg>
+        </span>
+        <span>Saldo kredytu</span>
+      </li>
+    </ul>
+  </div>
+
+  @if (geometry(); as geometry) {
+    <svg
+      #trendSvg
+      class="trend-chart-svg"
+      [attr.viewBox]="'0 0 ' + geometry.width + ' ' + geometry.height"
+      preserveAspectRatio="xMidYMid meet"
+    >
+      @for (tick of geometry.balanceTicks; track tick.value) {
+        <line
+          class="trend-chart-grid"
+          [attr.x1]="geometry.paddingLeft"
+          [attr.x2]="geometry.width - geometry.paddingRight"
+          [attr.y1]="tick.position"
+          [attr.y2]="tick.position"
+        />
+        <text
+          class="trend-chart-axis-label"
+          [attr.x]="geometry.paddingLeft - 10"
+          [attr.y]="tick.position + 4"
+          text-anchor="end"
+        >
+          {{ tick.label }}
+        </text>
+      }
+
+      @for (tick of geometry.stackTicks; track tick.value) {
+        <text
+          class="trend-chart-axis-label"
+          [attr.x]="geometry.width - geometry.paddingRight + 10"
+          [attr.y]="tick.position + 4"
+          text-anchor="start"
+        >
+          {{ tick.label }}
+        </text>
+      }
+
+      <text
+        class="trend-chart-axis-title"
+        [attr.x]="geometry.paddingLeft - 96"
+        [attr.y]="geometry.paddingTop + geometry.innerHeight / 2"
+        [attr.transform]="
+          'rotate(-90 ' +
+          (geometry.paddingLeft - 96) +
+          ' ' +
+          (geometry.paddingTop + geometry.innerHeight / 2) +
+          ')'
+        "
+        text-anchor="middle"
+      >
+        Saldo kredytu
+      </text>
+      <text
+        class="trend-chart-axis-title"
+        [attr.x]="geometry.width - geometry.paddingRight + 96"
+        [attr.y]="geometry.paddingTop + geometry.innerHeight / 2"
+        [attr.transform]="
+          'rotate(-90 ' +
+          (geometry.width - geometry.paddingRight + 96) +
+          ' ' +
+          (geometry.paddingTop + geometry.innerHeight / 2) +
+          ')'
+        "
+        text-anchor="middle"
+      >
+        Suma rocznych płatności
+      </text>
+
+      @for (bar of geometry.bars; track bar.year; let yearIndex = $index) {
+        <g
+          class="trend-chart-bar-group"
+          [class.is-selected]="selectedYearIndex() === yearIndex"
+          (click)="selectYear(yearIndex)"
+        >
+          <rect
+            class="trend-chart-hover-target"
+            [attr.x]="bar.centerX - geometry.columnWidth / 2"
+            [attr.y]="geometry.paddingTop"
+            [attr.width]="geometry.columnWidth"
+            [attr.height]="geometry.innerHeight"
+          />
+          @for (segment of bar.segments; track $index) {
+            <rect
+              class="trend-chart-bar-segment"
+              [class.is-dimmed]="isSegmentDimmed(segment.label, yearIndex)"
+              [attr.x]="segment.x"
+              [attr.y]="segment.y"
+              [attr.width]="segment.width"
+              [attr.height]="segment.height"
+              [attr.fill]="segment.color"
+            />
+          }
+        </g>
+      }
+
+      <path
+        class="trend-chart-line"
+        [attr.d]="geometry.linePath"
+        [style.d]="'path(\'' + geometry.linePath + '\')'"
+        fill="none"
+        stroke="var(--ink)"
+        stroke-width="2"
+        stroke-linejoin="round"
+        stroke-linecap="round"
+      />
+      @for (point of geometry.linePoints; track $index) {
+        <circle
+          class="trend-chart-line-point"
+          [attr.cx]="point.x"
+          [attr.cy]="point.y"
+          r="4"
+          fill="var(--ink)"
+          stroke="var(--surface)"
+          stroke-width="1.5"
+        />
+      }
+
+      @for (tick of geometry.xTicks; track tick.year) {
+        <text
+          class="trend-chart-axis-label"
+          [attr.x]="tick.x"
+          [attr.y]="geometry.paddingTop + geometry.innerHeight + 12"
+          [attr.transform]="
+            'rotate(-90 ' + tick.x + ' ' + (geometry.paddingTop + geometry.innerHeight + 12) + ')'
+          "
+          text-anchor="end"
+        >
+          {{ tick.year }}
+        </text>
+      }
+
+      <line
+        class="trend-chart-baseline"
+        [attr.x1]="geometry.paddingLeft"
+        [attr.x2]="geometry.width - geometry.paddingRight"
+        [attr.y1]="geometry.paddingTop + geometry.innerHeight"
+        [attr.y2]="geometry.paddingTop + geometry.innerHeight"
+      />
+    </svg>
+
+    <ui-divider [variant]="DividerVariant.SOLID" [padding]="false" />
+
+    @if (selectedYear(); as year) {
+      <ui-legend
+        [slices]="selectedYearSlices()"
+        [legendId]="rememberUiState() ? LegendId.TREND_CHART : null"
+        [totalLabel]="'Razem w ' + year.year"
+        footerLabel="Saldo na koniec roku"
+        [footerValue]="year.lastRemaining"
+        [activeLabel]="activeLabel()"
+        (sliceHover)="setActiveLabel($event)"
+      />
+    } @else {
+      <p class="trend-chart-hint">Kliknij rok na wykresie, aby zobaczyć szczegóły</p>
+    }
+  } @else {
+    <div class="trend-chart-empty">Brak danych do wyświetlenia.</div>
+  }
+</ui-card>

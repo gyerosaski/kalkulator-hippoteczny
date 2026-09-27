@@ -1,0 +1,180 @@
+/* Decade nav */
+.mp-decade-nav {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+}
+
+.mp-nav-btn {
+  width: var(--icon-btn-size);
+  height: var(--icon-btn-size);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+}
+
+.mp-nav-icon--prev {
+  transform: scaleX(-1);
+}
+
+.mp-decade-range {
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.005em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+/* Shortcuts */
+.mp-shortcuts {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5) 0;
+}
+
+.mp-shortcut {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+  border: var(--border-width) solid var(--line);
+  background: var(--surface-2);
+  font: inherit;
+  text-align: left;
+  padding: var(--space-2) var(--space-2);
+  border-radius: var(--r-control);
+  cursor: pointer;
+  transition:
+    background 0.12s,
+    border-color 0.12s,
+    transform 0.06s;
+
+  &:hover {
+    background: color-mix(in oklch, var(--accent) 8%, var(--surface-2));
+    border-color: color-mix(in oklch, var(--accent) 40%, var(--line));
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+.mp-shortcut-label {
+  font-size: var(--text-sm);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  color: var(--muted);
+}
+
+.mp-shortcut-date {
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+/* Years grid */
+.mp-years {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--space-2);
+  padding: 0 var(--space-5) var(--space-3);
+}
+
+.mp-year {
+  border: var(--border-width) solid transparent;
+  background: var(--surface-2);
+  font: inherit;
+  font-size: var(--text-base);
+  color: var(--ink-2);
+  padding: 9px 0;
+  border-radius: var(--r-control);
+  cursor: pointer;
+  transition:
+    background 0.12s,
+    color 0.12s,
+    border-color 0.12s;
+
+  &:hover {
+    background: var(--line);
+    color: var(--ink);
+  }
+
+  &.is-selected {
+    background: color-mix(in oklch, var(--accent) 26%, var(--surface));
+    color: var(--accent-deep);
+    border-color: color-mix(in oklch, var(--accent) 40%, var(--line));
+  }
+
+  &.is-focused {
+    background: var(--ink);
+    color: var(--surface);
+    border-color: var(--ink);
+  }
+}
+
+/* Months panel */
+.mp-months {
+  margin: 0 var(--space-3) var(--space-3);
+  padding: var(--space-3) var(--space-3) var(--space-3);
+  background: var(--surface-2);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+
+.mp-months-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-2);
+}
+
+.mp-month {
+  border: var(--border-width) solid transparent;
+  background: var(--surface);
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--ink-2);
+  padding: var(--space-2) 0;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition:
+    background 0.12s,
+    color 0.12s,
+    border-color 0.12s,
+    transform 0.08s;
+  letter-spacing: 0.01em;
+
+  &:hover {
+    background: var(--line);
+    color: var(--ink);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  &.is-selected {
+    background: color-mix(in oklch, var(--accent) 22%, var(--surface));
+    color: var(--accent-deep);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &.is-focused {
+    background: var(--accent-deep);
+    color: var(--surface);
+    border-color: var(--accent-deep);
+    font-weight: var(--font-weight-semibold);
+  }
+}

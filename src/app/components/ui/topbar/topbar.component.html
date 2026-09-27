@@ -1,0 +1,52 @@
+<header class="topbar">
+  @if (pixelHippoService.isEnabled()) {
+    <div class="sprite-track">
+      <ui-pixel-hippo />
+    </div>
+  }
+  <div class="topbar-left">
+    <div class="brand">
+      <div class="brand-mark">
+        <icon-calculator />
+      </div>
+      <div>
+        <div class="brand-name">Kalkulator Hippoteczny</div>
+        <div class="brand-sub">v0.0.1</div>
+      </div>
+    </div>
+  </div>
+  <nav class="tabs">
+    <span
+      class="tab-indicator"
+      [class.is-visible]="isIndicatorVisible()"
+      [style.left]="indicatorStyle().left"
+      [style.width]="indicatorStyle().width"
+    ></span>
+    <button class="tab" #tabBtn [class.is-on]="isCalculatorTab()" (click)="navigateToCalculator()">
+      Kalkulator
+    </button>
+    <button
+      class="tab"
+      #tabBtn
+      [class.is-on]="isCalculatorManagerTab()"
+      (click)="navigateToCalculatorManager()"
+    >
+      Twoje kalkulacje
+    </button>
+    <button
+      class="tab"
+      #tabBtn
+      [class.is-on]="isCalculationsCompareTab()"
+      (click)="navigateToCalculationsCompare()"
+    >
+      Porównanie ofert
+    </button>
+  </nav>
+  <div class="topbar-actions">
+    <button class="ico-btn" type="button" (click)="settingsDialog().open()" title="Ustawienia">
+      <icon-settings />
+    </button>
+  </div>
+</header>
+
+<app-settings-dialog />

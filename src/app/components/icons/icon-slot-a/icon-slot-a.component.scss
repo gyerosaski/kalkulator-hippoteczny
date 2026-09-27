@@ -1,0 +1,5 @@
+@use '../slot-badge.shared' as *;
+
+.badge {
+  background: var(--offer-a);
+}

@@ -1,0 +1,149 @@
+@use 'variables' as *;
+
+:host {
+  display: block;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.compare-view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--view-gap);
+  padding: 0 var(--view-pad) var(--view-pad);
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ---------- Hero ---------- */
+.compare-hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--muted);
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+}
+
+/* ---------- Slot bar ---------- */
+.compare-slots {
+  flex: 1 1 540px;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: stretch;
+  gap: var(--card-gap);
+}
+
+.compare-swap {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  align-self: center;
+  border: var(--border-width) solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: all var(--duration-fast);
+
+  &:not(:disabled):hover {
+    border-color: var(--accent-deep);
+    color: var(--accent-deep);
+    transform: rotate(180deg);
+  }
+
+  &:disabled {
+    color: var(--muted);
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+/* Tablet: pasek slotów zawija się pod tekst nagłówka (pełna szerokość). */
+@media (max-width: $breakpoint-tablet) {
+  .compare-slots {
+    flex-basis: 100%;
+  }
+}
+
+/* Telefon: sloty ofert jeden pod drugim, przycisk zamiany między nimi (strzałki obrócone w pion) */
+@media (max-width: $breakpoint-phone-wide) {
+  .compare-slots {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .compare-swap {
+    justify-self: center;
+    transform: rotate(90deg);
+
+    &:not(:disabled):hover {
+      transform: rotate(270deg);
+    }
+  }
+}
+
+/* ---------- Pasek akcji globalnych ---------- */
+.compare-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.compare-actions-group {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.compare-actions-label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--ink-2);
+}
+
+/* ---------- Wykres trendu — tryb „obok siebie" ---------- */
+.trend-side-by-side {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.trend-side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.trend-side-caption {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--ink);
+}
+
+@media (max-width: $breakpoint-tablet-wide) {
+  .trend-side-by-side {
+    grid-template-columns: 1fr;
+  }
+}

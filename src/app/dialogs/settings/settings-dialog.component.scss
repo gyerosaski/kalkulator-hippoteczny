@@ -1,0 +1,12 @@
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.setting-label {
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--ink);
+}

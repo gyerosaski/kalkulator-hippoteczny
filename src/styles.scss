@@ -1,0 +1,739 @@
+@use 'styles/variables' as *;
+
+@include design-tokens;
+
+/* Reset */
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+body {
+  /* Tokeny typografii żyją w `.app` (przełączanie motywu), więc element `body`
+     — przodek `.app` — nie może ich odczytać; bazowa typografia pozostaje
+     literałem zgodnym z `--font-sans` / `--text-base` / `--leading-base`. */
+  font-family: 'Inter Tight', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-feature-settings: 'tnum';
+  font-variant-numeric: tabular-nums;
+}
+
+/* Buttons */
+.btn {
+  border: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--r-control);
+  font: inherit;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  transition: all var(--duration-fast) ease;
+}
+
+/* Wszystkie ikony liniowe (komponenty <icon-*>) renderują host jako inline-flex,
+   przez co osadzony SVG jest zawsze wyśrodkowany w pionie względem sąsiedniego tekstu
+   (brak luki linii bazowej) — niezależnie od kontekstu (flex, grid czy tekst inline).
+   Każdy komponent ikony dokłada klasę `icon` na swój host (host: { class: 'icon' }),
+   więc miejsca użycia nie muszą już korygować wyrównania ręcznie. */
+.icon {
+  display: inline-flex;
+  vertical-align: middle;
+}
+.btn--primary {
+  background: var(--ink);
+  color: var(--surface);
+}
+.btn--primary:hover {
+  background: oklch(35% 0.018 250);
+}
+.btn--ghost {
+  background: transparent;
+  color: var(--ink-2);
+}
+.btn--ghost:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+.btn--mini {
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-sm);
+  background: var(--surface-2);
+  color: var(--ink-2);
+  border-radius: var(--r-sm);
+}
+.btn--mini:hover {
+  background: var(--line);
+}
+.btn--add {
+  background: transparent;
+  color: var(--accent-deep);
+  border: var(--border-width) dashed var(--line-2);
+  width: 100%;
+  justify-content: center;
+  padding: var(--space-2);
+  margin-top: var(--space-2);
+  border-radius: var(--r);
+}
+.btn--add:hover {
+  background: color-mix(in oklch, var(--accent) 20%, var(--surface));
+  border-color: var(--accent);
+}
+.ico-btn {
+  width: var(--icon-btn-size);
+  height: var(--icon-btn-size);
+  border-radius: var(--r-sm);
+  border: var(--border-width) solid var(--line);
+  background: var(--surface);
+  color: var(--ink-2);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--duration-fast) ease;
+}
+.ico-btn:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+.ico-btn:disabled {
+  opacity: var(--opacity-muted);
+  cursor: not-allowed;
+}
+
+/* Sections */
+.sec {
+  background: var(--surface);
+  border-radius: var(--r-xl);
+  border: var(--border-width) solid var(--line);
+  overflow: hidden;
+}
+.sec-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-5);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+.sec-chev {
+  display: inline-flex;
+  transition: transform var(--duration-base);
+  color: var(--muted);
+}
+.sec.is-open .sec-chev {
+  transform: rotate(90deg);
+}
+.sec:not(.sec--animate) .sec-chev {
+  transition: none;
+}
+.sec-num {
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+.sec-title {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-lg);
+  letter-spacing: var(--tracking-tight);
+}
+.sec-badge {
+  margin-left: auto;
+  font-size: var(--text-sm);
+  color: var(--ink-2);
+  padding: 3px var(--space-2);
+  background: var(--surface-2);
+  border-radius: var(--r-pill);
+  letter-spacing: 0.01em;
+}
+.sec-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+
+.sec-body.sec-body--animate {
+  transition:
+    grid-template-rows var(--duration-slow) ease,
+    opacity 0.25s ease;
+}
+
+.sec-body--open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.sec-body-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.sec-body-content {
+  padding: var(--sec-pad);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sec-gap);
+  border-top: var(--border-width) solid var(--line);
+}
+
+/* jednorazowy, subtelny puls koloru tytułu — wskazuje cel po nawigacji z legendy do formularza */
+@keyframes title-pulse {
+  50% {
+    color: var(--accent-deep);
+  }
+}
+
+.title-pulse {
+  animation: title-pulse 0.9s ease-in-out 2;
+}
+
+/* Fields */
+.row {
+  display: grid;
+  gap: var(--row-gap);
+}
+.row + .row {
+  margin-top: var(--row-margin);
+}
+.row--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.row--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.row--4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* Węższe ekrany: siatki pól zwijają się do mniejszej liczby kolumn */
+@media (max-width: $breakpoint-desktop-wide) {
+  .row--4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: $breakpoint-phone) {
+  .row--2,
+  .row--3,
+  .row--4 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.tranche-num {
+  width: var(--space-7);
+  height: var(--space-7);
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  color: var(--ink);
+  border-radius: var(--r-sm);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-base);
+  margin-bottom: var(--space-2);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+/* Wyrównanie pionowe pól w wierszu siatki: każde pole rozpina się przez subgrid
+   na trzy współdzielone wiersze (etykieta / kontrolka / podpowiedź), więc inputy
+   w wierszu pozostają wyrównane także wtedy, gdy któraś z sąsiednich etykiet
+   złamie się na dwie linie albo tylko jedno pole ma podpowiedź. Odstępy między
+   wierszami subgrida realizują paddingi (nie gap), żeby puste wiersze nie
+   dokładały pustej przestrzeni. */
+.row > ui-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: subgrid;
+  grid-row: span 3;
+}
+.row > ui-field > .field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: subgrid;
+  grid-row: span 3;
+  gap: 0;
+}
+.row > ui-field .field-label {
+  align-self: end;
+  padding-bottom: var(--space-2);
+}
+.row > ui-field .field-hint {
+  padding-top: var(--space-2);
+}
+.field-label {
+  display: flex;
+  gap: var(--space-2);
+  align-items: baseline;
+  font-size: var(--text-sm);
+  color: var(--ink-2);
+  font-weight: var(--font-weight-medium);
+}
+.field-num {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--r-xs);
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
+}
+.field-hint {
+  font-size: var(--text-sm);
+  color: var(--muted);
+}
+
+/* Inputs */
+.inp {
+  display: flex;
+  align-items: center;
+  background: var(--surface-2);
+  border: var(--border-width) solid transparent;
+  border-radius: var(--r-control);
+  padding: 0 var(--space-3);
+  height: var(--control-height);
+  transition: all var(--duration-fast);
+}
+.inp:hover {
+  background: var(--line);
+}
+.inp.inp--focus {
+  background: var(--surface);
+  border-color: var(--accent-deep);
+  box-shadow: var(--focus-ring);
+}
+.inp.inp--disabled {
+  opacity: var(--opacity-disabled);
+}
+.inp input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font: inherit;
+  color: var(--ink);
+  padding: 0;
+  height: 100%;
+  font-size: var(--text-base);
+}
+.inp input.mono {
+  font-family: var(--font-mono);
+}
+.inp .suffix {
+  color: var(--muted);
+  font-size: var(--text-sm);
+  margin-left: var(--space-2);
+}
+.inp .hint {
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+.inp--date {
+  gap: var(--space-2);
+}
+.inp--date input::-webkit-calendar-picker-indicator {
+  display: none;
+}
+.inp--date .cal-ico {
+  color: var(--muted);
+}
+
+.inline {
+  display: flex;
+  gap: var(--space-2);
+  align-items: stretch;
+}
+.inline > ui-number-input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Segmented */
+.seg {
+  display: inline-flex;
+  position: relative;
+  background: var(--surface-2);
+  border-radius: var(--r-control);
+  padding: 3px;
+  width: 100%;
+  height: var(--control-height);
+}
+.seg-indicator {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  box-shadow: 0 1px 2px oklch(40% 0.02 250 / 0.08);
+  pointer-events: none;
+  visibility: hidden;
+  transition:
+    left 240ms var(--ease-standard),
+    width 240ms var(--ease-standard);
+
+  &.is-visible {
+    visibility: visible;
+  }
+}
+.seg-btn {
+  /* basis auto: segment najpierw mieści swój tekst, dopiero nadmiar dzielony jest po równo */
+  flex: 1 1 auto;
+  position: relative;
+  z-index: var(--z-base);
+  border: 0;
+  background: transparent;
+  padding-inline: var(--space-3);
+  padding-block: 0;
+  /* overflow: hidden (poniżej) wyłącza wbudowane centrowanie treści przycisku,
+     dlatego etykietę centrujemy w pionie jawnie */
+  align-content: center;
+  font: inherit;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  color: var(--ink-2);
+  font-weight: var(--font-weight-medium);
+  /* etykieta nie może wyjść poza obrys kontrolki — przy braku miejsca jest przycinana z wielokropkiem */
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.seg-btn.is-on {
+  color: var(--ink);
+}
+
+.sec-head-wrap {
+  display: flex;
+  align-items: center;
+  padding-right: var(--space-4);
+}
+.sec-head-wrap .sec-head {
+  flex: 1;
+}
+.sec-head:disabled {
+  cursor: not-allowed;
+  opacity: var(--opacity-disabled);
+}
+.sec--off {
+  background: var(--surface-2);
+}
+.sec--off .sec-head {
+  opacity: var(--opacity-disabled);
+}
+
+.sec-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  user-select: none;
+  font-size: var(--text-sm);
+  color: var(--muted);
+}
+.sec-switch input {
+  display: none;
+}
+.switch-track {
+  width: var(--space-8);
+  height: var(--switch-track-h);
+  border-radius: var(--r-pill);
+  background: var(--line-2);
+  position: relative;
+  transition: background var(--duration-base);
+  display: inline-block;
+}
+.switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 1px 2px oklch(40% 0.02 250 / 0.2);
+  transition: left var(--duration-base);
+}
+.sec-switch input:checked + .switch-track {
+  background: var(--accent-deep);
+}
+.sec-switch input:checked + .switch-track .switch-thumb {
+  left: 16px;
+}
+
+.seg--compact {
+  width: auto;
+  padding: 2px;
+}
+.seg--compact .seg-indicator {
+  top: 2px;
+  bottom: 2px;
+}
+.seg--compact .seg-btn {
+  padding-inline: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.row + ui-cards-group {
+  margin-top: var(--row-margin);
+}
+
+.rate-period-from {
+  width: 184px;
+  flex-shrink: 0;
+}
+
+@media (max-width: $breakpoint-phone) {
+  .rate-period-from {
+    width: auto;
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+ui-card + ui-card,
+ui-card + ui-cards-group,
+ui-cards-group + ui-card {
+  margin-top: var(--card-gap);
+}
+
+/* Tranche */
+.suma-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) var(--space-3);
+  margin-top: var(--space-2);
+  background: color-mix(in oklch, var(--accent) 18%, var(--surface));
+  border-radius: var(--r);
+  font-size: var(--text-base);
+}
+/* KPI */
+.kpi-meta {
+  font-size: var(--text-sm);
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* Cards */
+.card {
+  background: var(--surface);
+  border-radius: var(--r-xl);
+  border: var(--border-width) solid var(--line);
+  padding: var(--card-pad) var(--sec-pad);
+  display: flex;
+  flex-direction: column;
+  gap: var(--card-gap);
+}
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+.card-head h3 {
+  margin: 0;
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.005em;
+}
+/* Donut */
+.donut-wrap {
+  position: relative;
+}
+.donut-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.donut-label {
+  font-size: var(--text-sm);
+  color: var(--muted);
+}
+.donut-value {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-tighter);
+}
+/* Table */
+.tbl {
+  font-size: var(--tbl-text);
+}
+.tbl-head,
+.tbl-row {
+  display: grid;
+  grid-template-columns: var(--tbl-cols, 1.4fr 1fr 1fr 1fr 1.2fr);
+  gap: var(--tbl-row-gap);
+  padding: var(--tbl-row-pad-y) var(--tbl-row-pad-x);
+  align-items: center;
+}
+.tbl-head {
+  background: var(--surface-2);
+  color: var(--ink-2);
+  font-size: var(--tbl-text-sm);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  font-weight: var(--font-weight-medium);
+}
+.tbl-head > div:not(:first-child) {
+  text-align: right;
+}
+.tbl .mono {
+  text-align: right;
+}
+.tbl-row {
+  border-top: var(--border-width) solid var(--line);
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.tbl-row--year:hover {
+  background: var(--surface-2);
+}
+.tbl-row--year.is-open {
+  background: color-mix(in oklch, var(--accent) 14%, var(--surface));
+}
+.tbl-row--year .cell-year {
+  font-weight: var(--font-weight-semibold);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.tbl-row--month {
+  background: var(--surface-stripe);
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: background var(--duration-fast);
+}
+.tbl-row--month:hover {
+  background: color-mix(in oklch, var(--accent) 10%, var(--surface));
+}
+.tbl-row--month.is-selected {
+  background: color-mix(in oklch, var(--accent) 24%, var(--surface));
+  box-shadow: inset 3px 0 0 var(--accent-deep, var(--accent));
+}
+.tbl-row--month.is-selected .cell-month {
+  color: var(--ink);
+  font-weight: var(--font-weight-semibold);
+}
+.tbl-row--month .cell-month {
+  padding-left: var(--space-4);
+  color: var(--muted);
+  font-size: var(--tbl-text-sm);
+}
+/* Misc */
+.card-head-suffix {
+  font-weight: var(--font-weight-medium);
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.muted {
+  color: var(--muted);
+}
+.small {
+  font-size: var(--text-sm);
+}
+
+/* Współdzielona „chrome" okien dialog (nagłówek, tytuł, przycisk zamknięcia).
+   Pudełko `dialog{}`, `.dialog-body` i `.dialog-actions` pozostają lokalne w komponentach,
+   bo różnią się między dialogami (szerokość, padding). */
+.dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-5) var(--space-5) 0;
+  gap: var(--space-3);
+}
+
+.dialog-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.dialog-title--danger {
+  color: var(--c-int);
+}
+
+.dialog-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--icon-btn-size);
+  height: var(--icon-btn-size);
+  border: none;
+  border-radius: var(--r-sm);
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0;
+  transition: all var(--duration-fast) ease;
+
+  &:hover {
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+}
+
+.dialog-hint {
+  font-size: var(--text-sm);
+  color: var(--muted);
+  line-height: var(--leading-relaxed);
+}
+
+/* Treść okien dialog jest wstrzykiwana przez content projection do `ui-dialog`, więc poza
+   enkapsulacją stylów tej powłoki — wspólne kontenery body/actions muszą być globalne. */
+.dialog-body {
+  padding: var(--space-4) var(--space-5) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-5);
+  border-top: var(--border-width) solid var(--line);
+}
+
+.dialog--danger .dialog-actions .btn--danger {
+  background: var(--c-int);
+  color: #fff;
+  border-color: var(--c-int);
+
+  &:hover {
+    background: oklch(from var(--c-int) calc(l - 0.05) c h);
+  }
+}

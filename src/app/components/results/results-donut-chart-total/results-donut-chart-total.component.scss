@@ -1,0 +1,19 @@
+@use 'variables' as *;
+
+.donut-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 18px;
+  align-items: center;
+}
+
+/* Telefon: legenda przenosi się pod wykres */
+@media (max-width: $breakpoint-phone) {
+  .donut-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  ui-donut {
+    justify-self: center;
+  }
+}

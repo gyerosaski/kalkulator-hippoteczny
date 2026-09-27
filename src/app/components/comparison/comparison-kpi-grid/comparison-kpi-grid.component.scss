@@ -1,0 +1,121 @@
+@use 'variables' as *;
+
+.kpi-grid {
+  display: grid;
+  gap: var(--card-gap);
+  padding: var(--panel-gap) var(--panel-pad-x) var(--panel-pad-y);
+}
+
+.kpi-row {
+  display: grid;
+  grid-template-columns: 1fr 170px 1fr;
+  align-items: stretch;
+  gap: var(--card-gap);
+}
+
+/* ---------- Kafelek oferty ---------- */
+.kpi-tile {
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--r-lg, 12px);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface);
+
+  &.is-leader {
+    background: var(--accent-sage-soft, var(--surface-2));
+    border-color: var(--accent-sage-deep);
+  }
+}
+
+.kpi-tile--a {
+  border-top: 3px solid var(--offer-a);
+}
+
+.kpi-tile--b {
+  border-top: 3px solid var(--offer-b);
+}
+
+.kpi-tile-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.kpi-label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.kpi-leader {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--accent-sage-deep);
+  white-space: nowrap;
+}
+
+.kpi-value {
+  margin-top: var(--space-2);
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--ink);
+}
+
+.kpi-meta {
+  margin-top: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--muted);
+}
+
+/* ---------- Kolumna delty ---------- */
+.kpi-delta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  border-radius: var(--r-lg, 12px);
+  background: var(--surface-2);
+  padding: var(--space-2);
+  text-align: center;
+}
+
+.kpi-delta-arrow {
+  font-size: var(--text-base);
+  line-height: 1;
+}
+
+.kpi-delta-value {
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-bold);
+}
+
+.kpi-delta-percent {
+  font-size: var(--text-sm);
+}
+
+/* ---------- Delta coloring ---------- */
+.delta--up {
+  color: var(--c-int);
+}
+
+.delta--down {
+  color: var(--accent-sage-deep);
+}
+
+.delta--flat {
+  color: var(--muted);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: $breakpoint-phone-wide) {
+  .kpi-row {
+    grid-template-columns: 1fr;
+  }
+
+  .kpi-delta {
+    order: 3;
+  }
+}

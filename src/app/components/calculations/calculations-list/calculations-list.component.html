@@ -1,0 +1,193 @@
+<div class="data-table">
+  @if (calculations().length > 0) {
+    <div class="table-header-row">
+      <div class="cell cell--name">Nazwa</div>
+      <div class="cell cell--money">Kwota · LTV</div>
+      <div class="cell cell--period">Okres</div>
+      <div class="cell cell--rate">Oproc.</div>
+      <div class="cell cell--installment">Pierwsza rata</div>
+      <div class="cell cell--interest">Odsetki</div>
+      <div class="cell cell--date">Zmodyfikowano</div>
+      <div class="cell cell--actions">Akcje</div>
+    </div>
+  }
+
+  @if (calculations().length === 0) {
+    <div class="empty-state">
+      <icon-calendar-list />
+      <div class="empty-title">Brak pasujących kalkulacji</div>
+      <div class="empty-sub">
+        Zmień filtry albo wyczyść pole szukania, aby zobaczyć wszystkie zapisane warianty.
+      </div>
+      @if (hasActiveFilter()) {
+        <button class="btn btn--ghost" (click)="clearFilters.emit()">Wyczyść filtry</button>
+      }
+    </div>
+  } @else {
+    @for (calculation of calculations(); track calculation.name) {
+      <div
+        class="table-data-row"
+        [class.table-data-row--active]="calculation.name === activeCalculationName()"
+      >
+        <div class="row-marker" aria-hidden="true"></div>
+
+        <!-- Nazwa -->
+        <div class="cell cell--name">
+          <div class="name-block">
+            <div class="name-row">
+              <span class="calc-name">{{ calculation.name }}</span>
+              @if (calculation.name === activeCalculationName()) {
+                <ui-badge
+                  label="bieżąca"
+                  [variant]="BadgeVariant.GREEN"
+                  tooltip="Kalkulacja wczytana na zakładce „Kalkulator”"
+                />
+                @if (isLoadedCalculationModified()) {
+                  <ui-badge label="zmodyfikowana" [variant]="BadgeVariant.RED" />
+                }
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Kwota · LTV -->
+        <div class="cell cell--money">
+          <div class="money-amount mono">
+            <b>{{ calculation.loanAmount | formatWholeAmount }}</b
+            ><span class="unit">zł</span>
+          </div>
+          <div class="money-sub">
+            <span class="muted">z {{ calculation.propertyValue | formatWholeAmount }} zł</span>
+            <span class="ltv-badge" [class.ltv-badge--high]="ltvOf(calculation) > 80">
+              LTV {{ ltvOf(calculation).toFixed(0) }}&nbsp;%
+            </span>
+          </div>
+        </div>
+
+        <!-- Okres -->
+        <div class="cell cell--period">
+          <div class="period-value mono">
+            {{ calculation.loanPeriodYears | formatLoanPeriod: calculation.loanPeriodExtraMonths }}
+          </div>
+          <div class="period-sub muted">
+            <span
+              class="installment-pill"
+              [class.installment-pill--equal]="
+                calculation.installmentType === InstallmentType.EQUAL
+              "
+              [class.installment-pill--decreasing]="
+                calculation.installmentType === InstallmentType.DECREASING
+              "
+            >
+              {{
+                calculation.installmentType === InstallmentType.EQUAL
+                  ? 'rata równa'
+                  : 'rata malejąca'
+              }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Oprocentowanie -->
+        <div class="cell cell--rate">
+          <div class="rate-value mono">{{ calculation.nominalRate | formatRate }}</div>
+          <div class="rate-sub muted">
+            @if (calculation.rateType === RateType.VARIABLE) {
+              Wskaźnik referencyjny {{ calculation.referenceIndex | formatRate }} + marża
+              {{ calculation.margin | formatRate }}
+            } @else {
+              stała
+            }
+          </div>
+        </div>
+
+        <!-- Pierwsza rata -->
+        <div class="cell cell--installment">
+          @if (calculation.firstInstallment > 0) {
+            <div class="installment-value mono">
+              <b>{{ calculation.firstInstallment | formatAmount }}</b
+              ><span class="unit">zł</span>
+            </div>
+          } @else {
+            <div class="installment-value muted">—</div>
+          }
+        </div>
+
+        <!-- Odsetki -->
+        <div class="cell cell--interest">
+          @if (calculation.totalInterest > 0) {
+            <div class="interest-value mono">
+              {{ calculation.totalInterest | formatWholeAmount }}<span class="unit">zł</span>
+            </div>
+          } @else {
+            <div class="interest-value muted">—</div>
+          }
+        </div>
+
+        <!-- Data modyfikacji -->
+        <div class="cell cell--date">
+          <div class="date-relative" [title]="calculation.updatedAt | formatExactDate">
+            {{ calculation.updatedAt | relativeTime }}
+          </div>
+          <div class="date-exact muted mono">
+            {{ calculation.updatedAt | formatExactDate | slice: 0 : 10 }}
+          </div>
+        </div>
+
+        <!-- Akcje -->
+        <div class="cell cell--actions">
+          <button class="action-btn action-btn--load" (click)="load.emit(calculation)">
+            <icon-arrow-right />
+            Wczytaj
+          </button>
+          <div class="actions-menu-wrap">
+            <button
+              class="action-btn action-btn--ghost"
+              [class.is-on]="openMenuName() === calculation.name"
+              (click)="toggleMenu($event, calculation.name)"
+              aria-label="Więcej akcji"
+            >
+              <icon-dots />
+            </button>
+            @if (openMenuName() === calculation.name) {
+              <div class="actions-menu" role="menu" (click)="$event.stopPropagation()">
+                @if (
+                  calculation.name === activeCalculationName() && isLoadedCalculationModified()
+                ) {
+                  <button
+                    class="menu-item"
+                    (click)="saveChanges.emit(calculation); openMenuName.set(null)"
+                  >
+                    <icon-save />
+                    Zapisz zmiany
+                  </button>
+                  <div class="menu-separator"></div>
+                }
+                <button class="menu-item" (click)="rename.emit(calculation)">
+                  <icon-edit />
+                  Zmień nazwę
+                </button>
+                <button class="menu-item" (click)="duplicate.emit(calculation)">
+                  <icon-duplicate />
+                  Duplikuj
+                </button>
+                <button
+                  class="menu-item"
+                  (click)="exportRequested.emit(calculation); openMenuName.set(null)"
+                >
+                  <icon-export />
+                  Eksportuj
+                </button>
+                <div class="menu-separator"></div>
+                <button class="menu-item menu-item--danger" (click)="delete.emit(calculation)">
+                  <icon-trash />
+                  Usuń
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  }
+</div>

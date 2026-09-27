@@ -1,0 +1,162 @@
+.legend-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.legend-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-size: var(--text-lg);
+  padding-bottom: var(--space-2);
+  margin-bottom: var(--space-2);
+  border-bottom: var(--border-width) solid var(--line);
+  cursor: pointer;
+}
+
+.legend-total .leg-lab {
+  color: var(--ink-2);
+}
+
+.legend-total .leg-val {
+  color: var(--ink);
+}
+
+.legend-total.is-active .leg-lab,
+.legend-total.is-active .leg-val {
+  font-weight: var(--font-weight-bold);
+  color: var(--ink);
+}
+
+.legend-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-size: var(--text-base);
+  padding-top: var(--space-2);
+  margin-top: var(--space-2);
+  border-top: var(--border-width) solid var(--line);
+}
+
+.legend-footer .leg-lab {
+  color: var(--ink-2);
+}
+
+.legend-footer .leg-val {
+  color: var(--ink);
+  cursor: copy;
+}
+
+.legend {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.legend li {
+  display: grid;
+  grid-template-columns: 14px 1fr auto;
+  gap: var(--space-2);
+  align-items: center;
+  font-size: var(--text-base);
+  cursor: pointer;
+  transition: transform var(--duration-base) ease;
+}
+
+.legend li.is-active .leg-lab,
+.legend li.is-active .leg-val {
+  font-weight: var(--font-weight-bold);
+  color: var(--ink);
+}
+
+.legend li.is-parent.is-open {
+  position: relative;
+  padding-bottom: var(--space-2);
+}
+
+/* separator zaczyna się równo z tekstem etykiety (po kolumnie markera: 14px + 10px odstępu) */
+.legend li.is-parent.is-open::after {
+  content: '';
+  position: absolute;
+  left: var(--space-6);
+  right: 0;
+  bottom: 0;
+  border-bottom: var(--border-width) solid var(--line);
+}
+
+/* Animowane rozwijanie pozycji potomnych: grid-template-rows 0fr → 1fr nie wymaga znanej wysokości */
+.legend li.children-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  cursor: default;
+  /* Zwinięty wiersz jest niewidoczny (opacity: 0), ale przez ujemny margines nakłada się na
+     etykietę rodzica — bez tego jego przyciski nawigacyjne przechwytywałyby klik rozwijający. */
+  pointer-events: none;
+  margin-top: calc(-1 * var(--space-2));
+  transition:
+    grid-template-rows var(--duration-slow) ease,
+    opacity 0.25s ease,
+    margin-top var(--duration-slow) ease;
+}
+
+.legend li.children-row--open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  pointer-events: auto;
+  margin-top: 0;
+}
+
+.children-row .children {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.legend li.is-child {
+  grid-template-columns: 1fr auto;
+  padding-left: var(--space-6);
+  font-size: var(--text-sm);
+}
+
+.leg-lab {
+  color: var(--ink-2);
+}
+
+.leg-val {
+  color: var(--ink);
+  font-size: var(--text-sm);
+  cursor: copy;
+}
+
+.leg-lab--nav {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  justify-self: start;
+}
+
+.leg-lab--nav:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+.leg-lab--nav:focus-visible {
+  outline: 2px solid var(--accent-deep);
+  outline-offset: 2px;
+  border-radius: var(--r-2xs);
+}

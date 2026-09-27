@@ -1,0 +1,111 @@
+:host {
+  display: block;
+}
+
+.trend-chart-head {
+  flex-wrap: wrap;
+  row-gap: var(--space-2);
+}
+
+.trend-chart-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--ink-2);
+}
+
+.trend-chart-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.trend-chart-legend-line {
+  display: inline-flex;
+  align-items: center;
+}
+
+.trend-chart-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.trend-chart-grid {
+  stroke: var(--grid);
+  stroke-dasharray: 2 4;
+}
+
+.trend-chart-baseline {
+  stroke: var(--line-2);
+}
+
+.trend-chart-axis-label {
+  font-size: var(--text-base);
+  fill: var(--muted);
+  font-feature-settings: 'tnum';
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--font-weight-semibold);
+}
+
+.trend-chart-axis-title {
+  font-size: var(--text-base);
+  fill: var(--ink-2);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-wide);
+}
+
+.trend-chart-bar-group {
+  cursor: pointer;
+}
+
+.trend-chart-bar-group rect {
+  transition:
+    opacity var(--duration-fast) ease,
+    y var(--duration-slower) var(--ease-standard),
+    height var(--duration-slower) var(--ease-standard);
+}
+
+.trend-chart-bar-group.is-selected .trend-chart-bar-segment {
+  opacity: 0.85;
+}
+
+.trend-chart-bar-segment.is-dimmed {
+  opacity: 0.25;
+}
+
+.trend-chart-line {
+  pointer-events: none;
+  transition: d var(--duration-slower) var(--ease-standard);
+}
+
+.trend-chart-line-point {
+  pointer-events: none;
+  transition: cy var(--duration-slower) var(--ease-standard);
+}
+
+.trend-chart-hover-target {
+  fill: transparent;
+}
+
+.trend-chart-bar-group:hover .trend-chart-hover-target {
+  fill: color-mix(in oklch, var(--accent) 18%, transparent);
+}
+
+.trend-chart-hint {
+  margin: 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: var(--text-base);
+}
+
+.trend-chart-empty {
+  padding: var(--space-8);
+  text-align: center;
+  color: var(--muted);
+  font-size: var(--text-base);
+}

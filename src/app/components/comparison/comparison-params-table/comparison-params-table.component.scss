@@ -1,0 +1,123 @@
+@use 'variables' as *;
+
+/* ---------- Table grid ---------- */
+.params-table {
+  display: grid;
+}
+
+.params-table-head,
+.params-table-row {
+  display: grid;
+  grid-template-columns: 1fr 220px 220px 120px;
+  align-items: center;
+  border-bottom: var(--border-width) solid var(--line);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.params-table-head {
+  background: var(--surface-2);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-wider);
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.params-table-head-sub {
+  font-weight: var(--font-weight-regular);
+  text-transform: none;
+}
+
+.params-table-group-head {
+  padding: var(--panel-cell-pad-y) var(--panel-cell-pad-x);
+  background: var(--surface-2);
+  border-bottom: var(--border-width) solid var(--line);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.params-table-cell {
+  padding: var(--panel-cell-pad-y) var(--panel-cell-pad-x);
+}
+
+.params-table-group-head .params-table-cell {
+  padding: 0;
+}
+
+.params-table-cell--label {
+  color: var(--ink-2);
+}
+
+.params-table-cell--offer {
+  position: relative;
+  text-align: right;
+  font-size: var(--text-base);
+}
+
+.params-table-cell--a,
+.params-table-cell--b,
+.params-table-cell--delta {
+  border-left: var(--border-width) solid var(--line);
+}
+
+.params-table-cell--delta {
+  text-align: right;
+  color: var(--muted);
+}
+
+.params-table-empty {
+  padding: var(--panel-gap) var(--panel-pad-x);
+  font-size: var(--text-base);
+}
+
+/* ---------- Row states ---------- */
+.params-table-row--equal {
+  background: var(--track);
+
+  .params-table-cell {
+    color: var(--muted);
+  }
+}
+
+/* ---------- Leader ---------- */
+.is-leader {
+  color: var(--ink);
+}
+
+.leader-marker {
+  color: var(--accent-sage-deep);
+  margin-right: var(--space-1);
+  font-size: var(--text-sm);
+  line-height: 1;
+}
+
+/* ---------- Delta coloring ---------- */
+.delta--up {
+  color: var(--c-int);
+}
+
+.delta--down {
+  color: var(--accent-sage-deep);
+}
+
+.delta--flat {
+  color: var(--muted);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: $breakpoint-tablet-narrow) {
+  .params-table-head,
+  .params-table-row {
+    grid-template-columns: 1fr 140px 140px 90px;
+  }
+
+  .params-table-cell--offer {
+    font-size: var(--text-sm);
+  }
+}

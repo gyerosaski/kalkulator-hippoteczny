@@ -1,0 +1,22 @@
+<div class="seg" [class.seg--compact]="compact()">
+  @if (indicatorStyle(); as style) {
+    <span
+      class="seg-indicator"
+      [class.is-visible]="isIndicatorVisible()"
+      [style.left]="style.left"
+      [style.width]="style.width"
+    ></span>
+  }
+  @for (o of options(); track o; let i = $index) {
+    <button
+      class="seg-btn"
+      #segBtn
+      type="button"
+      [class.is-on]="o === _value()"
+      [disabled]="disabled()"
+      (click)="select(o)"
+    >
+      {{ labels()[i] || o }}
+    </button>
+  }
+</div>

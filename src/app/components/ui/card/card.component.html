@@ -1,0 +1,14 @@
+﻿<div class="card" [class.card--bare]="bare()" [class.card--pulse]="highlighted()">
+  @if (tag() || removable()) {
+    <div class="card-head">
+      @if (tag()) {
+        <span class="card-tag">{{ tag() }}</span>
+      }
+      <ng-content select="[slot=header]" />
+      @if (removable()) {
+        <ui-btn-remove class="card-remove" (remove)="remove.emit()" />
+      }
+    </div>
+  }
+  <ng-content />
+</div>

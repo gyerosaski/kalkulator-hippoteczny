@@ -1,0 +1,35 @@
+:host {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.sprite {
+  --sprite-w: 51px;
+  --sprite-h: 36px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--sprite-w);
+  height: var(--sprite-h);
+  /* dom spoczynkowy: wyśrodkowany w pionie i poziomie, schowany za nawigacją.
+     Pozycja w poziomie jest sterowana z TS przez animację translateX. */
+  transform: translate(-50%, -50%);
+  background-image: url('/spritesheet-run.png');
+  background-repeat: no-repeat;
+  background-size: var(--sprite-w) calc(var(--sprite-h) * 6);
+  image-rendering: pixelated;
+  animation: sprite-frames 0.6s steps(6) infinite;
+}
+
+/* 6-klatkowy cykl biegu z pionowego spritesheetu */
+@keyframes sprite-frames {
+  from {
+    background-position-y: 0;
+  }
+  to {
+    background-position-y: calc(var(--sprite-h) * -6);
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Domyślne uprawnienia dla głównego okna aplikacji",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "store:default",
+    "dialog:default",
+    {
+      "identifier": "fs:allow-read-text-file",
+      "allow": [
+        { "path": "$DOCUMENT/**/*.json" },
+        { "path": "$DOWNLOAD/**/*.json" },
+        { "path": "$DESKTOP/**/*.json" },
+        { "path": "$HOME/**/*.json" }
+      ]
+    },
+    {
+      "identifier": "fs:allow-write-text-file",
+      "allow": [
+        { "path": "$DOCUMENT/**/*.json" },
+        { "path": "$DOWNLOAD/**/*.json" },
+        { "path": "$DESKTOP/**/*.json" },
+        { "path": "$HOME/**/*.json" },
+        { "path": "$DOCUMENT/**/*.csv" },
+        { "path": "$DOWNLOAD/**/*.csv" },
+        { "path": "$DESKTOP/**/*.csv" },
+        { "path": "$HOME/**/*.csv" }
+      ]
+    }
+  ]
+}

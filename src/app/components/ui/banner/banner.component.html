@@ -1,0 +1,9 @@
+<span class="banner-icon" aria-hidden="true">
+  @if (variant() === BannerVariant.WARNING) {
+    <icon-warning />
+  } @else {
+    <icon-info />
+  }
+</span>
+<span class="banner-content"><ng-content /></span>
+<span class="banner-actions"><ng-content select="[bannerAction]" /></span>

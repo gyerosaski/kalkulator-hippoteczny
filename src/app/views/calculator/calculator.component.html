@@ -1,0 +1,37 @@
+<div class="two-column-layout">
+  <div class="column" #formColumn (scroll)="onFormColumnScroll(formColumn.scrollTop)">
+    <app-basic-data-form />
+    <app-rate-periods-form />
+    <app-tranches-form />
+    <app-overhead-costs-form />
+    <app-prepayments-form />
+  </div>
+
+  <div class="column" #resultsColumn (scroll)="onResultsColumnScroll(resultsColumn.scrollTop)">
+    @if (results(); as resultsValue) {
+      @if (yearlyGroups()?.length) {
+        <app-results-donut-chart-total [results]="resultsValue" [followsMonthSelection]="false" />
+        <app-results-donut-chart-installment
+          [results]="resultsValue"
+          [followsMonthSelection]="false"
+        />
+        <app-results-trend-chart
+          [yearlyGroups]="yearlyGroups()"
+          [rememberUiState]="true"
+          [loanAmount]="loanAmount"
+          [results]="resultsValue"
+          [overheadCostsEnabled]="overheadCostsEnabled"
+          [prepaymentsEnabled]="prepaymentsEnabled"
+        />
+        @if (resultsValue.hasRateChanges) {
+          <app-results-rate-chart [results]="resultsValue" />
+        }
+        <app-results-schedule [yearlyGroups]="yearlyGroups()" [results]="resultsValue" />
+      } @else {
+        <app-results-errors />
+      }
+    } @else {
+      <app-results-errors />
+    }
+  </div>
+</div>

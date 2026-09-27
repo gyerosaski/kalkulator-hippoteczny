@@ -1,0 +1,83 @@
+:host {
+  display: block;
+}
+
+.rate-chart-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.rate-chart-grid {
+  stroke: var(--grid);
+  stroke-dasharray: 2 4;
+}
+
+.rate-chart-baseline {
+  stroke: var(--line-2);
+}
+
+.rate-chart-axis-label {
+  font-size: var(--text-base);
+  fill: var(--muted);
+  font-feature-settings: 'tnum';
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--font-weight-semibold);
+}
+
+.rate-chart-axis-title {
+  font-size: var(--text-base);
+  fill: var(--ink-2);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-wide);
+}
+
+.rate-chart-line {
+  pointer-events: none;
+}
+
+.rate-chart-line-point {
+  pointer-events: none;
+}
+
+.rate-chart-hover-target {
+  fill: transparent;
+  cursor: pointer;
+}
+
+.rate-chart-hover-target:hover {
+  fill: color-mix(in oklch, var(--accent) 18%, transparent);
+}
+
+.rate-chart-tooltip-bg {
+  fill: var(--surface);
+  stroke: var(--line-2);
+  stroke-width: 1;
+  filter: drop-shadow(0 4px 12px oklch(40% 0.02 250 / 0.18));
+}
+
+.rate-chart-tooltip-header {
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-semibold);
+  fill: var(--ink);
+}
+
+.rate-chart-tooltip-row-label {
+  font-size: var(--text-base);
+  fill: var(--ink-2);
+}
+
+.rate-chart-tooltip-row-value {
+  font-size: var(--text-base);
+  fill: var(--ink);
+  font-family: var(--font-mono);
+  font-feature-settings: 'tnum';
+  font-variant-numeric: tabular-nums;
+}
+
+.rate-chart-empty {
+  padding: var(--space-8);
+  text-align: center;
+  color: var(--muted);
+  font-size: var(--text-base);
+}

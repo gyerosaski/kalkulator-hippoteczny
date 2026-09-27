@@ -1,0 +1,38 @@
+@let row = selectedRow();
+<ui-card [bare]="embedded()">
+  <div class="card-head">
+    <div>
+      <h3>
+        Struktura płatności
+        @if (row) {
+          <span class="card-head-suffix"> do {{ row.date | formatMonth }}</span>
+        }
+      </h3>
+      <div class="muted small">
+        @if (row) {
+          narastająco od początku do wybranego miesiąca
+        } @else {
+          w pełnym okresie kredytowania
+        }
+      </div>
+    </div>
+  </div>
+  <div class="donut-row">
+    <ui-donut
+      [data]="totalSlices()"
+      [centerLabel]="centerContent().label"
+      [centerValue]="centerContent().value"
+      [activeLabel]="activeLabel()"
+      (sliceHover)="activeLabel.set($event)"
+    />
+    <ui-legend
+      [slices]="totalSlices()"
+      [legendId]="LegendId.DONUT_TOTAL"
+      totalLabel="Suma wszystkich płatności"
+      [footerLabel]="rrsoFooterLabel()"
+      [footerValueText]="rrsoFooterValue()"
+      [activeLabel]="activeLabel()"
+      (sliceHover)="activeLabel.set($event)"
+    />
+  </div>
+</ui-card>

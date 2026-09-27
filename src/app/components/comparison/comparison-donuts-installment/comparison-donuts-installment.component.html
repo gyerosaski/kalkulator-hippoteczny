@@ -1,0 +1,56 @@
+<ui-section [title]="sectionTitle()">
+  <div class="donut-pair-legend" role="list" aria-label="Legenda segmentów">
+    @for (segment of segmentLegend; track segment.label) {
+      <span class="donut-pair-legend-item" role="listitem">
+        <ui-color-code-marker [variant]="segment.variant" />
+        {{ segment.label }}
+      </span>
+    }
+  </div>
+
+  <div class="donut-pair">
+    <figure class="donut-pair-chart">
+      <ui-donut
+        [data]="donutA().slices"
+        [centerLabel]="donutA().centerLabel"
+        [centerValue]="donutA().centerValue"
+      />
+      <figcaption class="donut-pair-caption">
+        <icon-slot-a [size]="IconSize.SMALL" />
+        <span class="donut-pair-caption-name">{{ sideA().offer.name }}</span>
+        <span class="donut-pair-caption-total mono">{{ donutA().installmentText }}</span>
+        <span class="donut-pair-caption-meta mono">{{ donutA().rateText }}</span>
+        @if (donutA().isGracePeriod) {
+          <span class="donut-pair-caption-meta">(okres karencji)</span>
+        }
+      </figcaption>
+    </figure>
+
+    <div class="donut-pair-deltas donut-pair-deltas--single" aria-label="Różnica raty (B − A)">
+      <div class="donut-pair-deltas-head">Δ raty (B − A)</div>
+      <div
+        class="donut-pair-delta-value donut-pair-delta-value--big mono"
+        [class]="installmentDelta().deltaClass"
+      >
+        {{ installmentDelta().text }}
+      </div>
+    </div>
+
+    <figure class="donut-pair-chart">
+      <ui-donut
+        [data]="donutB().slices"
+        [centerLabel]="donutB().centerLabel"
+        [centerValue]="donutB().centerValue"
+      />
+      <figcaption class="donut-pair-caption">
+        <icon-slot-b [size]="IconSize.SMALL" />
+        <span class="donut-pair-caption-name">{{ sideB().offer.name }}</span>
+        <span class="donut-pair-caption-total mono">{{ donutB().installmentText }}</span>
+        <span class="donut-pair-caption-meta mono">{{ donutB().rateText }}</span>
+        @if (donutB().isGracePeriod) {
+          <span class="donut-pair-caption-meta">(okres karencji)</span>
+        }
+      </figcaption>
+    </figure>
+  </div>
+</ui-section>

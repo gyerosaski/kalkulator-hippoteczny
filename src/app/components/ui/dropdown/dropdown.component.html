@@ -1,0 +1,27 @@
+<div class="dropdown-wrap">
+  <button
+    type="button"
+    class="btn btn--ghost btn--mini"
+    [class.is-on]="open()"
+    [disabled]="disabled()"
+    (click)="toggle($event)"
+  >
+    <ng-content />
+    <icon-chevron-down class="dropdown-caret" />
+  </button>
+
+  @if (open()) {
+    <div
+      class="dropdown-menu"
+      [class.dropdown-menu--up]="placement() === DropdownPlacement.UP"
+      role="menu"
+      (click)="$event.stopPropagation()"
+    >
+      @for (option of options(); track option; let i = $index) {
+        <button type="button" class="menu-item" role="menuitem" (click)="choose(option)">
+          {{ labelFor(i, option) }}
+        </button>
+      }
+    </div>
+  }
+</div>

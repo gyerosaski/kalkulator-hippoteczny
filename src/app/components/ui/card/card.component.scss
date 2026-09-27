@@ -1,0 +1,57 @@
+:host {
+  display: block;
+}
+
+:host + :host {
+  margin-top: var(--space-2);
+}
+
+.card {
+  --card-tag-bg: color-mix(in oklch, var(--accent) 25%, var(--surface-2));
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--r);
+  padding: var(--ui-card-padding, var(--card-pad));
+  display: flex;
+  flex-direction: column;
+  gap: var(--card-gap);
+  background: var(--surface);
+}
+
+.card--bare {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+/* czas trwania zsynchronizowany z .title-pulse (styles.scss) i NAVIGATION_HIGHLIGHT_DURATION_MS */
+@keyframes card-pulse {
+  50% {
+    border-color: var(--accent-deep);
+    box-shadow: var(--focus-ring);
+  }
+}
+
+.card--pulse {
+  animation: card-pulse 0.9s ease-in-out 2;
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.card-tag {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+  background: var(--surface-2);
+  color: var(--muted);
+  padding: 3px var(--space-2);
+  border-radius: var(--r-xs);
+  letter-spacing: var(--tracking-wide);
+  white-space: nowrap;
+}
+
+.card-remove {
+  margin-left: auto;
+}

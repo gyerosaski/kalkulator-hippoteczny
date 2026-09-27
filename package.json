@@ -1,0 +1,51 @@
+{
+  "name": "kalkulator-hippoteczny",
+  "version": "0.1.0",
+  "license": "AGPL-3.0-only",
+  "scripts": {
+    "ng": "ng",
+    "prestart": "node scripts/seed-calculations.mjs",
+    "start": "ng serve",
+    "seed:calc": "node scripts/seed-calculations.mjs",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test",
+    "prettier": "prettier --write .",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "scan:unused-css": "node scripts/scan-unused-css.mjs",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build"
+  },
+  "type": "module",
+  "private": true,
+  "packageManager": "npm@11.8.0",
+  "dependencies": {
+    "@angular/common": "^21.2.0",
+    "@angular/compiler": "^21.2.0",
+    "@angular/core": "^21.2.0",
+    "@angular/forms": "^21.2.0",
+    "@angular/platform-browser": "^21.2.0",
+    "@angular/router": "^21.2.0",
+    "@tauri-apps/api": "^2.11.0",
+    "@tauri-apps/plugin-dialog": "^2.7.1",
+    "@tauri-apps/plugin-fs": "^2.5.1",
+    "@tauri-apps/plugin-store": "^2.4.3",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^21.2.8",
+    "@angular/cli": "^21.2.8",
+    "@angular/compiler-cli": "^21.2.0",
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "@tauri-apps/cli": "^2.11.2",
+    "eslint": "^10.3.0",
+    "jsdom": "^28.0.0",
+    "prettier": "^3.8.1",
+    "typescript": "~5.9.2",
+    "typescript-eslint": "^8.59.3",
+    "vitest": "^4.0.8"
+  }
+}

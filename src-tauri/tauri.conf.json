@@ -1,0 +1,48 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "Kalkulator Hippoteczny",
+  "version": "0.1.0",
+  "identifier": "kalkulator-hippoteczny",
+  "build": {
+    "frontendDist": "../dist/kalkulator-hippoteczny/browser",
+    "devUrl": "http://localhost:4200",
+    "beforeDevCommand": "npm start",
+    "beforeBuildCommand": "npm run build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Kalkulator Hippoteczny",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 480,
+        "minHeight": 320,
+        "resizable": true,
+        "maximized": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self' 'wasm-unsafe-eval'; connect-src 'self' ipc: http://ipc.localhost"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["msi", "nsis"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "wix": {
+        "language": ["pl-PL"]
+      },
+      "nsis": {
+        "languages": ["Polish"]
+      }
+    }
+  }
+}
