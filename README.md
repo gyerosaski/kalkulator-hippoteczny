@@ -21,14 +21,18 @@ Wydania powstają automatycznie po wypchnięciu tagu w formacie `vX.Y.Z`. Workfl
 (`.github/workflows/release.yml`) buduje aplikację na runnerze Windows i tworzy szkic Release z
 załączonymi instalatorami MSI/NSIS. Procedura nowego wydania:
 
-1. Podbić wersję zgodnie w `package.json`, `src-tauri/tauri.conf.json` i `src-tauri/Cargo.toml`.
-2. Utworzyć i wypchnąć tag:
+1. Na czystym `main` uruchomić skrypt wydania z nowym numerem wersji:
 
    ```bash
-   git tag v0.1.0
-   git push origin v0.1.0
+   npm run release -- 0.2.0
    ```
 
+   Skrypt (`scripts/release.mjs`) podbija wersję w `package.json`, `package-lock.json`,
+   `src-tauri/tauri.conf.json`, `src-tauri/Cargo.toml`, `src-tauri/Cargo.lock` oraz w nagłówku
+   aplikacji (topbar), tworzy commit „Wydanie v0.2.0” i tag `v0.2.0`, po czym wypycha oba na
+   `origin`. Opcja `--dry-run` wykonuje tylko walidację i podgląd zmian.
+
+2. Postęp buildu można śledzić przez `gh run watch`.
 3. Po zakończeniu buildu opublikować szkic wydania w zakładce Releases.
 
 ## Tryby uruchamiania w developmencie
