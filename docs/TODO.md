@@ -24,7 +24,7 @@
 - [x] dodaj regułę, żeby preferować użycie enumów zamiast literal types, zamień wszystkie wykorzystania, enumy powinny mieć klucze i wartości w języku angielskim, THIS_WAY, konwersja enumów na docelowe labelki w języku polskim powinna odbywać się w pipe'ach
 - [x] stwórz scheme opisującą strukturę zapisanych ustawień w formacie .json, waliduj .json na podstawie schemy przy wczytywaniu ustawień - jeśli walidacje nie przebiegnie pomyślnie, prezentuj natywny dialog wzorem SaveCalculationDialogComponent z informacją o tym, które pola są niepoprawne/mają niepoprawne wartości
 - [x] jeśli transzę są włączone ich suma musi być równa kwocie kredytu
-- [x] umożliwić zaznaczenie wiersza miesięcznego w tabeli harmonogram spłat, po zaznaczeniu, donut "Struktura wszystkich płatności" powinien przekształcić się w "Struktura wszystkich płatności do <zaznaczony miesiąc i rok>", a donut "Struktura pierwszej raty" w "Struktura raty w miesiącu <zaznaczony miesiąc i rok>", ponowne kliknięcie w dany wiersz odznacza go i przywraca domyślne zachowanie donutów
+- [x] umożliwić zaznaczenie wiersza miesięcznego w tabeli harmonogram spłat, po zaznaczeniu, donut "Struktura wszystkich płatności" powinien przekształcić się w "Struktura wszystkich płatności do <zaznaczony miesiąc i rok>", a donut "Struktura pierwszej raty" w "Struktura płatności w <zaznaczony miesiąc i rok>", ponowne kliknięcie w dany wiersz odznacza go i przywraca domyślne zachowanie donutów
 - [x] Podsekcja "Prowizja za udzielenie" powinna się składać z inputa numerycznego i przełącznika "%/zł" tak, aby użytkownik mógł wprowadzić wartość procentową lub konkretną kwotę
 - [x] Opłata za wycenę powinna być ujęta w harmonogramie spłat w kolumnie koszty w pierwszym miesiącu kredytu
 - [x] zmień konfigurację tauri tak, żeby aplikacja domyślnie uruchamiała się w trybie pełnoekranowym
@@ -62,7 +62,7 @@
 - [x] Dla poszczególnych wierszy w widoku "Twoje kalkulacje" w dots-menu akcję "Eksportuj CSV" zastąpić akcją "Eksportuj" z zagnieżdżoną listą formatów eksportu. Na początek powinna znaleźć się tam opcja "JSON" - oprogramować eksport do JSON
 - [x] Przycisk "Eksportuj wszystkie do JSON" na widoku "Twoje kalkulację" zastąpić przyciskiem-dropdownem "Eksportuj wszystkie". Dropdown na początek powinien pokazywać jedną opcję "JSON" podpiętą do obecnie działającego eksportu
 - [x] Przycisk "Importuj" na widoku "Twoje kalkulacje" powinien umożliwiać zarówno import pojedynczej kalkulacji, jak i tablicy kalkulacji w formacie JSON
-- [x] po zaznaczeniu miesiąca w harmonogramie spłat rozwijać wiersz; w rozwinięciu prezentować 2 donuty: struktura płatności do... i struktura raty w miesiącu tak, żeby user nie musiał scrollować po te dane na góre kolumny
+- [x] po zaznaczeniu miesiąca w harmonogramie spłat rozwijać wiersz; w rozwinięciu prezentować 2 donuty: struktura płatności do... i Struktura płatności w tak, żeby user nie musiał scrollować po te dane na góre kolumny
 - [x] dokumentacja funkcjonalna powinna być agnostyczna względem faktycznej implementacji, przejrzeć i dostosować; dodać regułę do Claude.md
 - [x] przejrzeć dialogi w src/app/dialogs i stworzyć generyczne komponenty będące podstawą budowania tych i kolejnych dialogów, wykorzystać content projection
 - [x] w docs/technikalia dodać dokument opisujący design system, dostępne kontrolki ui, zmienne kolorów, palety motywów
@@ -110,5 +110,3 @@
 - selektor "Typ wykresu trendu" prezentuj w prawym górnym rogu sekcji "Harmonogram spłaty"
 - [x] pixel hippo ma być opcjonalny, do wyłączenia na modalu ustawień
 - [x] stan szukajki na widoku "Twoje kalkulacje" nie jest przechowywany przy przechodzeniu pomiędzy widokami
-- typ i kierunek sortowania zapisuj w ustawieniach
-
