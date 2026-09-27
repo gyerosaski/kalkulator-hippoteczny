@@ -1,107 +1,84 @@
 # Kalkulator Hippoteczny
 
-Kalkulator kredytu hipotecznego (Angular 21 + Tauri V2). Aplikacja docelowo działa jako program
-desktopowy (Windows, pakowany do MSI/NSIS), a dane kalkulacji przechowuje lokalnie w pliku JSON.
+Program na komputer z systemem Windows, który pomaga policzyć, ile naprawdę będzie kosztował kredyt
+hipoteczny, i porównać ze sobą oferty różnych banków. Wszystkie dane zostają na Twoim komputerze.
 
-## Pobieranie
+## Co potrafi aplikacja
 
-Wydania w zakładce [**Releases**](https://github.com/gyerosaski/kalkulator-hippoteczny/releases)
-zawierają dwie formy dystrybucji:
+**Podstawowe wyliczenia**
 
-- **Instalatory Windows** — MSI oraz NSIS (`setup.exe`): standardowa instalacja z wpisem w menu Start.
-- **Wersja standalone (portable)** — plik `Kalkulator-Hippoteczny-vX.Y.Z-portable.exe`: uruchamiany
-  bezpośrednio, bez instalacji (wymaga jedynie środowiska WebView2, obecnego w Windows 10/11).
+- Po wpisaniu wartości nieruchomości, kwoty kredytu i okresu spłaty od razu pokazuje wysokość raty,
+  sumę odsetek, całkowity koszt kredytu oraz RRSO (rzeczywistą roczną stopę oprocentowania).
+- Pokazuje wkład własny w postaci wskaźnika LTV (jaka część nieruchomości jest finansowana kredytem).
+- Obsługuje raty równe i malejące oraz okres, w którym spłaca się tylko odsetki (karencja).
 
-Pliki nie są podpisane cyfrowo, więc Windows SmartScreen może pokazać ostrzeżenie — należy wybrać
-„Więcej informacji” → „Uruchom mimo to”.
+**Oprocentowanie**
 
-## Wydania (release)
+- Oprocentowanie zmienne (wskaźnik referencyjny, np. WIBOR/WIRON, plus marża banku) lub stałe.
+- Możliwość zaplanowania kilku okresów o różnym oprocentowaniu, np. stała stopa przez 5 lat, a potem
+  zmienna — i sprawdzenia, jak zmieni się wtedy rata.
 
-Wydania powstają automatycznie po wypchnięciu tagu w formacie `vX.Y.Z`. Workflow GitHub Actions
-(`.github/workflows/release.yml`) buduje aplikację na runnerze Windows i tworzy szkic Release z
-załączonymi instalatorami MSI/NSIS. Procedura nowego wydania:
+**Transze**
 
-1. Na czystym `main` uruchomić skrypt wydania z nowym numerem wersji:
+- Kredyt wypłacany w częściach (np. przy budowie domu) — z datami wypłat i ewentualnymi opłatami
+  za ich uruchomienie.
 
-   ```bash
-   npm run release -- 0.2.0
-   ```
+**Koszty dodatkowe i promocje**
 
-   Skrypt (`scripts/release.mjs`) podbija wersję w `package.json`, `package-lock.json`,
-   `src-tauri/tauri.conf.json`, `src-tauri/Cargo.toml`, `src-tauri/Cargo.lock` oraz w nagłówku
-   aplikacji (topbar), tworzy commit „Wydanie v0.2.0” i tag `v0.2.0`, po czym wypycha oba na
-   `origin`. Opcja `--dry-run` wykonuje tylko walidację i podgląd zmian.
+- Prowizja banku, opłata za wycenę nieruchomości.
+- Ubezpieczenia: pomostowe, nieruchomości, niskiego wkładu, na życie i od utraty pracy.
+- Inne dodatkowe koszty oraz promocyjne obniżki oprocentowania.
+- Dzięki temu widać pełny koszt oferty, a nie tylko samą ratę.
 
-2. Postęp buildu można śledzić przez `gh run watch`.
-3. Po zakończeniu buildu opublikować szkic wydania w zakładce Releases.
+**Nadpłaty**
 
-## Tryby uruchamiania w developmencie
+- Nadpłaty jednorazowe albo regularne (co miesiąc, co kwartał, co rok).
+- Wybór, czy nadpłata ma obniżyć ratę, czy skrócić okres spłaty.
+- Opcja „chcę płacić co miesiąc stałą kwotę” — nadwyżka ponad ratę jest automatycznie traktowana
+  jako nadpłata.
+- Uwzględnienie prowizji banku za wcześniejszą spłatę.
+- Od razu widać, ile pieniędzy pozwalają zaoszczędzić nadpłaty.
 
-Aplikację można rozwijać na dwa sposoby. Różnią się warstwą persystencji.
+**Harmonogram i wykresy**
 
-### Tryb przeglądarkowy (szybki dev / HMR)
+- Harmonogram spłat rok po roku, z możliwością rozwinięcia każdego roku na poszczególne miesiące.
+- Czytelne wykresy: z czego składają się wszystkie płatności, z czego składa się rata, jak w kolejnych
+  latach maleje dług oraz jak zmienia się oprocentowanie.
 
-```bash
-npm start
-```
+**Twoje kalkulacje i porównanie ofert**
 
-Uruchamia dev server Angulara pod `http://localhost:4200/` (automatyczny reload po zmianach).
-Najszybsza ścieżka do pracy nad UI i logiką kalkulacji — **bez** uruchamiania okna desktopowego.
+- Zapisywanie kalkulacji pod własną nazwą, wyszukiwanie, sortowanie, zmiana nazwy, kopiowanie
+  i usuwanie.
+- Eksport kalkulacji do pliku (JSON, a harmonogramu także do CSV otwieranego w Excelu) oraz import
+  z pliku — np. żeby przenieść dane na inny komputer.
+- Porównanie dwóch zapisanych ofert obok siebie: która jest tańsza w sumie, która ma niższą pierwszą
+  ratę, niższe odsetki i niższe koszty dodatkowe, oraz o ile się różnią.
 
-Poza środowiskiem Tauri wtyczki `@tauri-apps/*` nie działają, więc persystencja korzysta z
-**fallbacku na `localStorage`**. To odizolowana kopia robocza — nie modyfikuje realnego pliku store'a
-aplikacji desktopowej. Przy pierwszym starcie lista kalkulacji jest zasilana snapshotem realnych
-danych:
+**Wygoda**
 
-```bash
-npm run seed:calc
-```
+- Podpowiedzi przy błędnie wpisanych danych (np. kwota kredytu większa niż wartość nieruchomości).
+- Ustawienia wyglądu: motyw jasny, ciemny lub „ochra” oraz wielkość odstępów w interfejsie.
+- Hipopotam Hippoteczny, który od czasu do czasu wybiega na pasek u góry okna (można go wyłączyć).
 
-Skrypt kopiuje `%APPDATA%/kalkulator-hippoteczny/calculations.json` do `public/dev-seed/` (asset
-serwowany w dev). Jest też uruchamiany automatycznie jako `prestart` przed `npm start`. Gdy realny
-plik nie istnieje, dev startuje z pustą listą. Szczegóły: `docs/technikalia/persystencja-kalkulacji.md`
-(sekcja „Fallback przeglądarkowy”).
+## Jak zacząć
 
-### Tryb desktop / Tauri (pełne środowisko)
+1. Wejdź w zakładkę [**Releases**](https://github.com/gyerosaski/kalkulator-hippoteczny/releases)
+   i pobierz najnowszą wersję:
+   - **instalator** (plik `.msi` albo `setup.exe`) — program zostanie zainstalowany i pojawi się
+     w menu Start,
+   - **wersję bez instalacji** (plik `…-portable.exe`) — wystarczy ją uruchomić.
+2. Przy pierwszym uruchomieniu Windows może wyświetlić ostrzeżenie SmartScreen (program nie jest
+   podpisany cyfrowo). Wybierz „Więcej informacji” → „Uruchom mimo to”.
 
-```bash
-npm run tauri:dev
-```
+Program działa na Windows 10 i 11.
 
-Uruchamia dev server Angulara wraz z oknem Tauri (desktop, HMR). Persystencja idzie przez realny store
-Tauri — plik `%APPDATA%/kalkulator-hippoteczny/calculations.json`. Ten tryb jest wymagany do
-weryfikacji natywnych okien dialogowych (zapis/otwarcie pliku) i realnego zapisu danych.
+## Gdzie są moje dane
 
-Spakowanie do instalatorów (MSI + NSIS) — artefakty w `src-tauri/target/release/bundle/`:
+Kalkulacje zapisywane są wyłącznie lokalnie, w pliku na Twoim komputerze. Aplikacja niczego nie wysyła
+do internetu. Kopię danych możesz w każdej chwili zrobić, eksportując kalkulacje do pliku.
 
-```bash
-npm run tauri:build
-```
+## Dla programistów
 
-## Pozostałe polecenia
-
-```bash
-npm run build      # produkcyjny build frontendu (dist/)
-npm run watch      # build dev w trybie watch
-npm test           # testy jednostkowe (Vitest)
-npm run prettier   # formatowanie kodu
-npm run lint       # ESLint
-npm run seed:calc  # odświeżenie snapshotu kalkulacji dla trybu przeglądarkowego
-```
-
-Pojedynczy plik testowy:
-
-```bash
-npx vitest run src/app/services/calculator/calculator.service.spec.ts
-```
-
-## Dokumentacja
-
-- `docs/funkcjonalności/` — opis funkcjonalny (reguły biznesowe, walidacje, zachowania UI).
-- `docs/technikalia/` — architektura i decyzje implementacyjne (silnik obliczeniowy, persystencja,
-  Tauri, wykresy, system projektowy).
-
-## Angular CLI
-
-Projekt wygenerowany za pomocą [Angular CLI](https://github.com/angular/angular-cli). Pełny opis
-poleceń: [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli).
+Informacje techniczne — uruchamianie w trybie deweloperskim, polecenia, proces wydawania nowych
+wersji i odnośniki do dokumentacji architektury — znajdziesz w
+[**wiki projektu**](https://github.com/gyerosaski/kalkulator-hippoteczny/wiki).
