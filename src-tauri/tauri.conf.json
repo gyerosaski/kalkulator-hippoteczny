@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Kalkulator Hippoteczny",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "identifier": "kalkulator-hippoteczny",
   "build": {
     "frontendDist": "../dist/kalkulator-hippoteczny/browser",
