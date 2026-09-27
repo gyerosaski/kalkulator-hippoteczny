@@ -16,18 +16,20 @@
 // Uruchomienie:
 //   npm run release -- 0.2.0             # podbicie wersji, commit, tag, push
 //   npm run release -- 0.2.0 --dry-run   # tylko walidacja i podgląd zmian, bez zapisu
+//   npm run release                      # brak/niepoprawna wersja → skrypt zapyta o nią interaktywnie
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
+import { createInterface } from 'node:readline/promises';
 
 const projectRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 
+const versionPattern = /^\d+\.\d+\.\d+$/;
+
 const commandLineArguments = process.argv.slice(2);
 const isDryRun = commandLineArguments.includes('--dry-run');
-const version = commandLineArguments.find((argument) => !argument.startsWith('--'));
-const tagName = `v${version}`;
 
 function fail(message) {
   console.error(`[release] BŁĄD: ${message}`);
@@ -38,10 +40,40 @@ function runGit(gitArguments) {
   return execFileSync('git', gitArguments, { cwd: projectRoot, encoding: 'utf8' }).trim();
 }
 
-// --- Walidacja wejścia -----------------------------------------------------
-if (!version || !/^\d+\.\d+\.\d+$/.test(version)) {
-  fail('Podaj numer wersji w formacie X.Y.Z, np. `npm run release -- 0.2.0`.');
+async function promptForVersion() {
+  if (!process.stdin.isTTY) {
+    fail('Podaj numer wersji w formacie X.Y.Z, np. `npm run release -- 0.2.0`.');
+  }
+
+  const currentVersion = JSON.parse(readFileSync(join(projectRoot, 'package.json'), 'utf8')).version;
+  const readlineInterface = createInterface({ input: process.stdin, output: process.stdout });
+  try {
+    while (true) {
+      const answer = (
+        await readlineInterface.question(
+          `[release] Podaj nową wersję (bieżąca: ${currentVersion}, format X.Y.Z): `,
+        )
+      ).trim();
+      if (versionPattern.test(answer)) {
+        return answer;
+      }
+      console.error(`[release] Niepoprawny format wersji: „${answer}”. Spróbuj ponownie.`);
+    }
+  } finally {
+    readlineInterface.close();
+  }
 }
+
+// --- Walidacja wejścia -----------------------------------------------------
+let version = commandLineArguments.find((argument) => !argument.startsWith('--'));
+if (version !== undefined && !versionPattern.test(version)) {
+  console.error(`[release] Niepoprawny format wersji: „${version}”.`);
+  version = undefined;
+}
+if (version === undefined) {
+  version = await promptForVersion();
+}
+const tagName = `v${version}`;
 
 // --- Walidacja stanu repozytorium ------------------------------------------
 const currentBranch = runGit(['rev-parse', '--abbrev-ref', 'HEAD']);
