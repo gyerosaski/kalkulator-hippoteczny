@@ -1,3 +1,4 @@
+import { MortgageFormRawValue } from './form.model';
 import { InstallmentType, RateType } from './mortgage.model';
 
 export interface SavedCalculationMetadata {
@@ -18,7 +19,7 @@ export interface SavedCalculationRecord {
   createdAt: string;
   updatedAt?: string;
   metadata?: SavedCalculationMetadata;
-  data: unknown;
+  data: MortgageFormRawValue;
 }
 
 export interface SavedCalculation {

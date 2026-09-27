@@ -9,7 +9,7 @@ w `docs/funkcjonalności/twoje-kalkulacje.md`.
 Aplikacja działa jako desktopowa (Tauri V2). Kalkulacje przechowuje `CalculationsStoreService`
 (`src/app/services/calculations-store/calculations-store.service.ts`).
 
-- Plik danych: `calculations.json` w `%APPDATA%/com.gyerosaski.kalkulator-hippoteczny/`.
+- Plik danych: `calculations.json` w `%APPDATA%/kalkulator-hippoteczny/`.
 - Klucz tablicy rekordów w store: `"calculations"` (domyślnie pusta tablica).
 - Instancja Store tworzona jednorazowo przy pierwszym dostępie, opcja `autoSave: true`.
 
@@ -45,12 +45,12 @@ aplikacja działała również w przeglądarce, wprowadzono cienką warstwę wyb
 
 `src/app/services/platform/`:
 
-| Plik                     | Rola                                                                                                                                                    |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `is-tauri.ts`            | `isTauriRuntime()` — strażnik środowiska; sprawdza obecność `window.__TAURI_INTERNALS__` / `window.__TAURI__`                                            |
-| `local-storage-store.ts` | `LocalStorageStore` — implementacja `KeyValueStore` (`src/app/model/platform.model.ts`) oparta o `localStorage`; `storageKeyForStoreFile(fileName)`      |
-| `browser-file-io.ts`     | przeglądarkowe odpowiedniki IO: `downloadTextFile` (Blob + `<a download>`), `pickAndReadTextFile` (`<input type="file">`)                                 |
-| `platform-dialog.ts`     | `confirmDialog(message, options?)` — w Tauri deleguje do `ask`, w przeglądarce do `window.confirm`                                                        |
+| Plik                     | Rola                                                                                                                                                |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `is-tauri.ts`            | `isTauriRuntime()` — strażnik środowiska; sprawdza obecność `window.__TAURI_INTERNALS__` / `window.__TAURI__`                                       |
+| `local-storage-store.ts` | `LocalStorageStore` — implementacja `KeyValueStore` (`src/app/model/platform.model.ts`) oparta o `localStorage`; `storageKeyForStoreFile(fileName)` |
+| `browser-file-io.ts`     | przeglądarkowe odpowiedniki IO: `downloadTextFile` (Blob + `<a download>`), `pickAndReadTextFile` (`<input type="file">`)                           |
+| `platform-dialog.ts`     | `confirmDialog(message, options?)` — w Tauri deleguje do `ask`, w przeglądarce do `window.confirm`                                                  |
 
 `KeyValueStore` to wspólny interfejs (`get`/`set`/`save`/`delete`) odwzorowujący podzbiór API `Store`
 Tauri. Natywny `Store` spełnia go strukturalnie, więc `getStore()` w obu store'ach zwraca
@@ -92,7 +92,7 @@ Ustawienia aplikacji (motyw i gęstość interfejsu) przechowuje `AppSettingsSto
 (`src/app/services/app-settings-store/app-settings-store.service.ts`) — analogiczny wzorzec do
 `CalculationsStoreService`, oparty o ten sam `@tauri-apps/plugin-store` i uprawnienie `store`.
 
-- Plik danych: `settings.json` w `%APPDATA%/com.gyerosaski.kalkulator-hipoteczny/`.
+- Plik danych: `settings.json` w `%APPDATA%/kalkulator-hippoteczny/`.
 - Klucz obiektu ustawień w store: `"settings"` (typ `AppSettings` z `src/app/model/ui.model.ts`).
 - Instancja Store tworzona jednorazowo przy pierwszym dostępie, opcja `autoSave: true`. Bez `defaults`
   na poziomie store — dzięki temu `getRawSettings()` zwraca `undefined`, gdy plik nie zawiera jeszcze
@@ -179,7 +179,7 @@ po wczytaniu oferty jej skalary są nadpisywane wartościami z przeliczenia na �
   Wariant „polski Excel”: separator kolumn `;`, separator dziesiętny `,`, końce linii CRLF, prefiks BOM
   UTF-8; pola zawierające `;`, `"` lub znak nowej linii są cytowane (podwojony cudzysłów). CSV dotyczy
   wyłącznie eksportu pojedynczej kalkulacji (harmonogram spłaty), który przelicza harmonogram na nowo
-  (`normalizeCalculationData` → `buildMortgageInputs` → `CalculatorService.compute`) i zapisuje wiersze
+  (`SavedCalculationRecord.data` → `buildMortgageInputs` → `CalculatorService.compute`) i zapisuje wiersze
   `ScheduleRow`. Eksport wszystkich kalkulacji odbywa się wyłącznie do JSON.
 - Import — `extractImportableRecords` obsługuje trzy kształty: pojedynczy rekord, gołą tablicę,
   obiekt-opakowanie. Każdy element musi mieć `name` (string), `createdAt` i `data`; elementy
@@ -215,12 +215,18 @@ Każda zmiana (`form.valueChanges`) aktualizuje bieżący snapshot przez `toSign
 
 Snapshot resetowany do `null` przy `setDefaults()` i odświeżany po zapisaniu pod tą samą nazwą.
 
-## Migracja okresów oprocentowania
+## Kontrakt danych i brak kompatybilności wstecz
 
-Starsze zapisane kalkulacje trzymały okresy w `basicData.ratePeriods` (płaska tablica). Przy wczytywaniu
-(`FormService.loadFromFile`), w porównywarce ofert i na liście kalkulacji migawka jest normalizowana
-przez `normalizeCalculationData()` (`src/app/helpers/saved-calculation-data.helper.ts`) — stare pliki
-wczytują się bez zmian. Ta sama normalizacja mapuje też legacy nazwę pola wskaźnika referencyjnego
-`wibor` → `referenceIndex` w każdym okresie oprocentowania, więc kalkulacje zapisane przed zmianą
-nazwy wczytują się z zachowaniem wartości. Schemat zapisu (`src/app/schemas/calculation.schema.json`)
-opisuje wyłącznie bieżący kształt (`ratePeriods.items` w korzeniu, `referenceIndex`, `minItems: 1`).
+`SavedCalculationRecord.data` jest typowane jako `MortgageFormRawValue` (migawka `form.getRawValue()`)
+i konsumowane bezpośrednio — przy wczytywaniu (`FormService.loadFromFile`), w porównywarce ofert,
+na liście kalkulacji i przy eksporcie CSV. Aplikacja nie zawiera żadnej warstwy normalizacji ani aliasów
+kluczy: obsługiwany jest wyłącznie bieżący kształt opisany w `src/app/schemas/calculation.schema.json`
+(`ratePeriods.items` w korzeniu, `referenceIndex`, `prepaymentRules.items`, `targetInstallment`,
+`earlyRepaymentCommission`). Wszystkie klucze kontraktu są angielskie.
+
+Zmiana kształtu kontraktu wymaga jednorazowej, trwałej migracji istniejących plików
+(`calculations.json`, eksporty) poza kodem aplikacji — pliki w starym kształcie nie są wczytywane
+poprawnie. Ostatnia taka migracja (wrzesień 2026) przemianowała w `prepayments.fields`
+klucze `rataDocelowaRegula` → `targetInstallment` i `prowizjaWczesniejszaSplata` →
+`earlyRepaymentCommission`; jednocześnie usunięto dawną normalizację (`wibor` → `referenceIndex`,
+`basicData.ratePeriods` → `ratePeriods.items`, płaska tablica `prepaymentRules`).

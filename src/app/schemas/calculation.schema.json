@@ -291,7 +291,7 @@
         "enabled": { "type": "boolean" },
         "fields": {
           "type": "object",
-          "required": ["prepaymentRules", "rataDocelowaRegula", "prowizjaWczesniejszaSplata"],
+          "required": ["prepaymentRules", "targetInstallment", "earlyRepaymentCommission"],
           "properties": {
             "prepaymentRules": {
               "type": "object",
@@ -303,8 +303,8 @@
                 }
               }
             },
-            "rataDocelowaRegula": { "$ref": "#/$defs/TargetInstallmentRule" },
-            "prowizjaWczesniejszaSplata": { "$ref": "#/$defs/EarlyRepaymentCommission" }
+            "targetInstallment": { "$ref": "#/$defs/TargetInstallmentRule" },
+            "earlyRepaymentCommission": { "$ref": "#/$defs/EarlyRepaymentCommission" }
           }
         }
       }

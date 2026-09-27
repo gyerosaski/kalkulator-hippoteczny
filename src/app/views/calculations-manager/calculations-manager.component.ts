@@ -34,7 +34,6 @@ import { CalculationsStoreService } from '../../services/calculations-store/calc
 import { CalculatorStateService } from '../../services/calculator-state/calculator-state.service';
 import { CalculatorService } from '../../services/calculator/calculator.service';
 import { buildMortgageInputs } from '../../helpers/mortgage-inputs.helper';
-import { normalizeCalculationData } from '../../helpers/saved-calculation-data.helper';
 import { buildScheduleCsv } from '../../helpers/csv-export.helper';
 import { SaveCalculationDialogComponent } from '../../dialogs/save-calculation/save-calculation-dialog.component';
 import { RenameCalculationDialogComponent } from '../../dialogs/rename-calculation/rename-calculation-dialog.component';
@@ -54,7 +53,7 @@ import { IconArrowUpComponent } from '../../components/icons/icon-arrow-up/icon-
 import { CalculationsFooterComponent } from '../../components/calculations/calculations-footer/calculations-footer.component';
 import { RelativeTimePipe } from '../../pipes/relative-time/relative-time.pipe';
 import { ToastService } from '../../services/toast/toast.service';
-import {IconSaveComponent} from '../../components/icons/icon-save/icon-save.component';
+import { IconSaveComponent } from '../../components/icons/icon-save/icon-save.component';
 import { ViewHeaderComponent } from '../../components/ui/view-header/view-header.component';
 
 @Component({
@@ -270,12 +269,7 @@ export class CalculationsManagerComponent implements OnInit {
       return;
     }
 
-    const formValue = normalizeCalculationData(record.data);
-    if (!formValue) {
-      this.toastService.show('Nie udało się przeliczyć harmonogramu', ToastVariant.ERROR);
-      return;
-    }
-    const results = this.calculatorService.compute(buildMortgageInputs(formValue));
+    const results = this.calculatorService.compute(buildMortgageInputs(record.data));
 
     const savedPath =
       selection.format === ExportFormat.CSV

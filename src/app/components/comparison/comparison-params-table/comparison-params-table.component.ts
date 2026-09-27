@@ -619,7 +619,7 @@ export class ComparisonParamsTableComponent {
 
   private targetInstallmentText(prepayments: PrepaymentsRawValue | null): string | null {
     if (!prepayments) return null;
-    const rule = prepayments.rataDocelowaRegula;
+    const rule = prepayments.targetInstallment;
     const targetRate = Number(rule.targetRate) || 0;
     if (targetRate <= 0) return NO_VALUE_TEXT;
     return `${formatWholeAmount(targetRate)} zł · ${this.prepaymentEffectLabel.transform(rule.effect)} · ${this.formatMonth.transform(rule.from)} → ${this.formatMonth.transform(rule.to)}`;
@@ -627,7 +627,7 @@ export class ComparisonParamsTableComponent {
 
   private earlyRepaymentCommissionText(prepayments: PrepaymentsRawValue | null): string | null {
     if (!prepayments) return null;
-    const commission = prepayments.prowizjaWczesniejszaSplata;
+    const commission = prepayments.earlyRepaymentCommission;
     const commissionRate = Number(commission.ratePct) || 0;
     if (commissionRate <= 0) return NO_VALUE_TEXT;
     return `${formatPercent(commissionRate)}% do ${this.formatMonth.transform(commission.validUntil)}`;

@@ -8,39 +8,32 @@ import {
   SavedCalculationRecord,
 } from '../../model';
 import { CalculationsStoreService } from '../calculations-store/calculations-store.service';
-import { normalizeCalculationData } from '../../helpers/saved-calculation-data.helper';
 import { buildUniqueCalculationName } from '../../helpers/saved-calculation-import.helper';
 
 export function toSavedCalculation(record: SavedCalculationRecord): SavedCalculation {
-  const rawData = (normalizeCalculationData(record.data) ?? {}) as unknown as Record<
-    string,
-    unknown
-  >;
-  const basicData = (rawData?.['basicData'] ?? {}) as Record<string, unknown>;
-  const ratePeriodsSection = (rawData?.['ratePeriods'] ?? {}) as Record<string, unknown>;
-  const ratePeriods = (ratePeriodsSection?.['items'] as unknown[]) ?? [];
-  const firstRate = (ratePeriods[0] ?? {}) as Record<string, unknown>;
+  const basicData = record.data.basicData;
+  const firstRatePeriod = record.data.ratePeriods.items[0];
 
-  const loanPeriodMonths = Number(basicData?.['loanPeriod'] ?? 0);
-  const rateType = (firstRate?.['rateType'] as RateType) ?? RateType.VARIABLE;
-  const referenceIndex = Number(firstRate?.['referenceIndex'] ?? 0);
-  const margin = Number(firstRate?.['margin'] ?? 0);
+  const loanPeriodMonths = Number(basicData.loanPeriod ?? 0);
+  const rateType = firstRatePeriod?.rateType ?? RateType.VARIABLE;
+  const referenceIndex = Number(firstRatePeriod?.referenceIndex ?? 0);
+  const margin = Number(firstRatePeriod?.margin ?? 0);
   const nominalRate =
     rateType === RateType.VARIABLE
       ? referenceIndex + margin
-      : Number(firstRate?.['nominalRate'] ?? 0);
+      : Number(firstRatePeriod?.nominalRate ?? 0);
 
   const createdAt = new Date(record.createdAt);
   const updatedAt = record.updatedAt ? new Date(record.updatedAt) : createdAt;
 
   return {
     name: record.name,
-    loanAmount: Number(basicData?.['loanAmount'] ?? 0),
-    propertyValue: Number(basicData?.['propertyValue'] ?? 0),
+    loanAmount: Number(basicData.loanAmount ?? 0),
+    propertyValue: Number(basicData.propertyValue ?? 0),
     loanPeriodMonths,
     loanPeriodYears: Math.floor(loanPeriodMonths / 12),
     loanPeriodExtraMonths: loanPeriodMonths % 12,
-    installmentType: (basicData?.['installmentType'] as InstallmentType) ?? InstallmentType.EQUAL,
+    installmentType: basicData.installmentType ?? InstallmentType.EQUAL,
     rateType,
     referenceIndex,
     margin,

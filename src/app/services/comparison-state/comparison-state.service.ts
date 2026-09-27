@@ -14,7 +14,6 @@ import {
   SavedCalculationRecord,
 } from '../../model';
 import { buildMortgageInputs } from '../../helpers/mortgage-inputs.helper';
-import { normalizeCalculationData } from '../../helpers/saved-calculation-data.helper';
 import { groupByYear } from '../../helpers/year-group.helper';
 import { CalculatorService } from '../calculator/calculator.service';
 import { FormService } from '../form/form';
@@ -180,7 +179,7 @@ export class ComparisonStateService {
     const computation = this.computeSavedRecord(record);
     return {
       offer: computation ? this.withComputedTotals(baseOffer, computation) : baseOffer,
-      formValue: this.extractFormValue(record),
+      formValue: record.data,
       computation,
     };
   }
@@ -190,9 +189,8 @@ export class ComparisonStateService {
     const cached = this.savedComputationCache.get(cacheKey);
     if (cached !== undefined) return cached;
 
-    const formValue = this.extractFormValue(record);
     const hasErrors = record.metadata?.hasErrors ?? false;
-    const computation = hasErrors || !formValue ? null : this.computeFromFormValue(formValue);
+    const computation = hasErrors ? null : this.computeFromFormValue(record.data);
     this.savedComputationCache.set(cacheKey, computation);
     return computation;
   }
@@ -205,10 +203,6 @@ export class ComparisonStateService {
     } catch {
       return null;
     }
-  }
-
-  private extractFormValue(record: SavedCalculationRecord): MortgageFormRawValue | null {
-    return normalizeCalculationData(record.data);
   }
 
   /** Nadpisuje skalarne wyniki oferty wartościami z pełnego przeliczenia (jedno źródło prawdy dla sekcji 3.4–3.8). */

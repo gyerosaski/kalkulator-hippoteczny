@@ -91,27 +91,27 @@ export class PrepaymentsFormComponent {
   }
 
   get targetRateControl(): FormControl<number> {
-    return this.prepaymentsGroup.controls.rataDocelowaRegula.controls.targetRate;
+    return this.prepaymentsGroup.controls.targetInstallment.controls.targetRate;
   }
 
   get targetInstallmentFromControl(): FormControl<string> {
-    return this.prepaymentsGroup.controls.rataDocelowaRegula.controls.from;
+    return this.prepaymentsGroup.controls.targetInstallment.controls.from;
   }
 
   get targetInstallmentToControl(): FormControl<string> {
-    return this.prepaymentsGroup.controls.rataDocelowaRegula.controls.to;
+    return this.prepaymentsGroup.controls.targetInstallment.controls.to;
   }
 
   get targetInstallmentEffectControl(): FormControl<PrepaymentEffect> {
-    return this.prepaymentsGroup.controls.rataDocelowaRegula.controls.effect;
+    return this.prepaymentsGroup.controls.targetInstallment.controls.effect;
   }
 
   get earlyRepaymentRatePctControl(): FormControl<number> {
-    return this.prepaymentsGroup.controls.prowizjaWczesniejszaSplata.controls.ratePct;
+    return this.prepaymentsGroup.controls.earlyRepaymentCommission.controls.ratePct;
   }
 
   get earlyRepaymentValidUntilControl(): FormControl<string> {
-    return this.prepaymentsGroup.controls.prowizjaWczesniejszaSplata.controls.validUntil;
+    return this.prepaymentsGroup.controls.earlyRepaymentCommission.controls.validUntil;
   }
 
   addPrepaymentRule() {

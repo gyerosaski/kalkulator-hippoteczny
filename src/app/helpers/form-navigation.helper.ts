@@ -33,7 +33,7 @@ const OVERHEAD_COST_NAVIGATION_TARGETS: Record<OverheadCostKind, FormSectionNavi
   },
   [OverheadCostKind.EARLY_REPAYMENT_COMMISSION]: {
     sectionId: FormSectionId.PREPAYMENTS,
-    subsectionKey: 'prowizjaWczesniejszaSplata',
+    subsectionKey: 'earlyRepaymentCommission',
   },
   [OverheadCostKind.TRANCHE_DISBURSEMENT_FEE]: {
     sectionId: FormSectionId.TRANCHES,

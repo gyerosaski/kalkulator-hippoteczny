@@ -128,8 +128,8 @@ export interface OverheadCostsFormGroup {
 
 export interface PrepaymentsFieldsFormGroup {
   prepaymentRules: FormGroup<PrepaymentRulesSectionFormGroup>;
-  rataDocelowaRegula: FormGroup<TargetInstallmentFormGroup>;
-  prowizjaWczesniejszaSplata: FormGroup<EarlyRepaymentCommissionFormGroup>;
+  targetInstallment: FormGroup<TargetInstallmentFormGroup>;
+  earlyRepaymentCommission: FormGroup<EarlyRepaymentCommissionFormGroup>;
 }
 
 export interface TranchesFieldsFormGroup {

@@ -41,32 +41,6 @@ describe('FormService', () => {
       expect(service.ratePeriodsArray.at(0).getRawValue().nominalRate).toBe(7.5);
       expect(service.ratePeriodsArray.at(1).getRawValue().referenceIndex).toBe(5.5);
     });
-
-    it('wczytuje okresy oprocentowania ze starego kształtu (`basicData.ratePeriods`)', () => {
-      const current = service.form.getRawValue();
-      const legacySnapshot = {
-        ...current,
-        ratePeriods: undefined,
-        basicData: {
-          ...current.basicData,
-          ratePeriods: [
-            {
-              from: '2026-06',
-              rateType: RateType.FIXED,
-              nominalRate: 6.8,
-              referenceIndex: 0,
-              margin: 0,
-            },
-          ],
-        },
-      };
-
-      service.loadFromFile(legacySnapshot);
-
-      expect(service.ratePeriodsArray.length).toBe(1);
-      expect(service.ratePeriodsArray.at(0).getRawValue().rateType).toBe(RateType.FIXED);
-      expect(service.ratePeriodsArray.at(0).getRawValue().nominalRate).toBe(6.8);
-    });
   });
 
   describe('loadFromFile — reguły nadpłat', () => {
@@ -101,29 +75,6 @@ describe('FormService', () => {
         amount: 500,
         effect: PrepaymentEffect.LOWER_INSTALLMENT,
       });
-    });
-
-    it('wczytuje reguły nadpłat z historycznego kształtu z płaską tablicą', () => {
-      const data = service.form.getRawValue() as Record<string, unknown> & {
-        prepayments: { fields: { prepaymentRules: unknown } };
-      };
-      data.prepayments.fields.prepaymentRules = [
-        {
-          frequency: PrepaymentFrequency.YEARLY,
-          from: '2027-01',
-          to: '2030-01',
-          amount: 7_500,
-          effect: PrepaymentEffect.SHORTEN_PERIOD,
-        },
-      ];
-
-      service.loadFromFile(data);
-
-      expect(service.prepaymentRulesArray.length).toBe(1);
-      expect(service.prepaymentRulesArray.at(0).getRawValue().amount).toBe(7_500);
-      expect(service.prepaymentRulesArray.at(0).getRawValue().frequency).toBe(
-        PrepaymentFrequency.YEARLY,
-      );
     });
   });
 

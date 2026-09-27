@@ -45,7 +45,7 @@ describe('UiStateService', () => {
     });
 
     it('powinien zamykać podsekcję wartością null', () => {
-      service.setOpenSubsection(FormSectionId.PREPAYMENTS, 'prowizjaWczesniejszaSplata');
+      service.setOpenSubsection(FormSectionId.PREPAYMENTS, 'earlyRepaymentCommission');
       service.setOpenSubsection(FormSectionId.PREPAYMENTS, null);
       expect(service.openSubsection(FormSectionId.PREPAYMENTS)()).toBeNull();
     });

@@ -162,7 +162,7 @@ export class ResultsErrorsComponent {
         section: FormErrorSection.PREPAYMENTS,
         message: 'W regule docelowej raty data „do" nie może być wcześniejsza niż data „od".',
         fieldLabel: 'Zakres dat docelowej raty',
-        fieldId: 'rataDocelowaRegula',
+        fieldId: 'targetInstallment',
       });
     }
     if (fe?.['targetInstallmentInvalid']) {

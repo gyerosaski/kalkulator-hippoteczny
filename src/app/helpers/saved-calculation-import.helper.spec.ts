@@ -1,4 +1,4 @@
-import { SavedCalculationRecord } from '../model';
+import { MortgageFormRawValue, SavedCalculationRecord } from '../model';
 import {
   buildUniqueCalculationName,
   extractImportableRecords,
@@ -9,7 +9,7 @@ function buildRecord(name: string): SavedCalculationRecord {
   return {
     name,
     createdAt: '2026-01-01T00:00:00.000Z',
-    data: { basicData: { loanAmount: 100000 } },
+    data: { basicData: { loanAmount: 100000 } } as MortgageFormRawValue,
   };
 }
 

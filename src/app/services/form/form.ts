@@ -26,6 +26,7 @@ import {
   AdditionalCostFormGroup,
   BasicDataFormGroup,
   MortgageFormGroup,
+  MortgageFormRawValue,
   OverheadCostsFormGroup,
   PrepaymentRuleFormGroup,
   PrepaymentsFieldsFormGroup,
@@ -36,7 +37,6 @@ import {
 } from '../../model';
 import { addMonthsStr, nextMonthStr, ym } from '../../helpers/date.helper';
 import { MonthPickerReferenceDates } from '../../helpers/month-picker-shortcuts.helper';
-import { normalizeCalculationData } from '../../helpers/saved-calculation-data.helper';
 import { UiStateService } from '../ui-state/ui-state.service';
 
 function endOfLoanDate(): string {
@@ -61,9 +61,9 @@ function crossFieldValidator(control: AbstractControl) {
   const prepaymentRules = prepaymentsEnabled
     ? (prepaymentsSection.controls.fields.controls.prepaymentRules.value?.items ?? [])
     : [];
-  const rataDocelowaRegula = prepaymentsEnabled
+  const targetInstallment = prepaymentsEnabled
     ? ((
-        prepaymentsSection.controls.fields.controls.rataDocelowaRegula as FormGroup
+        prepaymentsSection.controls.fields.controls.targetInstallment as FormGroup
       )?.getRawValue() ?? ({} as any))
     : ({} as any);
 
@@ -116,14 +116,14 @@ function crossFieldValidator(control: AbstractControl) {
     }
 
     if (
-      rataDocelowaRegula.from &&
-      rataDocelowaRegula.to &&
-      rataDocelowaRegula.to < rataDocelowaRegula.from
+      targetInstallment.from &&
+      targetInstallment.to &&
+      targetInstallment.to < targetInstallment.from
     ) {
       errors['targetInstallmentDateRangeInvalid'] = true;
     }
 
-    if ((Number(rataDocelowaRegula.targetRate) || 0) < 0) {
+    if ((Number(targetInstallment.targetRate) || 0) < 0) {
       errors['targetInstallmentInvalid'] = true;
     }
   }
@@ -316,7 +316,7 @@ export class FormService {
             prepaymentRules: this.fb.group({
               items: this.fb.array([this.createPrepaymentRuleGroup()]),
             }),
-            rataDocelowaRegula: this.fb.group({
+            targetInstallment: this.fb.group({
               targetRate: this.fb.control(0, [Validators.min(0)]),
               from: this.fb.control(nextMonthStr(), [Validators.required]),
               to: this.fb.control(addMonthsStr(nextMonthStr(), 12), [Validators.required]),
@@ -324,7 +324,7 @@ export class FormService {
                 Validators.required,
               ]),
             }),
-            prowizjaWczesniejszaSplata: this.fb.group({
+            earlyRepaymentCommission: this.fb.group({
               ratePct: this.fb.control(0, [Validators.min(0), Validators.max(100)]),
               validUntil: this.fb.control(addMonthsStr(nextMonthStr(), 36), [Validators.required]),
             }),
@@ -559,7 +559,7 @@ export class FormService {
     this.uiStateService.resetCalculationViewState();
   }
 
-  loadFromSavedCalculation(data: unknown, name: string): void {
+  loadFromSavedCalculation(data: MortgageFormRawValue, name: string): void {
     this.loadFromFile(data);
     this.loadedCalculationName.set(name);
     this.loadedCalculationSnapshot.set(JSON.stringify(this.form.getRawValue()));
@@ -570,43 +570,35 @@ export class FormService {
     this.loadedCalculationSnapshot.set(JSON.stringify(this.form.getRawValue()));
   }
 
-  loadFromFile(savedData: any): void {
-    const data: any = normalizeCalculationData(savedData?.data ?? savedData);
-    if (!data) return;
-
-    const ratePeriods: any[] = data?.ratePeriods?.items ?? [];
+  loadFromFile(data: MortgageFormRawValue): void {
+    const ratePeriods = data.ratePeriods.items;
     this.ratePeriodsArray.clear();
     (ratePeriods.length > 0
-      ? ratePeriods.map((rp: any) => this.createRatePeriodGroup(rp))
+      ? ratePeriods.map((ratePeriod) => this.createRatePeriodGroup(ratePeriod))
       : [this.createRatePeriodGroup()]
     ).forEach((group) => this.ratePeriodsArray.push(group));
 
-    const tranches: any[] = data?.tranches?.fields?.tranches ?? [];
+    const tranches = data.tranches.fields.tranches;
     this.tranchesArray.clear();
     (tranches.length > 0
-      ? tranches.map((t: any, i: number) => this.createTrancheGroup(i === 0, t))
+      ? tranches.map((tranche, index) => this.createTrancheGroup(index === 0, tranche))
       : [this.createTrancheGroup(true)]
     ).forEach((group) => this.tranchesArray.push(group));
 
-    const prepaymentRulesSection = data?.prepayments?.fields?.prepaymentRules;
-    const prepaymentRules: any[] = Array.isArray(prepaymentRulesSection?.items)
-      ? prepaymentRulesSection.items
-      : Array.isArray(prepaymentRulesSection)
-        ? prepaymentRulesSection
-        : [];
+    const prepaymentRules = data.prepayments.fields.prepaymentRules.items;
     this.prepaymentRulesArray.clear();
     (prepaymentRules.length > 0
-      ? prepaymentRules.map((r: any) => this.createPrepaymentRuleGroup(r))
+      ? prepaymentRules.map((rule) => this.createPrepaymentRuleGroup(rule))
       : [this.createPrepaymentRuleGroup()]
     ).forEach((group) => this.prepaymentRulesArray.push(group));
 
-    const additionalCosts: any[] = data?.overheadCosts?.fields?.additionalCosts?.items ?? [];
+    const additionalCosts = data.overheadCosts.fields.additionalCosts.items;
     this.additionalCostsArray.clear();
     (additionalCosts.length > 0
-      ? additionalCosts.map((ac: any) => {
-          const g = this.createAdditionalCostGroup();
-          g.patchValue(ac);
-          return g;
+      ? additionalCosts.map((additionalCost) => {
+          const group = this.createAdditionalCostGroup();
+          group.patchValue(additionalCost);
+          return group;
         })
       : [this.createAdditionalCostGroup()]
     ).forEach((group) => this.additionalCostsArray.push(group));

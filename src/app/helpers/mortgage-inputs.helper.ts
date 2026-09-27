@@ -39,10 +39,10 @@ export function buildMortgageInputs(formValue: MortgageFormRawValue): MortgageIn
     : [];
 
   const targetInstallment = prepaymentsEnabled
-    ? formValue.prepayments.fields.rataDocelowaRegula
+    ? formValue.prepayments.fields.targetInstallment
     : undefined;
   const earlyRepaymentCommission = prepaymentsEnabled
-    ? formValue.prepayments.fields.prowizjaWczesniejszaSplata
+    ? formValue.prepayments.fields.earlyRepaymentCommission
     : undefined;
 
   const tranches: Tranche[] = tranchesEnabled
