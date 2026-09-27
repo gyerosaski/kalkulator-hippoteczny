@@ -33,6 +33,9 @@
           <ui-color-code-marker [variant]="ColorCodeMarkerVariant.COST" />Koszty
         </div>
       }
+      @if (isTotalPaymentColumnEnabled) {
+        <div>Łącznie</div>
+      }
       <div>Pozostało</div>
     </div>
     @for (year of yearlyGroups()!; track year.year) {
@@ -64,6 +67,9 @@
         }
         @if (isOverheadCostsEnabled) {
           <div class="mono c-cost">{{ year.sumInsuranceCost | formatAmount }}</div>
+        }
+        @if (isTotalPaymentColumnEnabled) {
+          <div class="mono">{{ year.sumTotalPayment | formatAmount }}</div>
         }
         <div class="mono">
           <b>{{ year.lastRemaining | formatAmount }}</b>
@@ -103,6 +109,9 @@
               }
               @if (isOverheadCostsEnabled) {
                 <div class="mono c-cost">{{ row.insuranceCost | formatAmount }}</div>
+              }
+              @if (isTotalPaymentColumnEnabled) {
+                <div class="mono">{{ row.totalPayment | formatAmount }}</div>
               }
               <div class="mono">{{ row.remaining | formatAmount }}</div>
             </button>

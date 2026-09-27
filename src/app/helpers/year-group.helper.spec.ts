@@ -15,6 +15,7 @@ function buildScheduleRow(overrides: Partial<ScheduleRow>): ScheduleRow {
     insuranceCost: 0,
     costBreakdown: [],
     interestBreakdown: [],
+    totalPayment: 0,
     ...overrides,
   };
 }
@@ -77,6 +78,17 @@ describe('groupByYear', () => {
     expect(groups[0].firstInterestRate).toBe(7.5);
     expect(groups[0].lastInterestRate).toBe(6.9);
     expect(groups[0].sumInterest).toBe(0.33);
+  });
+
+  it('powinien zsumować łączne płatności w roku', () => {
+    const rows: ScheduleRow[] = [
+      buildScheduleRow({ index: 1, date: '2026-01', totalPayment: 1250.5 }),
+      buildScheduleRow({ index: 2, date: '2026-02', totalPayment: 6100.25 }),
+    ];
+
+    const groups = groupByYear(rows);
+
+    expect(groups[0].sumTotalPayment).toBe(7350.75);
   });
 
   it('powinien posortować grupy rosnąco po roku', () => {

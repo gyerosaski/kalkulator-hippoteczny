@@ -42,6 +42,7 @@ export function buildScheduleCsv(schedule: ScheduleRow[]): string {
     'Prowizja',
     'Pozostało',
     'Koszty dodatkowe',
+    'Łącznie',
   ];
 
   const rows = schedule.map((row) => [
@@ -55,6 +56,7 @@ export function buildScheduleCsv(schedule: ScheduleRow[]): string {
     formatCsvNumber(row.commission),
     formatCsvNumber(row.remaining),
     formatCsvNumber(row.insuranceCost),
+    formatCsvNumber(row.totalPayment),
   ]);
 
   return toCsv(headers, rows);

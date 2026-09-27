@@ -7,8 +7,11 @@
   - Odsetki,
   - **Oprocentowanie** _(kolumna warunkowa — patrz § 1.1)_,
   - Nadpłaty,
-  - Pozostało do spłaty,
-  - Koszty okołokredytowe.
+  - Koszty okołokredytowe,
+  - **Łącznie** _(kolumna warunkowa — patrz § 1.2)_,
+  - Pozostało do spłaty.
+- „Rata” to zawsze rata umowna: `Kapitał + Odsetki`. Nadpłaty, prowizje i koszty okołokredytowe nie są
+  do niej wliczane — łączny miesięczny wypływ pokazuje kolumna „Łącznie”.
 - Widok roczny: wiersze „+ RRRR …” z możliwością rozwinięcia do miesięcy.
 - Sposób wyliczania (miesiąc m, stopa nominalna r, miesięczna `i_m = r/12`):
   - Tryb „równe” (dla okresu o stałym r):
@@ -58,3 +61,22 @@ Prezentacja:
   oprocentowanie niższe niż w poprzednim miesiącu ma kolor zielony, wyższe — czerwony.
 
 Kolejność kolumny: bezpośrednio po „Odsetki” (przy oglądaniu kwoty odsetek widoczna jest stopa, z której powstała).
+
+## 1.2. Kolumna „Łącznie” (warunkowa)
+
+Kolumna pokazuje łączną kwotę płaconą w danym miesiącu (warstwa miesięczna) lub roku (warstwa roczna — suma
+miesięcy):
+
+```
+Łącznie_m = Rata_m + Nadpłata_m + Prowizja za wcześniejszą spłatę_m + Koszty okołokredytowe_m
+```
+
+- Pojawia się, gdy włączona jest sekcja „Nadpłaty” lub „Koszty okołokredytowe i promocje” (w przeciwnym razie
+  byłaby równa kolumnie „Rata”).
+- Obejmuje prowizję za wcześniejszą spłatę, która nie ma w tabeli osobnej kolumny.
+- W pierwszym miesiącu obejmuje także koszty jednorazowe (prowizję za udzielenie kredytu i wycenę
+  nieruchomości), ujęte w kolumnie „Koszty okołokredytowe” tego miesiąca.
+- Przy aktywnej nadpłacie „docelowa rata” wartość (bez kosztów i prowizji) równa się kwocie docelowej.
+- Suma kolumny za cały okres jest równa „Sumie wszystkich płatności”.
+- Kolorystyka: neutralna (bez znacznika koloru), kolejność: bezpośrednio przed „Pozostało do spłaty”.
+- Eksport harmonogramu do `CSV` zawiera odpowiadającą kolumnę „Łącznie”.

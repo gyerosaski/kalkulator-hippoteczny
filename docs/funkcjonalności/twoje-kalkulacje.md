@@ -171,7 +171,7 @@ Otwierane akcją `Eksportuj` w menu ⋯ pojedynczej kalkulacji.
 Zawartość zapisywanych plików:
 
 - `Parametry kalkulacji` + `JSON` — rekord kalkulacji (parametry wraz z metadanymi).
-- `Harmonogram spłaty` + `CSV` — pełny harmonogram spłaty (miesiąc, rata, kapitał, odsetki, oprocentowanie, nadpłata, prowizja, pozostało do spłaty, koszty dodatkowe).
+- `Harmonogram spłaty` + `CSV` — pełny harmonogram spłaty (miesiąc, rata, kapitał, odsetki, oprocentowanie, nadpłata, prowizja, pozostało do spłaty, koszty dodatkowe, łącznie).
 - `Harmonogram spłaty` + `JSON` — pełny harmonogram spłaty jako tablica wierszy (te same dane co wariant `CSV`).
 
 #### 7.4 Priorytet klawisza Escape

@@ -90,6 +90,10 @@ export class ResultsScheduleComponent {
     return this.formService.isOverheadCostsEnabled;
   }
 
+  get isTotalPaymentColumnEnabled(): boolean {
+    return this.isPrepaymentEnabled || this.isOverheadCostsEnabled;
+  }
+
   readonly isRateColumnEnabled = computed(() => this.results().hasRateChanges);
 
   get gridColumns(): string {
@@ -97,6 +101,7 @@ export class ResultsScheduleComponent {
     if (this.isRateColumnEnabled()) cols.push('1fr');
     if (this.isPrepaymentEnabled) cols.push('1fr');
     if (this.isOverheadCostsEnabled) cols.push('1fr');
+    if (this.isTotalPaymentColumnEnabled) cols.push('1fr');
     cols.push('1.2fr');
     return cols.join(' ');
   }

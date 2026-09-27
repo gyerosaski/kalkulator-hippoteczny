@@ -72,6 +72,41 @@ describe('MortgageCalcService (nadpłaty)', () => {
     expect(result.totals.overheadCosts).toBeGreaterThan(0);
   });
 
+  it('łączna płatność wiersza obejmuje ratę, nadpłatę, prowizję i koszty', () => {
+    const inputs: MortgageInputs = {
+      ...baseInputs(),
+      overheadCosts: {
+        commissionCalcMethod: CommissionCalcMethod.FIXED_AMOUNT,
+        commissionValue: 3000,
+        appraisalFee: 500,
+        additionalCosts: [
+          {
+            name: 'Opłata administracyjna',
+            calcMethod: LifeInsuranceCalcMethod.FIXED_AMOUNT,
+            frequency: InsuranceFrequency.MONTHLY,
+            value: 25,
+            from: '2026-02',
+            to: '2026-12',
+          },
+        ],
+      },
+    };
+    const result = service.compute(inputs);
+
+    for (const row of result.schedule) {
+      expect(row.totalPayment).toBeCloseTo(
+        row.rate + row.prepayment + row.commission + row.insuranceCost,
+        6,
+      );
+    }
+    expect(result.schedule[0].totalPayment).toBeGreaterThanOrEqual(result.schedule[0].rate + 3500);
+    const eventRow = result.schedule.find((row) => row.date === '2026-03')!;
+    expect(eventRow.totalPayment).toBeCloseTo(eventRow.rate + 10_000 + 200 + 25, 6);
+    // rata umowna i suma wszystkich płatności nie zawierają podwójnie nadpłat i kosztów
+    const sumOfTotalPayments = result.schedule.reduce((sum, row) => sum + row.totalPayment, 0);
+    expect(result.totals.totalAllPayments).toBeCloseTo(sumOfTotalPayments, 2);
+  });
+
   it('nie powinien naliczać prowizji po dacie granicznej', () => {
     const inputs = baseInputs();
     inputs.prepaymentRules = [

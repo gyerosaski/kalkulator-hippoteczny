@@ -664,6 +664,7 @@ export class CalculatorService {
         insuranceCost,
         costBreakdown,
         interestBreakdown,
+        totalPayment: totalRateForMonth + prepayment + commission + insuranceCost,
       });
 
       if (!inGrace && remainingAmortMonths > 0) {
@@ -797,8 +798,7 @@ export class CalculatorService {
     }
     for (const row of schedule) {
       const upfrontCostsInRow = row.index === 1 ? upfrontCosts : 0;
-      const paymentAmount =
-        row.rate + row.prepayment + row.commission + row.insuranceCost - upfrontCostsInRow;
+      const paymentAmount = row.totalPayment - upfrontCostsInRow;
       if (paymentAmount > 0) {
         borrowerPayments.push({ monthOffset: row.index, amount: paymentAmount });
       }

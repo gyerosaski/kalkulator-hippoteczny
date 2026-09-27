@@ -17,6 +17,7 @@ function sampleScheduleRow(overrides: Partial<ScheduleRow> = {}): ScheduleRow {
     insuranceCost: 25,
     costBreakdown: [],
     interestBreakdown: [],
+    totalPayment: 2442.5,
     ...overrides,
   };
 }
@@ -54,9 +55,11 @@ describe('buildScheduleCsv', () => {
     const lines = csv.replace(UTF8_BOM, '').split('\r\n');
     expect(lines).toHaveLength(3);
     expect(lines[0]).toBe(
-      'Nr;Miesiąc;Rata;Kapitał;Odsetki;Oprocentowanie (%);Nadpłata;Prowizja;Pozostało;Koszty dodatkowe',
+      'Nr;Miesiąc;Rata;Kapitał;Odsetki;Oprocentowanie (%);Nadpłata;Prowizja;Pozostało;Koszty dodatkowe;Łącznie',
     );
-    expect(lines[1]).toBe('1;2026-02;2417,50;542,50;1875,00;7,50;0,00;0,00;299457,50;25,00');
+    expect(lines[1]).toBe(
+      '1;2026-02;2417,50;542,50;1875,00;7,50;0,00;0,00;299457,50;25,00;2442,50',
+    );
     expect(lines[2].startsWith('2;2026-03;')).toBe(true);
   });
 });

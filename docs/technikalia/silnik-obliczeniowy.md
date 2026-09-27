@@ -72,7 +72,7 @@ kwota kredytu / saldo / kwota). Skrajne zakresy neutralizuje `isMonthInRange` (z
 ```
 
 - Wypłaty (`Dₖ`): saldo początkowe w `t=0` + każda transza w miesiącu uruchomienia.
-- Płatności (`Pⱼ`): dla każdego wiersza `rate + prepayment + commission + insuranceCost`, z korektami:
+- Płatności (`Pⱼ`): dla każdego wiersza `totalPayment` (`rate + prepayment + commission + insuranceCost`), z korektami:
   koszty wstępne (prowizja za udzielenie + wycena) przenoszone do `t=0`; prowizje za uruchomienie transz
   dodawane w miesiącach uruchomienia (pierwsza transza pomijana — patrz `project_first_tranche_no_fee`).
 - Solver: bisekcja od −99,99% do górnej granicy podwajanej do zmiany znaku (cap 10 000%, ~200 iteracji,
@@ -86,13 +86,17 @@ MortgageResults  → { schedule: ScheduleRow[], totals, firstInstallment, effect
 YearGroup        → agregat ScheduleRow[] dla jednego roku kalendarzowego
 ```
 
-`ScheduleRow.rate = baseRate + prepayment + commission`. Totale w `compute()`:
+`ScheduleRow.rate = baseRate` (kapitał + odsetki — rata umowna, bez nadpłat, prowizji i kosztów).
+`ScheduleRow.totalPayment = rate + prepayment + commission + insuranceCost` — łączna płatność miesiąca
+(kolumna „Łącznie” w tabeli i CSV, podstawa przepływów RRSO); agregat roczny: `YearGroup.sumTotalPayment`.
+Semantyki `rate` celowo nie rozszerzamy — zależą od niej `totalRate`, `totalAllPayments`, RRSO,
+`firstInstallment` (KPI, zapisane kalkulacje, porównanie ofert) i donuty. Totale w `compute()`:
 
 ```
 totalRate          = Σ schedule[i].rate
-overheadCosts      = loanCommission + appraisalFee + Σ insuranceCost + Σ commission + Σ trancheDisbursementFees
+overheadCosts      = Σ insuranceCost (w tym loanCommission + appraisalFee z wiersza 1) + Σ commission + Σ trancheDisbursementFees
 prepayments        = Σ schedule[i].prepayment
-totalAllPayments   = Σ rate + overheadCosts
+totalAllPayments   = totalRate + overheadCosts + prepayments
 bankReturnRatioPct = totalAllPayments / loanAmount × 100
 ```
 

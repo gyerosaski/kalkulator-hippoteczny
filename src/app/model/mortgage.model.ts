@@ -203,6 +203,7 @@ export interface ScheduleRow {
   insuranceCost: number; // Koszt ubezpieczeń i dodatkowych kosztów w danym miesiącu
   costBreakdown: OverheadCostItem[]; // Rozbicie insuranceCost na składowe (suma value == insuranceCost)
   interestBreakdown: InterestComponentItem[]; // Rozbicie interest na składowe (suma value == interest)
+  totalPayment: number; // Łączna płatność w miesiącu = rate + prepayment + commission + insuranceCost
 }
 
 /** Pojedynczy przepływ pieniężny na osi czasu kredytu (do wyliczenia RRSO). */
@@ -245,6 +246,7 @@ export interface YearGroup {
   sumPrepayment: number;
   sumCommission: number;
   sumInsuranceCost: number;
+  sumTotalPayment: number;
   lastRemaining: number;
   firstInterestRate: number; // interestRate pierwszego wiersza roku
   lastInterestRate: number; // interestRate ostatniego wiersza roku

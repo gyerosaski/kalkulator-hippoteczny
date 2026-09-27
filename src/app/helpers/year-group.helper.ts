@@ -13,6 +13,7 @@ export function groupByYear(rows: ScheduleRow[]): YearGroup[] {
       sumPrepayment: 0,
       sumCommission: 0,
       sumInsuranceCost: 0,
+      sumTotalPayment: 0,
       lastRemaining: 0,
       firstInterestRate: 0,
       lastInterestRate: 0,
@@ -24,6 +25,7 @@ export function groupByYear(rows: ScheduleRow[]): YearGroup[] {
     group.sumPrepayment += row.prepayment;
     group.sumCommission += row.commission;
     group.sumInsuranceCost += row.insuranceCost;
+    group.sumTotalPayment += row.totalPayment;
     group.lastRemaining = row.remaining;
     if (group.rows.length === 0) {
       group.firstInterestRate = row.interestRate;
@@ -42,5 +44,6 @@ export function groupByYear(rows: ScheduleRow[]): YearGroup[] {
       sumPrepayment: Math.round(group.sumPrepayment * 100) / 100,
       sumInsuranceCost: Math.round(group.sumInsuranceCost * 100) / 100,
       sumCommission: Math.round(group.sumCommission * 100) / 100,
+      sumTotalPayment: Math.round(group.sumTotalPayment * 100) / 100,
     }));
 }
