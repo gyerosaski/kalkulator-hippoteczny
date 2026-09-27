@@ -109,7 +109,7 @@ export class CalculationsManagerComponent implements OnInit {
   protected readonly sortOptionValues = this.sortOptions.map((option) => option.value);
   protected readonly sortOptionLabels = this.sortOptions.map((option) => option.label);
 
-  readonly searchQuery = signal('');
+  protected readonly searchQuery = this.uiStateService.savedCalculationsSearchQuery;
   readonly activeSortControl = new FormControl<SavedCalculationSortOption>(
     this.uiStateService.savedCalculationsSortOption(),
     { nonNullable: true },
@@ -219,8 +219,12 @@ export class CalculationsManagerComponent implements OnInit {
     }
   }
 
+  protected setSearchQuery(searchQuery: string): void {
+    this.uiStateService.setSavedCalculationsSearchQuery(searchQuery);
+  }
+
   clearFilters(): void {
-    this.searchQuery.set('');
+    this.setSearchQuery('');
   }
 
   async navigateToNewCalculation(): Promise<void> {

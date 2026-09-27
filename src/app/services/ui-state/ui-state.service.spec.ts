@@ -206,5 +206,27 @@ describe('UiStateService', () => {
       expect(service.savedCalculationsSortOption()).toBe(SavedCalculationSortOption.NAME);
       expect(service.savedCalculationsSortDirection()).toBe(directionBeforeReset);
     });
+
+    it('nie powinien czyścić frazy wyszukiwania listy kalkulacji', () => {
+      service.setSavedCalculationsSearchQuery('mieszkanie');
+
+      service.resetCalculationViewState();
+
+      expect(service.savedCalculationsSearchQuery()).toBe('mieszkanie');
+    });
+  });
+
+  describe('wyszukiwanie na liście kalkulacji', () => {
+    it('powinien domyślnie zwracać pustą frazę wyszukiwania', () => {
+      expect(service.savedCalculationsSearchQuery()).toBe('');
+    });
+
+    it('powinien zapamiętywać i czyścić frazę wyszukiwania', () => {
+      service.setSavedCalculationsSearchQuery('dom');
+      expect(service.savedCalculationsSearchQuery()).toBe('dom');
+
+      service.setSavedCalculationsSearchQuery('');
+      expect(service.savedCalculationsSearchQuery()).toBe('');
+    });
   });
 });

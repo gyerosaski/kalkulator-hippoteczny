@@ -70,6 +70,10 @@ export class UiStateService {
 
   readonly savedCalculationsSortDirection = this._savedCalculationsSortDirection.asReadonly();
 
+  private readonly _savedCalculationsSearchQuery = signal('');
+  /** Fraza wyszukiwania na liście kalkulacji; przeżywa przełączanie widoków w ramach sesji. */
+  readonly savedCalculationsSearchQuery = this._savedCalculationsSearchQuery.asReadonly();
+
   sectionOpen(sectionId: FormSectionId, defaultOpen = true): Signal<boolean> {
     if (!this.sectionDefaultOpen.has(sectionId)) {
       this.sectionDefaultOpen.set(sectionId, defaultOpen);
@@ -206,6 +210,10 @@ export class UiStateService {
     );
   }
 
+  setSavedCalculationsSearchQuery(searchQuery: string): void {
+    this._savedCalculationsSearchQuery.set(searchQuery);
+  }
+
   toggleScheduleYear(year: number): void {
     this._expandedScheduleYear.update((current) => (current === year ? null : year));
   }
@@ -253,7 +261,7 @@ export class UiStateService {
   /**
    * Czyści stan UI związany z konkretną kalkulacją: zaznaczenia w wynikach, rozwinięte podsekcje,
    * pozycje legendy oraz stan rozwinięcia sekcji wraca do wartości domyślnych. Preferencje sortowania
-   * listy kalkulacji pozostają nietknięte. Mutuje istniejące sygnały (nie podmienia ich), aby nie
+   * i fraza wyszukiwania listy kalkulacji pozostają nietknięte. Mutuje istniejące sygnały (nie podmienia ich), aby nie
    * zerwać powiązań trzymanych w komponentach.
    */
   resetCalculationViewState(): void {

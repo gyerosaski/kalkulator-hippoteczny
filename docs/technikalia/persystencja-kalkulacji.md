@@ -197,7 +197,8 @@ Widok „Twoje kalkulacje” to standalone component z `ChangeDetectionStrategy.
 - Kryteria sortowania i ich domyślne kierunki (`DEFAULT_SORT_DIRECTIONS`): `UPDATED` (malejąco, `updatedAt`),
   `CREATED` (malejąco, `createdAt`), `NAME` (rosnąco, locale `pl`), `LOAN_AMOUNT` (malejąco, `loanAmount`),
   `FIRST_INSTALLMENT` (rosnąco, `firstInstallment`). Kryterium i kierunek (`SortDirection`) trzyma
-  `UiStateService` (przeżywają przełączanie widoków w sesji).
+  `UiStateService` (przeżywają przełączanie widoków w sesji); tam też żyje fraza wyszukiwania
+  (`savedCalculationsSearchQuery`), więc nie ginie przy zniszczeniu komponentu widoku.
 - Helpery: `relativeTime(d): string` (czas względny), `exactDate(d): string` (`DD.MM.RRRR HH:mm`),
   `ltvOf(c)`, `periodOf(c)`.
 - Obsługa klawiatury i menu: `@HostListener('document:keydown.escape')` (priorytet: rename → delete → menu ⋯),

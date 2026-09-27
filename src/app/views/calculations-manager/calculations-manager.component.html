@@ -30,10 +30,10 @@
         type="text"
         placeholder="Szukaj po nazwie…"
         [value]="searchQuery()"
-        (input)="searchQuery.set($any($event.target).value)"
+        (input)="setSearchQuery($any($event.target).value)"
       />
       @if (searchQuery()) {
-        <button class="search-clear" (click)="searchQuery.set('')" aria-label="Wyczyść">×</button>
+        <button class="search-clear" (click)="setSearchQuery('')" aria-label="Wyczyść">×</button>
       }
     </div>
 

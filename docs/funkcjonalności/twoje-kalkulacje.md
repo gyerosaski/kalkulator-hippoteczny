@@ -49,7 +49,8 @@ techniczne warstwy persystencji — `docs/technikalia/persystencja-kalkulacji.md
 | wysokość raty          | rosnąco               |
 
 Zmiana kryterium sortowania resetuje kierunek do domyślnego dla tego kryterium; przycisk obok odwraca
-kierunek. Kryterium i kierunek przeżywają przełączanie widoków w ramach sesji.
+kierunek. Kryterium, kierunek oraz wpisana fraza wyszukiwania przeżywają przełączanie widoków w ramach
+sesji.
 
 ---
 

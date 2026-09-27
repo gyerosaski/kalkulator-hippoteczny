@@ -20,10 +20,10 @@ npm run tauri:dev   # Uruchom Angular dev server + okno Tauri (desktop, HMR)
 npm run tauri:build # Zbuduj frontend i spakuj MSI/NSIS (src-tauri/target/release/bundle/)
 ```
 
-To run a single test file:
+To run a single test file (always through the Angular test builder — plain `npx vitest run <file>` bypasses the Angular config and fails with `describe is not defined`):
 
 ```bash
-npx vitest run src/app/services/calculator/calculator.service.spec.ts
+npx ng test --watch=false --include src/app/services/calculator/calculator.service.spec.ts
 ```
 
 ## Architecture
