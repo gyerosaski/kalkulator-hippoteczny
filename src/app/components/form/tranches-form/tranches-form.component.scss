@@ -7,10 +7,12 @@
     flex: 1;
   }
 
-  /* 5px = (38px wysokości inputa − 28px badge'a) / 2 — centruje względem pasa kontrolek */
+  /* Centruje badge i przycisk względem pasa kontrolek. Pod kontrolką subgrid pola
+     zostawia połowę row-gapu rodzica (pusty wiersz podpowiedzi), a pozostała różnica
+     to połowa nadwyżki wysokości kontrolki nad wysokością badge'a. */
   > .tranche-num,
   > ui-btn-remove {
-    margin-bottom: 5px;
+    margin-bottom: calc(var(--row-gap) / 2 + (var(--control-height) - var(--space-7)) / 2);
   }
 }
 
