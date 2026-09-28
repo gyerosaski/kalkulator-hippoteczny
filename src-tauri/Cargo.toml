@@ -1,6 +1,6 @@
 [package]
 name = "kalkulator-hippoteczny"
-version = "0.2.2"
+version = "0.2.3"
 description = "Kalkulator Hippoteczny — aplikacja desktopowa"
 authors = ["gyerosaski"]
 license = "AGPL-3.0-only"
