@@ -110,3 +110,82 @@
 - selektor "Typ wykresu trendu" prezentuj w prawym górnym rogu sekcji "Harmonogram spłaty"
 - [x] pixel hippo ma być opcjonalny, do wyłączenia na modalu ustawień
 - [x] stan szukajki na widoku "Twoje kalkulacje" nie jest przechowywany przy przechodzeniu pomiędzy widokami
+
+## Audyt 2026-09-28 — Etap 0: Siatka bezpieczeństwa
+
+- lint: skrypt `"lint": "eslint src/**/*.ts"` w `package.json` na Ubuntu (CI) jest rozwijany przez `sh` i sprawdza tylko 3 pliki — zmienić na `eslint .`; w `eslint.config.js` zastąpić `tseslint.configs.base` (brak reguł) przez `recommendedTypeChecked`, dodać angular-eslint (reguły TS i szablonów, w tym `template/accessibility`) i naprawić zgłoszone problemy
+- usunąć `as any` z `crossFieldValidator` (`src/app/services/form/form.ts`) — otypować `getRawValue()` sekcji nadpłat
+- testy referencyjne `CalculatorService` z wartościami bezwzględnymi (obecne testy porównują tylko wyniki względne): annuitet 300 000 zł / 8% / 240 mies. → rata 2 509,32 zł, raty malejące, stopa zmienna (VARIABLE), karencja, nadpłaty QUARTERLY i YEARLY
+- testy regresyjne błędów silnika z Etapu 1: w każdym scenariuszu suma kapitału = kwota kredytu, a "Pozostało" w ostatnim wierszu = 0
+- dodać `@vitest/coverage-v8` i raportowanie pokrycia w CI; brak testów komponentów, pipe'ów oraz `CalculationsStoreService`, `SavedCalculationsStateService`, `ComparisonStateService`, `AppSettingsStoreService`
+- CI: dodać `cargo check`/`cargo clippy` dla `src-tauri` (dziś błąd w Rust wychodzi dopiero przy wydaniu); `release.yml` ma uruchamiać lint, testy i build przed bundlowaniem; przypiąć `tauri-action` do konkretnej wersji
+
+## Audyt 2026-09-28 — Etap 1: Błędy krytyczne (poprawność obliczeń i utrata danych)
+
+- BŁĄD: przy ratach równych z ubezpieczeniem niskiego wkładu lub pomostowym kredyt nie jest spłacany do zera — `equalRate` liczony ze stopy bazowej (`iCurrent`), a odsetki ze stopy efektywnej (`iMonth`), pętla kończy się na umownym okresie z saldem > 0 (zaniżone odsetki, koszt całkowity i RRSO); przy promocji odwrotnie — kredyt kończy się przed terminem. Poprawka: rata liczona ze stopy efektywnej i przeliczana przy każdej jej zmianie (nie tylko przy zmianie okresu oprocentowania), ostatnia rata domyka saldo (`capital = saldo`); zaktualizować `harmonogram-splaty.md`, `koszty-okolokredytowe-i-promocje.md`, `silnik-obliczeniowy.md`
+- walidacja: początek spłat kapitału musi przypadać przed końcem kredytu — dziś karencja ≥ okres kredytowania daje harmonogram bez spłaty kapitału i bez żadnego komunikatu
+- BŁĄD: nowa transza dostaje domyślnie datę uruchomienia kredytu (`FormService.createTrancheGroup`), silnik ją pomija (pętla zaczyna od miesiąca po uruchomieniu), a RRSO ją uwzględnia — walidacja: data transzy 2+ późniejsza niż data uruchomienia i nie późniejsza niż koniec kredytu; domyślna data = miesiąc po ostatniej transzy
+- walidacja okresów oprocentowania: unikalne daty "od", nie wcześniejsze niż data uruchomienia i wcześniejsze niż koniec kredytu; nowy okres domyślnie miesiąc po ostatnim (dziś dostaje datę pierwszego okresu i po cichu go nadpisuje)
+- walidacja dat nadpłat, docelowej raty i kosztów okołokredytowych (muszą mieścić się w okresie kredytu) oraz warunku "do" ≥ "od" w kosztach i promocji (dziś niewalidowane); uzupełnić `walidacje.md` i `ResultsErrorsComponent`
+- BŁĄD utraty danych: zmiana nazwy kalkulacji na już istniejącą nadpisuje tamten rekord (`saveCalculation` robi upsert po `name`, rename = zapis + usunięcie); ponowne duplikowanie nadpisuje istniejącą "— kopia". Poprawka: stabilne `id` (`crypto.randomUUID()`) w `SavedCalculationRecord`, upsert po `id`, rename jednym zapisem (`updateCalculation(id, patch)`), blokada zajętej nazwy w `RenameCalculationDialogComponent`, duplikowanie przez istniejące `buildUniqueCalculationName`
+- serializacja zapisów w `CalculationsStoreService` (kolejka operacji read-modify-write)
+- kopia zapasowa kalkulacji: plugin-store przy uszkodzonym `calculations.json` startuje z pustą listą, a kolejny zapis nadpisuje plik — przed każdym zapisem kopia do `calculations.backup.json`; przy pustym store i niepustej kopii baner z opcją przywrócenia
+- eksport do pliku nie ma obsługi błędów — przy nieudanym zapisie pokazać toast błędu
+- `scripts/seed-calculations.mjs` kopiuje prawdziwe kalkulacje z `%APPDATA%` do `public/dev-seed`, który trafia do każdego buildu (także lokalnego `tauri:build`) — wykluczyć `dev-seed/**` z assetów konfiguracji production w `angular.json`
+
+## Audyt 2026-09-28 — Etap 2: Silnik zgodny z harmonogramami bankowymi
+
+- refaktoryzacja `CalculatorService.compute()` (~436 linii) bez zmiany wyników: resolver stopy (okres + składniki efektywne), generyczny kalkulator kosztu cyklicznego zamiast 3 skopiowanych bloków w `calcInsuranceCostForMonth`, kalkulator nadpłat, builder wiersza; nowe typy w `src/app/model`
+- dzień spłaty raty (1–28) i dzień uruchomienia kredytu w "Danych podstawowych" oraz konwencja naliczania odsetek (enum `ACTUAL_365` domyślnie, `ACTUAL_360`, `THIRTY_360` = obecny model r/12): odsetki = saldo × r × dni między terminami płatności / baza, pierwsza rata proporcjonalna do liczby dni od uruchomienia, rata annuitetowa nadal ze wzoru r/12
+- zaokrąglenia do grosza (half-up) rat, odsetek, składek i prowizji w każdym wierszu, kapitał = rata − odsetki, ostatnia rata koryguje resztę — dziś brak zaokrągleń i suma wierszy ≠ wyświetlana suma; usunąć z `CLAUDE.md` wzmiankę o `round2()`
+- RRSO w wariancie ustawowym (harmonogram umowny bez nadpłat i docelowej raty) oraz osobna pozycja "Efektywny koszt Twojego scenariusza" uwzględniająca nadpłaty — dziś RRSO uwzględnia nadpłaty użytkownika
+- prowizja za wcześniejszą spłatę przy stopie zmiennej: tylko w pierwszych 36 miesiącach i nie więcej niż odsetki za 12 miesięcy od nadpłaconej kwoty (ustawa o kredycie hipotecznym); ostrzeżenie, gdy "Bank pobiera prowizję do" wykracza poza 36 miesięcy
+- testy referencyjne dla ACT/365 policzone ręcznie w arkuszu (tolerancja 0,01 zł na wiersz); wyniki dla `THIRTY_360` bez zmian
+
+## Audyt 2026-09-28 — Etap 3: Persystencja pod publiczne wydania
+
+- `schemaVersion` w zapisanej kalkulacji i eksporcie oraz łańcuch migracji vN→vN+1 (`src/app/helpers/saved-calculation-migrations.helper.ts`) uruchamiany przy odczycie store'a i przy imporcie; migracja v1→v2 nadaje `id` i ustawia `THIRTY_360`, żeby istniejące kalkulacje nie zmieniły wyników
+- REGRESJA: `calculation.schema.json` nie jest używany w runtime (mimo odhaczonej wyżej pozycji o walidacji schematem), import sprawdza tylko `name`/`createdAt`/`data` — walidować import schematem (ajv), dialog `src/app/dialogs/import-validation` z listą niepoprawnych pól, rozróżnić "plik nie jest poprawnym JSON-em" od "brak rekordów"
+- `FormService.loadFromFile`/`loadFromSavedCalculation`: defensywne odczyty (dziś TypeError na niepoprawnym pliku), odbudowa FormArray z `emitEvent: false` i jedno `updateValueAndValidity()` na końcu (dziś przeliczenie przy każdym dodanym wierszu)
+- ustawienia: `ThemeService`, `DensityService` i `PixelHippoService` niezależnie czytają i scalają `settings.json` i przy pierwszym uruchomieniu nadpisują sobie zmiany — jeden serwis ładujący ustawienia raz i wspólna kolejka zapisów
+- aktualizacja `persystencja-kalkulacji.md` (wersjonowanie, migracje, kopia zapasowa; usunąć nieaktualne `data: unknown`, `id`, `note`) i `tauri.md` (zakres fs obejmuje też `.csv`, usunąć wzmiankę o chart.js)
+
+## Audyt 2026-09-28 — Etap 4: UX — błędy, bezpieczeństwo pracy, wprowadzanie danych
+
+- panel błędów budowany ze wszystkich niepoprawnych kontrolek — dziś błędy pól (LTV ≤ 100, stopy ≤ 50, wartości nieujemne, wymagane miesiące) nie mają komunikatu i panel potrafi pokazać "0 błędów" przy ukrytych wynikach; kliknięcie błędu przewija do pola (`UiStateService.revealFormSection`, `form-navigation.helper.ts`); `aria-invalid` i klasa `.is-invalid` w `ui-field`
+- pola wyłączonych sekcji "Koszty okołokredytowe i promocje" oraz "Nadpłaty" nadal blokują wyniki — uogólnić `syncTranchesFieldsEnabledState` na wszystkie sekcje opcjonalne
+- przy niepoprawnym formularzu pokazywać ostatnie poprawne wyniki przygaszone, z banerem "Wyniki nieaktualne — popraw N błędów", zamiast je ukrywać; zaktualizować § 8 `walidacje.md`
+- dialog niezapisanych zmian (`src/app/dialogs/unsaved-changes`) przy "Wczytaj" i "Nowa kalkulacja", gdy formularz jest zmodyfikowany; obsługa zamykania okna (Tauri `onCloseRequested`, `beforeunload` w wersji web); autozapis szkicu formularza przywracany przy starcie
+- "Zapisz" / "Zapisz jako" oraz badge wczytanej kalkulacji ze stanem "Zmodyfikowana" w widoku "Kalkulator" — dziś zapis możliwy tylko z "Twoich kalkulacji"; po "Zapisz jako" nowa kalkulacja nie jest oznaczana jako wczytana
+- cofanie usunięcia kalkulacji: toast z akcją "Cofnij" (~6 s, miękkie usunięcie); toasty błędów nie znikają automatycznie
+- `NumberInputComponent`: parser polskiego formatu (dziś wklejone "1.234,56" daje 1,234, bo `replace(',', '.')` zamienia tylko pierwszy przecinek), puste pole → `null` zamiast 0, `min`/`max`/`step` i strzałki ↑/↓, stan błędu dla nieparsowalnego tekstu; okres w latach z 2 miejscami po przecinku (dziś 245 mies. wyświetla się jako "20")
+- pomoc kontekstowa (`icon-info` z podpowiedzią) przy LTV, RRSO, wskaźniku referencyjnym, skutku nadpłaty, karencji i konwencji odsetek; brakujące etykiety pól prowizji, wyceny, daty "od" okresu oprocentowania i wyszukiwarki
+- puste stany: lista bez zapisanych kalkulacji nie powinna sugerować "Zmień filtry…"; wykorzystać `isLoading` (dziś przy ładowaniu miga pusty stan); porównanie ofert przed wybraniem obu ofert pokazuje pusty ekran
+- eksport harmonogramu (CSV/JSON) bezpośrednio z widoku "Kalkulator" oraz arkusz `@media print` do druku/PDF
+
+## Audyt 2026-09-28 — Etap 5: Dostępność i motywy
+
+- przełącznik sekcji jest niedostępny z klawiatury i dla czytników ekranu (`.sec-switch input { display: none }` w `styles.scss`, etykieta "wł./wył.") — input ukryty wizualnie i `aria-label` z nazwą sekcji
+- zwinięte sekcje formularza nadal przyjmują fokus — dodać `[inert]` przy zwinięciu
+- `aria-expanded` w nagłówkach sekcji, podsekcji i dropdownach, `aria-pressed`/`radiogroup` w `ui-segmented`, `aria-current` w topbarze, `aria-label` przycisku ustawień; menu wiersza listy kalkulacji ma się zamykać po "Zmień nazwę", "Duplikuj" i "Usuń"
+- dialogi: `aria-labelledby` wskazujące tytuł, autofocus pola nazwy w dialogach zapisu i zmiany nazwy; usunąć z `abstract-dialog.ts` komentarz o zamykaniu kliknięciem w tło albo zaimplementować to zachowanie
+- month-picker: ikona kalendarza jako `<button>` (dziś nie da się jej osiągnąć klawiaturą)
+- wykresy (donuty, trend, oprocentowanie): `role="img"` oraz `<title>`/`<desc>`; wybór roku oraz rozwijanie i kopiowanie w legendzie jako przyciski; kierunek zmiany stopy w harmonogramie sygnalizowany nie tylko kolorem
+- motyw ciemny bez `color-scheme: dark` (natywne kontrolki renderują się jasno); kontrast `--muted` poniżej 4.5:1; obsługa `prefers-reduced-motion`; rozmiary czcionek w `rem`; toast z `role="status"` tworzony razem z treścią (czytnik może go nie ogłosić)
+
+## Audyt 2026-09-28 — Etap 6: Dystrybucja i bezpieczeństwo Tauri
+
+- `src-tauri/capabilities/default.json` pozwala czytać i zapisywać dowolny `.json` pod `$HOME/**` — usunąć statyczny zakres fs (dialog sam dopuszcza plik wybrany przez użytkownika) i sprawdzić import oraz eksport
+- wyłączyć feature `devtools` w buildzie release (`src-tauri/Cargo.toml`)
+- auto-aktualizacje: `tauri-plugin-updater`, klucze podpisu w GitHub Secrets, `latest.json` w wydaniu
+- podpis kodu instalatora Windows (wymaga zakupu certyfikatu)
+- wersja aplikacji z jednego źródła (`package.json`) w `release.mjs` — dziś wpisywana w 6 miejscach, w tym na sztywno w topbarze
+- nie zmieniać `identifier` w `tauri.conf.json` (osierociłoby dane użytkowników w `%APPDATA%`) — opisać to w `tauri.md`
+
+## Audyt 2026-09-28 — Etap 7: Wydajność i porządki
+
+- jedno źródło wyników: przeliczenie z `form.valueChanges` z `debounceTime(150)` w `CalculatorStateService`, a `CalculatorComponent` i `ComparisonStateService` tylko czytają wynik — dziś compute przy każdym znaku, dwa razy przy starcie (konstruktor + `startWith`), a porównanie liczy bieżący formularz drugi raz; ograniczyć nigdy nieczyszczony cache porównania
+- harmonogram renderuje wiersze miesięczne tylko dla rozwiniętego roku (dziś ~360 wierszy w DOM od razu)
+- `track $index` → śledzenie po tożsamości kontrolki w listach transz i nadpłat
+- usunąć zduplikowane budowanie metadanych w `calculations-manager.component.ts` i martwe wywołanie `ngZone.run` (aplikacja działa bez zone.js)
+- rozbić `comparison-params-table.component.ts` (635 linii)
