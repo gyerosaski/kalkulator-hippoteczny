@@ -136,7 +136,7 @@
 
         <!-- Akcje -->
         <div class="cell cell--actions">
-          <button class="action-btn action-btn--load" (click)="load.emit(calculation)">
+          <button class="action-btn action-btn--load" (click)="loadRequested.emit(calculation)">
             <icon-arrow-right />
             Wczytaj
           </button>
@@ -150,7 +150,7 @@
               <icon-dots />
             </button>
             @if (openMenuName() === calculation.name) {
-              <div class="actions-menu" role="menu" (click)="$event.stopPropagation()">
+              <div class="actions-menu" role="menu">
                 @if (
                   calculation.name === activeCalculationName() && isLoadedCalculationModified()
                 ) {

@@ -15,7 +15,6 @@
       class="dropdown-menu"
       [class.dropdown-menu--up]="placement() === DropdownPlacement.UP"
       role="menu"
-      (click)="$event.stopPropagation()"
     >
       @for (option of options(); track option; let i = $index) {
         <button type="button" class="menu-item" role="menuitem" (click)="choose(option)">

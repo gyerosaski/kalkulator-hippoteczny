@@ -130,6 +130,30 @@
   font-size: var(--text-sm);
 }
 
+/* Klikalne pozycje legendy są przyciskami (obsługa klawiaturą) — reset domyślnego wyglądu przycisku.
+   Krój pisma wartości pochodzi z globalnej klasy .mono, dlatego font-family dziedziczą tylko etykiety. */
+.leg-btn {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  cursor: inherit;
+}
+
+.leg-btn:not(.mono) {
+  font-family: inherit;
+  text-align: left;
+}
+
+.leg-btn:focus-visible {
+  outline: 2px solid var(--accent-deep);
+  outline-offset: 2px;
+  border-radius: var(--r-2xs);
+}
+
 .leg-lab {
   color: var(--ink-2);
 }

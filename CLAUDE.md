@@ -15,6 +15,8 @@ npm start          # Dev server at http://localhost:4200
 npm run build      # Production build (dist/)
 npm run watch      # Dev build with watch mode
 npm test           # Run unit tests (Vitest)
+npm run test:coverage # Single test run with coverage report (coverage/)
+npm run lint       # ESLint: typed TS rules + Angular template/accessibility rules
 npm run prettier   # Format code
 npm run tauri:dev   # Uruchom Angular dev server + okno Tauri (desktop, HMR)
 npm run tauri:build # Zbuduj frontend i spakuj MSI/NSIS (src-tauri/target/release/bundle/)
@@ -108,6 +110,7 @@ Dialogs (`src/app/dialogs/`): `save-calculation`, `rename-calculation`, `delete-
 - **No abbreviated identifiers** — use full, descriptive names for all variables, functions, classes, properties, and types. Single-letter names (`r`, `s`, `k`, `x`), common shorthand (`res`, `cfg`, `val`, `acc`, `len`, `pct`, `calc`, `intl`, `fi`), and truncated words (`col`, `btn` in logic code) are forbidden. Exceptions: universally established domain acronyms used as-is in the business domain (e.g. `ltv`, `pln`) and Angular/RxJS idioms (`of`, `map` etc. as operator names).
 - **Strict TypeScript** (`strict: true`, `strictTemplates: true`). No `any`.
 - **Tests use Vitest** (not Karma/Jasmine). `describe`/`it`/`expect` are auto-imported via `vitest/globals`.
+- **Known bugs are pinned with `it.fails`** — a test describing the correct behaviour of a not-yet-fixed bug is marked `it.fails(...)`. When a fix makes it pass, Vitest reports it as a failure: remove `.fails` in the same change. Engine tests should assert reference values computed independently of the engine, not only relative comparisons. Details: `docs/technikalia/jakosc-kodu-i-ci.md`.
 - SCSS for component styles; global styles in `src/styles.scss`.
 - **Generic UI components first** — before writing ad-hoc markup, always check `src/app/components/ui/` for an existing component that fits. If none exists, create a new generic one there rather than embedding one-off styles in a feature template. Prefer reuse and extraction over duplication.
 - **`ui-` selector prefix** — every component in `src/app/components/ui/` must have a selector starting with `ui-` (e.g. `ui-field`, `ui-btn-add`, `ui-section`). Never use `app-` or bare names for UI components.

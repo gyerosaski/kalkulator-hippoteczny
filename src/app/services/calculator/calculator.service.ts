@@ -179,7 +179,7 @@ export class CalculatorService {
     edited: 'ltv' | 'loanAmount' | 'propertyValue',
   ): { propertyValue: number; loanAmount: number; ltv: number } {
     const safePV = Math.max(0, Number(propertyValue) || 0);
-    let resultPV = safePV;
+    const resultPV = safePV;
     let resultAmount = Math.max(0, Number(loanAmount) || 0);
     let resultLtv = Math.max(0, Number(ltv) || 0);
 
@@ -213,7 +213,6 @@ export class CalculatorService {
     saldo: number,
     inputs: MortgageInputs,
     oc: OverheadCostsInputs,
-    monthIndexFromStart: number,
   ): OverheadCostItem[] {
     const items: OverheadCostItem[] = [];
 
@@ -644,7 +643,7 @@ export class CalculatorService {
       }
       if (oc) {
         costBreakdown.push(
-          ...this.calcInsuranceCostForMonth(date, balanceForInsuranceCalc, inputs, oc, idx),
+          ...this.calcInsuranceCostForMonth(date, balanceForInsuranceCalc, inputs, oc),
         );
       }
       const insuranceCost = costBreakdown.reduce((sum, item) => sum + item.value, 0);

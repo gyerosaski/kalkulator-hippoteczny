@@ -5,9 +5,11 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_call: # wywoływany przez release.yml — wydanie powstaje tylko z zielonego CI
 
 jobs:
-  build-test:
+  frontend:
+    name: Lint, testy, build (frontend)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -17,5 +19,40 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
-      - run: npm test -- --watch=false
+      - run: npm run test:coverage
+      - name: Raport pokrycia testami
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage
+          path: coverage/
+          if-no-files-found: ignore
       - run: npm run build
+
+  tauri:
+    name: Clippy (Rust / Tauri)
+    runs-on: windows-latest # jak release — na Windows nie są potrzebne dodatkowe biblioteki systemowe
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+
+      - name: Cache Rust (src-tauri/target)
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      # `tauri::generate_context!()` wymaga istnienia katalogu `frontendDist` już podczas kompilacji;
+      # do analizy kodu Rust wystarczy zaślepka zamiast pełnego buildu frontendu.
+      - name: Zaślepka frontendDist
+        shell: bash
+        run: |
+          mkdir -p dist/kalkulator-hippoteczny/browser
+          echo '<!doctype html><title>ci</title>' > dist/kalkulator-hippoteczny/browser/index.html
+
+      - name: cargo clippy
+        working-directory: src-tauri
+        run: cargo clippy --locked --all-targets -- -D warnings

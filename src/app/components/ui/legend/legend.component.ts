@@ -88,8 +88,9 @@ export class LegendComponent {
   }
 
   protected copyText(text: string): void {
-    navigator.clipboard.writeText(text).then(() => {
-      this.toastService.show(`Wartość skopiowana do schowka`, ToastVariant.INFO);
-    });
+    navigator.clipboard.writeText(text).then(
+      () => this.toastService.show(`Wartość skopiowana do schowka`, ToastVariant.INFO),
+      () => this.toastService.show(`Nie udało się skopiować wartości`, ToastVariant.ERROR),
+    );
   }
 }

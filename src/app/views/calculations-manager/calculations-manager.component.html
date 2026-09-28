@@ -63,7 +63,7 @@
     [activeCalculationName]="activeCalculationName()"
     [isLoadedCalculationModified]="isLoadedCalculationModified()"
     [hasActiveFilter]="hasActiveFilter()"
-    (load)="loadCalculation($event)"
+    (loadRequested)="loadCalculation($event)"
     (saveChanges)="saveCurrentCalculation($event)"
     (rename)="startRename($event)"
     (delete)="startDelete($event)"

@@ -952,3 +952,291 @@ describe('MortgageCalcService (RRSO)', () => {
     expect(result.rrso!).toBeGreaterThan(0);
   });
 });
+
+/**
+ * Wejścia referencyjne: kredyt bez nadpłat, kosztów i promocji, pierwsza rata miesiąc po
+ * uruchomieniu (bez karencji). Oczekiwane wartości w testach poniżej policzono niezależnie
+ * od silnika, wzorem annuitetowym `R = P·i / (1 − (1 + i)^(−n))` z `i = r / 12`.
+ */
+function referenceInputs(overrides: Partial<MortgageInputs> = {}): MortgageInputs {
+  return {
+    propertyValue: 500_000,
+    loanAmount: 300_000,
+    ltv: 60,
+    loanPeriod: 20 * 12,
+    startDate: '2026-01',
+    capitalStartDate: '2026-02',
+    installmentType: InstallmentType.EQUAL,
+    ratePeriods: [
+      {
+        from: '2026-01',
+        rateType: RateType.FIXED,
+        nominalRate: 8,
+        referenceIndex: 0,
+        margin: 0,
+      },
+    ],
+    prepaymentRules: [],
+    targetInstallmentRule: {
+      targetRate: 0,
+      from: '2026-01',
+      to: '2026-01',
+      effect: PrepaymentEffect.LOWER_INSTALLMENT,
+    },
+    earlyRepaymentCommission: { ratePct: 0, validUntil: '2026-01' },
+    ...overrides,
+  };
+}
+
+function sumOf(values: number[]): number {
+  return values.reduce((sum, value) => sum + value, 0);
+}
+
+describe('MortgageCalcService (wartości referencyjne)', () => {
+  let service: CalculatorService;
+
+  beforeEach(() => {
+    service = new CalculatorService();
+  });
+
+  it('raty równe: 300 000 zł, 8%, 240 mies. → rata 2 509,32 zł i odsetki 302 236,85 zł', () => {
+    const result = service.compute(referenceInputs());
+
+    expect(result.schedule).toHaveLength(240);
+    expect(result.firstInstallment?.rate).toBeCloseTo(2509.32, 2);
+    for (const row of result.schedule) {
+      expect(row.rate).toBeCloseTo(2509.32, 2);
+    }
+    expect(result.totals.totalInterest).toBeCloseTo(302_236.85, 2);
+    expect(result.totals.totalCapital).toBeCloseTo(300_000, 2);
+    expect(result.schedule.at(-1)?.remaining).toBeCloseTo(0, 2);
+  });
+
+  it('raty malejące: 240 000 zł, 6%, 240 mies. → kapitał 1 000 zł, rata od 2 200 zł do 1 005 zł', () => {
+    const result = service.compute(
+      referenceInputs({
+        loanAmount: 240_000,
+        ltv: 48,
+        installmentType: InstallmentType.DECREASING,
+        ratePeriods: [
+          {
+            from: '2026-01',
+            rateType: RateType.FIXED,
+            nominalRate: 6,
+            referenceIndex: 0,
+            margin: 0,
+          },
+        ],
+      }),
+    );
+
+    expect(result.schedule).toHaveLength(240);
+    for (const row of result.schedule) {
+      expect(row.capital).toBeCloseTo(1000, 2);
+    }
+    expect(result.schedule[0].interest).toBeCloseTo(1200, 2);
+    expect(result.schedule[0].rate).toBeCloseTo(2200, 2);
+    expect(result.schedule.at(-1)?.rate).toBeCloseTo(1005, 2);
+    expect(result.totals.totalInterest).toBeCloseTo(144_600, 2);
+    expect(result.schedule.at(-1)?.remaining).toBeCloseTo(0, 2);
+  });
+
+  it('stopa zmienna: oprocentowanie = wskaźnik referencyjny + marża, a zmiana okresu przelicza ratę', () => {
+    const result = service.compute(
+      referenceInputs({
+        ratePeriods: [
+          {
+            from: '2026-01',
+            rateType: RateType.VARIABLE,
+            nominalRate: 0,
+            referenceIndex: 5.85,
+            margin: 2.15,
+          },
+          {
+            from: '2031-02',
+            rateType: RateType.VARIABLE,
+            nominalRate: 0,
+            referenceIndex: 4,
+            margin: 2,
+          },
+        ],
+      }),
+    );
+
+    // 60 rat przy 5,85% + 2,15% = 8% (jak w scenariuszu ze stopą stałą)
+    expect(result.effectiveRate).toBeCloseTo(8, 10);
+    expect(result.schedule[0].rate).toBeCloseTo(2509.32, 2);
+    expect(result.schedule[59].date).toBe('2031-01');
+    expect(result.schedule[59].remaining).toBeCloseTo(262_576.75, 2);
+    // od 2031-02: 4% + 2% = 6%, rata przeliczona z salda na pozostałe 180 miesięcy
+    expect(result.schedule[60].interestRate).toBeCloseTo(6, 10);
+    expect(result.schedule[60].rate).toBeCloseTo(2215.77, 2);
+    expect(result.schedule).toHaveLength(240);
+    expect(result.hasRateChanges).toBe(true);
+    expect(result.schedule.at(-1)?.remaining).toBeCloseTo(0, 2);
+  });
+
+  it('karencja: do początku spłat kapitału płacone są tylko odsetki, potem rata z krótszego okresu', () => {
+    const result = service.compute(referenceInputs({ capitalStartDate: '2026-07' }));
+
+    const graceRows = result.schedule.slice(0, 5);
+    expect(graceRows.map((row) => row.date)).toEqual([
+      '2026-02',
+      '2026-03',
+      '2026-04',
+      '2026-05',
+      '2026-06',
+    ]);
+    for (const row of graceRows) {
+      expect(row.capital).toBe(0);
+      expect(row.interest).toBeCloseTo(2000, 2);
+      expect(row.rate).toBeCloseTo(2000, 2);
+    }
+    // 240 − 5 miesięcy karencji = 235 rat kapitałowo-odsetkowych
+    expect(result.schedule[5].date).toBe('2026-07');
+    expect(result.schedule[5].rate).toBeCloseTo(2531.09, 2);
+    expect(result.firstInstallment?.rate).toBeCloseTo(2531.09, 2);
+    expect(result.amortizationMonths).toBe(235);
+    expect(result.schedule).toHaveLength(240);
+    expect(result.totals.totalCapital).toBeCloseTo(300_000, 2);
+  });
+
+  it('nadpłata kwartalna: co 3 miesiące w zakresie [od, do], rata bez zmian, okres krótszy', () => {
+    const result = service.compute(
+      referenceInputs({
+        prepaymentRules: [
+          {
+            frequency: PrepaymentFrequency.QUARTERLY,
+            from: '2026-03',
+            to: '2027-12',
+            amount: 5000,
+            effect: PrepaymentEffect.SHORTEN_PERIOD,
+          },
+        ],
+      }),
+    );
+
+    const prepaymentDates = result.schedule
+      .filter((row) => row.prepayment > 0)
+      .map((row) => row.date);
+    expect(prepaymentDates).toEqual([
+      '2026-03',
+      '2026-06',
+      '2026-09',
+      '2026-12',
+      '2027-03',
+      '2027-06',
+      '2027-09',
+      '2027-12',
+    ]);
+    expect(result.totals.prepayments).toBeCloseTo(40_000, 2);
+    expect(result.schedule[30].rate).toBeCloseTo(2509.32, 2);
+    expect(result.schedule.length).toBeLessThan(240);
+    expect(sumOf(result.schedule.map((row) => row.capital + row.prepayment))).toBeCloseTo(
+      300_000,
+      2,
+    );
+  });
+
+  it('nadpłata roczna: co 12 miesięcy w zakresie [od, do], rata maleje, okres bez zmian', () => {
+    const result = service.compute(
+      referenceInputs({
+        prepaymentRules: [
+          {
+            frequency: PrepaymentFrequency.YEARLY,
+            from: '2026-06',
+            to: '2030-06',
+            amount: 10_000,
+            effect: PrepaymentEffect.LOWER_INSTALLMENT,
+          },
+        ],
+      }),
+    );
+
+    const prepaymentDates = result.schedule
+      .filter((row) => row.prepayment > 0)
+      .map((row) => row.date);
+    expect(prepaymentDates).toEqual(['2026-06', '2027-06', '2028-06', '2029-06', '2030-06']);
+    expect(result.totals.prepayments).toBeCloseTo(50_000, 2);
+
+    const rateBefore = result.schedule.find((row) => row.date === '2026-06')?.rate;
+    const rateAfter = result.schedule.find((row) => row.date === '2026-07')?.rate;
+    expect(rateBefore).toBeCloseTo(2509.32, 2);
+    expect(rateAfter).toBeLessThan(rateBefore ?? 0);
+    expect(result.schedule).toHaveLength(240);
+    expect(sumOf(result.schedule.map((row) => row.capital + row.prepayment))).toBeCloseTo(
+      300_000,
+      2,
+    );
+  });
+});
+
+/**
+ * Znane błędy silnika opisane w docs/TODO.md (Audyt 2026-09-28 — Etap 1). Testy opisują
+ * poprawne zachowanie i są oznaczone `it.fails`, dopóki błąd nie zostanie naprawiony —
+ * po naprawie test zacznie przechodzić, przez co `it.fails` zgłosi błąd i wymusi zdjęcie `.fails`.
+ */
+describe('MortgageCalcService (regresje do naprawy w Etapie 1)', () => {
+  let service: CalculatorService;
+
+  beforeEach(() => {
+    service = new CalculatorService();
+  });
+
+  function overheadCosts(overrides: Partial<OverheadCostsInputs>): OverheadCostsInputs {
+    return {
+      commissionValue: 0,
+      commissionCalcMethod: CommissionCalcMethod.PERCENTAGE,
+      appraisalFee: 0,
+      ...overrides,
+    };
+  }
+
+  it.fails(
+    'raty równe z ubezpieczeniem niskiego wkładu spłacają cały kapitał w umownym okresie',
+    () => {
+      const result = service.compute(
+        referenceInputs({
+          loanAmount: 450_000,
+          ltv: 90,
+          ratePeriods: [
+            {
+              from: '2026-01',
+              rateType: RateType.FIXED,
+              nominalRate: 6,
+              referenceIndex: 0,
+              margin: 0,
+            },
+          ],
+          overheadCosts: overheadCosts({ lowEquityInsurance: { rateIncrease: 2 } }),
+        }),
+      );
+
+      expect(result.schedule.at(-1)?.remaining).toBeCloseTo(0, 2);
+      expect(result.totals.totalCapital).toBeCloseTo(450_000, 2);
+    },
+  );
+
+  it.fails('raty równe z ubezpieczeniem pomostowym spłacają cały kapitał w umownym okresie', () => {
+    const result = service.compute(
+      referenceInputs({
+        overheadCosts: overheadCosts({ bridgeInsurance: { rateIncrease: 1, months: 12 } }),
+      }),
+    );
+
+    expect(result.schedule.at(-1)?.remaining).toBeCloseTo(0, 2);
+    expect(result.totals.totalCapital).toBeCloseTo(300_000, 2);
+  });
+
+  it.fails('promocja oprocentowania nie skraca umownego okresu kredytowania', () => {
+    const result = service.compute(
+      referenceInputs({
+        overheadCosts: overheadCosts({
+          promotionalRate: { rateDecrease: 1, from: '2026-02', to: '2027-01' },
+        }),
+      }),
+    );
+
+    expect(result.schedule).toHaveLength(240);
+  });
+});

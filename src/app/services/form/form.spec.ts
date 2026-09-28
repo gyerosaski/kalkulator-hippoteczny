@@ -1,7 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
 import { FormService } from './form';
-import { PrepaymentEffect, PrepaymentFrequency, RateType } from '../../model';
+import {
+  CapitalBeforeLastTrancheErrorDetails,
+  PrepaymentEffect,
+  PrepaymentFrequency,
+  RateType,
+} from '../../model';
 
 describe('FormService', () => {
   let service: FormService;
@@ -121,9 +126,11 @@ describe('FormService', () => {
       addTrancheWithDate('2026-06');
       setCapitalStartDate('2026-06');
 
-      const error = service.form.errors?.['capitalBeforeLastTranche'];
+      const error = service.form.errors?.['capitalBeforeLastTranche'] as
+        | CapitalBeforeLastTrancheErrorDetails
+        | undefined;
       expect(error).toBeTruthy();
-      expect(error['lastTrancheDate']).toBe('2026-06');
+      expect(error?.lastTrancheDate).toBe('2026-06');
     });
 
     it('should emit capitalBeforeLastTranche when capitalStartDate is before the last tranche date', () => {
@@ -131,9 +138,11 @@ describe('FormService', () => {
       addTrancheWithDate('2026-08');
       setCapitalStartDate('2026-07');
 
-      const error = service.form.errors?.['capitalBeforeLastTranche'];
+      const error = service.form.errors?.['capitalBeforeLastTranche'] as
+        | CapitalBeforeLastTrancheErrorDetails
+        | undefined;
       expect(error).toBeTruthy();
-      expect(error['lastTrancheDate']).toBe('2026-08');
+      expect(error?.lastTrancheDate).toBe('2026-08');
     });
 
     it('should not emit capitalBeforeLastTranche when capitalStartDate is strictly after the last tranche date', () => {
@@ -151,9 +160,11 @@ describe('FormService', () => {
       addTrancheWithDate('2026-06');
       setCapitalStartDate('2026-08');
 
-      const error = service.form.errors?.['capitalBeforeLastTranche'];
+      const error = service.form.errors?.['capitalBeforeLastTranche'] as
+        | CapitalBeforeLastTrancheErrorDetails
+        | undefined;
       expect(error).toBeTruthy();
-      expect(error['lastTrancheDate']).toBe('2026-09');
+      expect(error?.lastTrancheDate).toBe('2026-09');
     });
 
     it('should not emit capitalBeforeLastTranche when capitalStartDate is after the maximum tranche date', () => {
@@ -236,4 +247,88 @@ describe('FormService', () => {
       expect(service.form.invalid).toBe(true);
     });
   });
+});
+
+/**
+ * Brakujące walidacje dat opisane w docs/TODO.md (Audyt 2026-09-28 — Etap 1). Każdy scenariusz
+ * ma test kontrolny (poprawne dane → formularz poprawny) oraz test `it.fails` opisujący
+ * oczekiwane odrzucenie niepoprawnych danych — po dodaniu walidacji należy zdjąć `.fails`.
+ */
+describe('FormService — walidacje dat do dodania w Etapie 1', () => {
+  let service: FormService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(FormService);
+    const basicData = service.form.controls.basicData.controls;
+    basicData.startDate.setValue('2026-01');
+    basicData.capitalStartDate.setValue('2026-06');
+    basicData.loanPeriod.setValue(24);
+    service.form.updateValueAndValidity();
+  });
+
+  function setCapitalStartDate(dateYm: string): void {
+    service.form.controls.basicData.controls.capitalStartDate.setValue(dateYm);
+    service.form.updateValueAndValidity();
+  }
+
+  function setUpTwoTranches(secondTrancheDate: string): void {
+    service.form.controls.tranches.controls.enabled.setValue(true);
+    service.addTranche();
+    const loanAmount = service.form.controls.basicData.controls.loanAmount.value;
+    service.tranchesArray.at(0).controls.date.setValue('2026-01');
+    service.tranchesArray.at(0).controls.amount.setValue(loanAmount - 100_000);
+    service.tranchesArray.at(1).controls.amount.setValue(100_000);
+    service.tranchesArray.at(1).controls.date.setValue(secondTrancheDate);
+    service.form.updateValueAndValidity();
+  }
+
+  function setSecondRatePeriodFrom(dateYm: string): void {
+    service.addRatePeriod();
+    service.ratePeriodsArray.at(0).controls.from.setValue('2026-01');
+    service.ratePeriodsArray.at(1).controls.from.setValue(dateYm);
+    service.form.updateValueAndValidity();
+  }
+
+  it('kontrola: początek spłat kapitału w okresie kredytowania jest poprawny', () => {
+    setCapitalStartDate('2026-06');
+
+    expect(service.form.valid).toBe(true);
+  });
+
+  it.fails(
+    'odrzuca początek spłat kapitału po końcu okresu kredytowania (karencja ≥ okres)',
+    () => {
+      setCapitalStartDate('2028-03');
+
+      expect(service.form.valid).toBe(false);
+    },
+  );
+
+  it('kontrola: druga transza uruchomiona po dacie uruchomienia kredytu jest poprawna', () => {
+    setUpTwoTranches('2026-03');
+
+    expect(service.form.valid).toBe(true);
+  });
+
+  it.fails('odrzuca drugą transzę z datą uruchomienia kredytu (harmonogram ją pomija)', () => {
+    setUpTwoTranches('2026-01');
+
+    expect(service.form.valid).toBe(false);
+  });
+
+  it('kontrola: okresy oprocentowania z różnymi datami „od” są poprawne', () => {
+    setSecondRatePeriodFrom('2027-01');
+
+    expect(service.form.valid).toBe(true);
+  });
+
+  it.fails(
+    'odrzuca dwa okresy oprocentowania z tą samą datą „od” (drugi nadpisuje pierwszy)',
+    () => {
+      setSecondRatePeriodFrom('2026-01');
+
+      expect(service.form.valid).toBe(false);
+    },
+  );
 });

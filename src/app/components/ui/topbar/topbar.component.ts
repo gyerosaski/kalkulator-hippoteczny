@@ -43,7 +43,10 @@ export class TopbarComponent {
     initialValue: this.router.url,
   });
 
-  private readonly currentRoute = computed(() => (this.routerUrl() ?? '').split('/')[1] ?? '');
+  // pierwszy segment ścieżki porównywany wyłącznie z wartościami `AppRoute`
+  private readonly currentRoute = computed(
+    () => ((this.routerUrl() ?? '').split('/')[1] ?? '') as AppRoute,
+  );
 
   protected readonly isCalculatorTab = computed(() => this.currentRoute() === AppRoute.CALCULATOR);
 

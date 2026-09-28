@@ -56,7 +56,7 @@ export class CalculationsListComponent {
   readonly isLoadedCalculationModified = input<boolean>(false);
   readonly hasActiveFilter = input.required<boolean>();
 
-  readonly load = output<SavedCalculation>();
+  readonly loadRequested = output<SavedCalculation>();
   readonly saveChanges = output<SavedCalculation>();
   readonly rename = output<SavedCalculation>();
   readonly delete = output<SavedCalculation>();

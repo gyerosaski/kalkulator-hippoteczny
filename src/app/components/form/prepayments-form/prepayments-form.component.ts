@@ -71,7 +71,7 @@ export class PrepaymentsFormComponent {
   );
 
   readonly badge = computed(() =>
-    this.isSectionEnabled() && this.prepaymentRulesCount()! > 1
+    this.isSectionEnabled() && this.prepaymentRulesCount() > 1
       ? `liczba reguł: ${this.prepaymentRulesCount()}`
       : 'opcjonalne',
   );

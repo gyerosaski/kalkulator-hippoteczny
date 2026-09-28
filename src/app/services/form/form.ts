@@ -25,6 +25,7 @@ import {
 import {
   AdditionalCostFormGroup,
   BasicDataFormGroup,
+  CapitalBeforeLastTrancheErrorDetails,
   MortgageFormGroup,
   MortgageFormRawValue,
   OverheadCostsFormGroup,
@@ -33,6 +34,7 @@ import {
   RatePeriodFormGroup,
   ToggleableSectionFormGroup,
   TrancheFormGroup,
+  TrancheSumMismatchErrorDetails,
   TranchesFieldsFormGroup,
 } from '../../model';
 import { addMonthsStr, nextMonthStr, ym } from '../../helpers/date.helper';
@@ -62,10 +64,8 @@ function crossFieldValidator(control: AbstractControl) {
     ? (prepaymentsSection.controls.fields.controls.prepaymentRules.value?.items ?? [])
     : [];
   const targetInstallment = prepaymentsEnabled
-    ? ((
-        prepaymentsSection.controls.fields.controls.targetInstallment as FormGroup
-      )?.getRawValue() ?? ({} as any))
-    : ({} as any);
+    ? prepaymentsSection.controls.fields.controls.targetInstallment.getRawValue()
+    : null;
 
   const errors: Record<string, unknown> = {};
   if (pv && la && la > pv) errors['loanGtProperty'] = true;
@@ -81,7 +81,7 @@ function crossFieldValidator(control: AbstractControl) {
         expected: la,
         actual: trancheSum,
         diff: Math.round((trancheSum - la) * 100) / 100,
-      };
+      } satisfies TrancheSumMismatchErrorDetails;
     }
   }
   if (Math.trunc(loanPeriod) <= 0) errors['totalMonthsInvalid'] = true;
@@ -96,7 +96,9 @@ function crossFieldValidator(control: AbstractControl) {
       if (trancheDate && trancheDate > lastTrancheDate) lastTrancheDate = trancheDate;
     }
     if (lastTrancheDate && capStart <= lastTrancheDate) {
-      errors['capitalBeforeLastTranche'] = { lastTrancheDate };
+      errors['capitalBeforeLastTranche'] = {
+        lastTrancheDate,
+      } satisfies CapitalBeforeLastTrancheErrorDetails;
     }
   }
 
@@ -116,14 +118,14 @@ function crossFieldValidator(control: AbstractControl) {
     }
 
     if (
-      targetInstallment.from &&
+      targetInstallment?.from &&
       targetInstallment.to &&
       targetInstallment.to < targetInstallment.from
     ) {
       errors['targetInstallmentDateRangeInvalid'] = true;
     }
 
-    if ((Number(targetInstallment.targetRate) || 0) < 0) {
+    if ((Number(targetInstallment?.targetRate) || 0) < 0) {
       errors['targetInstallmentInvalid'] = true;
     }
   }

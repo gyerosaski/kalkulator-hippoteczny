@@ -175,8 +175,8 @@ export class CalculationsManagerComponent implements OnInit {
     this.formService.isLoadedCalculationModified(),
   );
 
-  async ngOnInit(): Promise<void> {
-    await this.savedCalculationsStateService.loadAll();
+  ngOnInit(): void {
+    void this.savedCalculationsStateService.loadAll();
   }
 
   async loadCalculation(calculation: SavedCalculation): Promise<void> {

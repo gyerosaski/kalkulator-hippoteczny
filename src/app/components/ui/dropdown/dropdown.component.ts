@@ -24,7 +24,7 @@ export class DropdownComponent {
   readonly disabled = input<boolean>(false);
   readonly placement = input<DropdownPlacement>(DropdownPlacement.DOWN);
 
-  readonly select = output<string>();
+  readonly optionSelected = output<string>();
 
   protected readonly DropdownPlacement = DropdownPlacement;
   readonly open = signal(false);
@@ -53,7 +53,7 @@ export class DropdownComponent {
   }
 
   choose(option: string): void {
-    this.select.emit(option);
+    this.optionSelected.emit(option);
     this.open.set(false);
   }
 }

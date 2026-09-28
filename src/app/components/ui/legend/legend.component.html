@@ -7,9 +7,14 @@
       (mouseleave)="onHover(null)"
     >
       <span class="leg-lab">{{ totalLabel() }}</span>
-      <span class="leg-val mono" (click)="copyAmount(legendTotal())"
-        >{{ legendTotal() | formatAmount }} zł</span
+      <button
+        type="button"
+        class="leg-btn leg-val mono"
+        title="Kopiuj do schowka"
+        (click)="copyAmount(legendTotal())"
       >
+        {{ legendTotal() | formatAmount }} zł
+      </button>
     </div>
   }
   <ul class="legend">
@@ -23,10 +28,22 @@
           (mouseleave)="onHover(null)"
         >
           <ui-color-code-marker [variant]="slice.variant" />
-          <span class="leg-lab" (click)="toggleExpand(slice.label)">{{ slice.label }}</span>
-          <span class="leg-val mono" (click)="copyAmount(slice.value)"
-            >{{ slice.value | formatAmount }} zł</span
+          <button
+            type="button"
+            class="leg-btn leg-lab"
+            [attr.aria-expanded]="isExpanded(slice.label)"
+            (click)="toggleExpand(slice.label)"
           >
+            {{ slice.label }}
+          </button>
+          <button
+            type="button"
+            class="leg-btn leg-val mono"
+            title="Kopiuj do schowka"
+            (click)="copyAmount(slice.value)"
+          >
+            {{ slice.value | formatAmount }} zł
+          </button>
         </li>
         <li class="children-row" [class.children-row--open]="isExpanded(slice.label)">
           <ul class="children">
@@ -44,9 +61,14 @@
                 } @else {
                   <span class="leg-lab">{{ child.label }}</span>
                 }
-                <span class="leg-val mono" (click)="copyAmount(child.value)"
-                  >{{ child.value | formatAmount }} zł</span
+                <button
+                  type="button"
+                  class="leg-btn leg-val mono"
+                  title="Kopiuj do schowka"
+                  (click)="copyAmount(child.value)"
                 >
+                  {{ child.value | formatAmount }} zł
+                </button>
               </li>
             }
           </ul>
@@ -65,9 +87,14 @@
           } @else {
             <span class="leg-lab">{{ slice.label }}</span>
           }
-          <span class="leg-val mono" (click)="copyAmount(slice.value)"
-            >{{ slice.value | formatAmount }} zł</span
+          <button
+            type="button"
+            class="leg-btn leg-val mono"
+            title="Kopiuj do schowka"
+            (click)="copyAmount(slice.value)"
           >
+            {{ slice.value | formatAmount }} zł
+          </button>
         </li>
       }
     }
@@ -76,13 +103,23 @@
     <div class="legend-footer">
       <span class="leg-lab">{{ footerLabel() }}</span>
       @if (footerValueText()) {
-        <span class="leg-val mono" (click)="copyText(footerValueText())">{{
-          footerValueText()
-        }}</span>
-      } @else {
-        <span class="leg-val mono" (click)="copyAmount(footerValue() ?? 0)"
-          >{{ footerValue() ?? 0 | formatAmount }} zł</span
+        <button
+          type="button"
+          class="leg-btn leg-val mono"
+          title="Kopiuj do schowka"
+          (click)="copyText(footerValueText())"
         >
+          {{ footerValueText() }}
+        </button>
+      } @else {
+        <button
+          type="button"
+          class="leg-btn leg-val mono"
+          title="Kopiuj do schowka"
+          (click)="copyAmount(footerValue() ?? 0)"
+        >
+          {{ footerValue() ?? 0 | formatAmount }} zł
+        </button>
       }
     </div>
   }

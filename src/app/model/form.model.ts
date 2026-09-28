@@ -182,3 +182,15 @@ export type TranchesRawValue = MortgageFormRawValue['tranches']['fields'];
 
 /** Migawka wartości pól sekcji „Nadpłaty” (bez flagi `enabled`). */
 export type PrepaymentsRawValue = MortgageFormRawValue['prepayments']['fields'];
+
+/** Szczegóły błędu walidacji krzyżowej `trancheSumMismatch` (suma transz ≠ kwota kredytu). */
+export interface TrancheSumMismatchErrorDetails {
+  expected: number;
+  actual: number;
+  diff: number;
+}
+
+/** Szczegóły błędu walidacji krzyżowej `capitalBeforeLastTranche`. */
+export interface CapitalBeforeLastTrancheErrorDetails {
+  lastTrancheDate: string;
+}

@@ -195,7 +195,11 @@ export class CalculationsCompareComponent implements OnInit {
     );
   });
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
+    void this.loadOffers();
+  }
+
+  private async loadOffers(): Promise<void> {
     await this.savedCalculationsState.loadAll();
     this.clearSlotsWithRemovedOffers();
   }

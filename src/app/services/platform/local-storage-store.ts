@@ -33,30 +33,31 @@ export class LocalStorageStore implements KeyValueStore {
     this.defaults = defaults;
   }
 
-  async get<T>(key: string): Promise<T | undefined> {
+  get<T>(key: string): Promise<T | undefined> {
     const state = this.readState();
-    if (key in state) return state[key] as T;
-    return this.defaults[key] as T | undefined;
+    if (key in state) return Promise.resolve(state[key] as T);
+    return Promise.resolve(this.defaults[key] as T | undefined);
   }
 
-  async set(key: string, value: unknown): Promise<void> {
+  set(key: string, value: unknown): Promise<void> {
     const state = this.readState();
     state[key] = value;
     this.writeState(state);
+    return Promise.resolve();
   }
 
   async save(): Promise<void> {
     // stan jest utrwalany natychmiast przy każdym `set`/`delete` — `save()` istnieje dla zgodności API.
   }
 
-  async delete(key: string): Promise<boolean> {
+  delete(key: string): Promise<boolean> {
     const state = this.readState();
     const existed = key in state;
     if (existed) {
       delete state[key];
       this.writeState(state);
     }
-    return existed;
+    return Promise.resolve(existed);
   }
 
   /** Odczytuje i parsuje stan magazynu z `localStorage`; zwraca pusty obiekt przy braku lub błędzie. */
@@ -64,8 +65,10 @@ export class LocalStorageStore implements KeyValueStore {
     const raw = localStorage.getItem(this.storageKey);
     if (!raw) return {};
     try {
-      const parsed = JSON.parse(raw);
-      return typeof parsed === 'object' && parsed !== null ? (parsed as Record<string, unknown>) : {};
+      const parsed: unknown = JSON.parse(raw);
+      return typeof parsed === 'object' && parsed !== null
+        ? (parsed as Record<string, unknown>)
+        : {};
     } catch {
       return {};
     }

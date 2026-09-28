@@ -53,17 +53,13 @@ export function pickAndReadTextFile(accept = '.json,.csv'): Promise<string | nul
     };
 
     // odczyt zawartości po wyborze pliku
-    const onChange = async (): Promise<void> => {
+    const onChange = (): void => {
       const file = input.files?.[0];
       if (!file) {
         settle(null);
         return;
       }
-      try {
-        settle(await file.text());
-      } catch {
-        settle(null);
-      }
+      file.text().then(settle, () => settle(null));
     };
 
     // anulowanie okna wyboru

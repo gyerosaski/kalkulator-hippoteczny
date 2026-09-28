@@ -1,7 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormService } from '../../../services/form/form';
-import { FormError, FormErrorSection } from '../../../model';
+import {
+  CapitalBeforeLastTrancheErrorDetails,
+  FormError,
+  FormErrorSection,
+  TrancheSumMismatchErrorDetails,
+} from '../../../model';
 import { IconWarningComponent } from '../../icons/icon-warning/icon-warning.component';
 import { IconWarningSmComponent } from '../../icons/icon-warning-sm/icon-warning-sm.component';
 import { BadgeComponent } from '../../ui/badge/badge.component';
@@ -90,22 +95,24 @@ export class ResultsErrorsComponent {
         fieldId: 'capitalStartDate',
       });
     }
-    const capitalBeforeLastTranche = fe?.['capitalBeforeLastTranche'];
+    const capitalBeforeLastTranche = fe?.['capitalBeforeLastTranche'] as
+      | CapitalBeforeLastTrancheErrorDetails
+      | undefined;
     if (capitalBeforeLastTranche) {
       errs.push({
         section: FormErrorSection.BASIC_DATA,
-        message: `Początek spłat kapitału musi przypadać po dacie uruchomienia ostatniej transzy (ostatnia transza: ${capitalBeforeLastTranche['lastTrancheDate'] as string}).`,
+        message: `Początek spłat kapitału musi przypadać po dacie uruchomienia ostatniej transzy (ostatnia transza: ${capitalBeforeLastTranche.lastTrancheDate}).`,
         fieldLabel: 'Data początku spłaty kapitału',
         fieldId: 'capitalStartDate',
       });
     }
 
-    const mismatch = fe?.['trancheSumMismatch'];
+    const mismatch = fe?.['trancheSumMismatch'] as TrancheSumMismatchErrorDetails | undefined;
     if (mismatch) {
-      const expected = (mismatch.expected as number).toLocaleString('pl-PL', {
+      const expected = mismatch.expected.toLocaleString('pl-PL', {
         minimumFractionDigits: 2,
       });
-      const diff = mismatch.diff as number;
+      const diff = mismatch.diff;
       const diffStr =
         (diff > 0 ? '+' : '') + diff.toLocaleString('pl-PL', { minimumFractionDigits: 2 });
       errs.push({
