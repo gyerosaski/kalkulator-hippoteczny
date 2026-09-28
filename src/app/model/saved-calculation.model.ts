@@ -15,6 +15,9 @@ export interface SavedCalculationMetadata {
 }
 
 export interface SavedCalculationRecord {
+  /** Stabilny identyfikator rekordu (UUID) — nie zmienia się przy zmianie nazwy. */
+  id: string;
+  /** Nazwa kalkulacji — unikalna w obrębie zapisanych kalkulacji. */
   name: string;
   createdAt: string;
   updatedAt?: string;
@@ -23,6 +26,7 @@ export interface SavedCalculationRecord {
 }
 
 export interface SavedCalculation {
+  id: string;
   name: string;
   loanAmount: number;
   propertyValue: number;
@@ -80,4 +84,11 @@ export interface ExportSelection {
 export interface CalculationImportResult {
   status: CalculationImportStatus;
   importedCount: number;
+}
+
+/** Wynik porządkowania tożsamości zapisanych kalkulacji (identyfikatory i unikalne nazwy). */
+export interface NormalizedSavedCalculationRecords {
+  records: SavedCalculationRecord[];
+  /** `true`, gdy któryś rekord dostał nowy identyfikator lub nazwę — należy je ponownie zapisać. */
+  changed: boolean;
 }

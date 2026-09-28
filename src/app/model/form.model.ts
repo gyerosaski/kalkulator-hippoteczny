@@ -6,6 +6,7 @@ import {
   InstallmentType,
   LifeInsuranceCalcMethod,
   LoanPeriodUnit,
+  OverheadCostKind,
   PrepaymentEffect,
   PrepaymentFrequency,
   RateType,
@@ -193,4 +194,19 @@ export interface TrancheSumMismatchErrorDetails {
 /** Szczegóły błędu walidacji krzyżowej `capitalBeforeLastTranche`. */
 export interface CapitalBeforeLastTrancheErrorDetails {
   lastTrancheDate: string;
+}
+
+/** Szczegóły błędu walidacji krzyżowej `capitalAfterLoanEnd` (karencja nie krótsza niż okres kredytu). */
+export interface CapitalAfterLoanEndErrorDetails {
+  loanEndDate: string;
+}
+
+/** Szczegóły błędów walidacji krzyżowej dotyczących pozycji list formularza (numeracja od 1). */
+export interface ItemPositionsErrorDetails {
+  positions: number[];
+}
+
+/** Szczegóły błędów walidacji dat w sekcji „Koszty okołokredytowe i promocje”. */
+export interface OverheadCostDatesErrorDetails {
+  kinds: OverheadCostKind[];
 }

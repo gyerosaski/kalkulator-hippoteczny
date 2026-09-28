@@ -22,8 +22,15 @@ Sekcja zawiera listę kart `OKRES n`. Domyślnie istnieje jeden okres startując
 
 Reguły: wszystkie pola liczbowe z zakresu 0–50.
 
-Pierwszy okres ma stałą datę startu „od daty uruchomienia kredytu” (bez wyboru daty). Kolejne okresy mają
-edytowalne pole daty „od” w nagłówku karty oraz przycisk usuwania.
+Pierwszy okres ma stałą datę startu „od daty uruchomienia kredytu” (bez wyboru daty) — zmiana daty
+uruchomienia przesuwa również początek pierwszego okresu. Kolejne okresy mają edytowalne pole daty „od”
+w nagłówku karty oraz przycisk usuwania.
+
+Reguły dat kolejnych okresów (od drugiego):
+
+- data „od” musi przypadać po dacie uruchomienia kredytu i nie później niż w miesiącu ostatniej raty,
+- każdy okres musi zaczynać się w innym miesiącu — dwa okresy z tą samą datą „od” są błędem (jeden
+  z nich nie miałby żadnego wpływu na wynik).
 
 Przycisk `+ Dodaj okres oprocentowania` tworzy nowy okres z datą o 12 miesięcy późniejszą niż poprzedni
 i kopiuje pozostałe wartości z poprzedniego okresu.
@@ -32,4 +39,6 @@ i kopiuje pozostałe wartości z poprzedniego okresu.
 
 Okresy są uporządkowane rosnąco po dacie „od”. Dla danego miesiąca obowiązuje ostatni okres, którego
 data „od” nie jest późniejsza niż ten miesiąc. Każda zmiana oprocentowania w trakcie spłaty powoduje
-rekalkulację raty (równej lub malejącej) od bieżącego salda i pozostałej liczby rat.
+rekalkulację raty (równej lub malejącej) od bieżącego salda i pozostałej liczby rat. Rata równa jest
+przeliczana także przy zmianach stopy wynikających z sekcji „Koszty okołokredytowe i promocje”
+(ubezpieczenie pomostowe, niskiego wkładu, promocja).

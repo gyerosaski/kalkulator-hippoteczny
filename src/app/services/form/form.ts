@@ -15,6 +15,7 @@ import {
   InsuranceFrequency,
   LifeInsuranceCalcMethod,
   LoanPeriodUnit,
+  OverheadCostKind,
   PrepaymentEffect,
   PrepaymentFrequency,
   PrepaymentRule,
@@ -25,7 +26,10 @@ import {
 import {
   AdditionalCostFormGroup,
   BasicDataFormGroup,
+  CapitalAfterLoanEndErrorDetails,
   CapitalBeforeLastTrancheErrorDetails,
+  ItemPositionsErrorDetails,
+  OverheadCostDatesErrorDetails,
   MortgageFormGroup,
   MortgageFormRawValue,
   OverheadCostsFormGroup,
@@ -43,6 +47,161 @@ import { UiStateService } from '../ui-state/ui-state.service';
 
 function endOfLoanDate(): string {
   return addMonthsStr(nextMonthStr(), 20 * 12 - 1);
+}
+
+/**
+ * Walidacje dat względem okresu spłaty kredytu — od miesiąca pierwszej raty (miesiąc po
+ * uruchomieniu) do miesiąca ostatniej raty (uruchomienie + okres kredytowania). Silnik
+ * harmonogramu nalicza zdarzenia wyłącznie w tym przedziale, więc daty spoza niego byłyby
+ * po cichu pomijane.
+ */
+function repaymentPeriodDateErrors(group: FormGroup<MortgageFormGroup>): Record<string, unknown> {
+  const errors: Record<string, unknown> = {};
+  const basicData = group.controls.basicData.getRawValue();
+  const loanPeriod = Math.trunc(basicData.loanPeriod ?? 0);
+  if (!basicData.startDate || loanPeriod <= 0) return errors;
+
+  const startDate = basicData.startDate;
+  const firstInstallmentDate = addMonthsStr(startDate, 1);
+  const loanEndDate = addMonthsStr(startDate, loanPeriod);
+  const isWithinRepaymentPeriod = (month: string): boolean =>
+    month >= firstInstallmentDate && month <= loanEndDate;
+
+  // karencja musi być krótsza niż okres kredytowania
+  if (basicData.capitalStartDate && basicData.capitalStartDate > loanEndDate) {
+    errors['capitalAfterLoanEnd'] = { loanEndDate } satisfies CapitalAfterLoanEndErrorDetails;
+  }
+
+  // kolejne okresy oprocentowania (pierwszy obowiązuje od daty uruchomienia)
+  const ratePeriodDates = group.controls.ratePeriods.controls.items
+    .getRawValue()
+    .map((ratePeriod) => ratePeriod.from);
+  const ratePeriodsOutsideLoan: number[] = [];
+  const ratePeriodsWithDuplicateDates: number[] = [];
+  ratePeriodDates.forEach((from, index) => {
+    if (index === 0 || !from) return;
+    if (!isWithinRepaymentPeriod(from)) ratePeriodsOutsideLoan.push(index + 1);
+    const isDuplicate = ratePeriodDates.some(
+      (otherFrom, otherIndex) => otherIndex > 0 && otherIndex !== index && otherFrom === from,
+    );
+    if (isDuplicate) ratePeriodsWithDuplicateDates.push(index + 1);
+  });
+  if (ratePeriodsOutsideLoan.length) {
+    errors['ratePeriodOutsideLoan'] = {
+      positions: ratePeriodsOutsideLoan,
+    } satisfies ItemPositionsErrorDetails;
+  }
+  if (ratePeriodsWithDuplicateDates.length) {
+    errors['ratePeriodDuplicateDates'] = {
+      positions: ratePeriodsWithDuplicateDates,
+    } satisfies ItemPositionsErrorDetails;
+  }
+
+  // kolejne transze (pierwsza jest uruchamiana razem z kredytem)
+  const tranchesSection = group.controls.tranches;
+  if (tranchesSection.controls.enabled.value) {
+    const tranchesNotAfterStart = tranchesSection.controls.fields.controls.tranches
+      .getRawValue()
+      .map((tranche, index) => ({ date: tranche.date, position: index + 1 }))
+      .filter(({ date, position }) => position > 1 && !!date && date <= startDate)
+      .map(({ position }) => position);
+    if (tranchesNotAfterStart.length) {
+      errors['trancheDateNotAfterStart'] = {
+        positions: tranchesNotAfterStart,
+      } satisfies ItemPositionsErrorDetails;
+    }
+  }
+
+  // aktywne reguły nadpłat i docelowej raty
+  const prepaymentsSection = group.controls.prepayments;
+  if (prepaymentsSection.controls.enabled.value) {
+    const prepaymentFields = prepaymentsSection.controls.fields.getRawValue();
+    const prepaymentsOutsideLoan = prepaymentFields.prepaymentRules.items
+      .map((rule, index) => ({ rule, position: index + 1 }))
+      .filter(({ rule }) => (Number(rule.amount) || 0) > 0 && !!rule.from)
+      .filter(({ rule }) => !isWithinRepaymentPeriod(rule.from))
+      .map(({ position }) => position);
+    if (prepaymentsOutsideLoan.length) {
+      errors['prepaymentOutsideLoan'] = {
+        positions: prepaymentsOutsideLoan,
+      } satisfies ItemPositionsErrorDetails;
+    }
+    const targetInstallment = prepaymentFields.targetInstallment;
+    if (
+      (Number(targetInstallment.targetRate) || 0) > 0 &&
+      targetInstallment.from &&
+      !isWithinRepaymentPeriod(targetInstallment.from)
+    ) {
+      errors['targetInstallmentOutsideLoan'] = true;
+    }
+  }
+
+  // aktywne (niezerowe) koszty okołokredytowe i promocja oprocentowania
+  const overheadCostsSection = group.controls.overheadCosts;
+  if (overheadCostsSection.controls.enabled.value) {
+    const costFields = overheadCostsSection.controls.fields.getRawValue();
+    const datedCosts = [
+      {
+        kind: OverheadCostKind.PROPERTY_INSURANCE,
+        value: costFields.propertyInsurance.propInsValue,
+        frequency: costFields.propertyInsurance.propInsFrequency,
+        from: costFields.propertyInsurance.propInsFrom,
+        to: costFields.propertyInsurance.propInsTo,
+      },
+      {
+        kind: OverheadCostKind.LIFE_INSURANCE,
+        value: costFields.lifeInsurance.lifeInsValue,
+        frequency: costFields.lifeInsurance.lifeInsFrequency,
+        from: costFields.lifeInsurance.lifeInsFrom,
+        to: costFields.lifeInsurance.lifeInsTo,
+      },
+      {
+        kind: OverheadCostKind.JOB_LOSS_INSURANCE,
+        value: costFields.jobLossInsurance.jobLossInsValue,
+        frequency: costFields.jobLossInsurance.jobLossInsFrequency,
+        from: costFields.jobLossInsurance.jobLossInsFrom,
+        to: costFields.jobLossInsurance.jobLossInsTo,
+      },
+      ...costFields.additionalCosts.items.map((additionalCost) => ({
+        kind: OverheadCostKind.ADDITIONAL_COST,
+        value: additionalCost.value,
+        frequency: additionalCost.frequency,
+        from: additionalCost.from,
+        to: additionalCost.to,
+      })),
+    ].filter((cost) => (Number(cost.value) || 0) > 0 && !!cost.from);
+
+    const distinctKinds = (costs: typeof datedCosts): OverheadCostKind[] => [
+      ...new Set(costs.map((cost) => cost.kind)),
+    ];
+    const costsOutsideLoan = datedCosts.filter((cost) => !isWithinRepaymentPeriod(cost.from));
+    if (costsOutsideLoan.length) {
+      errors['overheadCostOutsideLoan'] = {
+        kinds: distinctKinds(costsOutsideLoan),
+      } satisfies OverheadCostDatesErrorDetails;
+    }
+    // koszt jednorazowy ma jedno pole daty — „do” nie jest wtedy brane pod uwagę
+    const costsWithInvalidRange = datedCosts.filter(
+      (cost) => cost.frequency !== InsuranceFrequency.ONE_TIME && !!cost.to && cost.to < cost.from,
+    );
+    if (costsWithInvalidRange.length) {
+      errors['overheadCostDateRangeInvalid'] = {
+        kinds: distinctKinds(costsWithInvalidRange),
+      } satisfies OverheadCostDatesErrorDetails;
+    }
+
+    const promotionalRate = costFields.promoRate;
+    if ((Number(promotionalRate.promoRateDecrease) || 0) > 0 && promotionalRate.promoFrom) {
+      if (!isWithinRepaymentPeriod(promotionalRate.promoFrom)) {
+        errors['promotionalRateOutsideLoan'] = true;
+      }
+      if (promotionalRate.promoTo && promotionalRate.promoTo < promotionalRate.promoFrom) {
+        errors['promotionalRateDateRangeInvalid'] = true;
+      }
+    }
+  }
+
+  return errors;
 }
 
 function crossFieldValidator(control: AbstractControl) {
@@ -141,6 +300,8 @@ function crossFieldValidator(control: AbstractControl) {
     }
   }
 
+  Object.assign(errors, repaymentPeriodDateErrors(group));
+
   return Object.keys(errors).length ? errors : null;
 }
 
@@ -168,6 +329,7 @@ export class FormService {
   constructor() {
     this.form.controls.basicData.controls.startDate.valueChanges.subscribe((newDate) => {
       this.tranchesArray.at(0)?.controls.date.setValue(newDate, { emitEvent: false });
+      this.ratePeriodsArray.at(0)?.controls.from.setValue(newDate, { emitEvent: false });
     });
 
     this.form.controls.tranches.controls.enabled.valueChanges.subscribe((enabled) =>

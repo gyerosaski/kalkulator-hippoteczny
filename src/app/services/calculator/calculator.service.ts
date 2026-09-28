@@ -479,6 +479,20 @@ export class CalculatorService {
     let prevPeriod = initialPeriod;
     // Flaga: transza uruchomiona w tym miesiącu – przelicz ratę dopiero w kolejnym
     let needsRateRecalcAfterTranche = false;
+    // Miesięczna stopa efektywna, od której policzono bieżącą ratę równą — jej zmiana
+    // (okres oprocentowania, pomostowe, niski wkład, promocja) wymusza przeliczenie raty
+    let installmentMonthlyRate = initialI;
+
+    /** Przelicza ratę na pozostały okres amortyzacji z bieżącego salda i podanej stopy miesięcznej. */
+    const recalculateInstallment = (monthlyRate: number): void => {
+      const periods = Math.max(1, remainingAmortMonths);
+      if (inputs.installmentType === InstallmentType.EQUAL) {
+        equalRate = this.annuityPayment(saldo, monthlyRate, periods);
+        installmentMonthlyRate = monthlyRate;
+      } else {
+        decreasingCapitalPart = saldo / periods;
+      }
+    };
 
     const loanCommission = oc
       ? oc.commissionCalcMethod === CommissionCalcMethod.FIXED_AMOUNT
@@ -495,31 +509,8 @@ export class CalculatorService {
       const date = this.addMonths(inputs.startDate, idx);
       const period = getPeriod(date);
       const baseEffectiveRate = getBaseEffectiveRate(period);
-      const iCurrent = this.monthlyRate(baseEffectiveRate);
 
       const inGrace = idx <= graceMonths;
-
-      // Odroczone przeliczenie raty po transzy z poprzedniego miesiąca
-      if (needsRateRecalcAfterTranche && !inGrace && remainingAmortMonths > 0) {
-        needsRateRecalcAfterTranche = false;
-        if (inputs.installmentType === InstallmentType.EQUAL) {
-          equalRate = this.annuityPayment(saldo, iCurrent, Math.max(1, remainingAmortMonths));
-        } else {
-          decreasingCapitalPart = saldo / Math.max(1, remainingAmortMonths);
-        }
-      }
-
-      // Przy zmianie okresu oprocentowania przelicz ratę
-      if (period !== prevPeriod) {
-        prevPeriod = period;
-        if (!inGrace && remainingAmortMonths > 0) {
-          if (inputs.installmentType === InstallmentType.EQUAL) {
-            equalRate = this.annuityPayment(saldo, iCurrent, remainingAmortMonths);
-          } else {
-            decreasingCapitalPart = saldo / remainingAmortMonths;
-          }
-        }
-      }
 
       // Dynamiczna stopa dla tego miesiąca (ubezpieczenie pomostowe, niski wkład, promocja)
       const rateComponents = this.getRateComponentsForMonth(
@@ -536,6 +527,23 @@ export class CalculatorService {
         rateComponents.lowEquity -
         rateComponents.promotionalDiscount;
       const iMonth = this.monthlyRate(monthEffRate);
+
+      // Przeliczenie raty na pozostały okres: po transzy uruchomionej w poprzednim miesiącu,
+      // przy zmianie okresu oprocentowania oraz — dla rat równych — przy każdej zmianie stopy
+      // efektywnej, tak by rata zawsze spłacała kapitał w umownym terminie
+      const periodChanged = period !== prevPeriod;
+      prevPeriod = period;
+      const effectiveRateChanged =
+        inputs.installmentType === InstallmentType.EQUAL && iMonth !== installmentMonthlyRate;
+      if (
+        !inGrace &&
+        remainingAmortMonths > 0 &&
+        (needsRateRecalcAfterTranche || periodChanged || effectiveRateChanged)
+      ) {
+        needsRateRecalcAfterTranche = false;
+        recalculateInstallment(iMonth);
+      }
+
       const interest = saldo * iMonth;
 
       // Rozbicie odsetek na składowe stopy (suma value == interest).
@@ -559,19 +567,20 @@ export class CalculatorService {
       if (inGrace || remainingAmortMonths <= 0) {
         capital = 0;
         baseRate = interest;
-      } else if (inputs.installmentType === InstallmentType.EQUAL) {
-        const planned =
-          equalRate > 0 ? equalRate : this.annuityPayment(saldo, iCurrent, remainingAmortMonths);
-        capital = planned - interest;
-        if (capital < 0) capital = 0;
-        if (capital > saldo) capital = saldo;
-        baseRate = interest + capital;
       } else {
-        const capitalConst =
-          decreasingCapitalPart > 0
-            ? decreasingCapitalPart
-            : saldo / Math.max(1, remainingAmortMonths);
-        capital = Math.min(saldo, capitalConst);
+        if (inputs.installmentType === InstallmentType.EQUAL) {
+          const planned =
+            equalRate > 0 ? equalRate : this.annuityPayment(saldo, iMonth, remainingAmortMonths);
+          capital = Math.min(saldo, Math.max(0, planned - interest));
+        } else {
+          const capitalConst =
+            decreasingCapitalPart > 0
+              ? decreasingCapitalPart
+              : saldo / Math.max(1, remainingAmortMonths);
+          capital = Math.min(saldo, capitalConst);
+        }
+        // Ostatnia rata kapitałowo-odsetkowa domyka saldo (bez reszt z arytmetyki zmiennoprzecinkowej)
+        if (remainingAmortMonths === 1) capital = saldo;
         baseRate = interest + capital;
       }
 
@@ -676,7 +685,7 @@ export class CalculatorService {
           if (appliedPrepaymentShorten > 0) {
             remainingAmortMonths = this.shortenedAmortMonths(
               saldo,
-              iCurrent,
+              iMonth,
               remainingAmortMonths,
               inputs.installmentType,
               equalRate,
@@ -684,18 +693,14 @@ export class CalculatorService {
             );
           }
           if (appliedPrepaymentLower > 0) {
-            if (inputs.installmentType === InstallmentType.EQUAL) {
-              equalRate = this.annuityPayment(saldo, iCurrent, Math.max(1, remainingAmortMonths));
-            } else {
-              decreasingCapitalPart = saldo / Math.max(1, remainingAmortMonths);
-            }
+            recalculateInstallment(iMonth);
           }
         }
       } else if (inGrace && remainingAmortMonths > 0 && saldo > 0) {
         if (appliedPrepaymentShorten > 0) {
           remainingAmortMonths = this.shortenedAmortMonths(
             saldo,
-            iCurrent,
+            iMonth,
             remainingAmortMonths,
             inputs.installmentType,
             equalRate,
@@ -703,11 +708,7 @@ export class CalculatorService {
           );
         }
         if (appliedPrepaymentLower > 0) {
-          if (inputs.installmentType === InstallmentType.EQUAL) {
-            equalRate = this.annuityPayment(saldo, iCurrent, Math.max(1, remainingAmortMonths));
-          } else {
-            decreasingCapitalPart = saldo / Math.max(1, remainingAmortMonths);
-          }
+          recalculateInstallment(iMonth);
         }
       }
 

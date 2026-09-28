@@ -92,8 +92,10 @@ kredytowania ukrywa „Ostatni miesiąc kredytu”).
 
 - Format: miesiąc i rok. Pole jest zawsze edytowalne.
 - Domyślna wartość startowa: miesiąc po dacie uruchomienia.
-- Reguły: wartość obowiązkowa; nie może być wcześniejsza niż data uruchomienia. Gdy włączone są transze
-  i zdefiniowano więcej niż jedną, początek spłat kapitału musi przypadać ściśle po dacie ostatniej transzy.
+- Reguły: wartość obowiązkowa; nie może być wcześniejsza niż data uruchomienia ani późniejsza niż miesiąc
+  ostatniej raty (uruchomienie + okres kredytowania) — okres karencji musi być krótszy niż okres
+  kredytowania. Gdy włączone są transze i zdefiniowano więcej niż jedną, początek spłat kapitału musi
+  przypadać ściśle po dacie ostatniej transzy.
 - Zależności: ustawienie daty późniejszej niż miesiąc po uruchomieniu skutkuje karencją (w okresie
   karencji harmonogram zawiera wyłącznie odsetki, część kapitałowa wynosi 0).
 
@@ -184,6 +186,7 @@ Walidacje obejmujące wiele pól prezentowane są jako lista błędów globalnyc
 | Kwota kredytu większa od wartości nieruchomości                                                  | błąd: kwota kredytu nie może przekraczać wartości nieruchomości |
 | Okres kredytowania ≤ 0 miesięcy                                                                  | błąd: niepoprawny okres kredytowania                            |
 | Początek spłat kapitału wcześniejszy niż data uruchomienia                                       | błąd: spłata kapitału przed uruchomieniem                       |
+| Początek spłat kapitału późniejszy niż miesiąc ostatniej raty                                    | błąd: okres karencji musi być krótszy niż okres kredytowania    |
 | Transze włączone, liczba transz > 1, początek spłat kapitału nie późniejszy niż ostatnia transza | błąd: spłata kapitału musi zacząć się po ostatniej transzy      |
 | Transze włączone i suma transz ≠ kwocie kredytu (tolerancja 0,01)                                | błąd: suma transz musi równać się kwocie kredytu                |
 | Reguła nadpłaty (nie „jednorazowo”) z datą „do” wcześniejszą niż „od”                            | błąd: niepoprawny zakres dat nadpłaty                           |

@@ -35,6 +35,10 @@
   - `niższa rata` — obniżenie kolejnych rat przy zachowaniu okresu,
   - `skrócenie okresu` — utrzymanie rat i skracanie czasu spłaty.
 - Prowizja naliczana tylko do daty granicznej („Bank pobiera prowizję do”).
+- Aktywna reguła nadpłaty (kwota większa od 0) i aktywna reguła docelowej raty (rata większa od 0)
+  muszą zaczynać się między miesiącem pierwszej raty (miesiąc po uruchomieniu kredytu) a miesiącem
+  ostatniej raty — nadpłata w miesiącu uruchomienia lub po ostatniej racie nie trafiłaby do harmonogramu.
+  Data „do” reguły cyklicznej może wykraczać poza koniec kredytu (nadpłaty kończą się wraz ze spłatą).
 
 ### 5. Wpływ nadpłat na koszt kredytu
 

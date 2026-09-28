@@ -14,6 +14,14 @@ import {
 import { nextMonthStr } from './date.helper';
 
 /**
+ * Miesiąc końca naliczania kosztu: dla kosztu jednorazowego równy miesiącowi „od” — formularz
+ * pokazuje wtedy tylko pole „od”, a wartość ukrytej kontrolki „do” jest pomijana.
+ */
+function effectiveEndMonth(frequency: InsuranceFrequency, from: string, to: string): string {
+  return frequency === InsuranceFrequency.ONE_TIME ? from : to;
+}
+
+/**
  * Buduje wejścia silnika kalkulacyjnego z migawki wartości formularza (`form.getRawValue()`).
  * Używane zarówno dla bieżącej kalkulacji, jak i dla zapisanych rekordów (`SavedCalculationRecord.data`),
  * dlatego odczyty są defensywne — starsze migawki mogą nie zawierać wszystkich pól.
@@ -70,7 +78,11 @@ export function buildMortgageInputs(formValue: MortgageFormRawValue): MortgageIn
           calcMethod: overheadCostsRaw.propertyInsurance?.propInsCalcMethod,
           value: Number(overheadCostsRaw.propertyInsurance?.propInsValue) || 0,
           from: overheadCostsRaw.propertyInsurance?.propInsFrom,
-          to: overheadCostsRaw.propertyInsurance?.propInsTo,
+          to: effectiveEndMonth(
+            overheadCostsRaw.propertyInsurance?.propInsFrequency,
+            overheadCostsRaw.propertyInsurance?.propInsFrom,
+            overheadCostsRaw.propertyInsurance?.propInsTo,
+          ),
         },
         lowEquityInsurance: {
           rateIncrease: Number(overheadCostsRaw.lowEquityInsurance?.lowEquityRateIncrease) || 0,
@@ -80,14 +92,22 @@ export function buildMortgageInputs(formValue: MortgageFormRawValue): MortgageIn
           calcMethod: overheadCostsRaw.lifeInsurance?.lifeInsCalcMethod,
           value: Number(overheadCostsRaw.lifeInsurance?.lifeInsValue) || 0,
           from: overheadCostsRaw.lifeInsurance?.lifeInsFrom,
-          to: overheadCostsRaw.lifeInsurance?.lifeInsTo,
+          to: effectiveEndMonth(
+            overheadCostsRaw.lifeInsurance?.lifeInsFrequency,
+            overheadCostsRaw.lifeInsurance?.lifeInsFrom,
+            overheadCostsRaw.lifeInsurance?.lifeInsTo,
+          ),
         },
         jobLossInsurance: {
           frequency: overheadCostsRaw.jobLossInsurance?.jobLossInsFrequency,
           calcMethod: overheadCostsRaw.jobLossInsurance?.jobLossInsCalcMethod,
           value: Number(overheadCostsRaw.jobLossInsurance?.jobLossInsValue) || 0,
           from: overheadCostsRaw.jobLossInsurance?.jobLossInsFrom,
-          to: overheadCostsRaw.jobLossInsurance?.jobLossInsTo,
+          to: effectiveEndMonth(
+            overheadCostsRaw.jobLossInsurance?.jobLossInsFrequency,
+            overheadCostsRaw.jobLossInsurance?.jobLossInsFrom,
+            overheadCostsRaw.jobLossInsurance?.jobLossInsTo,
+          ),
         },
         additionalCosts: (overheadCostsRaw.additionalCosts?.items ?? []).map((additionalCost) => ({
           name: additionalCost.name || '',
@@ -95,7 +115,7 @@ export function buildMortgageInputs(formValue: MortgageFormRawValue): MortgageIn
           calcMethod: additionalCost.calcMethod,
           value: Number(additionalCost.value) || 0,
           from: additionalCost.from,
-          to: additionalCost.to,
+          to: effectiveEndMonth(additionalCost.frequency, additionalCost.from, additionalCost.to),
         })),
         promotionalRate: {
           rateDecrease: Number(overheadCostsRaw.promoRate?.promoRateDecrease) || 0,
@@ -139,13 +159,16 @@ export function buildMortgageInputs(formValue: MortgageFormRawValue): MortgageIn
       };
 
   const basicData = formValue.basicData;
-  const ratePeriods: RatePeriod[] = (formValue.ratePeriods?.items ?? []).map((ratePeriod) => ({
-    from: ratePeriod.from || basicData.startDate,
-    rateType: ratePeriod.rateType,
-    nominalRate: Number(ratePeriod.nominalRate) || 0,
-    referenceIndex: Number(ratePeriod.referenceIndex) || 0,
-    margin: Number(ratePeriod.margin) || 0,
-  }));
+  // pierwszy okres obowiązuje zawsze od daty uruchomienia (jego pole „od” nie jest edytowalne)
+  const ratePeriods: RatePeriod[] = (formValue.ratePeriods?.items ?? []).map(
+    (ratePeriod, index) => ({
+      from: index === 0 ? basicData.startDate : ratePeriod.from || basicData.startDate,
+      rateType: ratePeriod.rateType,
+      nominalRate: Number(ratePeriod.nominalRate) || 0,
+      referenceIndex: Number(ratePeriod.referenceIndex) || 0,
+      margin: Number(ratePeriod.margin) || 0,
+    }),
+  );
 
   return {
     propertyValue: basicData.propertyValue,

@@ -48,8 +48,21 @@ Kluczowe metody pomocnicze:
 | `syncLtvAmountValue`        | synchronizacja `loanAmount` / `ltv` / `propertyValue`                    |
 
 Okresy oprocentowania sortowane są rosnąco po `from`; dla danego miesiąca brany jest ostatni okres
-spełniający `period.from <= date`. Zmiana okresu w trakcie spłaty wyzwala rekalkulację `equalRate`
-lub `decreasingCapitalPart` od bieżącego salda i pozostałej liczby rat.
+spełniający `period.from <= date`. `buildMortgageInputs` zawsze ustawia `from` pierwszego okresu na
+`startDate` (jego pole „od” w formularzu nie jest edytowalne).
+
+Przeliczenie raty (`recalculateInstallment(monthlyRate)` — `equalRate` lub `decreasingCapitalPart`
+z bieżącego salda na `max(1, remainingAmortMonths)`) następuje, poza karencją, gdy:
+
+- w poprzednim miesiącu uruchomiono transzę (`needsRateRecalcAfterTranche`),
+- zmienił się okres oprocentowania (`period !== prevPeriod`),
+- dla rat równych — zmieniła się **efektywna** stopa miesięczna `iMonth` (baza + pomostowe + niski
+  wkład − promocja) względem stopy, od której policzono bieżącą ratę (`installmentMonthlyRate`).
+
+Rata równa jest więc zawsze annuitetem od stopy efektywnej. Nadpłaty obniżające ratę i skracające
+okres również korzystają z `iMonth`. W ostatnim miesiącu
+amortyzacji (`remainingAmortMonths === 1`) kapitał równa się całemu saldu — harmonogram kończy się
+saldem 0 bez reszt z arytmetyki zmiennoprzecinkowej.
 
 Ubezpieczenie pomostowe: dla `monthIdx >= 1 && monthIdx <= bridgeMonths` (gdzie
 `monthIdx = monthDiff(startDate, date)`) bazowa stopa rośnie o `bridgeRateIncrease`.
@@ -61,6 +74,8 @@ Składka ubezpieczeniowa (`calcInsuranceCostForMonth`): naliczana, gdy `date ∈
 `monthDiff(from, date) % 12 === 0` (`co rok`), w każdym miesiącu (`co miesiąc`) lub w pierwszym
 miesiącu (`jednorazowo`, `monthDiff(from, date) === 0`). Baza zależy od metody (wartość nieruchomości /
 kwota kredytu / saldo / kwota). Skrajne zakresy neutralizuje `isMonthInRange` (zwraca `false`).
+Dla kosztów `jednorazowo` `buildMortgageInputs` ustawia `to = from` (`effectiveEndMonth`) — formularz
+pokazuje wtedy tylko pole „od”, a wartość ukrytej kontrolki „do” jest pomijana.
 
 ## RRSO
 

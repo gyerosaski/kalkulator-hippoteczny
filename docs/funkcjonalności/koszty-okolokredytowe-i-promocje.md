@@ -53,7 +53,9 @@ w pierwszym miesiącu harmonogramu.
 
 Mechanizm: przez wskazaną liczbę pierwszych miesięcy spłaty bazowa stopa jest powiększana o podwyżkę
 pomostową. Skutek: wyższe odsetki w okresie pomostowym — nie tworzy osobnej pozycji kosztów (wpływa
-pośrednio przez ratę). Część odsetek z tej podwyżki jest wyodrębniona jako składnik „Ubezpieczenie
+pośrednio przez ratę). Przy ratach równych rata jest wyższa przez cały okres pomostowy, a po jego
+zakończeniu zostaje przeliczona w dół (z bieżącego salda na pozostały okres) — kapitał jest spłacany
+w umownym terminie. Część odsetek z tej podwyżki jest wyodrębniona jako składnik „Ubezpieczenie
 pomostowe” w rozwijanej legendzie „Odsetki” (patrz §4 i `docs/funkcjonalności/wykresy.md`).
 
 ### 2.4. Ubezpieczenie nieruchomości
@@ -81,8 +83,10 @@ Mechanizm: stopa jest powiększana o podwyżkę niskiego wkładu tylko wtedy, gd
 LTV liczone jest w każdym miesiącu jako `aktualne saldo / wartość nieruchomości × 100`. Podwyżka przestaje
 być stosowana automatycznie w miesiącu, w którym saldo spadnie wystarczająco, by LTV osiągnęło lub
 przekroczyło próg 80% od góry. Nie ma konfigurowalnej daty granicznej — warunek jest sprawdzany co miesiąc.
-Wpływa pośrednio na odsetki, nie na koszty. Część odsetek z tej podwyżki jest wyodrębniona jako składnik
-„Ubezpieczenie niskiego wkładu” w rozwijanej legendzie „Odsetki” (§4).
+Wpływa pośrednio na odsetki, nie na koszty. Przy ratach równych rata uwzględnia podwyżkę, a w miesiącu,
+w którym podwyżka przestaje obowiązywać, zostaje przeliczona w dół (z bieżącego salda na pozostały
+okres). Część odsetek z tej podwyżki jest wyodrębniona jako składnik „Ubezpieczenie niskiego wkładu”
+w rozwijanej legendzie „Odsetki” (§4).
 
 Przykład: kredyt 420 000 zł przy wartości nieruchomości 500 000 zł → LTV = 84% → podwyżka aktywna.
 Po nadpłatach redukujących saldo do 399 000 zł → LTV = 79,8% ≤ 80% → podwyżka wyłącza się automatycznie.
@@ -143,7 +147,8 @@ Suma wszystkich miesięcznych pozycji wchodzi do kosztów okołokredytowych.
 | Do                     | data      | 12 miesięcy po dacie „od” |
 
 Mechanizm: dla miesięcy w zakresie `[od, do]` stopa zostaje pomniejszona o obniżkę promocyjną
-(nie schodzi poniżej 0).
+(nie schodzi poniżej 0). Przy ratach równych rata jest przeliczana na początku i po zakończeniu promocji,
+więc promocja obniża ratę, ale nie skraca okresu kredytowania.
 
 ## 3. Akcje w sekcji
 
@@ -177,7 +182,9 @@ wcześniejszą spłatę i opłaty transzowe pojęciowo należą do sekcji „Nad
 w kosztach okołokredytowych (przekategoryzowanie planowane osobnym zadaniem).
 
 Ubezpieczenie pomostowe (2.3), niskiego wkładu (2.5) i promocja (2.9) zmieniają **efektywną stopę
-miesiąca** i wpływają pośrednio przez odsetki, a nie przez koszty okołokredytowe.
+miesiąca** i wpływają pośrednio przez odsetki, a nie przez koszty okołokredytowe. Każda zmiana
+efektywnej stopy powoduje przy ratach równych przeliczenie raty na pozostały okres (patrz
+`docs/funkcjonalności/harmonogram-splaty.md`).
 
 Stąd wartości zbiorcze:
 
@@ -190,5 +197,10 @@ Stąd wartości zbiorcze:
 
 - Każde pole liczbowe przyjmuje wartości nieujemne. Procentowa prowizja za udzielenie dodatkowo nie może
   przekraczać 100.
-- Sekcja nie ma własnych walidacji krzyżowych — błędny zakres okresu ubezpieczenia (data „od” późniejsza
-  niż „do”) nie zgłasza błędu; składka po prostu nie jest wtedy naliczana.
+- Daty sprawdzane są tylko dla pozycji aktywnych — ubezpieczeń i kosztów dodatkowych o wartości większej
+  od 0 oraz promocji z obniżką większą od 0:
+  - data „od” musi przypadać między miesiącem pierwszej raty (miesiąc po uruchomieniu kredytu)
+    a miesiącem ostatniej raty — wcześniejsze lub późniejsze naliczenia nie trafiłyby do harmonogramu,
+  - przy płatności cyklicznej (`co rok`, `co miesiąc`) oraz w promocji data „do” nie może być wcześniejsza
+    niż „od”; przy płatności `jednorazowo` liczy się wyłącznie data „od”.
+- Pełna lista reguł i komunikatów: `docs/funkcjonalności/walidacje.md`.

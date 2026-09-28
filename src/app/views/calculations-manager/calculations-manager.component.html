@@ -58,6 +58,19 @@
     </div>
   </div>
 
+  @if (backupRecordCount() > 0) {
+    <ui-banner [variant]="BannerVariant.WARNING">
+      Lista kalkulacji jest pusta, ale kopia zapasowa zawiera {{ backupRecordCount() }}
+      {{ backupRecordCount() === 1 ? 'kalkulację' : 'kalkulacji' }} z poprzedniego zapisu.
+      <button bannerAction class="btn btn--primary" type="button" (click)="restoreBackup()">
+        Przywróć
+      </button>
+      <button bannerAction class="btn btn--ghost" type="button" (click)="discardBackup()">
+        Odrzuć
+      </button>
+    </ui-banner>
+  }
+
   <app-calculations-list
     [calculations]="filteredCalculations()"
     [activeCalculationName]="activeCalculationName()"

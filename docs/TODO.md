@@ -113,26 +113,23 @@
 
 ## Audyt 2026-09-28 — Etap 0: Siatka bezpieczeństwa
 
-- [x] lint: skrypt `"lint": "eslint src/**/*.ts"` w `package.json` na Ubuntu (CI) jest rozwijany przez `sh` i sprawdza tylko 3 pliki — zmienić na `eslint .`; w `eslint.config.js` zastąpić `tseslint.configs.base` (brak reguł) przez `recommendedTypeChecked`, dodać angular-eslint (reguły TS i szablonów, w tym `template/accessibility`) i naprawić zgłoszone problemy
-- [x] usunąć `as any` z `crossFieldValidator` (`src/app/services/form/form.ts`) — otypować `getRawValue()` sekcji nadpłat
-- [x] testy referencyjne `CalculatorService` z wartościami bezwzględnymi (obecne testy porównują tylko wyniki względne): annuitet 300 000 zł / 8% / 240 mies. → rata 2 509,32 zł, raty malejące, stopa zmienna (VARIABLE), karencja, nadpłaty QUARTERLY i YEARLY
-- [x] testy regresyjne błędów silnika z Etapu 1 (oznaczone `it.fails`, patrz `docs/technikalia/jakosc-kodu-i-ci.md`): w każdym scenariuszu suma kapitału = kwota kredytu, a "Pozostało" w ostatnim wierszu = 0
-- [x] dodać `@vitest/coverage-v8` i raportowanie pokrycia w CI (`npm run test:coverage`; punkt wyjścia: 19% instrukcji)
-- testy komponentów, pipe'ów oraz `CalculationsStoreService`, `SavedCalculationsStateService`, `ComparisonStateService`, `AppSettingsStoreService` (dziś bez testów)
-- [x] CI: dodać `cargo check`/`cargo clippy` dla `src-tauri` (dziś błąd w Rust wychodzi dopiero przy wydaniu); `release.yml` ma uruchamiać lint, testy i build przed bundlowaniem; przypiąć `tauri-action` do konkretnej wersji
+- [x] lint: `eslint .`, reguły `recommendedTypeChecked` oraz angular-eslint (TS, szablony, dostępność)
+- [x] typowanie `crossFieldValidator` bez `as any`
+- [x] testy referencyjne `CalculatorService`: raty równe i malejące, stopa zmienna, karencja, nadpłaty kwartalne i roczne
+- [x] pokrycie testami: `@vitest/coverage-v8`, `npm run test:coverage` w CI
+- testy komponentów, pipe'ów oraz `CalculationsStoreService`, `ComparisonStateService`, `AppSettingsStoreService`
+- [x] CI: `cargo clippy` dla `src-tauri`, wydanie uruchamia CI przed bundlowaniem, `tauri-action` przypięty do wersji
 
-## Audyt 2026-09-28 — Etap 1: Błędy krytyczne (poprawność obliczeń i utrata danych)
+## Audyt 2026-09-28 — Etap 1: Poprawność obliczeń i integralność danych
 
-- BŁĄD: przy ratach równych z ubezpieczeniem niskiego wkładu lub pomostowym kredyt nie jest spłacany do zera — `equalRate` liczony ze stopy bazowej (`iCurrent`), a odsetki ze stopy efektywnej (`iMonth`), pętla kończy się na umownym okresie z saldem > 0 (zaniżone odsetki, koszt całkowity i RRSO); przy promocji odwrotnie — kredyt kończy się przed terminem. Potwierdzone testami `it.fails` w `calculator.service.spec.ts`: 450 000 zł przy LTV 90% i dopłacie +2 pp → 236 928 zł niespłaconego kapitału; pomostowe +1 pp przez 12 mies. → 14 091 zł; promocja −1 pp przez 12 mies. → 235 zamiast 240 rat. Poprawka: rata liczona ze stopy efektywnej i przeliczana przy każdej jej zmianie (nie tylko przy zmianie okresu oprocentowania), ostatnia rata domyka saldo (`capital = saldo`); zaktualizować `harmonogram-splaty.md`, `koszty-okolokredytowe-i-promocje.md`, `silnik-obliczeniowy.md`
-- walidacja: początek spłat kapitału musi przypadać przed końcem kredytu — dziś karencja ≥ okres kredytowania daje harmonogram bez spłaty kapitału i bez żadnego komunikatu (test `it.fails` w `form.spec.ts`)
-- walidacja: data transzy 2+ musi być późniejsza niż data uruchomienia kredytu i nie późniejsza niż koniec kredytu — dziś można ręcznie ustawić datę uruchomienia (lub wcześniejszą), silnik pomija taką transzę (pętla zaczyna od miesiąca po uruchomieniu), a RRSO ją uwzględnia (test `it.fails` w `form.spec.ts`; domyślna data nowej transzy jest poprawna — uruchomienie + n miesięcy)
-- walidacja okresów oprocentowania: unikalne daty "od", nie wcześniejsze niż data uruchomienia i wcześniejsze niż koniec kredytu — dziś dwa okresy z tą samą datą są akceptowane i jeden po cichu nadpisuje drugi (test `it.fails` w `form.spec.ts`; domyślna data nowego okresu jest poprawna — ostatni + 12 miesięcy)
-- walidacja dat nadpłat, docelowej raty i kosztów okołokredytowych (muszą mieścić się w okresie kredytu) oraz warunku "do" ≥ "od" w kosztach i promocji (dziś niewalidowane); uzupełnić `walidacje.md` i `ResultsErrorsComponent`
-- BŁĄD utraty danych: zmiana nazwy kalkulacji na już istniejącą nadpisuje tamten rekord (`saveCalculation` robi upsert po `name`, rename = zapis + usunięcie); ponowne duplikowanie nadpisuje istniejącą "— kopia". Poprawka: stabilne `id` (`crypto.randomUUID()`) w `SavedCalculationRecord`, upsert po `id`, rename jednym zapisem (`updateCalculation(id, patch)`), blokada zajętej nazwy w `RenameCalculationDialogComponent`, duplikowanie przez istniejące `buildUniqueCalculationName`
-- serializacja zapisów w `CalculationsStoreService` (kolejka operacji read-modify-write)
-- kopia zapasowa kalkulacji: plugin-store przy uszkodzonym `calculations.json` startuje z pustą listą, a kolejny zapis nadpisuje plik — przed każdym zapisem kopia do `calculations.backup.json`; przy pustym store i niepustej kopii baner z opcją przywrócenia
-- eksport do pliku nie ma obsługi błędów — przy nieudanym zapisie pokazać toast błędu
-- `scripts/seed-calculations.mjs` kopiuje prawdziwe kalkulacje z `%APPDATA%` do `public/dev-seed`, który trafia do każdego buildu (także lokalnego `tauri:build`) — wykluczyć `dev-seed/**` z assetów konfiguracji production w `angular.json`
+- [x] rata równa liczona od stopy efektywnej (baza + dopłaty − promocja) i przeliczana przy każdej jej zmianie; ostatnia rata domyka saldo
+- [x] walidacje dat względem okresu spłaty: karencja krótsza niż okres kredytowania, transze po dacie uruchomienia, okresy oprocentowania w okresie spłaty z unikalnymi datami „od”, aktywne nadpłaty, docelowa rata, koszty i promocja w okresie spłaty („do” ≥ „od”)
+- [x] pierwszy okres oprocentowania zawsze od daty uruchomienia; koszt jednorazowy naliczany wyłącznie w miesiącu „od”
+- [x] stabilne `id` zapisanych kalkulacji, zmiana nazwy jednym zapisem, unikalne nazwy przy zmianie nazwy, duplikowaniu i imporcie
+- [x] kolejka operacji zapisu w `CalculationsStoreService`
+- [x] kopia zapasowa `calculations.backup.json` z banerem przywracania przy pustej liście
+- [x] komunikat błędu przy nieudanym zapisie pliku eksportu
+- [x] `dev-seed` wykluczony z buildu produkcyjnego
 
 ## Audyt 2026-09-28 — Etap 2: Silnik zgodny z harmonogramami bankowymi
 

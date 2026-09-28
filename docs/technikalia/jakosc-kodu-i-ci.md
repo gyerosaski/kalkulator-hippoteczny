@@ -7,9 +7,8 @@ Opis narzędzi pilnujących jakości kodu (lint, testy, pokrycie) oraz przebiegu
 ## 1. Lint (ESLint)
 
 - Uruchomienie: `npm run lint` (`eslint .`), automatyczne poprawki: `npm run lint:fix`.
-- Zakres wynika z konfiguracji (`eslint.config.js`), a nie z globu w skrypcie. Glob `src/**/*.ts`
-  bez cudzysłowu był na Linuksie (CI) rozwijany przez `sh`, który nie obsługuje `**` — lint
-  sprawdzał wtedy tylko pliki bezpośrednio w `src/app/`.
+- Zakres wynika z konfiguracji (`eslint.config.js`), a nie z globu w skrypcie — niecytowany glob
+  z `**` rozwija na Linuksie `sh`, który nie obsługuje tego wzorca.
 - Konfiguracja (flat config):
   - `src/**/*.ts` — `typescript-eslint` `recommendedTypeChecked` (reguły korzystające z informacji
     o typach, `projectService`) oraz `angular-eslint` `tsRecommended`;
@@ -30,8 +29,9 @@ Opis narzędzi pilnujących jakości kodu (lint, testy, pokrycie) oraz przebiegu
   kwartalne i roczne), a nie tylko porównania względne.
 - **Znane błędy** są opisane testami `it.fails(...)`: test opisuje poprawne zachowanie, a `.fails`
   oznacza, że dziś ono nie występuje. Po naprawie błędu test zaczyna przechodzić, przez co
-  `it.fails` zgłasza błąd — trzeba wtedy zdjąć `.fails`. Tak oznaczone są regresje z
-  `docs/TODO.md` (Audyt 2026-09-28 — Etap 1) w `calculator.service.spec.ts` i `form.spec.ts`.
+  `it.fails` zgłasza błąd — trzeba wtedy zdjąć `.fails` w tej samej zmianie.
+- Integracja zapisu kalkulacji ze store'em jest testowana w trybie przeglądarkowym (localStorage) w
+  `saved-calculations-state.service.spec.ts` — zmiana nazwy, duplikaty, równoległe zapisy, kopia zapasowa.
 
 ## 3. CI (`.github/workflows/ci.yml`)
 

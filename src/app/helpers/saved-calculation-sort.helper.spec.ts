@@ -9,6 +9,7 @@ import { DEFAULT_SORT_DIRECTIONS, sortSavedCalculations } from './saved-calculat
 
 function buildCalculation(overrides: Partial<SavedCalculation>): SavedCalculation {
   return {
+    id: 'kalkulacja',
     name: 'Kalkulacja',
     loanAmount: 400000,
     propertyValue: 500000,

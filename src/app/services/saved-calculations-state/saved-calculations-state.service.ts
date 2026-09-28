@@ -9,6 +9,7 @@ import {
 } from '../../model';
 import { CalculationsStoreService } from '../calculations-store/calculations-store.service';
 import { buildUniqueCalculationName } from '../../helpers/saved-calculation-import.helper';
+import { createCalculationId } from '../../helpers/saved-calculation-identity.helper';
 
 export function toSavedCalculation(record: SavedCalculationRecord): SavedCalculation {
   const basicData = record.data.basicData;
@@ -27,6 +28,7 @@ export function toSavedCalculation(record: SavedCalculationRecord): SavedCalcula
   const updatedAt = record.updatedAt ? new Date(record.updatedAt) : createdAt;
 
   return {
+    id: record.id,
     name: record.name,
     loanAmount: Number(basicData.loanAmount ?? 0),
     propertyValue: Number(basicData.propertyValue ?? 0),
@@ -60,41 +62,55 @@ export class SavedCalculationsStateService {
   private readonly recordsSignal = signal<SavedCalculationRecord[]>([]);
   readonly records = this.recordsSignal.asReadonly();
   readonly isLoading = signal(false);
+  /** Liczba kalkulacji w kopii zapasowej, gdy lista jest pusta (0 — brak czego przywracać). */
+  readonly backupRecordCount = signal(0);
 
   async loadAll(): Promise<void> {
     this.isLoading.set(true);
     try {
       const records = await this.calculationsStore.listCalculations();
       this.recordsSignal.set(records);
+      await this.refreshBackupRecordCount(records);
     } finally {
       this.isLoading.set(false);
     }
   }
 
-  async rename(oldName: string, newName: string): Promise<void> {
-    const records = await this.calculationsStore.listCalculations();
-    const existing = records.find((record) => record.name === oldName);
-    if (!existing) return;
-
-    const renamed: SavedCalculationRecord = {
-      ...existing,
-      name: newName,
-      updatedAt: new Date().toISOString(),
-    };
-    await this.calculationsStore.saveCalculation(renamed);
-    await this.calculationsStore.deleteCalculation(oldName);
-    await this.refreshRecords();
+  /** Czy nazwa jest zajęta przez inną zapisaną kalkulację niż wskazana (`exceptId`). */
+  isNameTaken(name: string, exceptId?: string): boolean {
+    return this.recordsSignal().some((record) => record.name === name && record.id !== exceptId);
   }
 
-  async duplicate(sourceName: string): Promise<string | null> {
+  /**
+   * Zmienia nazwę kalkulacji jednym zapisem.
+   * @returns `false`, gdy nazwa jest zajęta przez inną kalkulację lub rekord nie istnieje.
+   */
+  async rename(id: string, newName: string): Promise<boolean> {
+    await this.refreshRecords();
+    if (this.isNameTaken(newName, id)) return false;
+
+    const renamed = await this.calculationsStore.updateCalculation(id, {
+      name: newName,
+      updatedAt: new Date().toISOString(),
+    });
+    await this.refreshRecords();
+    return renamed;
+  }
+
+  /** Tworzy kopię kalkulacji pod unikalną nazwą („ — kopia”, „ — kopia (2)”…). */
+  async duplicate(sourceId: string): Promise<string | null> {
     const records = await this.calculationsStore.listCalculations();
-    const source = records.find((record) => record.name === sourceName);
+    const source = records.find((record) => record.id === sourceId);
     if (!source) return null;
 
     const now = new Date().toISOString();
-    const copyName = `${sourceName} — kopia`;
+    const copyName = buildUniqueCalculationName(
+      source.name,
+      records.map((record) => record.name),
+    );
     const copy: SavedCalculationRecord = {
       ...source,
+      id: createCalculationId(),
       name: copyName,
       createdAt: now,
       updatedAt: now,
@@ -104,9 +120,23 @@ export class SavedCalculationsStateService {
     return copyName;
   }
 
-  async remove(name: string): Promise<void> {
-    await this.calculationsStore.deleteCalculation(name);
+  async remove(id: string): Promise<void> {
+    await this.calculationsStore.deleteCalculation(id);
     await this.refreshRecords();
+  }
+
+  /** Przywraca kalkulacje z kopii zapasowej. @returns liczba przywróconych kalkulacji. */
+  async restoreBackup(): Promise<number> {
+    const restoredCount = await this.calculationsStore.restoreFromBackup();
+    await this.refreshRecords();
+    this.backupRecordCount.set(0);
+    return restoredCount;
+  }
+
+  /** Odrzuca kopię zapasową — baner przywracania przestaje się pojawiać. */
+  async discardBackup(): Promise<void> {
+    await this.calculationsStore.discardBackup();
+    this.backupRecordCount.set(0);
   }
 
   async importFromFile(): Promise<CalculationImportResult> {
@@ -124,8 +154,11 @@ export class SavedCalculationsStateService {
     for (const importedRecord of importedRecords) {
       const uniqueName = buildUniqueCalculationName(importedRecord.name, takenNames);
       takenNames.add(uniqueName);
+      // importowany rekord zawsze dostaje nowy identyfikator — plik może pochodzić z eksportu
+      // tej samej kalkulacji, która nadal jest na liście
       const record: SavedCalculationRecord = {
         ...importedRecord,
+        id: createCalculationId(),
         name: uniqueName,
         updatedAt: now,
       };
@@ -139,5 +172,15 @@ export class SavedCalculationsStateService {
   public async refreshRecords(): Promise<void> {
     const records = await this.calculationsStore.listCalculations();
     this.recordsSignal.set(records);
+  }
+
+  /** baner przywracania ma sens tylko przy pustej liście i niepustej kopii zapasowej */
+  private async refreshBackupRecordCount(records: SavedCalculationRecord[]): Promise<void> {
+    if (records.length) {
+      this.backupRecordCount.set(0);
+      return;
+    }
+    const backupRecords = await this.calculationsStore.listBackupCalculations();
+    this.backupRecordCount.set(backupRecords.length);
   }
 }

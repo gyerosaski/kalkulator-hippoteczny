@@ -2,15 +2,26 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormService } from '../../../services/form/form';
 import {
+  CapitalAfterLoanEndErrorDetails,
   CapitalBeforeLastTrancheErrorDetails,
   FormError,
   FormErrorSection,
+  ItemPositionsErrorDetails,
+  OverheadCostDatesErrorDetails,
+  OverheadCostKind,
   TrancheSumMismatchErrorDetails,
 } from '../../../model';
+import { FormatMonthPipe } from '../../../pipes/format-month/format-month.pipe';
+import { OverheadCostKindLabelPipe } from '../../../pipes/overhead-cost-kind-label/overhead-cost-kind-label.pipe';
 import { IconWarningComponent } from '../../icons/icon-warning/icon-warning.component';
 import { IconWarningSmComponent } from '../../icons/icon-warning-sm/icon-warning-sm.component';
 import { BadgeComponent } from '../../ui/badge/badge.component';
 import { BadgeVariant } from '../../../model';
+
+/** Lista numerów pozycji w komunikacie, np. „nr 2, 3”. */
+function positionsLabel(positions: number[]): string {
+  return `nr ${positions.join(', ')}`;
+}
 
 function pluralErr(n: number): string {
   if (n === 1) return '1 błąd';
@@ -36,6 +47,8 @@ interface ErrorGroup {
 })
 export class ResultsErrorsComponent {
   private readonly formService = inject(FormService);
+  private readonly formatMonthPipe = new FormatMonthPipe();
+  private readonly overheadCostKindLabelPipe = new OverheadCostKindLabelPipe();
   protected readonly BadgeVariant = BadgeVariant;
 
   private readonly _formVersion = toSignal(this.formService.form.valueChanges, {
@@ -50,6 +63,7 @@ export class ResultsErrorsComponent {
   readonly groups = computed((): ErrorGroup[] => {
     const order = [
       FormErrorSection.BASIC_DATA,
+      FormErrorSection.RATE_PERIODS,
       FormErrorSection.TRANCHES,
       FormErrorSection.PREPAYMENTS,
       FormErrorSection.OVERHEAD_COSTS,
@@ -101,9 +115,43 @@ export class ResultsErrorsComponent {
     if (capitalBeforeLastTranche) {
       errs.push({
         section: FormErrorSection.BASIC_DATA,
-        message: `Początek spłat kapitału musi przypadać po dacie uruchomienia ostatniej transzy (ostatnia transza: ${capitalBeforeLastTranche.lastTrancheDate}).`,
+        message: `Początek spłat kapitału musi przypadać po dacie uruchomienia ostatniej transzy (ostatnia transza: ${this.formatMonthPipe.transform(capitalBeforeLastTranche.lastTrancheDate)}).`,
         fieldLabel: 'Data początku spłaty kapitału',
         fieldId: 'capitalStartDate',
+      });
+    }
+    const capitalAfterLoanEnd = fe?.['capitalAfterLoanEnd'] as
+      | CapitalAfterLoanEndErrorDetails
+      | undefined;
+    if (capitalAfterLoanEnd) {
+      errs.push({
+        section: FormErrorSection.BASIC_DATA,
+        message: `Początek spłat kapitału nie może przypadać po ostatniej racie kredytu (${this.formatMonthPipe.transform(capitalAfterLoanEnd.loanEndDate)}) — okres karencji musi być krótszy niż okres kredytowania.`,
+        fieldLabel: 'Data początku spłaty kapitału',
+        fieldId: 'capitalStartDate',
+      });
+    }
+
+    const ratePeriodsOutsideLoan = fe?.['ratePeriodOutsideLoan'] as
+      | ItemPositionsErrorDetails
+      | undefined;
+    if (ratePeriodsOutsideLoan) {
+      errs.push({
+        section: FormErrorSection.RATE_PERIODS,
+        message: `Okres oprocentowania ${positionsLabel(ratePeriodsOutsideLoan.positions)} musi zaczynać się po dacie uruchomienia kredytu i nie później niż w miesiącu ostatniej raty.`,
+        fieldLabel: 'Data początku okresu',
+        fieldId: 'ratePeriodFrom',
+      });
+    }
+    const ratePeriodDuplicateDates = fe?.['ratePeriodDuplicateDates'] as
+      | ItemPositionsErrorDetails
+      | undefined;
+    if (ratePeriodDuplicateDates) {
+      errs.push({
+        section: FormErrorSection.RATE_PERIODS,
+        message: `Okresy oprocentowania ${positionsLabel(ratePeriodDuplicateDates.positions)} zaczynają się w tym samym miesiącu — każdy okres musi mieć inną datę początku.`,
+        fieldLabel: 'Data początku okresu',
+        fieldId: 'ratePeriodFrom',
       });
     }
 
@@ -148,6 +196,18 @@ export class ResultsErrorsComponent {
       });
     }
 
+    const tranchesNotAfterStart = fe?.['trancheDateNotAfterStart'] as
+      | ItemPositionsErrorDetails
+      | undefined;
+    if (tranchesNotAfterStart) {
+      errs.push({
+        section: FormErrorSection.TRANCHES,
+        message: `Transza ${positionsLabel(tranchesNotAfterStart.positions)} musi zostać uruchomiona po dacie uruchomienia kredytu — w tym samym miesiącu uruchamiana jest tylko pierwsza transza.`,
+        fieldLabel: 'Data uruchomienia transzy',
+        fieldId: 'trancheDate',
+      });
+    }
+
     if (fe?.['prepaymentDateRangeInvalid']) {
       errs.push({
         section: FormErrorSection.PREPAYMENTS,
@@ -162,6 +222,26 @@ export class ResultsErrorsComponent {
         message: 'Kwota nadpłaty nie może być ujemna.',
         fieldLabel: 'Kwota nadpłaty',
         fieldId: 'prepaymentAmount',
+      });
+    }
+    const prepaymentsOutsideLoan = fe?.['prepaymentOutsideLoan'] as
+      | ItemPositionsErrorDetails
+      | undefined;
+    if (prepaymentsOutsideLoan) {
+      errs.push({
+        section: FormErrorSection.PREPAYMENTS,
+        message: `Nadpłata ${positionsLabel(prepaymentsOutsideLoan.positions)} musi zaczynać się między miesiącem pierwszej a miesiącem ostatniej raty kredytu.`,
+        fieldLabel: 'Data nadpłaty',
+        fieldId: 'prepaymentRule',
+      });
+    }
+    if (fe?.['targetInstallmentOutsideLoan']) {
+      errs.push({
+        section: FormErrorSection.PREPAYMENTS,
+        message:
+          'Reguła docelowej raty musi zaczynać się między miesiącem pierwszej a miesiącem ostatniej raty kredytu.',
+        fieldLabel: 'Data docelowej raty',
+        fieldId: 'targetInstallment',
       });
     }
     if (fe?.['targetInstallmentDateRangeInvalid']) {
@@ -191,6 +271,53 @@ export class ResultsErrorsComponent {
       });
     }
 
+    const overheadCostsOutsideLoan = fe?.['overheadCostOutsideLoan'] as
+      | OverheadCostDatesErrorDetails
+      | undefined;
+    if (overheadCostsOutsideLoan) {
+      errs.push({
+        section: FormErrorSection.OVERHEAD_COSTS,
+        message: `${this.overheadCostsLabel(overheadCostsOutsideLoan.kinds)}: data „od” musi przypadać między miesiącem pierwszej a miesiącem ostatniej raty kredytu.`,
+        fieldLabel: 'Data naliczania kosztu',
+        fieldId: 'overheadCostDates',
+      });
+    }
+    const overheadCostsWithInvalidRange = fe?.['overheadCostDateRangeInvalid'] as
+      | OverheadCostDatesErrorDetails
+      | undefined;
+    if (overheadCostsWithInvalidRange) {
+      errs.push({
+        section: FormErrorSection.OVERHEAD_COSTS,
+        message: `${this.overheadCostsLabel(overheadCostsWithInvalidRange.kinds)}: data „do” nie może być wcześniejsza niż data „od”.`,
+        fieldLabel: 'Zakres dat kosztu',
+        fieldId: 'overheadCostDates',
+      });
+    }
+    if (fe?.['promotionalRateOutsideLoan']) {
+      errs.push({
+        section: FormErrorSection.OVERHEAD_COSTS,
+        message:
+          'Promocja oprocentowania musi zaczynać się między miesiącem pierwszej a miesiącem ostatniej raty kredytu.',
+        fieldLabel: 'Promocja oprocentowania',
+        fieldId: 'promoRate',
+      });
+    }
+    if (fe?.['promotionalRateDateRangeInvalid']) {
+      errs.push({
+        section: FormErrorSection.OVERHEAD_COSTS,
+        message: 'W promocji oprocentowania data „do” nie może być wcześniejsza niż data „od”.',
+        fieldLabel: 'Promocja oprocentowania',
+        fieldId: 'promoRate',
+      });
+    }
+
     return errs;
+  }
+
+  /** Etykiety rodzajów kosztów rozdzielone przecinkami, np. „Ubezpieczenie na życie, Koszt dodatkowy”. */
+  private overheadCostsLabel(kinds: OverheadCostKind[]): string {
+    return kinds
+      .map((kind) => this.overheadCostKindLabelPipe.transform({ kind, value: 0 }))
+      .join(', ');
   }
 }

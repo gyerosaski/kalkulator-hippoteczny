@@ -1,7 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
 import { FormService } from '../services/form/form';
-import { CommissionCalcMethod, PrepaymentEffect, PrepaymentFrequency } from '../model';
+import {
+  CommissionCalcMethod,
+  InsuranceFrequency,
+  PrepaymentEffect,
+  PrepaymentFrequency,
+} from '../model';
 import { buildMortgageInputs } from './mortgage-inputs.helper';
 
 describe('buildMortgageInputs', () => {
@@ -109,5 +114,34 @@ describe('buildMortgageInputs', () => {
     const inputs = buildMortgageInputs(formService.form.getRawValue());
 
     expect(inputs.prepaymentRules).toEqual([]);
+  });
+  it('powinien ustawić początek pierwszego okresu oprocentowania na datę uruchomienia kredytu', () => {
+    const formValue = formService.form.getRawValue();
+    formValue.basicData.startDate = '2025-01';
+    formValue.ratePeriods.items = [
+      { ...formValue.ratePeriods.items[0], from: '2026-09' },
+      { ...formValue.ratePeriods.items[0], from: '2026-03', referenceIndex: 3 },
+    ];
+
+    const inputs = buildMortgageInputs(formValue);
+
+    // nieaktualna data pierwszego okresu nie może przestawić kolejności okresów
+    expect(inputs.ratePeriods.map((ratePeriod) => ratePeriod.from)).toEqual(['2025-01', '2026-03']);
+  });
+
+  it('powinien przyjąć `to = from` dla kosztu jednorazowego z nieaktualnym polem „do”', () => {
+    formService.form.controls.overheadCosts.controls.enabled.setValue(true);
+    const additionalCost = formService.additionalCostsArray.at(0).controls;
+    additionalCost.value.setValue(500);
+    additionalCost.frequency.setValue(InsuranceFrequency.ONE_TIME);
+    additionalCost.from.setValue('2027-05');
+    additionalCost.to.setValue('2026-01');
+
+    const inputs = buildMortgageInputs(formService.form.getRawValue());
+
+    expect(inputs.overheadCosts?.additionalCosts?.[0]).toMatchObject({
+      from: '2027-05',
+      to: '2027-05',
+    });
   });
 });

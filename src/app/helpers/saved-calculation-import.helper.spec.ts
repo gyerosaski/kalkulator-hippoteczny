@@ -7,6 +7,7 @@ import {
 
 function buildRecord(name: string): SavedCalculationRecord {
   return {
+    id: `id-${name}`,
     name,
     createdAt: '2026-01-01T00:00:00.000Z',
     data: { basicData: { loanAmount: 100000 } } as MortgageFormRawValue,

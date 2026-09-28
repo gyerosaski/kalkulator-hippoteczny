@@ -12,6 +12,9 @@
           (keydown.escape)="dismiss()"
         />
       </div>
+      @if (isNameTaken()) {
+        <span class="field-hint field-hint--error">Kalkulacja o tej nazwie już istnieje.</span>
+      }
     </div>
     <div class="dialog-actions">
       <button class="btn btn--ghost" type="button" (click)="dismiss()">Anuluj</button>

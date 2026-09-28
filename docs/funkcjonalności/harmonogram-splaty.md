@@ -13,8 +13,10 @@
 - „Rata” to zawsze rata umowna: `Kapitał + Odsetki`. Nadpłaty, prowizje i koszty okołokredytowe nie są
   do niej wliczane — łączny miesięczny wypływ pokazuje kolumna „Łącznie”.
 - Widok roczny: wiersze „+ RRRR …” z możliwością rozwinięcia do miesięcy.
-- Sposób wyliczania (miesiąc m, stopa nominalna r, miesięczna `i_m = r/12`):
-  - Tryb „równe” (dla okresu o stałym r):
+- Sposób wyliczania (miesiąc m, efektywna stopa roczna r miesiąca — oprocentowanie z sekcji
+  „Oprocentowanie” powiększone o ubezpieczenie pomostowe i niskiego wkładu, pomniejszone o promocję —
+  miesięczna `i_m = r/12`):
+  - Tryb „równe” (dla okresu o stałej efektywnej stopie r):
     - Rata stała `R = saldo × i_m / (1 − (1 + i_m)^(−n_okresu))`,
     - `Odsetki_m = Saldo_{m−1} × i_m`,
     - `Kapitał_m = R − Odsetki_m`,
@@ -24,6 +26,12 @@
     - `Odsetki_m = Saldo_{m−1} × i_m`,
     - `Rata_m = Kapitał_m + Odsetki_m`,
     - `Saldo_m = Saldo_{m−1} − Kapitał_m`.
+  - Rata jest przeliczana z bieżącego salda na pozostałą liczbę rat, gdy zmienia się efektywna stopa
+    (nowy okres oprocentowania, początek lub koniec ubezpieczenia pomostowego, spadek LTV poniżej progu
+    ubezpieczenia niskiego wkładu, początek lub koniec promocji) oraz w miesiącu po uruchomieniu kolejnej
+    transzy. Dzięki temu rata zawsze pokrywa odsetki, a kapitał jest spłacany w umownym terminie.
+  - Ostatnia rata kapitałowo-odsetkowa spłaca całe pozostałe saldo — po ostatniej racie „Pozostało do
+    spłaty” wynosi 0,00.
   - Nadpłaty (jeśli skonfigurowane) zmniejszają saldo i modyfikują kolejne wyliczenia.
   - Koszty okołokredytowe przypisywane do miesięcy zgodnie z konfiguracją (domyślnie 0,00).
 

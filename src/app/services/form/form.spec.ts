@@ -2,7 +2,12 @@ import { TestBed } from '@angular/core/testing';
 
 import { FormService } from './form';
 import {
+  CapitalAfterLoanEndErrorDetails,
   CapitalBeforeLastTrancheErrorDetails,
+  InsuranceFrequency,
+  ItemPositionsErrorDetails,
+  OverheadCostDatesErrorDetails,
+  OverheadCostKind,
   PrepaymentEffect,
   PrepaymentFrequency,
   RateType,
@@ -250,11 +255,11 @@ describe('FormService', () => {
 });
 
 /**
- * Brakujące walidacje dat opisane w docs/TODO.md (Audyt 2026-09-28 — Etap 1). Każdy scenariusz
- * ma test kontrolny (poprawne dane → formularz poprawny) oraz test `it.fails` opisujący
- * oczekiwane odrzucenie niepoprawnych danych — po dodaniu walidacji należy zdjąć `.fails`.
+ * Walidacje dat względem okresu spłaty: daty muszą mieścić się między miesiącem pierwszej raty
+ * a miesiącem ostatniej raty.
+ * Kredyt w testach: uruchomienie 2026-01, 24 miesiące → pierwsza rata 2026-02, ostatnia 2028-01.
  */
-describe('FormService — walidacje dat do dodania w Etapie 1', () => {
+describe('FormService — walidacje dat względem okresu spłaty', () => {
   let service: FormService;
 
   beforeEach(() => {
@@ -267,6 +272,10 @@ describe('FormService — walidacje dat do dodania w Etapie 1', () => {
     service.form.updateValueAndValidity();
   });
 
+  function formError<T>(key: string): T | undefined {
+    return service.form.errors?.[key] as T | undefined;
+  }
+
   function setCapitalStartDate(dateYm: string): void {
     service.form.controls.basicData.controls.capitalStartDate.setValue(dateYm);
     service.form.updateValueAndValidity();
@@ -276,59 +285,216 @@ describe('FormService — walidacje dat do dodania w Etapie 1', () => {
     service.form.controls.tranches.controls.enabled.setValue(true);
     service.addTranche();
     const loanAmount = service.form.controls.basicData.controls.loanAmount.value;
-    service.tranchesArray.at(0).controls.date.setValue('2026-01');
     service.tranchesArray.at(0).controls.amount.setValue(loanAmount - 100_000);
     service.tranchesArray.at(1).controls.amount.setValue(100_000);
     service.tranchesArray.at(1).controls.date.setValue(secondTrancheDate);
     service.form.updateValueAndValidity();
   }
 
-  function setSecondRatePeriodFrom(dateYm: string): void {
-    service.addRatePeriod();
-    service.ratePeriodsArray.at(0).controls.from.setValue('2026-01');
-    service.ratePeriodsArray.at(1).controls.from.setValue(dateYm);
+  function setRatePeriodDates(...laterPeriodDates: string[]): void {
+    for (const date of laterPeriodDates) {
+      service.addRatePeriod();
+      service.ratePeriodsArray.at(service.ratePeriodsArray.length - 1).controls.from.setValue(date);
+    }
     service.form.updateValueAndValidity();
   }
 
-  it('kontrola: początek spłat kapitału w okresie kredytowania jest poprawny', () => {
-    setCapitalStartDate('2026-06');
+  function enableOverheadCosts(): void {
+    service.form.controls.overheadCosts.controls.enabled.setValue(true);
+    service.form.updateValueAndValidity();
+  }
 
-    expect(service.form.valid).toBe(true);
-  });
+  describe('Dane podstawowe', () => {
+    it('początek spłat kapitału w okresie kredytowania jest poprawny', () => {
+      setCapitalStartDate('2026-06');
 
-  it.fails(
-    'odrzuca początek spłat kapitału po końcu okresu kredytowania (karencja ≥ okres)',
-    () => {
+      expect(service.form.valid).toBe(true);
+    });
+
+    it('początek spłat kapitału w miesiącu ostatniej raty jest poprawny (jedna rata kapitałowa)', () => {
+      setCapitalStartDate('2028-01');
+
+      expect(formError('capitalAfterLoanEnd')).toBeUndefined();
+    });
+
+    it('odrzuca początek spłat kapitału po ostatniej racie (karencja ≥ okres)', () => {
       setCapitalStartDate('2028-03');
 
       expect(service.form.valid).toBe(false);
-    },
-  );
+      expect(formError<CapitalAfterLoanEndErrorDetails>('capitalAfterLoanEnd')).toEqual({
+        loanEndDate: '2028-01',
+      });
+    });
 
-  it('kontrola: druga transza uruchomiona po dacie uruchomienia kredytu jest poprawna', () => {
-    setUpTwoTranches('2026-03');
+    it('pierwszy okres oprocentowania podąża za datą uruchomienia kredytu', () => {
+      service.form.controls.basicData.controls.startDate.setValue('2027-03');
 
-    expect(service.form.valid).toBe(true);
+      expect(service.ratePeriodsArray.at(0).controls.from.value).toBe('2027-03');
+    });
   });
 
-  it.fails('odrzuca drugą transzę z datą uruchomienia kredytu (harmonogram ją pomija)', () => {
-    setUpTwoTranches('2026-01');
+  describe('Oprocentowanie', () => {
+    it('okresy z różnymi datami „od” w okresie spłaty są poprawne', () => {
+      setRatePeriodDates('2026-07', '2027-01');
 
-    expect(service.form.valid).toBe(false);
-  });
+      expect(service.form.valid).toBe(true);
+    });
 
-  it('kontrola: okresy oprocentowania z różnymi datami „od” są poprawne', () => {
-    setSecondRatePeriodFrom('2027-01');
-
-    expect(service.form.valid).toBe(true);
-  });
-
-  it.fails(
-    'odrzuca dwa okresy oprocentowania z tą samą datą „od” (drugi nadpisuje pierwszy)',
-    () => {
-      setSecondRatePeriodFrom('2026-01');
+    it('odrzuca okres zaczynający się w miesiącu uruchomienia (duplikat pierwszego okresu)', () => {
+      setRatePeriodDates('2026-01');
 
       expect(service.form.valid).toBe(false);
-    },
-  );
+      expect(formError<ItemPositionsErrorDetails>('ratePeriodOutsideLoan')).toEqual({
+        positions: [2],
+      });
+    });
+
+    it('odrzuca okres zaczynający się po ostatniej racie', () => {
+      setRatePeriodDates('2026-07', '2028-05');
+
+      expect(formError<ItemPositionsErrorDetails>('ratePeriodOutsideLoan')).toEqual({
+        positions: [3],
+      });
+    });
+
+    it('odrzuca dwa okresy z tą samą datą „od” (drugi nadpisywałby pierwszy)', () => {
+      setRatePeriodDates('2026-07', '2026-07');
+
+      expect(service.form.valid).toBe(false);
+      expect(formError<ItemPositionsErrorDetails>('ratePeriodDuplicateDates')).toEqual({
+        positions: [2, 3],
+      });
+    });
+  });
+
+  describe('Transze', () => {
+    it('druga transza uruchomiona po dacie uruchomienia kredytu jest poprawna', () => {
+      setUpTwoTranches('2026-03');
+
+      expect(service.form.valid).toBe(true);
+    });
+
+    it('odrzuca drugą transzę z datą uruchomienia kredytu (harmonogram by ją pominął)', () => {
+      setUpTwoTranches('2026-01');
+
+      expect(service.form.valid).toBe(false);
+      expect(formError<ItemPositionsErrorDetails>('trancheDateNotAfterStart')).toEqual({
+        positions: [2],
+      });
+    });
+
+    it('nie waliduje dat transz, gdy sekcja jest wyłączona', () => {
+      setUpTwoTranches('2026-01');
+      service.form.controls.tranches.controls.enabled.setValue(false);
+      service.form.updateValueAndValidity();
+
+      expect(formError('trancheDateNotAfterStart')).toBeUndefined();
+    });
+  });
+
+  describe('Nadpłaty', () => {
+    function setUpPrepaymentRule(from: string, amount: number): void {
+      service.form.controls.prepayments.controls.enabled.setValue(true);
+      const rule = service.prepaymentRulesArray.at(0).controls;
+      rule.frequency.setValue(PrepaymentFrequency.ONE_TIME);
+      rule.from.setValue(from);
+      rule.to.setValue(from);
+      rule.amount.setValue(amount);
+      service.form.updateValueAndValidity();
+    }
+
+    it('odrzuca nadpłatę w miesiącu uruchomienia (przed pierwszą ratą)', () => {
+      setUpPrepaymentRule('2026-01', 10_000);
+
+      expect(formError<ItemPositionsErrorDetails>('prepaymentOutsideLoan')).toEqual({
+        positions: [1],
+      });
+    });
+
+    it('odrzuca nadpłatę po ostatniej racie', () => {
+      setUpPrepaymentRule('2028-02', 10_000);
+
+      expect(formError('prepaymentOutsideLoan')).toBeDefined();
+    });
+
+    it('nie waliduje daty nieaktywnej reguły (kwota 0)', () => {
+      setUpPrepaymentRule('2030-01', 0);
+
+      expect(formError('prepaymentOutsideLoan')).toBeUndefined();
+    });
+
+    it('odrzuca aktywną regułę docelowej raty zaczynającą się po ostatniej racie', () => {
+      service.form.controls.prepayments.controls.enabled.setValue(true);
+      const targetInstallment = service.prepaymentsGroup.controls.targetInstallment.controls;
+      targetInstallment.targetRate.setValue(5000);
+      targetInstallment.from.setValue('2028-06');
+      targetInstallment.to.setValue('2028-12');
+      service.form.updateValueAndValidity();
+
+      expect(formError('targetInstallmentOutsideLoan')).toBe(true);
+    });
+  });
+
+  describe('Koszty okołokredytowe i promocje', () => {
+    it('odrzuca aktywne ubezpieczenie zaczynające się przed pierwszą ratą', () => {
+      enableOverheadCosts();
+      const lifeInsurance = service.overheadCostsGroup.controls.lifeInsurance.controls;
+      lifeInsurance.lifeInsValue.setValue(0.5);
+      lifeInsurance.lifeInsFrequency.setValue(InsuranceFrequency.YEARLY);
+      lifeInsurance.lifeInsFrom.setValue('2026-01');
+      lifeInsurance.lifeInsTo.setValue('2028-01');
+      service.form.updateValueAndValidity();
+
+      expect(formError<OverheadCostDatesErrorDetails>('overheadCostOutsideLoan')).toEqual({
+        kinds: [OverheadCostKind.LIFE_INSURANCE],
+      });
+    });
+
+    it('nie waliduje dat nieaktywnych kosztów (wartość 0)', () => {
+      enableOverheadCosts();
+      const lifeInsurance = service.overheadCostsGroup.controls.lifeInsurance.controls;
+      lifeInsurance.lifeInsFrom.setValue('2030-01');
+      service.form.updateValueAndValidity();
+
+      expect(formError('overheadCostOutsideLoan')).toBeUndefined();
+    });
+
+    it('odrzuca koszt cykliczny z datą „do” wcześniejszą niż „od”', () => {
+      enableOverheadCosts();
+      const additionalCost = service.additionalCostsArray.at(0).controls;
+      additionalCost.value.setValue(100);
+      additionalCost.frequency.setValue(InsuranceFrequency.MONTHLY);
+      additionalCost.from.setValue('2027-01');
+      additionalCost.to.setValue('2026-06');
+      service.form.updateValueAndValidity();
+
+      expect(formError<OverheadCostDatesErrorDetails>('overheadCostDateRangeInvalid')).toEqual({
+        kinds: [OverheadCostKind.ADDITIONAL_COST],
+      });
+    });
+
+    it('ignoruje ukryte pole „do” kosztu jednorazowego', () => {
+      enableOverheadCosts();
+      const additionalCost = service.additionalCostsArray.at(0).controls;
+      additionalCost.value.setValue(100);
+      additionalCost.frequency.setValue(InsuranceFrequency.ONE_TIME);
+      additionalCost.from.setValue('2027-01');
+      additionalCost.to.setValue('2026-06');
+      service.form.updateValueAndValidity();
+
+      expect(formError('overheadCostDateRangeInvalid')).toBeUndefined();
+    });
+
+    it('odrzuca aktywną promocję poza okresem spłaty oraz z odwróconym zakresem dat', () => {
+      enableOverheadCosts();
+      const promotionalRate = service.overheadCostsGroup.controls.promoRate.controls;
+      promotionalRate.promoRateDecrease.setValue(1);
+      promotionalRate.promoFrom.setValue('2028-06');
+      promotionalRate.promoTo.setValue('2028-03');
+      service.form.updateValueAndValidity();
+
+      expect(formError('promotionalRateOutsideLoan')).toBe(true);
+      expect(formError('promotionalRateDateRangeInvalid')).toBe(true);
+    });
+  });
 });

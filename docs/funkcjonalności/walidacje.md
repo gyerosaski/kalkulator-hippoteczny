@@ -111,28 +111,43 @@ Wszystkie pola wartości i stawek w tej sekcji muszą być nieujemne:
 | Wartość kosztu dodatkowego                                  | wartość nieujemna                                                                   | `%` lub `zł`       |
 | Obniżka oprocentowania (promocja)                           | wartość nieujemna                                                                   | `%`                |
 
-> Pola dat „od/do" w kosztach okołokredytowych i promocji nie podlegają walidacji.
+> Daty „od/do" aktywnych ubezpieczeń, kosztów dodatkowych i promocji (o wartości większej od 0)
+> podlegają walidacjom krzyżowym względem okresu spłaty — patrz § 7.
 
 ---
 
 ## 7. Walidacje krzyżowe (globalne)
 
-Walidacje obejmujące wiele pól lub sekcji prezentowane są jako lista błędów globalnych:
+Walidacje obejmujące wiele pól lub sekcji prezentowane są jako lista błędów globalnych.
 
-| Warunek wyzwolenia                                                                               | Komunikat / efekt                                                                        |
-| ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| Kwota kredytu większa od wartości nieruchomości                                                  | błąd: kwota kredytu nie może być większa niż wartość nieruchomości                       |
-| Okres kredytowania ≤ 0 miesięcy                                                                  | błąd: łączna liczba miesięcy musi być większa od 0                                       |
-| Początek spłat kapitału wcześniejszy niż data uruchomienia kredytu                               | błąd: początek spłat kapitału nie może być wcześniejszy niż data uruchomienia            |
-| Transze włączone, liczba transz > 1, początek spłat kapitału nie późniejszy niż ostatnia transza | błąd: początek spłat kapitału musi przypadać po dacie uruchomienia ostatniej transzy     |
-| Transze włączone i suma transz ≠ kwocie kredytu (tolerancja 0,01 zł)                             | błąd: suma transz musi być równa kwocie kredytu (z podaniem kwoty oczekiwanej i różnicy) |
-| Transze włączone i kwota dowolnej transzy niepoprawna (≤ 0)                                      | błąd: kwota każdej transzy musi być większa od zera                                      |
-| Transze włączone i opłata za uruchomienie dowolnej transzy większa niż 1 000 zł                  | błąd: wysokość opłaty za uruchomienie transzy nie może być wyższa niż 1 000 zł           |
-| Reguła nadpłaty (nie „jednorazowo") z datą „do" wcześniejszą niż „od"                            | błąd: w regule nadpłaty data „do" nie może być wcześniejsza niż data „od"                |
-| Ujemna kwota nadpłaty                                                                            | błąd: kwota nadpłaty nie może być ujemna                                                 |
-| Reguła docelowej raty z datą „do" wcześniejszą niż „od"                                          | błąd: w regule docelowej raty data „do" nie może być wcześniejsza niż data „od"          |
-| Ujemna docelowa rata                                                                             | błąd: docelowa rata nie może być ujemna                                                  |
-| Koszty okołokredytowe włączone, prowizja za udzielenie liczona procentowo i większa niż 100%     | błąd: prowizja za udzielenie (%) nie może przekraczać 100%                               |
+**Okres spłaty** to przedział od miesiąca pierwszej raty (miesiąc po dacie uruchomienia kredytu) do
+miesiąca ostatniej raty (data uruchomienia + okres kredytowania). Harmonogram obejmuje wyłącznie ten
+przedział, dlatego zdarzenia datowane poza nim są zgłaszane jako błąd.
+
+| Warunek wyzwolenia                                                                                                                                              | Komunikat / efekt                                                                                                                            |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Kwota kredytu większa od wartości nieruchomości                                                                                                                 | błąd: kwota kredytu nie może być większa niż wartość nieruchomości                                                                           |
+| Okres kredytowania ≤ 0 miesięcy                                                                                                                                 | błąd: łączna liczba miesięcy musi być większa od 0                                                                                           |
+| Początek spłat kapitału wcześniejszy niż data uruchomienia kredytu                                                                                              | błąd: początek spłat kapitału nie może być wcześniejszy niż data uruchomienia                                                                |
+| Transze włączone, liczba transz > 1, początek spłat kapitału nie późniejszy niż ostatnia transza                                                                | błąd: początek spłat kapitału musi przypadać po dacie uruchomienia ostatniej transzy                                                         |
+| Transze włączone i suma transz ≠ kwocie kredytu (tolerancja 0,01 zł)                                                                                            | błąd: suma transz musi być równa kwocie kredytu (z podaniem kwoty oczekiwanej i różnicy)                                                     |
+| Transze włączone i kwota dowolnej transzy niepoprawna (≤ 0)                                                                                                     | błąd: kwota każdej transzy musi być większa od zera                                                                                          |
+| Transze włączone i opłata za uruchomienie dowolnej transzy większa niż 1 000 zł                                                                                 | błąd: wysokość opłaty za uruchomienie transzy nie może być wyższa niż 1 000 zł                                                               |
+| Reguła nadpłaty (nie „jednorazowo") z datą „do" wcześniejszą niż „od"                                                                                           | błąd: w regule nadpłaty data „do" nie może być wcześniejsza niż data „od"                                                                    |
+| Ujemna kwota nadpłaty                                                                                                                                           | błąd: kwota nadpłaty nie może być ujemna                                                                                                     |
+| Reguła docelowej raty z datą „do" wcześniejszą niż „od"                                                                                                         | błąd: w regule docelowej raty data „do" nie może być wcześniejsza niż data „od"                                                              |
+| Ujemna docelowa rata                                                                                                                                            | błąd: docelowa rata nie może być ujemna                                                                                                      |
+| Koszty okołokredytowe włączone, prowizja za udzielenie liczona procentowo i większa niż 100%                                                                    | błąd: prowizja za udzielenie (%) nie może przekraczać 100%                                                                                   |
+| Początek spłat kapitału późniejszy niż miesiąc ostatniej raty                                                                                                   | błąd: początek spłat kapitału nie może przypadać po ostatniej racie — okres karencji musi być krótszy niż okres kredytowania                 |
+| Okres oprocentowania (od drugiego) z datą „od” nie późniejszą niż data uruchomienia lub późniejszą niż miesiąc ostatniej raty                                   | błąd: okres oprocentowania nr N musi zaczynać się po dacie uruchomienia i nie później niż w miesiącu ostatniej raty (grupa „Oprocentowanie”) |
+| Co najmniej dwa okresy oprocentowania (od drugiego) z tą samą datą „od”                                                                                         | błąd: okresy oprocentowania nr … zaczynają się w tym samym miesiącu (grupa „Oprocentowanie”)                                                 |
+| Transze włączone i transza (od drugiej) z datą nie późniejszą niż data uruchomienia kredytu                                                                     | błąd: transza nr N musi zostać uruchomiona po dacie uruchomienia kredytu                                                                     |
+| Nadpłaty włączone, reguła nadpłaty z kwotą większą od 0 i datą „od” spoza okresu spłaty                                                                         | błąd: nadpłata nr N musi zaczynać się między miesiącem pierwszej a miesiącem ostatniej raty                                                  |
+| Nadpłaty włączone, docelowa rata większa od 0 i data „od” spoza okresu spłaty                                                                                   | błąd: reguła docelowej raty musi zaczynać się między miesiącem pierwszej a miesiącem ostatniej raty                                          |
+| Koszty okołokredytowe włączone, ubezpieczenie lub koszt dodatkowy o wartości większej od 0 z datą „od” spoza okresu spłaty                                      | błąd: [rodzaje kosztów]: data „od” musi przypadać między miesiącem pierwszej a miesiącem ostatniej raty                                      |
+| Koszty okołokredytowe włączone, cykliczne (`co rok`, `co miesiąc`) ubezpieczenie lub koszt dodatkowy o wartości większej od 0 z datą „do” wcześniejszą niż „od” | błąd: [rodzaje kosztów]: data „do” nie może być wcześniejsza niż data „od” (przy płatności `jednorazowo` liczy się tylko „od”)               |
+| Koszty okołokredytowe włączone, promocja z obniżką większą od 0 i datą „od” spoza okresu spłaty                                                                 | błąd: promocja oprocentowania musi zaczynać się między miesiącem pierwszej a miesiącem ostatniej raty                                        |
+| Koszty okołokredytowe włączone, promocja z obniżką większą od 0 i datą „do” wcześniejszą niż „od”                                                               | błąd: w promocji oprocentowania data „do” nie może być wcześniejsza niż data „od”                                                            |
 
 ---
 

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal, viewChild } from '@angular/core';
 
 import { AbstractDialog } from '../../components/ui/dialog/abstract-dialog';
 import { DialogComponent } from '../../components/ui/dialog/dialog.component';
@@ -16,10 +16,21 @@ export class RenameCalculationDialogComponent extends AbstractDialog<string | nu
 
   protected readonly originalName = signal('');
   protected readonly currentValue = signal('');
+  private readonly takenNames = signal<ReadonlySet<string>>(new Set());
 
-  open(currentName: string): Promise<string | null> {
+  /** Nowa nazwa jest już używana przez inną zapisaną kalkulację. */
+  protected readonly isNameTaken = computed(() =>
+    this.takenNames().has(this.currentValue().trim()),
+  );
+
+  /**
+   * @param currentName bieżąca nazwa kalkulacji.
+   * @param takenNames nazwy pozostałych zapisanych kalkulacji — nie można ich użyć.
+   */
+  open(currentName: string, takenNames: readonly string[] = []): Promise<string | null> {
     this.originalName.set(currentName);
     this.currentValue.set(currentName);
+    this.takenNames.set(new Set(takenNames));
     return this.beginInteraction(null);
   }
 
@@ -29,7 +40,7 @@ export class RenameCalculationDialogComponent extends AbstractDialog<string | nu
 
   protected isConfirmDisabled(): boolean {
     const trimmed = this.currentValue().trim();
-    return !trimmed || trimmed === this.originalName();
+    return !trimmed || trimmed === this.originalName() || this.isNameTaken();
   }
 
   protected confirm(): void {

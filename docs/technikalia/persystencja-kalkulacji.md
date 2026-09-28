@@ -12,14 +12,29 @@ Aplikacja działa jako desktopowa (Tauri V2). Kalkulacje przechowuje `Calculatio
 - Plik danych: `calculations.json` w `%APPDATA%/kalkulator-hippoteczny/`.
 - Klucz tablicy rekordów w store: `"calculations"` (domyślnie pusta tablica).
 - Instancja Store tworzona jednorazowo przy pierwszym dostępie, opcja `autoSave: true`.
+- Kopia zapasowa: `calculations.backup.json` (ten sam klucz `"calculations"`) — stan listy sprzed
+  ostatniego zapisu. Kopia jest aktualizowana tylko wtedy, gdy poprzednia lista nie była pusta: start
+  z uszkodzonego pliku (plugin-store ignoruje błąd odczytu i zwraca wartości domyślne) i późniejszy zapis
+  nie niszczą ostatniego dobrego stanu.
+- Kolejka operacji: każda operacja odczyt-modyfikacja-zapis (`saveCalculation`, `updateCalculation`,
+  `deleteCalculation`, `restoreFromBackup`, …) jest dopisywana do wspólnej kolejki obietnic
+  (`enqueue`) i wykonuje się w całości przed kolejną — równoległe wywołania nie gubią rekordów.
+- Porządkowanie tożsamości przy każdym odczycie (`normalizeSavedCalculationRecords`,
+  `src/app/helpers/saved-calculation-identity.helper.ts`): rekordy bez `id` lub ze zdublowanym `id`
+  dostają nowy UUID (`crypto.randomUUID()`), zdublowane nazwy — sufiks „ — kopia”; uporządkowany stan
+  jest od razu zapisywany.
 
 ### Operacje serwisu
 
 | Metoda                                     | Działanie                                                                                                                                                       |
 | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `listCalculations()`                       | pobiera tablicę wszystkich rekordów ze store                                                                                                                    |
-| `saveCalculation(record)`                  | upsert po `name` (zastępuje lub dodaje); wywołuje `store.save()`                                                                                                |
-| `deleteCalculation(name)`                  | usuwa rekord o danej nazwie i zapisuje tablicę                                                                                                                  |
+| `listCalculations()`                       | pobiera tablicę wszystkich rekordów ze store (po uporządkowaniu tożsamości)                                                                                     |
+| `saveCalculation(record)`                  | upsert po `id` (zastępuje lub dodaje); wywołuje `store.save()`                                                                                                  |
+| `updateCalculation(id, patch)`             | aktualizuje wybrane pola rekordu jednym zapisem (np. zmiana nazwy); zwraca `false`, gdy rekord nie istnieje                                                     |
+| `deleteCalculation(id)`                    | usuwa rekord o danym `id` i zapisuje tablicę                                                                                                                    |
+| `listBackupCalculations()`                 | rekordy z kopii zapasowej                                                                                                                                       |
+| `restoreFromBackup()`                      | dopisuje z kopii zapasowej rekordy nieobecne na liście (po `id`); zwraca ich liczbę                                                                             |
+| `discardBackup()`                          | czyści kopię zapasową                                                                                                                                           |
 | `exportToFile(record)`                     | systemowy dialog zapisu (Tauri `saveDialog`), zapis JSON; zwraca ścieżkę lub `null`                                                                             |
 | `exportCsvToFile(name, csvContent, title)` | systemowy dialog zapisu z filtrem `.csv`, sanityzacja nazwy pliku i zapis gotowej treści CSV; zwraca ścieżkę lub `null`                                         |
 | `importFromFile()`                         | systemowy dialog otwarcia (`openDialog`), parsowanie JSON i wyłuskanie rekordów przez `extractImportableRecords`; zwraca tablicę poprawnych rekordów lub `null` |
@@ -157,14 +172,15 @@ szybkiego cache'u przy starcie (bez migotania hipopotama, gdy jest wyłączony).
 
 `src/app/model/saved-calculation.model.ts`:
 
-| Pole        | Typ       | Opis                                                                                     |
-| ----------- | --------- | ---------------------------------------------------------------------------------------- |
-| `name`      | `string`  | klucz unikalności — identyfikator rekordu                                                |
-| `createdAt` | `string`  | data ISO-8601                                                                            |
-| `data`      | `unknown` | pełny zestaw parametrów (`MortgageInputs`) w postaci JSON (migawka `form.getRawValue()`) |
+| Pole        | Typ       | Opis                                                                                                    |
+| ----------- | --------- | ------------------------------------------------------------------------------------------------------- |
+| `id`        | `string`  | stabilny identyfikator (UUID) — klucz operacji w store, nie zmienia się przy zmianie nazwy              |
+| `name`      | `string`  | nazwa unikalna w obrębie listy — klucz kalkulacji w interfejsie (wczytana kalkulacja, porównanie ofert) |
+| `createdAt` | `string`  | data ISO-8601                                                                                           |
+| `data`      | `unknown` | pełny zestaw parametrów (`MortgageInputs`) w postaci JSON (migawka `form.getRawValue()`)                |
 
 Model widokowy `SavedCalculation` (warstwa prezentacji listy) rozszerza to o skalary wyliczone przy
-zapisie: `id` (UUID), `note`, `propertyValue`, `loanAmount`, `years`, `months`, `installmentType`,
+zapisie: `id` (przepisany z rekordu), `note`, `propertyValue`, `loanAmount`, `years`, `months`, `installmentType`,
 `rateType`, `referenceIndex`, `margin`, `rate`, `firstInstallment`, `totalInterest`, `totalCosts`,
 `overpaymentsEnabled`, `tranches`, `updatedAt`, `createdAt`. Metadane służą wyłącznie liście i chipom;
 po wczytaniu oferty jej skalary są nadpisywane wartościami z przeliczenia na żywo.
@@ -185,6 +201,10 @@ po wczytaniu oferty jej skalary są nadpisywane wartościami z przeliczenia na �
   obiekt-opakowanie. Każdy element musi mieć `name` (string), `createdAt` i `data`; elementy
   o niepoprawnym kształcie są pomijane. Przy kolizji nazwy rekord importowany jest jako kopia
   (`buildUniqueCalculationName`: sufiks „ — kopia”, „ — kopia (2)”, …) — nic nie jest nadpisywane.
+  Każdy importowany rekord dostaje nowe `id` (plik może być eksportem kalkulacji, która nadal jest
+  na liście).
+- Błąd zapisu pliku eksportu (wyjątek z `writeTextFile`) jest przechwytywany w widoku i kończy się
+  toastem błędu.
 
 ## Filtrowanie, sortowanie, czas względny
 

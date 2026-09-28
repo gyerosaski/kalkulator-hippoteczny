@@ -255,6 +255,7 @@ export interface YearGroup {
 
 export enum FormErrorSection {
   BASIC_DATA = 'Dane podstawowe',
+  RATE_PERIODS = 'Oprocentowanie',
   TRANCHES = 'Transze',
   PREPAYMENTS = 'Nadpłaty',
   OVERHEAD_COSTS = 'Koszty okołokredytowe i promocje',

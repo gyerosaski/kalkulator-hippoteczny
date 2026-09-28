@@ -36,6 +36,13 @@
           },
           "configurations": {
             "production": {
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "public",
+                  "ignore": ["dev-seed/**"]
+                }
+              ],
               "optimization": {
                 "scripts": true,
                 "styles": {

@@ -40,7 +40,10 @@
    - data pierwszej transzy jest zawsze równa dacie uruchomienia kredytu i aktualizuje się automatycznie
      przy jej zmianie; pole jest zablokowane dla użytkownika,
    - kolejne transze definiuje użytkownik (kwota + data + opłata za uruchomienie),
-   - data każdej kolejnej transzy musi być większa od daty transzy poprzedniej.
+   - data każdej kolejnej transzy musi przypadać po dacie uruchomienia kredytu — w miesiącu uruchomienia
+     wypłacana jest wyłącznie pierwsza transza (transza z tą samą lub wcześniejszą datą nie trafiłaby do
+     harmonogramu); kolejność dat między transzami nie jest wymagana, a transze z tym samym miesiącem
+     są wypłacane łącznie.
 3. **Opłata za uruchomienie:** zwiększa „Koszty okołokredytowe” i tym samym koszt całkowity.
 4. **Kolejność spłaty kapitału:** gdy aktywna jest więcej niż jedna transza, „Początek spłat kapitału”
    (sekcja „Dane podstawowe”) musi wskazywać miesiąc ściśle późniejszy niż data ostatniej transzy.

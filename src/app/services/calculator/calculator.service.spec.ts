@@ -1172,11 +1172,10 @@ describe('MortgageCalcService (wartości referencyjne)', () => {
 });
 
 /**
- * Znane błędy silnika opisane w docs/TODO.md (Audyt 2026-09-28 — Etap 1). Testy opisują
- * poprawne zachowanie i są oznaczone `it.fails`, dopóki błąd nie zostanie naprawiony —
- * po naprawie test zacznie przechodzić, przez co `it.fails` zgłosi błąd i wymusi zdjęcie `.fails`.
+ * Rata równa jest liczona od stopy efektywnej (baza + dopłaty − promocja) i przeliczana przy każdej
+ * jej zmianie, a ostatnia rata domyka saldo.
  */
-describe('MortgageCalcService (regresje do naprawy w Etapie 1)', () => {
+describe('MortgageCalcService (raty równe przy zmianach stopy efektywnej)', () => {
   let service: CalculatorService;
 
   beforeEach(() => {
@@ -1192,32 +1191,29 @@ describe('MortgageCalcService (regresje do naprawy w Etapie 1)', () => {
     };
   }
 
-  it.fails(
-    'raty równe z ubezpieczeniem niskiego wkładu spłacają cały kapitał w umownym okresie',
-    () => {
-      const result = service.compute(
-        referenceInputs({
-          loanAmount: 450_000,
-          ltv: 90,
-          ratePeriods: [
-            {
-              from: '2026-01',
-              rateType: RateType.FIXED,
-              nominalRate: 6,
-              referenceIndex: 0,
-              margin: 0,
-            },
-          ],
-          overheadCosts: overheadCosts({ lowEquityInsurance: { rateIncrease: 2 } }),
-        }),
-      );
+  it('raty równe z ubezpieczeniem niskiego wkładu spłacają cały kapitał w umownym okresie', () => {
+    const result = service.compute(
+      referenceInputs({
+        loanAmount: 450_000,
+        ltv: 90,
+        ratePeriods: [
+          {
+            from: '2026-01',
+            rateType: RateType.FIXED,
+            nominalRate: 6,
+            referenceIndex: 0,
+            margin: 0,
+          },
+        ],
+        overheadCosts: overheadCosts({ lowEquityInsurance: { rateIncrease: 2 } }),
+      }),
+    );
 
-      expect(result.schedule.at(-1)?.remaining).toBeCloseTo(0, 2);
-      expect(result.totals.totalCapital).toBeCloseTo(450_000, 2);
-    },
-  );
+    expect(result.schedule.at(-1)?.remaining).toBeCloseTo(0, 2);
+    expect(result.totals.totalCapital).toBeCloseTo(450_000, 2);
+  });
 
-  it.fails('raty równe z ubezpieczeniem pomostowym spłacają cały kapitał w umownym okresie', () => {
+  it('raty równe z ubezpieczeniem pomostowym spłacają cały kapitał w umownym okresie', () => {
     const result = service.compute(
       referenceInputs({
         overheadCosts: overheadCosts({ bridgeInsurance: { rateIncrease: 1, months: 12 } }),
@@ -1228,7 +1224,24 @@ describe('MortgageCalcService (regresje do naprawy w Etapie 1)', () => {
     expect(result.totals.totalCapital).toBeCloseTo(300_000, 2);
   });
 
-  it.fails('promocja oprocentowania nie skraca umownego okresu kredytowania', () => {
+  it('rata rośnie na czas ubezpieczenia pomostowego i maleje po jego zakończeniu', () => {
+    const result = service.compute(
+      referenceInputs({
+        overheadCosts: overheadCosts({ bridgeInsurance: { rateIncrease: 1, months: 12 } }),
+      }),
+    );
+
+    // miesiące 1–12: 8% + 1 pp = 9% → rata z 9% na 240 miesięcy
+    expect(result.schedule[0].interestRate).toBeCloseTo(9, 10);
+    expect(result.schedule[0].rate).toBeCloseTo(2699.18, 2);
+    expect(result.schedule[11].rate).toBeCloseTo(result.schedule[0].rate, 6);
+    // od 13. miesiąca stopa wraca do 8%, a rata jest przeliczana z salda na pozostałe 228 miesięcy
+    expect(result.schedule[12].interestRate).toBeCloseTo(8, 10);
+    expect(result.schedule[12].rate).toBeLessThan(result.schedule[11].rate);
+    expect(result.schedule).toHaveLength(240);
+  });
+
+  it('promocja oprocentowania nie skraca umownego okresu kredytowania', () => {
     const result = service.compute(
       referenceInputs({
         overheadCosts: overheadCosts({

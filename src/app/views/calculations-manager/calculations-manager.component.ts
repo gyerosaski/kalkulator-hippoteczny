@@ -18,6 +18,7 @@ import { confirmDialog } from '../../services/platform/platform-dialog';
 
 import {
   AppRoute,
+  BannerVariant,
   CalculationImportStatus,
   ExportFormat,
   ExportScope,
@@ -35,6 +36,7 @@ import { CalculatorStateService } from '../../services/calculator-state/calculat
 import { CalculatorService } from '../../services/calculator/calculator.service';
 import { buildMortgageInputs } from '../../helpers/mortgage-inputs.helper';
 import { buildScheduleCsv } from '../../helpers/csv-export.helper';
+import { createCalculationId } from '../../helpers/saved-calculation-identity.helper';
 import { SaveCalculationDialogComponent } from '../../dialogs/save-calculation/save-calculation-dialog.component';
 import { RenameCalculationDialogComponent } from '../../dialogs/rename-calculation/rename-calculation-dialog.component';
 import { DeleteCalculationDialogComponent } from '../../dialogs/delete-calculation/delete-calculation-dialog.component';
@@ -55,6 +57,7 @@ import { RelativeTimePipe } from '../../pipes/relative-time/relative-time.pipe';
 import { ToastService } from '../../services/toast/toast.service';
 import { IconSaveComponent } from '../../components/icons/icon-save/icon-save.component';
 import { ViewHeaderComponent } from '../../components/ui/view-header/view-header.component';
+import { BannerComponent } from '../../components/ui/banner/banner.component';
 
 @Component({
   selector: 'app-calculations-manager',
@@ -79,6 +82,7 @@ import { ViewHeaderComponent } from '../../components/ui/view-header/view-header
     RelativeTimePipe,
     IconSaveComponent,
     ViewHeaderComponent,
+    BannerComponent,
   ],
 })
 export class CalculationsManagerComponent implements OnInit {
@@ -116,6 +120,7 @@ export class CalculationsManagerComponent implements OnInit {
 
   protected readonly sortDirection = this.uiStateService.savedCalculationsSortDirection;
   protected readonly SortDirection = SortDirection;
+  protected readonly BannerVariant = BannerVariant;
   protected readonly isAnimatable = signal(false);
 
   constructor() {
@@ -171,6 +176,8 @@ export class CalculationsManagerComponent implements OnInit {
   readonly hasActiveFilter = computed(() => !!this.searchQuery());
 
   readonly activeCalculationName = computed(() => this.formService.loadedCalculationName());
+  /** Liczba kalkulacji w kopii zapasowej, gdy lista jest pusta — steruje banerem przywracania. */
+  readonly backupRecordCount = this.savedCalculationsStateService.backupRecordCount;
   readonly isLoadedCalculationModified = computed(() =>
     this.formService.isLoadedCalculationModified(),
   );
@@ -180,9 +187,7 @@ export class CalculationsManagerComponent implements OnInit {
   }
 
   async loadCalculation(calculation: SavedCalculation): Promise<void> {
-    const record = this.savedCalculationsStateService
-      .records()
-      .find((record) => record.name === calculation.name);
+    const record = this.findRecord(calculation);
     if (!record) return;
     this.ngZone.run(() => {
       this.formService.loadFromSavedCalculation(record.data, calculation.name);
@@ -192,9 +197,17 @@ export class CalculationsManagerComponent implements OnInit {
   }
 
   async startRename(calculation: SavedCalculation): Promise<void> {
-    const newName = await this.renameDialog().open(calculation.name);
+    const takenNames = this.savedCalculationsStateService
+      .records()
+      .filter((record) => record.id !== calculation.id)
+      .map((record) => record.name);
+    const newName = await this.renameDialog().open(calculation.name, takenNames);
     if (!newName || newName === calculation.name) return;
-    await this.savedCalculationsStateService.rename(calculation.name, newName);
+    const renamed = await this.savedCalculationsStateService.rename(calculation.id, newName);
+    if (!renamed) {
+      this.toastService.show(`Kalkulacja o nazwie „${newName}" już istnieje`, ToastVariant.ERROR);
+      return;
+    }
     if (this.formService.loadedCalculationName() === calculation.name) {
       this.formService.loadedCalculationName.set(newName);
     }
@@ -204,7 +217,7 @@ export class CalculationsManagerComponent implements OnInit {
   async startDelete(calculation: SavedCalculation): Promise<void> {
     const confirmed = await this.deleteDialog().open(calculation);
     if (!confirmed) return;
-    await this.savedCalculationsStateService.remove(calculation.name);
+    await this.savedCalculationsStateService.remove(calculation.id);
     if (this.formService.loadedCalculationName() === calculation.name) {
       this.formService.loadedCalculationName.set(null);
     }
@@ -212,7 +225,7 @@ export class CalculationsManagerComponent implements OnInit {
   }
 
   async duplicateCalculation(calculation: SavedCalculation): Promise<void> {
-    const copyName = await this.savedCalculationsStateService.duplicate(calculation.name);
+    const copyName = await this.savedCalculationsStateService.duplicate(calculation.id);
     if (copyName) {
       this.toastService.show(`Utworzono kopię „${copyName}"`);
     }
@@ -246,52 +259,58 @@ export class CalculationsManagerComponent implements OnInit {
 
   async exportAll(): Promise<void> {
     const records = this.savedCalculationsStateService.records();
-    const savedPath = await this.calculationsStore.exportAllToFile(records);
-    if (savedPath) {
-      this.toastService.show(`Wyeksportowano ${records.length} kalkulacji`);
-    }
+    await this.saveExportFile(
+      () => this.calculationsStore.exportAllToFile(records),
+      `Wyeksportowano ${records.length} kalkulacji`,
+    );
   }
 
   async exportCalculation(calculation: SavedCalculation): Promise<void> {
-    const record = this.savedCalculationsStateService
-      .records()
-      .find((existing) => existing.name === calculation.name);
+    const record = this.findRecord(calculation);
     if (!record) return;
 
     const selection = await this.exportDialog().open();
     if (!selection) return;
 
+    const successMessage = `Wyeksportowano kalkulację „${calculation.name}"`;
     if (selection.scope === ExportScope.PARAMETERS) {
-      const savedPath = await this.calculationsStore.exportToFile(record);
-      if (savedPath) {
-        this.toastService.show(`Wyeksportowano kalkulację „${calculation.name}"`);
-      }
+      await this.saveExportFile(() => this.calculationsStore.exportToFile(record), successMessage);
       return;
     }
 
     const results = this.calculatorService.compute(buildMortgageInputs(record.data));
+    await this.saveExportFile(
+      () =>
+        selection.format === ExportFormat.CSV
+          ? this.calculationsStore.exportCsvToFile(
+              `${calculation.name}.csv`,
+              buildScheduleCsv(results.schedule),
+              'Zapisz harmonogram do pliku CSV',
+            )
+          : this.calculationsStore.exportJsonToFile(
+              `${calculation.name}.json`,
+              JSON.stringify(results.schedule, null, 2),
+              'Zapisz harmonogram do pliku JSON',
+            ),
+      successMessage,
+    );
+  }
 
-    const savedPath =
-      selection.format === ExportFormat.CSV
-        ? await this.calculationsStore.exportCsvToFile(
-            `${calculation.name}.csv`,
-            buildScheduleCsv(results.schedule),
-            'Zapisz harmonogram do pliku CSV',
-          )
-        : await this.calculationsStore.exportJsonToFile(
-            `${calculation.name}.json`,
-            JSON.stringify(results.schedule, null, 2),
-            'Zapisz harmonogram do pliku JSON',
-          );
-    if (savedPath) {
-      this.toastService.show(`Wyeksportowano kalkulację „${calculation.name}"`);
-    }
+  async restoreBackup(): Promise<void> {
+    const restoredCount = await this.savedCalculationsStateService.restoreBackup();
+    this.toastService.show(
+      restoredCount === 1
+        ? 'Przywrócono kalkulację z kopii zapasowej'
+        : `Przywrócono ${restoredCount} kalkulacji z kopii zapasowej`,
+    );
+  }
+
+  async discardBackup(): Promise<void> {
+    await this.savedCalculationsStateService.discardBackup();
   }
 
   async saveCurrentCalculation(calculation: SavedCalculation): Promise<void> {
-    const existingRecord = this.savedCalculationsStateService
-      .records()
-      .find((record) => record.name === calculation.name);
+    const existingRecord = this.findRecord(calculation);
     if (!existingRecord) return;
 
     const formData = this.formService.form.getRawValue();
@@ -373,7 +392,9 @@ export class CalculationsManagerComponent implements OnInit {
         }
       : undefined;
 
+    // nadpisanie istniejącej kalkulacji zachowuje jej identyfikator i datę utworzenia
     const record: SavedCalculationRecord = {
+      id: existingRecord?.id ?? createCalculationId(),
       name,
       createdAt: existingRecord?.createdAt ?? now,
       updatedAt: now,
@@ -387,5 +408,24 @@ export class CalculationsManagerComponent implements OnInit {
       this.formService.refreshLoadedCalculationSnapshot();
     }
     this.toastService.show(`Zapisano nową kalkulację „${name}"`);
+  }
+
+  private findRecord(calculation: SavedCalculation): SavedCalculationRecord | undefined {
+    return this.savedCalculationsStateService
+      .records()
+      .find((record) => record.id === calculation.id);
+  }
+
+  /** zapis pliku eksportu; błąd zapisu (np. brak uprawnień do katalogu) kończy się komunikatem */
+  private async saveExportFile(
+    writeFile: () => Promise<string | null>,
+    successMessage: string,
+  ): Promise<void> {
+    try {
+      const savedPath = await writeFile();
+      if (savedPath) this.toastService.show(successMessage);
+    } catch {
+      this.toastService.show('Nie udało się zapisać pliku', ToastVariant.ERROR);
+    }
   }
 }

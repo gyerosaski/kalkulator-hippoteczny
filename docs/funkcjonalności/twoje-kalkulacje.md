@@ -121,7 +121,7 @@ Wyświetlany, gdy po zastosowaniu filtrów i wyszukiwania nie pozostaje żaden r
 | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `Zapisz zmiany` | nadpisuje rekord aktualnym stanem formularza; widoczna tylko gdy kalkulacja jest wczytana **i** zmodyfikowana; toast: `Zapisano zmiany w „{nazwa}"`                                                                                           |
 | `Zmień nazwę`   | otwiera modal zmiany nazwy (sekcja 7.1)                                                                                                                                                                                                       |
-| `Duplikuj`      | tworzy kopię z nową nazwą (z sufiksem); toast: `Utworzono kopię „{nazwa}"`                                                                                                                                                                    |
+| `Duplikuj`      | tworzy kopię pod unikalną nazwą (sufiks „ — kopia”, a przy kolejnych kopiach „ — kopia (2)”, „ — kopia (3)”…); istniejące kopie nie są nadpisywane; toast: `Utworzono kopię „{nazwa}"`                                                        |
 | `Eksportuj`     | otwiera okno konfiguratora eksportu (sekcja 7.3), w którym wybiera się **zakres** (`Parametry kalkulacji` / `Harmonogram spłaty`) i **format** (`JSON` / `CSV`); po zatwierdzeniu zapisuje plik; toast: `Wyeksportowano kalkulację „{nazwa}"` |
 | `Usuń`          | otwiera modal potwierdzenia usunięcia (sekcja 7.2)                                                                                                                                                                                            |
 
@@ -139,13 +139,14 @@ Przy zapisaniu zmian zachowywana jest oryginalna data utworzenia, a aktualizowan
 
 #### 7.1 Modal zmiany nazwy
 
-| Element               | Zachowanie                                                |
-| --------------------- | --------------------------------------------------------- |
-| Pole nazwy            | wypełnione aktualną nazwą                                 |
-| Przycisk `Zapisz`     | nieaktywny gdy pole puste LUB nazwa identyczna z aktualną |
-| `Enter`               | zatwierdza                                                |
-| `Escape` / klik w tło | zamyka bez zapisu                                         |
-| Toast po zapisie      | `Zmieniono nazwę na „{nowa nazwa}"`                       |
+| Element               | Zachowanie                                                                                               |
+| --------------------- | -------------------------------------------------------------------------------------------------------- |
+| Pole nazwy            | wypełnione aktualną nazwą                                                                                |
+| Przycisk `Zapisz`     | nieaktywny gdy pole puste LUB nazwa identyczna z aktualną LUB nazwa należy do innej zapisanej kalkulacji |
+| Komunikat pod polem   | `Kalkulacja o tej nazwie już istnieje.` — gdy nazwa należy do innej zapisanej kalkulacji                 |
+| `Enter`               | zatwierdza                                                                                               |
+| `Escape` / klik w tło | zamyka bez zapisu                                                                                        |
+| Toast po zapisie      | `Zmieniono nazwę na „{nowa nazwa}"`                                                                      |
 
 #### 7.2 Modal potwierdzenia usunięcia
 
@@ -203,6 +204,17 @@ Zawartość zapisywanych plików:
   średnik, separator dziesiętny to przecinek. Eksport pojedynczej kalkulacji konfiguruje się w osobnym
   oknie (zakres i format — sekcja 7.3); eksport wszystkich zapisuje wszystkie rekordy do jednego
   pliku JSON.
+- **Błąd zapisu pliku** — gdy zapis pliku eksportu się nie powiedzie (np. brak uprawnień do katalogu),
+  wyświetlany jest toast błędu `Nie udało się zapisać pliku`.
+- **Unikalność nazw** — nazwa jest kluczem kalkulacji na liście: zmiana nazwy na nazwę innej kalkulacji
+  jest zablokowana, duplikaty i importy dostają unikalne nazwy, a „Zapisz jako” z istniejącą nazwą pyta
+  o nadpisanie. Jeśli starsze zapisy zawierały zdublowane nazwy, przy wczytaniu listy kolejne wystąpienia
+  dostają sufiks „ — kopia”.
+- **Kopia zapasowa** — przed każdą zmianą listy zapisywany jest jej poprzedni stan. Gdy lista kalkulacji
+  jest pusta, a kopia zapasowa zawiera kalkulacje (np. po uszkodzeniu pliku z danymi albo po usunięciu
+  wszystkich kalkulacji), nad listą pojawia się ostrzeżenie `Lista kalkulacji jest pusta, ale kopia
+zapasowa zawiera N kalkulacji z poprzedniego zapisu.` z akcjami `Przywróć` (dopisuje kalkulacje z kopii)
+  i `Odrzuć` (usuwa kopię, ostrzeżenie znika). Pusta lista nigdy nie nadpisuje kopii zapasowej.
 - **Import** — obsługiwane są trzy kształty pliku JSON: pojedynczy rekord, tablica rekordów oraz plik
   z eksportu „wszystkich”. Przy kolizji nazwy z istniejącą kalkulacją rekord jest importowany jako kopia
   (sufiks „ — kopia”, „ — kopia (2)”, …) — nic nie jest nadpisywane.

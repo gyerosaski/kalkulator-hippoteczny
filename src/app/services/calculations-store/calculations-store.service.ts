@@ -6,6 +6,7 @@ import { appDataDir } from '@tauri-apps/api/path';
 
 import { KeyValueStore, SavedCalculationRecord } from '../../model';
 import { extractImportableRecords } from '../../helpers/saved-calculation-import.helper';
+import { normalizeSavedCalculationRecords } from '../../helpers/saved-calculation-identity.helper';
 import { isTauriRuntime } from '../platform/is-tauri';
 import { LocalStorageStore, storageKeyForStoreFile } from '../platform/local-storage-store';
 import { downloadTextFile, pickAndReadTextFile } from '../platform/browser-file-io';
@@ -13,6 +14,8 @@ import { downloadTextFile, pickAndReadTextFile } from '../platform/browser-file-
 @Injectable({ providedIn: 'root' })
 export class CalculationsStoreService {
   private static readonly STORE_FILE_NAME = 'calculations.json';
+  /** Kopia stanu sprzed ostatniego zapisu — ratunek, gdy główny plik store'a zostanie uszkodzony. */
+  private static readonly BACKUP_STORE_FILE_NAME = 'calculations.backup.json';
   private static readonly RECORDS_KEY = 'calculations';
   private static readonly FILE_FILTERS = [{ name: 'Kalkulacja JSON', extensions: ['json'] }];
   private static readonly CSV_FILE_FILTERS = [{ name: 'Plik CSV', extensions: ['csv'] }];
@@ -22,31 +25,94 @@ export class CalculationsStoreService {
   private static readonly BROWSER_STORE_PATH_LABEL = 'localStorage (tryb przeglądarkowy)';
 
   private storePromise: Promise<KeyValueStore> | null = null;
+  private backupStorePromise: Promise<KeyValueStore> | null = null;
+  /** Kolejka operacji na rekordach — każda operacja odczyt-modyfikacja-zapis wykonuje się w całości. */
+  private operationQueue: Promise<unknown> = Promise.resolve();
 
-  async listCalculations(): Promise<SavedCalculationRecord[]> {
-    const store = await this.getStore();
-    return (await store.get<SavedCalculationRecord[]>(CalculationsStoreService.RECORDS_KEY)) ?? [];
+  listCalculations(): Promise<SavedCalculationRecord[]> {
+    return this.enqueue(() => this.readRecords());
   }
 
-  async saveCalculation(record: SavedCalculationRecord): Promise<void> {
-    const store = await this.getStore();
-    const records = await this.listCalculations();
-    const existingIndex = records.findIndex((existing) => existing.name === record.name);
-    if (existingIndex >= 0) {
-      records[existingIndex] = record;
-    } else {
-      records.push(record);
-    }
-    await store.set(CalculationsStoreService.RECORDS_KEY, records);
-    await store.save();
+  /** Zapisuje rekord: zastępuje istniejący o tym samym `id` albo dopisuje nowy. */
+  saveCalculation(record: SavedCalculationRecord): Promise<void> {
+    return this.enqueue(async () => {
+      const records = await this.readRecords();
+      const existingIndex = records.findIndex((existing) => existing.id === record.id);
+      const nextRecords =
+        existingIndex >= 0
+          ? records.map((existing, index) => (index === existingIndex ? record : existing))
+          : [...records, record];
+      await this.writeRecords(records, nextRecords);
+    });
   }
 
-  async deleteCalculation(name: string): Promise<void> {
-    const store = await this.getStore();
-    const records = await this.listCalculations();
-    const next = records.filter((record) => record.name !== name);
-    await store.set(CalculationsStoreService.RECORDS_KEY, next);
-    await store.save();
+  /**
+   * Aktualizuje wybrane pola rekordu o podanym `id` jednym zapisem.
+   * @returns `false`, gdy rekord nie istnieje.
+   */
+  updateCalculation(
+    id: string,
+    patch: Partial<Omit<SavedCalculationRecord, 'id'>>,
+  ): Promise<boolean> {
+    return this.enqueue(async () => {
+      const records = await this.readRecords();
+      if (!records.some((record) => record.id === id)) return false;
+      const nextRecords = records.map((record) =>
+        record.id === id ? { ...record, ...patch } : record,
+      );
+      await this.writeRecords(records, nextRecords);
+      return true;
+    });
+  }
+
+  deleteCalculation(id: string): Promise<void> {
+    return this.enqueue(async () => {
+      const records = await this.readRecords();
+      await this.writeRecords(
+        records,
+        records.filter((record) => record.id !== id),
+      );
+    });
+  }
+
+  /** Rekordy z kopii zapasowej (stan sprzed ostatniego zapisu niepustej listy). */
+  listBackupCalculations(): Promise<SavedCalculationRecord[]> {
+    return this.enqueue(async () => {
+      const backupStore = await this.getBackupStore();
+      return (
+        (await backupStore.get<SavedCalculationRecord[]>(CalculationsStoreService.RECORDS_KEY)) ??
+        []
+      );
+    });
+  }
+
+  /**
+   * Przywraca z kopii zapasowej rekordy, których nie ma na bieżącej liście (po `id`).
+   * @returns liczba przywróconych rekordów.
+   */
+  restoreFromBackup(): Promise<number> {
+    return this.enqueue(async () => {
+      const backupStore = await this.getBackupStore();
+      const backupRecords =
+        (await backupStore.get<SavedCalculationRecord[]>(CalculationsStoreService.RECORDS_KEY)) ??
+        [];
+      const records = await this.readRecords();
+      const presentIds = new Set(records.map((record) => record.id));
+      const missingRecords = backupRecords.filter((record) => !presentIds.has(record.id));
+      if (!missingRecords.length) return 0;
+      const normalized = normalizeSavedCalculationRecords([...records, ...missingRecords]);
+      await this.writeRecords(records, normalized.records);
+      return missingRecords.length;
+    });
+  }
+
+  /** Usuwa kopię zapasową (np. gdy użytkownik świadomie odrzuca jej przywrócenie). */
+  discardBackup(): Promise<void> {
+    return this.enqueue(async () => {
+      const backupStore = await this.getBackupStore();
+      await backupStore.set(CalculationsStoreService.RECORDS_KEY, []);
+      await backupStore.save();
+    });
   }
 
   async exportToFile(record: SavedCalculationRecord): Promise<string | null> {
@@ -147,16 +213,73 @@ export class CalculationsStoreService {
     return await appDataDir();
   }
 
+  /** dopisuje operację do kolejki — kolejna startuje dopiero po zakończeniu poprzedniej */
+  private enqueue<T>(operation: () => Promise<T>): Promise<T> {
+    const result = this.operationQueue.then(operation, operation);
+    this.operationQueue = result.catch(() => undefined);
+    return result;
+  }
+
+  /**
+   * odczytuje rekordy i porządkuje ich tożsamość (brakujące `id`, zdublowane nazwy);
+   * uporządkowany stan jest od razu zapisywany. Wywoływać wyłącznie wewnątrz `enqueue`.
+   */
+  private async readRecords(): Promise<SavedCalculationRecord[]> {
+    const store = await this.getStore();
+    const storedRecords =
+      (await store.get<SavedCalculationRecord[]>(CalculationsStoreService.RECORDS_KEY)) ?? [];
+    const normalized = normalizeSavedCalculationRecords(storedRecords);
+    if (normalized.changed) {
+      await store.set(CalculationsStoreService.RECORDS_KEY, normalized.records);
+      await store.save();
+    }
+    return normalized.records;
+  }
+
+  /**
+   * zapisuje nową listę rekordów; wcześniej, o ile poprzednia lista nie była pusta, kopiuje ją do
+   * kopii zapasowej. Pusta lista nie nadpisuje kopii — dzięki temu start z uszkodzonego (pustego)
+   * store'a i późniejszy zapis nie niszczą ostatniego dobrego stanu. Wywoływać wewnątrz `enqueue`.
+   */
+  private async writeRecords(
+    previousRecords: SavedCalculationRecord[],
+    nextRecords: SavedCalculationRecord[],
+  ): Promise<void> {
+    if (previousRecords.length) {
+      const backupStore = await this.getBackupStore();
+      await backupStore.set(CalculationsStoreService.RECORDS_KEY, previousRecords);
+      await backupStore.save();
+    }
+    const store = await this.getStore();
+    await store.set(CalculationsStoreService.RECORDS_KEY, nextRecords);
+    await store.save();
+  }
+
   private async getStore(): Promise<KeyValueStore> {
     if (!this.storePromise) {
-      this.storePromise = isTauriRuntime() ? this.loadTauriStore() : this.loadBrowserStore();
+      this.storePromise = isTauriRuntime()
+        ? this.loadTauriStore(CalculationsStoreService.STORE_FILE_NAME)
+        : this.loadBrowserStore();
     }
     return this.storePromise;
   }
 
+  private async getBackupStore(): Promise<KeyValueStore> {
+    if (!this.backupStorePromise) {
+      this.backupStorePromise = isTauriRuntime()
+        ? this.loadTauriStore(CalculationsStoreService.BACKUP_STORE_FILE_NAME)
+        : Promise.resolve(
+            new LocalStorageStore(CalculationsStoreService.BACKUP_STORE_FILE_NAME, {
+              [CalculationsStoreService.RECORDS_KEY]: [],
+            }),
+          );
+    }
+    return this.backupStorePromise;
+  }
+
   /** ładuje natywny store Tauri (desktop). */
-  private async loadTauriStore(): Promise<KeyValueStore> {
-    return load(CalculationsStoreService.STORE_FILE_NAME, {
+  private async loadTauriStore(fileName: string): Promise<KeyValueStore> {
+    return load(fileName, {
       defaults: { [CalculationsStoreService.RECORDS_KEY]: [] },
       autoSave: true,
     });
@@ -197,7 +320,9 @@ export class CalculationsStoreService {
   private extractSeedRecords(parsed: unknown): SavedCalculationRecord[] {
     if (Array.isArray(parsed)) return parsed as SavedCalculationRecord[];
     if (parsed && typeof parsed === 'object') {
-      const calculations = (parsed as Record<string, unknown>)[CalculationsStoreService.RECORDS_KEY];
+      const calculations = (parsed as Record<string, unknown>)[
+        CalculationsStoreService.RECORDS_KEY
+      ];
       if (Array.isArray(calculations)) return calculations as SavedCalculationRecord[];
     }
     return [];
